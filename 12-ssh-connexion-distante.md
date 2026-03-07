@@ -55,6 +55,41 @@ scp utilisateur@serveur:/chemin/fichier.txt ./
 sftp utilisateur@serveur
 ```
 
+## Port Forwarding (Tunnel SSH)
+
+Le port forwarding permet d'accéder à un service sur le serveur SSH comme si il était en local sur ta machine.
+
+### Format
+```bash
+ssh -L [port_local]:[destination]:[port_destination] utilisateur@serveur
+```
+
+### Exemple pratique
+```bash
+ssh -L 11435:127.0.0.1:11434 utilisateur@serveur
+```
+解释 :
+- **11435** → port local sur ton ordinateur (après -L)
+- **127.0.0.1** → adresse vue depuis le serveur SSH (ici localhost)
+- **11434** → port du service sur le serveur
+
+### Cas d'usage courants
+
+| Commande | Description |
+|---------|-------------|
+| `ssh -L 8080:localhost:80 user@serveur` | Accéder au serveur web local du serveur |
+| `ssh -L 3306:localhost:3306 user@serveur` | Accéder à MySQL du serveur |
+| `ssh -L 5432:localhost:5432 user@serveur` | Accéder à PostgreSQL du serveur |
+
+### Exercice
+
+1. Connecte-toi avec un tunnel :
+   ```bash
+   ssh -L 9000:localhost:80 user@ton_serveur
+   ```
+2. Ouvre un navigateur et va sur `http://localhost:9000`
+3. Tu devrais voir le serveur web du serveur distant !
+
 ## Exercice pratique
 
 1. Génère une clé SSH sur ta machine :
