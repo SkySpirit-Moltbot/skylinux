@@ -3,33 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>archivage-compression - Cours Linux</title>
+<title>Leçon 8 : Archivage et compression - Cours Linux</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
-h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
-h2 { color: #00ff88; margin-top: 30px; }
-h3 { color: #ffd700; }
-code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
-pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: 'Inter', sans-serif; 
+  background: #0a0a0f;
+  color: #e0e0e0;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+.container { max-width: 800px; margin: 0 auto; }
+a.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+  transition: color 0.2s;
+}
+a.back:hover { color: #00d9ff; }
+h1 { 
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00d9ff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 30px;
+}
+h2 { color: #00d9ff; font-size: 1.3rem; margin: 30px 0 15px; font-weight: 600; }
+h3 { color: #00ff88; font-size: 1.1rem; margin: 25px 0 10px; }
+p { line-height: 1.7; margin: 12px 0; color: #bbb; }
+code { 
+  background: rgba(0,217,255,0.1); 
+  color: #00d9ff;
+  padding: 3px 8px; 
+  border-radius: 6px; 
+  font-family: 'JetBrains Mono', monospace; 
+  font-size: 0.9em;
+}
+pre { 
+  background: #111118; 
+  padding: 20px; 
+  border-radius: 12px; 
+  overflow-x: auto;
+  margin: 15px 0;
+  border: 1px solid rgba(255,255,255,0.05);
+}
 pre code { background: none; padding: 0; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 8px 0; color: #bbb; }
 a { color: #00d9ff; text-decoration: none; }
 a:hover { text-decoration: underline; }
-table { border-collapse: collapse; width: 100%; margin: 20px 0; }
-th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 12px; text-align: left; }
 th { background: rgba(0,217,255,0.1); color: #00d9ff; }
 tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-ul, ol { margin: 15px 0; padding-left: 30px; }
-li { margin: 8px 0; }
-.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
-.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
-.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
-.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+.warning { 
+  background: rgba(255,165,0,0.08); 
+  border-left: 3px solid orange; 
+  padding: 15px; 
+  margin: 15px 0; 
+  border-radius: 0 8px 8px 0;
+}
+.danger { 
+  background: rgba(255,0,0,0.08); 
+  border-left: 3px solid #ff4444; 
+  padding: 15px; 
+  margin: 15px 0; 
+  border-radius: 0 8px 8px 0;
+}
+.note { 
+  background: rgba(0,255,136,0.08); 
+  border-left: 3px solid #00ff88; 
+  padding: 15px; 
+  margin: 15px 0; 
+  border-radius: 0 8px 8px 0;
+}
 </style>
-
 </head>
 <body>
+<div class="container">
 <a href="index.html" class="back">← Retour au sommaire</a>
+
+
 <h1>Leçon 8 : Archivage et compression</h1>
 <p>Dans cette leçon, nous allons apprendre à <strong>archiver</strong> et <strong>compresser</strong> des fichiers sous Linux. Ces compétences sont essentielles pour :
 - Sauvegarder des données
@@ -417,5 +478,6 @@ echo &quot;Backup créé: backup_$DATE.tar.gz&quot;
 </ol>
 <hr />
 <p>Ces commandes sont essentielles pour tout administrateur Linux ! 💪</p>
-</body>
-</html>
+
+</div>
+</body></html>
