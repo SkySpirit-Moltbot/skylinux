@@ -4,39 +4,98 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cours Linux - Débutant</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-body { font-family: monospace; background: #1a1a2e; color: #ccc; padding: 20px; max-width: 800px; margin: 0 auto; }
-h1 { color: #00d9ff; font-size: 1.5em; border-bottom: 1px solid #333; padding-bottom: 10px; }
-ul { list-style: none; padding: 0; }
-li { padding: 8px 0; border-bottom: 1px solid #222; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { color: #00ff88; }
-.num { color: #666; margin-right: 10px; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: 'Inter', sans-serif; 
+  background: #0a0a0f;
+  color: #e0e0e0;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+.container { max-width: 700px; margin: 0 auto; }
+h1 { 
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00d9ff, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 40px;
+  text-align: center;
+}
+.list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px; 
+}
+.item {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  text-decoration: none;
+  color: #e0e0e0;
+  transition: all 0.2s ease;
+}
+.item:hover {
+  background: rgba(0,217,255,0.08);
+  border-color: rgba(0,217,255,0.3);
+  transform: translateX(6px);
+}
+.num {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  width: 28px;
+  text-transform: uppercase;
+}
+.title {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.arrow {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: #00d9ff;
+}
+.item:hover .arrow { opacity: 1; }
+.count {
+  text-align: center;
+  color: #444;
+  font-size: 0.85rem;
+  margin-top: 30px;
+}
 </style>
 </head>
 <body>
-<h1>🐧 Cours Linux pour Débutants</h1>
-<ul>
-<li><span class="num">01</span><a href="01-introduction.html">Introduction</a></li>
-<li><span class="num">02</span><a href="02-commandes-base.html">Commandes de base</a></li>
-<li><span class="num">03</span><a href="03-permissions.html">Permissions</a></li>
-<li><span class="num">04</span><a href="04-processus-services.html">Processus et Services</a></li>
-<li><span class="num">05</span><a href="05-installation-logiciels.html">Installation logiciels</a></li>
-<li><span class="num">06</span><a href="06-reseaux.html">Réseaux</a></li>
-<li><span class="num">07</span><a href="07-gestion-fichiers.html">Gestion fichiers</a></li>
-<li><span class="num">08</span><a href="08-archivage-compression.html">Archivage et compression</a></li>
-<li><span class="num">09</span><a href="09-recherche-fichiers-texte.html">Recherche</a></li>
-<li><span class="num">10</span><a href="10-variables-scripts.html">Variables et Scripts</a></li>
-<li><span class="num">11</span><a href="11-supervision-systeme.html">Supervision système</a></li>
-<li><span class="num">12</span><a href="12-ssh-connexion-distante.html">SSH</a></li>
-<li><span class="num">13</span><a href="13-taches-planifiees-cron.html">Tâches Cron</a></li>
-<li><span class="num">14</span><a href="14-gestion-utilisateurs-groupes.html">Utilisateurs et Groupes</a></li>
-<li><span class="num">15</span><a href="15-redirections-pipes.html">Redirections et Pipes</a></li>
-<li><span class="num">16</span><a href="16-editeurs-texte.html">Éditeurs (Vim/Nano)</a></li>
-<li><span class="num">17</span><a href="17-logs-systeme.html">Logs système</a></li>
-<li><span class="num">18</span><a href="18-gestion-disques-partitions.html">Disques et Partitions</a></li>
-<li><span class="num">19</span><a href="19-sauvegardes-restauration.html">Sauvegardes</a></li>
-<li><span class="num">20</span><a href="20-securite-base.html">Sécurité</a></li>
-</ul>
-<p style="color:#666;margin-top:20px;">20 leçons</p>
+<div class="container">
+<h1>🐧 Linux Debutant</h1>
+<div class="list">
+<a href="01-introduction.html" class="item"><span class="num">01</span><span class="title">Introduction</span><span class="arrow">→</span></a>
+<a href="02-commandes-base.html" class="item"><span class="num">02</span><span class="title">Commandes de base</span><span class="arrow">→</span></a>
+<a href="03-permissions.html" class="item"><span class="num">03</span><span class="title">Permissions</span><span class="arrow">→</span></a>
+<a href="04-processus-services.html" class="item"><span class="num">04</span><span class="title">Processus et Services</span><span class="arrow">→</span></a>
+<a href="05-installation-logiciels.html" class="item"><span class="num">05</span><span class="title">Installation logiciels</span><span class="arrow">→</span></a>
+<a href="06-reseaux.html" class="item"><span class="num">06</span><span class="title">Reseaux</span><span class="arrow">→</span></a>
+<a href="07-gestion-fichiers.html" class="item"><span class="num">07</span><span class="title">Gestion fichiers</span><span class="arrow">→</span></a>
+<a href="08-archivage-compression.html" class="item"><span class="num">08</span><span class="title">Archivage et compression</span><span class="arrow">→</span></a>
+<a href="09-recherche-fichiers-texte.html" class="item"><span class="num">09</span><span class="title">Recherche</span><span class="arrow">→</span></a>
+<a href="10-variables-scripts.html" class="item"><span class="num">10</span><span class="title">Variables et Scripts</span><span class="arrow">→</span></a>
+<a href="11-supervision-systeme.html" class="item"><span class="num">11</span><span class="title">Supervision systeme</span><span class="arrow">→</span></a>
+<a href="12-ssh-connexion-distante.html" class="item"><span class="num">12</span><span class="title">SSH</span><span class="arrow">→</span></a>
+<a href="13-taches-planifiees-cron.html" class="item"><span class="num">13</span><span class="title">Taches Cron</span><span class="arrow">→</span></a>
+<a href="14-gestion-utilisateurs-groupes.html" class="item"><span class="num">14</span><span class="title">Utilisateurs et Groupes</span><span class="arrow">→</span></a>
+<a href="15-redirections-pipes.html" class="item"><span class="num">15</span><span class="title">Redirections et Pipes</span><span class="arrow">→</span></a>
+<a href="16-editeurs-texte.html" class="item"><span class="num">16</span><span class="title">Editeurs (Vim/Nano)</span><span class="arrow">→</span></a>
+<a href="17-logs-systeme.html" class="item"><span class="num">17</span><span class="title">Logs systeme</span><span class="arrow">→</span></a>
+<a href="18-gestion-disques-partitions.html" class="item"><span class="num">18</span><span class="title">Disques et Partitions</span><span class="arrow">→</span></a>
+<a href="19-sauvegardes-restauration.html" class="item"><span class="num">19</span><span class="title">Sauvegardes</span><span class="arrow">→</span></a>
+<a href="20-securite-base.html" class="item"><span class="num">20</span><span class="title">Securite</span><span class="arrow">→</span></a>
+</div>
+<p class="count">20 lecons</p>
+</div>
 </body></html>
