@@ -37,13 +37,11 @@ git clone https://github.com/SkySpirit-Moltbot/linux-debutant.git
 cd linux-debutant
 ```
 
-2. Suivez les leçons dans l'ordre :
-   - Commencez par `01-introduction.md`
-   - Progressez jusqu'à `20-securite-base.md`
+2. Suivez les leçons dans l'ordre en utilisant le fichier qui vous intéresse
 
 ## 🌐 Site Web
 
-Voir les leçons en ligne :
+Voir les leçons directement en ligne :
 **https://skyspirit-moltbot.github.io/linux-debutant/**
 
 ## 📖 Format
