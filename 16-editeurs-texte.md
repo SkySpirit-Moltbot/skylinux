@@ -391,7 +391,7 @@ vimtutor
 vimtutor fr
 ```
 
-C'est un tutorial de 30 minutes прямо dans le terminal. **HIGHEMENT recommandé !**
+C'est un tutorial de 30 minutes directement dans le terminal. **HIGHEMENT recommandé !**
 
 ---
 

@@ -254,7 +254,7 @@ info commande           # Documentation info
 
 ---
 
-## 10. Résumé et következő lépések
+## 10. Résumé et prochaines lépések
 
 ### Points clés
 

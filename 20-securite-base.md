@@ -316,7 +316,7 @@ cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh && cat >> ~/.ssh/a
 | `/var/log/faillog` | Échecs de connexion |
 | `/var/log/btmp` | Mauvaises connexions |
 
-### Commandes de анализ
+### Commandes de analyse
 
 ```bash
 # Rechercher les échecs

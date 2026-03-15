@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Securite - Cours Linux</title>
-<meta name="description" content="Lecon Securite - Cours Linux - Apprenez Linux pas a pas avec ce cours complet pour debutants.">
-<meta name="keywords" content="linux, cours, securite, debutant, ubuntu, terminal, commandes">
-
+<title>securite-base - Cours Linux</title>
+<meta name="description" content="Lecon securite-base - Cours Linux - Apprenez Linux pas a pas avec ce cours complet pour debutants.">
+<meta name="keywords" content="linux, cours, securite-base, debutant, ubuntu, terminal, commandes">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,14 +17,14 @@ h1 { font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #0
 h2 { color: #00d9ff; font-size: 1.3rem; margin: 30px 0 15px; font-weight: 600; }
 h3 { color: #00ff88; font-size: 1.1rem; margin: 25px 0 10px; }
 p { line-height: 1.7; margin: 12px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 3px 8px; border-radius: 6px; font-family: monospace; font-size: 0.9em; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 3px 8px; border-radius: 6px; font-family: monospace; }
 pre { background: #111118; padding: 20px; border-radius: 12px; overflow-x: auto; margin: 15px 0; border: 1px solid rgba(255,255,255,0.05); }
 pre code { background: none; padding: 0; }
 ul, ol { margin: 12px 0; padding-left: 25px; }
 li { margin: 8px 0; color: #bbb; }
 a { color: #00d9ff; text-decoration: none; }
 table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-th, td { border: 1px solid #333; padding: 12px; text-align: left; }
+th, td { border: 1px solid #333; padding: 12px; }
 th { background: rgba(0,217,255,0.1); color: #00d9ff; }
 </style>
 </head>
@@ -340,7 +339,7 @@ cat ~/.ssh/id_ed25519.pub | ssh user@serveur &quot;mkdir -p ~/.ssh &amp;&amp; ca
 </tr>
 </tbody>
 </table>
-<h3>Commandes de анализ</h3>
+<h3>Commandes de analyse</h3>
 <pre class="codehilite"><code class="language-bash"># Rechercher les échecs
 grep &quot;Failed&quot; /var/log/auth.log
 grep &quot;Failed&quot; /var/log/auth.log | tail -20
