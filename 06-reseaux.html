@@ -1,31 +1,70 @@
-# Leçon 6 : Réseaux de base
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>reseaux - Cours Linux</title>
 
-Dans cette leçon, tu vas maîtriser les fondamentaux du réseau sous Linux : configuration IP, diagnostic, SSH, et transfert de fichiers.
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
 
----
-
-## 1. Adresses IP
-
-### IPv4 vs IPv6
-
-| Type | Format | Exemple |
-|------|--------|---------|
-| **IPv4** | 4 nombres (0-255) | 192.168.1.100 |
-| **IPv6** | 8 groupes hexadécimaux | 2001:0db8::1 |
-
-### IP publique vs privée
-
-- **IP publique** : Adresse visible sur Internet (attribuée par le FAI)
-- **IP privée** : Adresse locale (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
-
----
-
-## 2. Commandes de configuration IP
-
-### Voir les adresses IP
-
-```bash
-ip addr                 # Méthode moderne
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 6 : Réseaux de base</h1>
+<p>Dans cette leçon, tu vas maîtriser les fondamentaux du réseau sous Linux : configuration IP, diagnostic, SSH, et transfert de fichiers.</p>
+<hr />
+<h2>1. Adresses IP</h2>
+<h3>IPv4 vs IPv6</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Format</th>
+<th>Exemple</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IPv4</strong></td>
+<td>4 nombres (0-255)</td>
+<td>192.168.1.100</td>
+</tr>
+<tr>
+<td><strong>IPv6</strong></td>
+<td>8 groupes hexadécimaux</td>
+<td>2001:0db8::1</td>
+</tr>
+</tbody>
+</table>
+<h3>IP publique vs privée</h3>
+<ul>
+<li><strong>IP publique</strong> : Adresse visible sur Internet (attribuée par le FAI)</li>
+<li><strong>IP privée</strong> : Adresse locale (192.168.x.x, 10.x.x.x, 172.16-31.x.x)</li>
+</ul>
+<hr />
+<h2>2. Commandes de configuration IP</h2>
+<h3>Voir les adresses IP</h3>
+<pre class="codehilite"><code class="language-bash">ip addr                 # Méthode moderne
 ip addr show eth0      # Une interface spécifique
 ip -4 addr             # IPv4 seulement
 ip -6 addr             # IPv6 seulement
@@ -33,12 +72,10 @@ ip -6 addr             # IPv6 seulement
 # Méthode classique (deprecated mais encore là)
 ifconfig
 ifconfig -a
-```
+</code></pre>
 
-### Paramètres d'une interface
-
-```bash
-ip link show           # Liste des interfaces
+<h3>Paramètres d'une interface</h3>
+<pre class="codehilite"><code class="language-bash">ip link show           # Liste des interfaces
 ip link set eth0 up   # Activer interface
 ip link set eth0 down # Désactiver
 
@@ -47,24 +84,18 @@ ip addr add 192.168.1.100/24 dev eth0
 
 # Supprimer une IP
 ip addr del 192.168.1.100/24 dev eth0
-```
+</code></pre>
 
-### Table de routage
-
-```bash
-ip route               # Routes actuelles
+<h3>Table de routage</h3>
+<pre class="codehilite"><code class="language-bash">ip route               # Routes actuelles
 ip route show
 ip route add default via 192.168.1.1  # Passerelle par défaut
-```
+</code></pre>
 
----
-
-## 3. Diagnostic réseau
-
-### Ping - Tester la connectivité
-
-```bash
-ping google.com              # Ping infini
+<hr />
+<h2>3. Diagnostic réseau</h2>
+<h3>Ping - Tester la connectivité</h3>
+<pre class="codehilite"><code class="language-bash">ping google.com              # Ping infini
 ping -c 4 google.com         # 4 pings seulement
 ping -i 0.2 google.com       # Intervalle de 0.2s
 ping -w 5 google.com         # Timeout 5 secondes
@@ -72,21 +103,17 @@ ping -w 5 google.com         # Timeout 5 secondes
 # Types de ping
 ping -4 google.com           # IPv4 seulement
 ping -6 google.com           # IPv6 seulement
-```
+</code></pre>
 
-### Traceroute - Chemin jusqu'à la destination
-
-```bash
-traceroute google.com        # Linux (utilise UDP)
+<h3>Traceroute - Chemin jusqu'à la destination</h3>
+<pre class="codehilite"><code class="language-bash">traceroute google.com        # Linux (utilise UDP)
 traceroute -I google.com    # ICMP
 traceroute -n google.com    # Sans résolution DNS
 mtr google.com               # Ping + traceroute en temps réel
-```
+</code></pre>
 
-### Connexions réseau
-
-```bash
-# Commandes modernes (ss)
+<h3>Connexions réseau</h3>
+<pre class="codehilite"><code class="language-bash"># Commandes modernes (ss)
 ss -tuln                   # TCP/UDP en écoute
 ss -tuln -p                # Avec processus
 ss -tan                    # Toutes connexions TCP
@@ -96,12 +123,10 @@ ss -tnp | grep ESTAB       # Connexions établies
 netstat -tuln              # Ports en écoute
 netstat -rn                # Table de routage
 netstat -i                 # Stats interfaces
-```
+</code></pre>
 
-### DNS
-
-```bash
-# Serveurs DNS utilisés
+<h3>DNS</h3>
+<pre class="codehilite"><code class="language-bash"># Serveurs DNS utilisés
 cat /etc/resolv.conf
 resolvectl status
 
@@ -109,63 +134,47 @@ resolvectl status
 nslookup google.com
 dig google.com
 host google.com
-```
+</code></pre>
 
-### IP publique
-
-```bash
-curl ifconfig.me
+<h3>IP publique</h3>
+<pre class="codehilite"><code class="language-bash">curl ifconfig.me
 curl icanhazip.com
 wget -qO- ifconfig.me
-```
+</code></pre>
 
----
-
-## 4. Configuration réseau
-
-### Fichiers de configuration (Debian/Ubuntu)
-
-```bash
-# Configuration interfaces
+<hr />
+<h2>4. Configuration réseau</h2>
+<h3>Fichiers de configuration (Debian/Ubuntu)</h3>
+<pre class="codehilite"><code class="language-bash"># Configuration interfaces
 sudo nano /etc/network/interfaces
 
 # Configuration DNS
 sudo nano /etc/resolv.conf
-```
+</code></pre>
 
-### Exemple /etc/network/interfaces
-
-```
-auto eth0
+<h3>Exemple /etc/network/interfaces</h3>
+<pre class="codehilite"><code>auto eth0
 iface eth0 inet static
     address 192.168.1.100
     netmask 255.255.255.0
     gateway 192.168.1.1
     dns-nameservers 8.8.8.8 8.8.4.4
-```
+</code></pre>
 
-### Redémarrer le réseau
-
-```bash
-sudo systemctl restart networking
+<h3>Redémarrer le réseau</h3>
+<pre class="codehilite"><code class="language-bash">sudo systemctl restart networking
 # ou
 sudo /etc/init.d/networking restart
-```
+</code></pre>
 
----
+<hr />
+<h2>5. Le fichier /etc/hosts</h2>
+<p>Le fichier hosts permet de résoudre les noms localement.</p>
+<pre class="codehilite"><code class="language-bash">sudo nano /etc/hosts
+</code></pre>
 
-## 5. Le fichier /etc/hosts
-
-Le fichier hosts permet de résoudre les noms localement.
-
-```bash
-sudo nano /etc/hosts
-```
-
-Contenu :
-
-```
-127.0.0.1       localhost
+<p>Contenu :</p>
+<pre class="codehilite"><code>127.0.0.1       localhost
 127.0.1.1       raspberrypi
 
 # Cartes alias
@@ -176,60 +185,46 @@ Contenu :
 # Bloquer un site
 127.0.0.1       facebook.com
 127.0.0.1       www.facebook.com
-```
+</code></pre>
 
----
-
-## 6. SSH - Connexion à distance
-
-### Installer le serveur
-
-```bash
-sudo apt install openssh-server
+<hr />
+<h2>6. SSH - Connexion à distance</h2>
+<h3>Installer le serveur</h3>
+<pre class="codehilite"><code class="language-bash">sudo apt install openssh-server
 sudo systemctl enable ssh
 sudo systemctl start ssh
-```
+</code></pre>
 
-### Se connecter
-
-```bash
-ssh utilisateur@adresse_ip
+<h3>Se connecter</h3>
+<pre class="codehilite"><code class="language-bash">ssh utilisateur@adresse_ip
 ssh -p 2222 utilisateur@ip    # Port personnalisé
 ssh -i ~/.ssh/cle_privee user@ip  # Avec clé SSH
-```
+</code></pre>
 
-### Sécurisation SSH
-
-```bash
-# Modifier le port (dans /etc/ssh/sshd_config)
+<h3>Sécurisation SSH</h3>
+<pre class="codehilite"><code class="language-bash"># Modifier le port (dans /etc/ssh/sshd_config)
 sudo nano /etc/ssh/sshd_config
-# Changer "Port 22" en "Port 2222"
+# Changer &quot;Port 22&quot; en &quot;Port 2222&quot;
 
 # Redémarrer SSH
 sudo systemctl restart ssh
-```
+</code></pre>
 
-### Clés SSH
-
-```bash
-# Générer une clé
-ssh-keygen -t ed25519 -C "mon@email.com"
+<h3>Clés SSH</h3>
+<pre class="codehilite"><code class="language-bash"># Générer une clé
+ssh-keygen -t ed25519 -C &quot;mon@email.com&quot;
 
 # Copier la clé sur le serveur
 ssh-copy-id utilisateur@serveur
 
 # Ou manuellement
-cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
-```
+cat ~/.ssh/id_ed25519.pub | ssh user@serveur &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys&quot;
+</code></pre>
 
----
-
-## 7. Transfert de fichiers
-
-### SCP - Copie sécurisée
-
-```bash
-# Copier vers le serveur
+<hr />
+<h2>7. Transfert de fichiers</h2>
+<h3>SCP - Copie sécurisée</h3>
+<pre class="codehilite"><code class="language-bash"># Copier vers le serveur
 scp fichier.txt user@serveur:/home/user/
 scp -r dossier/ user@serveur:/home/user/
 
@@ -240,19 +235,15 @@ scp user@serveur:/home/user/fichier.txt ./
 scp -P 2222 fichier.txt user@serveur:/dossier/  # Port
 scp -v fichier.txt user@serveur:/dossier/       # Verbeux
 scp -C fichier.txt user@serveur:/dossier/       # Compression
-```
+</code></pre>
 
-### SFTP - Transfert interactif
-
-```bash
-sftp user@serveur
+<h3>SFTP - Transfert interactif</h3>
+<pre class="codehilite"><code class="language-bash">sftp user@serveur
 # Commandes: ls, cd, put, get, rm, mkdir, etc.
-```
+</code></pre>
 
-### RSYNC - Synchronisation
-
-```bash
-# Synchroniser un dossier
+<h3>RSYNC - Synchronisation</h3>
+<pre class="codehilite"><code class="language-bash"># Synchroniser un dossier
 rsync -av dossier/ user@serveur:/home/user/backup/
 
 # Synchronisation avec compression et suppression
@@ -260,16 +251,12 @@ rsync -avz --delete dossier/ user@serveur:/home/user/backup/
 
 # Exclure des fichiers
 rsync -av --exclude='*.log' dossier/ user@serveur:/backup/
-```
+</code></pre>
 
----
-
-## 8. Commandes firewall (UFW)
-
-### UFW (Uncomplicated Firewall)
-
-```bash
-# Activer
+<hr />
+<h2>8. Commandes firewall (UFW)</h2>
+<h3>UFW (Uncomplicated Firewall)</h3>
+<pre class="codehilite"><code class="language-bash"># Activer
 sudo ufw enable
 
 # Désactiver
@@ -292,51 +279,82 @@ sudo ufw deny 80/tcp
 
 # Supprimer une règle
 sudo ufw delete allow 80/tcp
-```
+</code></pre>
 
----
-
-## 9. Exercices pratiques
-
-### Exercice 1 : Vérifier la connectivité
-```bash
-ip addr
+<hr />
+<h2>9. Exercices pratiques</h2>
+<h3>Exercice 1 : Vérifier la connectivité</h3>
+<pre class="codehilite"><code class="language-bash">ip addr
 ping -c 3 8.8.8.8
 traceroute google.com
-```
+</code></pre>
 
-### Exercice 2 : Configurer une IP statique
-```bash
-sudo nano /etc/network/interfaces
+<h3>Exercice 2 : Configurer une IP statique</h3>
+<pre class="codehilite"><code class="language-bash">sudo nano /etc/network/interfaces
 # Ajouter la configuration statique
 sudo systemctl restart networking
-```
+</code></pre>
 
-### Exercice 3 : Transférer un fichier
-```bash
-# Créer un fichier test
-echo "Test" > test.txt
+<h3>Exercice 3 : Transférer un fichier</h3>
+<pre class="codehilite"><code class="language-bash"># Créer un fichier test
+echo &quot;Test&quot; &gt; test.txt
 # Le copier sur le serveur
 scp test.txt user@serveur:/tmp/
-```
+</code></pre>
 
----
-
-## 10. Tableau résumé
-
-| Commande | Description |
-|----------|-------------|
-| `ip addr` | Voir les IPs |
-| `ping` | Tester connectivité |
-| `traceroute` | Chemin jusqu'au serveur |
-| `ss` | Connexions réseau |
-| `nslookup/dig` | Requêtes DNS |
-| `ssh` | Connexion à distance |
-| `scp` | Copier via SSH |
-| `sftp` | Transfert interactif |
-| `rsync` | Synchronisation |
-| `ufw` | Firewall |
-
----
-
-Maîtrise ces commandes pour administrer le réseau sous Linux ! 🌐
+<hr />
+<h2>10. Tableau résumé</h2>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ip addr</code></td>
+<td>Voir les IPs</td>
+</tr>
+<tr>
+<td><code>ping</code></td>
+<td>Tester connectivité</td>
+</tr>
+<tr>
+<td><code>traceroute</code></td>
+<td>Chemin jusqu'au serveur</td>
+</tr>
+<tr>
+<td><code>ss</code></td>
+<td>Connexions réseau</td>
+</tr>
+<tr>
+<td><code>nslookup/dig</code></td>
+<td>Requêtes DNS</td>
+</tr>
+<tr>
+<td><code>ssh</code></td>
+<td>Connexion à distance</td>
+</tr>
+<tr>
+<td><code>scp</code></td>
+<td>Copier via SSH</td>
+</tr>
+<tr>
+<td><code>sftp</code></td>
+<td>Transfert interactif</td>
+</tr>
+<tr>
+<td><code>rsync</code></td>
+<td>Synchronisation</td>
+</tr>
+<tr>
+<td><code>ufw</code></td>
+<td>Firewall</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Maîtrise ces commandes pour administrer le réseau sous Linux ! 🌐</p>
+</body>
+</html>

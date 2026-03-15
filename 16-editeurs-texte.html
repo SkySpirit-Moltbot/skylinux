@@ -1,147 +1,261 @@
-# Leçon 16 : Éditeurs de texte en ligne de commande
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>editeurs-texte - Cours Linux</title>
 
-Dans cette leçon, tu vas maîtriser les deux éditeurs de texte essentiels sous Linux : **Nano** (simple) et **Vim** (puissant). Ces éditeurs sont indispensables pour modifier des fichiers de configuration, écrire des scripts et éditer du code.
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
 
----
-
-## 1. Introduction aux éditeurs
-
-### Pourquoi un éditeur en ligne de commande ?
-
-- Modifier des fichiers de configuration système
-- Écrire des scripts
-- Éditer sur des serveurs distants (SSH)
-- Rapidité et efficacité
-- Pas besoin d'interface graphique
-
-### Les deux approches
-
-| Nano | Vim |
-|------|-----|
-| Simple, immédiat | Puissant, nécessite apprentissage |
-| Raccourcis affichés | Modes de fonctionnement |
-| Idéal débutants | Idéal experts |
-| Édition linéaire | Édition structurée |
-
----
-
-## 2. NANO - L'éditeur simple
-
-### Lancer Nano
-
-```bash
-nano                    # Nouveau fichier
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 16 : Éditeurs de texte en ligne de commande</h1>
+<p>Dans cette leçon, tu vas maîtriser les deux éditeurs de texte essentiels sous Linux : <strong>Nano</strong> (simple) et <strong>Vim</strong> (puissant). Ces éditeurs sont indispensables pour modifier des fichiers de configuration, écrire des scripts et éditer du code.</p>
+<hr />
+<h2>1. Introduction aux éditeurs</h2>
+<h3>Pourquoi un éditeur en ligne de commande ?</h3>
+<ul>
+<li>Modifier des fichiers de configuration système</li>
+<li>Écrire des scripts</li>
+<li>Éditer sur des serveurs distants (SSH)</li>
+<li>Rapidité et efficacité</li>
+<li>Pas besoin d'interface graphique</li>
+</ul>
+<h3>Les deux approches</h3>
+<table>
+<thead>
+<tr>
+<th>Nano</th>
+<th>Vim</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple, immédiat</td>
+<td>Puissant, nécessite apprentissage</td>
+</tr>
+<tr>
+<td>Raccourcis affichés</td>
+<td>Modes de fonctionnement</td>
+</tr>
+<tr>
+<td>Idéal débutants</td>
+<td>Idéal experts</td>
+</tr>
+<tr>
+<td>Édition linéaire</td>
+<td>Édition structurée</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. NANO - L'éditeur simple</h2>
+<h3>Lancer Nano</h3>
+<pre class="codehilite"><code class="language-bash">nano                    # Nouveau fichier
 nano fichier.txt        # Ouvrir fichier existant
 nano -c fichier.txt     # Afficher position curseur
 nano -m fichier.txt     # Activer souris
 nano +10 fichier.txt    # Aller à la ligne 10
 nano -i fichier.txt    # Indentation automatique
-```
+</code></pre>
 
-### Interface Nano
-
-```
- GNU nano 6.2           Modification de fichier.txt                          
+<h3>Interface Nano</h3>
+<pre class="codehilite"><code> GNU nano 6.2           Modification de fichier.txt                          
 ^G Aide    ^O Écrire   ^R Lire    ^X Quitter   ^C Position ^_ Recherche
-```
+</code></pre>
 
-Le `^` représente la touche **Ctrl**.
-
-### Raccourcis essentiels
-
-| Raccourci | Action | Description |
-|-----------|--------|-------------|
-| **Ctrl + O** | Save | Écrire/Sauvegarder |
-| **Ctrl + X** | Exit | Quitter |
-| **Ctrl + W** | Where | Rechercher |
-| **Ctrl + \** | Replace | Rechercher et remplacer |
-| **Ctrl + K** | Cut | Couper la ligne |
-| **Ctrl + U** | Paste | Coller la ligne |
-| **Ctrl + C** | Location | Afficher position |
-| **Ctrl + G** | Help | Aide |
-
-### Navigation
-
-| Raccourci | Action |
-|-----------|--------|
-| Ctrl + A | Début de ligne |
-| Ctrl + E | Fin de ligne |
-| Ctrl + Y | Page précédente |
-| Ctrl + V | Page suivante |
-| Ctrl + _ | Aller à une ligne |
-| Meta + \ | Aller au début |
-| Meta + / | Aller à la fin |
-
-> **Note** : Meta = Alt ou Échap
-
-### Rechercher et remplacer
-
-```bash
-# Rechercher
+<p>Le <code>^</code> représente la touche <strong>Ctrl</strong>.</p>
+<h3>Raccourcis essentiels</h3>
+<table>
+<thead>
+<tr>
+<th>Raccourci</th>
+<th>Action</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl + O</strong></td>
+<td>Save</td>
+<td>Écrire/Sauvegarder</td>
+</tr>
+<tr>
+<td><strong>Ctrl + X</strong></td>
+<td>Exit</td>
+<td>Quitter</td>
+</tr>
+<tr>
+<td><strong>Ctrl + W</strong></td>
+<td>Where</td>
+<td>Rechercher</td>
+</tr>
+<tr>
+<td>*<em>Ctrl + *</em></td>
+<td>Replace</td>
+<td>Rechercher et remplacer</td>
+</tr>
+<tr>
+<td><strong>Ctrl + K</strong></td>
+<td>Cut</td>
+<td>Couper la ligne</td>
+</tr>
+<tr>
+<td><strong>Ctrl + U</strong></td>
+<td>Paste</td>
+<td>Coller la ligne</td>
+</tr>
+<tr>
+<td><strong>Ctrl + C</strong></td>
+<td>Location</td>
+<td>Afficher position</td>
+</tr>
+<tr>
+<td><strong>Ctrl + G</strong></td>
+<td>Help</td>
+<td>Aide</td>
+</tr>
+</tbody>
+</table>
+<h3>Navigation</h3>
+<table>
+<thead>
+<tr>
+<th>Raccourci</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl + A</td>
+<td>Début de ligne</td>
+</tr>
+<tr>
+<td>Ctrl + E</td>
+<td>Fin de ligne</td>
+</tr>
+<tr>
+<td>Ctrl + Y</td>
+<td>Page précédente</td>
+</tr>
+<tr>
+<td>Ctrl + V</td>
+<td>Page suivante</td>
+</tr>
+<tr>
+<td>Ctrl + _</td>
+<td>Aller à une ligne</td>
+</tr>
+<tr>
+<td>Meta + \</td>
+<td>Aller au début</td>
+</tr>
+<tr>
+<td>Meta + /</td>
+<td>Aller à la fin</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note</strong> : Meta = Alt ou Échap</p>
+</blockquote>
+<h3>Rechercher et remplacer</h3>
+<pre class="codehilite"><code class="language-bash"># Rechercher
 Ctrl + W, taper le mot, Entrée
 # Suivant: Ctrl + W puis Entrée
 
 # Rechercher et remplacer
 Ctrl + \ , taper recherche, Entrée, taper remplacement, Entrée
 # Confirmer: A pour tous, Y pour un par un
-```
+</code></pre>
 
-###nano par défaut
-
-```bash
-# Créer ~/.nanorc
+<h3>nano par défaut</h3>
+<pre class="codehilite"><code class="language-bash"># Créer ~/.nanorc
 set linenumbers      # Numéros de ligne
 set mouse           # Support souris
 set autoindent      # Indentation auto
 set noread          # Fichiers ouverts en lecture seule
-```
+</code></pre>
 
----
-
-## 3. VIM - L'éditeur puissant
-
-### Vim vs Vi
-
-- **Vi** : Ancêtre, présent sur tous les Unix
-- **Vim** : Vi Improved, version améliorée (la plus utilisée)
-
-### Lancer Vim
-
-```bash
-vim                     # Vim vide
+<hr />
+<h2>3. VIM - L'éditeur puissant</h2>
+<h3>Vim vs Vi</h3>
+<ul>
+<li><strong>Vi</strong> : Ancêtre, présent sur tous les Unix</li>
+<li><strong>Vim</strong> : Vi Improved, version améliorée (la plus utilisée)</li>
+</ul>
+<h3>Lancer Vim</h3>
+<pre class="codehilite"><code class="language-bash">vim                     # Vim vide
 vim fichier.txt         # Ouvrir fichier
 vim +10 fichier.txt     # Ligne 10
-vim +/motif fichier     # Rechercher "motif"
+vim +/motif fichier     # Rechercher &quot;motif&quot;
 vim -R fichier.txt      # Lecture seule
 vim -d fichier1.txt fichier2.txt   # Comparer 2 fichiers
-```
+</code></pre>
 
----
-
-## 4. Les modes de Vim
-
-C'est le concept le plus important à comprendre !
-
-### Les 3 modes principaux
-
-| Mode | Description | Comment y entrer | Comment en sortir |
-|------|-------------|------------------|-------------------|
-| **NORMAL** | Navigation, commandes | Par défaut | Échap |
-| **INSERTION** | Écrire du texte | `i`, `a`, `o` | Échap |
-| **COMMANDE** | Commandes avancées | `:` | Échap |
-
-### Mode Normal
-
-C'est le mode par défaut quand vous ouvrez Vim. Ici, chaque touche exécute une commande !
-
-```bash
-# Quand vous tapez "x", ça supprime le caractère, ça n'écrit pas "x" !
+<hr />
+<h2>4. Les modes de Vim</h2>
+<p>C'est le concept le plus important à comprendre !</p>
+<h3>Les 3 modes principaux</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+<th>Comment y entrer</th>
+<th>Comment en sortir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NORMAL</strong></td>
+<td>Navigation, commandes</td>
+<td>Par défaut</td>
+<td>Échap</td>
+</tr>
+<tr>
+<td><strong>INSERTION</strong></td>
+<td>Écrire du texte</td>
+<td><code>i</code>, <code>a</code>, <code>o</code></td>
+<td>Échap</td>
+</tr>
+<tr>
+<td><strong>COMMANDE</strong></td>
+<td>Commandes avancées</td>
+<td><code>:</code></td>
+<td>Échap</td>
+</tr>
+</tbody>
+</table>
+<h3>Mode Normal</h3>
+<p>C'est le mode par défaut quand vous ouvrez Vim. Ici, chaque touche exécute une commande !</p>
+<pre class="codehilite"><code class="language-bash"># Quand vous tapez &quot;x&quot;, ça supprime le caractère, ça n'écrit pas &quot;x&quot; !
 # C'est normal, c'est le mode NORMAL.
-```
+</code></pre>
 
-**Mouvements de base :**
-```bash
-h j k l           # Gauche, Bas, Haut, Droite (ou flèches)
+<p><strong>Mouvements de base :</strong></p>
+<pre class="codehilite"><code class="language-bash">h j k l           # Gauche, Bas, Haut, Droite (ou flèches)
 w                 # Mot suivant
 b                 # Mot précédent
 e                 # Fin du mot
@@ -151,12 +265,10 @@ gg                # Début du fichier
 G                 # Fin du fichier
 :n                # Aller à la ligne n
 %                 # Aller à l'accolade opposante
-```
+</code></pre>
 
-### Passer en mode Insertion
-
-```bash
-i          # Insertion avant le curseur (le plus utilisé)
+<h3>Passer en mode Insertion</h3>
+<pre class="codehilite"><code class="language-bash">i          # Insertion avant le curseur (le plus utilisé)
 I          # Insertion début de ligne
 a          # Insertion après le curseur
 A          # Insertion fin de ligne
@@ -165,85 +277,186 @@ O          # Nouvelle ligne dessus
 s          # Supprimer caractère et insérer
 S          # Supprimer ligne et insérer
 cc         # Supprimer ligne et insérer
-```
+</code></pre>
 
-**Touche Échap** ou **Ctrl + [** pour revenir au mode Normal !
-
-### Mode Commande
-
-En mode Normal, taper `:` pour accéder aux commandes.
-
-```bash
-:w             # Enregistrer (write)
+<p><strong>Touche Échap</strong> ou <strong>Ctrl + [</strong> pour revenir au mode Normal !</p>
+<h3>Mode Commande</h3>
+<p>En mode Normal, taper <code>:</code> pour accéder aux commandes.</p>
+<pre class="codehilite"><code class="language-bash">:w             # Enregistrer (write)
 :wq            # Enregistrer et quitter
 :x             # Enregistrer et quitter (plus court)
 :q             # Quitter (si pas de changement)
 :q!            # Quitter sans enregistrer
 :wqa           # Enregistrer et quitter tous les fichiers
 :qa            # Quitter tous les fichiers
-```
+</code></pre>
 
----
-
-## 5. Commandes du mode Normal
-
-### Suppression et modification
-
-| Commande | Action |
-|----------|--------|
-| `x` | Supprimer caractère |
-| `X` | Supprimer caractère avant |
-| `dd` | Supprimer ligne |
-| `dw` | Supprimer mot |
-| `d$` | Supprimer jusqu'à fin de ligne |
-| `d0` | Supprimer jusqu'à début de ligne |
-| `D` | Supprimer jusqu'à fin de ligne |
-| `cc` | Supprimer ligne et passer en insertion |
-| `C` | Supprimer et insérer |
-| `r` | Remplacer un caractère |
-| `R` | Mode remplacement |
-| `~` | Inverser casse |
-| `.` | Répéter dernière commande |
-
-### Copier/Coller
-
-| Commande | Action |
-|----------|--------|
-| `yy` | Copier ligne (yank) |
-| `yw` | Copier mot |
-| `y$` | Copier jusqu'à fin de ligne |
-| `p` | Coller après curseur |
-| `P` | Coller avant curseur |
-| `"+y` | Copier vers presse-papiers système |
-| `"+p` | Coller depuis presse-papiers système |
-
-### Annuler/Rétablir
-
-| Commande | Action |
-|----------|--------|
-| `u` | Annuler (undo) |
-| Ctrl + R | Rétablir (redo) |
-| `U` | Annuler tout sur la ligne |
-
-### Recherche
-
-| Commande | Action |
-|----------|--------|
-| `/motif` | Rechercher en avant |
-| `?motif` | Rechercher en arrière |
-| `n` | Occurrence suivante |
-| `N` | Occurrence précédente |
-| `*` | Rechercher mot sous curseur |
-| `#` | Rechercher mot sous curseur (arrière) |
-
----
-
-## 6. Commandes du mode Commande
-
-### Enregistrement et sauvegarde
-
-```bash
-:w             # Enregistrer
+<hr />
+<h2>5. Commandes du mode Normal</h2>
+<h3>Suppression et modification</h3>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>Supprimer caractère</td>
+</tr>
+<tr>
+<td><code>X</code></td>
+<td>Supprimer caractère avant</td>
+</tr>
+<tr>
+<td><code>dd</code></td>
+<td>Supprimer ligne</td>
+</tr>
+<tr>
+<td><code>dw</code></td>
+<td>Supprimer mot</td>
+</tr>
+<tr>
+<td><code>d$</code></td>
+<td>Supprimer jusqu'à fin de ligne</td>
+</tr>
+<tr>
+<td><code>d0</code></td>
+<td>Supprimer jusqu'à début de ligne</td>
+</tr>
+<tr>
+<td><code>D</code></td>
+<td>Supprimer jusqu'à fin de ligne</td>
+</tr>
+<tr>
+<td><code>cc</code></td>
+<td>Supprimer ligne et passer en insertion</td>
+</tr>
+<tr>
+<td><code>C</code></td>
+<td>Supprimer et insérer</td>
+</tr>
+<tr>
+<td><code>r</code></td>
+<td>Remplacer un caractère</td>
+</tr>
+<tr>
+<td><code>R</code></td>
+<td>Mode remplacement</td>
+</tr>
+<tr>
+<td><code>~</code></td>
+<td>Inverser casse</td>
+</tr>
+<tr>
+<td><code>.</code></td>
+<td>Répéter dernière commande</td>
+</tr>
+</tbody>
+</table>
+<h3>Copier/Coller</h3>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>yy</code></td>
+<td>Copier ligne (yank)</td>
+</tr>
+<tr>
+<td><code>yw</code></td>
+<td>Copier mot</td>
+</tr>
+<tr>
+<td><code>y$</code></td>
+<td>Copier jusqu'à fin de ligne</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Coller après curseur</td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td>Coller avant curseur</td>
+</tr>
+<tr>
+<td><code>"+y</code></td>
+<td>Copier vers presse-papiers système</td>
+</tr>
+<tr>
+<td><code>"+p</code></td>
+<td>Coller depuis presse-papiers système</td>
+</tr>
+</tbody>
+</table>
+<h3>Annuler/Rétablir</h3>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u</code></td>
+<td>Annuler (undo)</td>
+</tr>
+<tr>
+<td>Ctrl + R</td>
+<td>Rétablir (redo)</td>
+</tr>
+<tr>
+<td><code>U</code></td>
+<td>Annuler tout sur la ligne</td>
+</tr>
+</tbody>
+</table>
+<h3>Recherche</h3>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/motif</code></td>
+<td>Rechercher en avant</td>
+</tr>
+<tr>
+<td><code>?motif</code></td>
+<td>Rechercher en arrière</td>
+</tr>
+<tr>
+<td><code>n</code></td>
+<td>Occurrence suivante</td>
+</tr>
+<tr>
+<td><code>N</code></td>
+<td>Occurrence précédente</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>Rechercher mot sous curseur</td>
+</tr>
+<tr>
+<td><code>#</code></td>
+<td>Rechercher mot sous curseur (arrière)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6. Commandes du mode Commande</h2>
+<h3>Enregistrement et sauvegarde</h3>
+<pre class="codehilite"><code class="language-bash">:w             # Enregistrer
 :w fichier     # Enregistrer sous
 :wq            # Enregistrer et quitter
 :x             # Enregistrer et quitter
@@ -252,62 +465,48 @@ En mode Normal, taper `:` pour accéder aux commandes.
 :wqa           # Enregistrer et quitter tout
 :qa            # Quitter tout
 :qa!           # Forcer quitter tout
-```
+</code></pre>
 
-### Rechercher et remplacer
-
-```bash
-:/motif        # Rechercher
+<h3>Rechercher et remplacer</h3>
+<pre class="codehilite"><code class="language-bash">:/motif        # Rechercher
 :%s/old/new/   # Remplacer premiere occurrence
 :%s/old/new/g  # Remplacer toutes les occurrences
 :%s/old/new/gc # Confirmer chaque remplacement
 :s/old/new/    # Ligne actuelle seulement
 :5,10s/old/new/g  # Lignes 5 à 10
-```
+</code></pre>
 
-### Édition avancée
-
-```bash
-:set nu         # Afficher numéros de ligne
+<h3>Édition avancée</h3>
+<pre class="codehilite"><code class="language-bash">:set nu         # Afficher numéros de ligne
 :set nonu       # Masquer numéros
 :set hlsearch   # Surligner recherches
 :set incsearch  # Recherche incrémentale
 :set syntax on  # Coloration syntaxique
 :set tabstop=4  # Taille tabulation
 :set expandtab  # Espaces au lieu de tab
-```
+</code></pre>
 
----
-
-## 7. Sélection visuelle
-
-### Mode Visuel
-
-```bash
-v           # Mode visuel (caractère)
+<hr />
+<h2>7. Sélection visuelle</h2>
+<h3>Mode Visuel</h3>
+<pre class="codehilite"><code class="language-bash">v           # Mode visuel (caractère)
 V           # Mode visuel (ligne)
 Ctrl + V    # Mode visuel (bloc)
-```
+</code></pre>
 
-### Avec sélection
-
-```bash
-y           # Copier (yank)
+<h3>Avec sélection</h3>
+<pre class="codehilite"><code class="language-bash">y           # Copier (yank)
 d           # Supprimer
 c           # Supprimer et insérer
->           # Indenter à droite
-<           # Indenter à gauche
+&gt;           # Indenter à droite
+&lt;           # Indenter à gauche
 !           # Filtrer avec commande externe
-```
+</code></pre>
 
----
-
-## 8. Fenêtres et splits
-
-### Splits horizontaux et verticaux
-
-```bash
-:split           # Split horizontal
+<hr />
+<h2>8. Fenêtres et splits</h2>
+<h3>Splits horizontaux et verticaux</h3>
+<pre class="codehilite"><code class="language-bash">:split           # Split horizontal
 :vsplit          # Split vertical
 Ctrl + w + h     # Allergauche
 Ctrl + w + j     # Allerbas
@@ -318,20 +517,16 @@ Ctrl + w + =     # Égaliser les fenêtres
 Ctrl + w + _     # Maximiser horizontale
 Ctrl + w + |    # Maximiser verticale
 :close           # Fermer la fenêtre
-```
+</code></pre>
 
----
-
-## 9. Macros
-
-### Enregistrer et exécuter
-
-```bash
-# Commencer l'enregistrement (registre a)
+<hr />
+<h2>9. Macros</h2>
+<h3>Enregistrer et exécuter</h3>
+<pre class="codehilite"><code class="language-bash"># Commencer l'enregistrement (registre a)
 qa
 
 # Faire des actions
-I# <Esc>
+I# &lt;Esc&gt;
 
 # Arrêter l'enregistrement
 q
@@ -341,65 +536,54 @@ q
 
 # Exécuter 5 fois
 5@a
-```
+</code></pre>
 
----
+<hr />
+<h2>10. Fichiers de configuration Vim</h2>
+<h3>~/.vimrc basique</h3>
+<pre class="codehilite"><code class="language-syntax">&quot; Mon fichier .vimrc
 
-## 10. Fichiers de configuration Vim
+&quot; Basique
+set number          &quot; Numéros de ligne
+set relativenumber  &quot; Numéros relatifs
+set cursorline     &quot; Surbrillance ligne
+set showcmd         &quot; Commande en cours
 
-### ~/.vimrc basique
+&quot; Indentation
+set autoindent     &quot; Indentation auto
+set smartindent    &quot; Indentation intelligente
+set shiftwidth=4   &quot; Taille indentation
+set tabstop=4      &quot; Taille tab
 
-```syntax
-" Mon fichier .vimrc
+&quot; Recherche
+set ignorecase     &quot; Ignorer casse
+set smartcase      &quot; Casse si majuscule
+set hlsearch       &quot; Surligner recherche
+set incsearch      &quot; Recherche incrémentale
 
-" Basique
-set number          " Numéros de ligne
-set relativenumber  " Numéros relatifs
-set cursorline     " Surbrillance ligne
-set showcmd         " Commande en cours
-
-" Indentation
-set autoindent     " Indentation auto
-set smartindent    " Indentation intelligente
-set shiftwidth=4   " Taille indentation
-set tabstop=4      " Taille tab
-
-" Recherche
-set ignorecase     " Ignorer casse
-set smartcase      " Casse si majuscule
-set hlsearch       " Surligner recherche
-set incsearch      " Recherche incrémentale
-
-" Couleurs
-syntax on          " Coloration syntaxique
+&quot; Couleurs
+syntax on          &quot; Coloration syntaxique
 colorscheme default
 
-" Divers
-set mouse=a        " Support souris
-set backspace=2    " Backspace fonctionne
-```
+&quot; Divers
+set mouse=a        &quot; Support souris
+set backspace=2    &quot; Backspace fonctionne
+</code></pre>
 
----
-
-## 11. vimtutor - Le meilleur moyen d'apprendre
-
-```bash
-# Lancer le tutorial interactif
+<hr />
+<h2>11. vimtutor - Le meilleur moyen d'apprendre</h2>
+<pre class="codehilite"><code class="language-bash"># Lancer le tutorial interactif
 vimtutor
 
 # Version française (si disponible)
 vimtutor fr
-```
+</code></pre>
 
-C'est un tutorial de 30 minutes прямо dans le terminal. **HIGHEMENT recommandé !**
-
----
-
-## 12. Exercices pratiques
-
-### Exercice 1 : Nano basique
-```bash
-# Créer un fichier
+<p>C'est un tutorial de 30 minutes прямо dans le terminal. <strong>HIGHEMENT recommandé !</strong></p>
+<hr />
+<h2>12. Exercices pratiques</h2>
+<h3>Exercice 1 : Nano basique</h3>
+<pre class="codehilite"><code class="language-bash"># Créer un fichier
 nano test.txt
 
 # Écrire du texte
@@ -408,22 +592,20 @@ nano test.txt
 
 # Vérifier
 cat test.txt
-```
+</code></pre>
 
-### Exercice 2 : Vim premier pas
-```bash
-# Ouvrir vim
+<h3>Exercice 2 : Vim premier pas</h3>
+<pre class="codehilite"><code class="language-bash"># Ouvrir vim
 vim
 
 # Passer en mode insertion (i)
-# Écrire "Bonjour"
+# Écrire &quot;Bonjour&quot;
 # Échap pour revenir en mode normal
 # :wq pour sauvegarder et quitter
-```
+</code></pre>
 
-### Exercice 3 : Vim avancé
-```bash
-# Ouvrir un fichier
+<h3>Exercice 3 : Vim avancé</h3>
+<pre class="codehilite"><code class="language-bash"># Ouvrir un fichier
 vim fichier.txt
 
 # Naviguer: gg (début), G (fin)
@@ -431,69 +613,164 @@ vim fichier.txt
 # Copier/Coller: yy, p
 # Rechercher: /motif
 # Remplacer: :%s/old/new/g
-```
+</code></pre>
 
-### Exercice 4 : vimtutor
-```bash
-# Faire le tutorial
+<h3>Exercice 4 : vimtutor</h3>
+<pre class="codehilite"><code class="language-bash"># Faire le tutorial
 vimtutor
 
 # Faire les 2 premières leçons
-```
+</code></pre>
 
----
-
-## 13. Tableau résumé Nano
-
-| Raccourci | Action |
-|-----------|--------|
-| Ctrl + O | Écrire |
-| Ctrl + X | Quitter |
-| Ctrl + W | Rechercher |
-| Ctrl + K | Couper ligne |
-| Ctrl + U | Coller |
-
----
-
-## 14. Tableau résumé Vim
-
-### Modes
-
-| Mode | Description |
-|------|-------------|
-| Normal | Par défaut, commandes |
-| Insertion | Écrire du texte |
-| Visuel | Sélection |
-| Commande | :commandes |
-
-### Touches essentielles
-
-| Touche | Action |
-|--------|--------|
-| `i` | Mode insertion |
-| Échap | Retour mode normal |
-| `:wq` | Enregistrer et quitter |
-| `dd` | Supprimer ligne |
-| `yy` | Copier ligne |
-| `p` | Coller |
-| `/` | Rechercher |
-| `u` | Annuler |
-| Ctrl + R | Rétablir |
-
----
-
-## 15. Quand utiliser quoi ?
-
-| Situation | Éditeur recommandé |
-|-----------|-------------------|
-| Édition rapide | Nano |
-|Débutant | Nano |
-| Fichier config système | Nano ou Vim |
-| Programmation | Vim (avec plugins) |
-| Gros fichiers | Vim |
-| Édition sur serveur | Vim |
-| Apprentisage | vimtutor |
-
----
-
-Maîtrise ces deux éditeurs et tu pourras éditer n'importe quel fichier sous Linux ! ✍️
+<hr />
+<h2>13. Tableau résumé Nano</h2>
+<table>
+<thead>
+<tr>
+<th>Raccourci</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl + O</td>
+<td>Écrire</td>
+</tr>
+<tr>
+<td>Ctrl + X</td>
+<td>Quitter</td>
+</tr>
+<tr>
+<td>Ctrl + W</td>
+<td>Rechercher</td>
+</tr>
+<tr>
+<td>Ctrl + K</td>
+<td>Couper ligne</td>
+</tr>
+<tr>
+<td>Ctrl + U</td>
+<td>Coller</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>14. Tableau résumé Vim</h2>
+<h3>Modes</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal</td>
+<td>Par défaut, commandes</td>
+</tr>
+<tr>
+<td>Insertion</td>
+<td>Écrire du texte</td>
+</tr>
+<tr>
+<td>Visuel</td>
+<td>Sélection</td>
+</tr>
+<tr>
+<td>Commande</td>
+<td>:commandes</td>
+</tr>
+</tbody>
+</table>
+<h3>Touches essentielles</h3>
+<table>
+<thead>
+<tr>
+<th>Touche</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>i</code></td>
+<td>Mode insertion</td>
+</tr>
+<tr>
+<td>Échap</td>
+<td>Retour mode normal</td>
+</tr>
+<tr>
+<td><code>:wq</code></td>
+<td>Enregistrer et quitter</td>
+</tr>
+<tr>
+<td><code>dd</code></td>
+<td>Supprimer ligne</td>
+</tr>
+<tr>
+<td><code>yy</code></td>
+<td>Copier ligne</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Coller</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td>Rechercher</td>
+</tr>
+<tr>
+<td><code>u</code></td>
+<td>Annuler</td>
+</tr>
+<tr>
+<td>Ctrl + R</td>
+<td>Rétablir</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>15. Quand utiliser quoi ?</h2>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Éditeur recommandé</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Édition rapide</td>
+<td>Nano</td>
+</tr>
+<tr>
+<td>Débutant</td>
+<td>Nano</td>
+</tr>
+<tr>
+<td>Fichier config système</td>
+<td>Nano ou Vim</td>
+</tr>
+<tr>
+<td>Programmation</td>
+<td>Vim (avec plugins)</td>
+</tr>
+<tr>
+<td>Gros fichiers</td>
+<td>Vim</td>
+</tr>
+<tr>
+<td>Édition sur serveur</td>
+<td>Vim</td>
+</tr>
+<tr>
+<td>Apprentisage</td>
+<td>vimtutor</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Maîtrise ces deux éditeurs et tu pourras éditer n'importe quel fichier sous Linux ! ✍️</p>
+</body>
+</html>

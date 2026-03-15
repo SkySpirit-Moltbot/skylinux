@@ -1,15 +1,41 @@
-# Leçon 20 : Sécurité de base sous Linux
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>securite-base - Cours Linux</title>
 
-La sécurité est un aspect fondamental de l'administration Linux. Dans cette leçon, tu vas maîtriser les commandes et bonnes pratiques essentielles pour protéger ton système.
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
 
----
-
-## 1. Surveillance des utilisateurs
-
-### Voir qui est connecté
-
-```bash
-# Liste simple des utilisateurs connectés
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 20 : Sécurité de base sous Linux</h1>
+<p>La sécurité est un aspect fondamental de l'administration Linux. Dans cette leçon, tu vas maîtriser les commandes et bonnes pratiques essentielles pour protéger ton système.</p>
+<hr />
+<h2>1. Surveillance des utilisateurs</h2>
+<h3>Voir qui est connecté</h3>
+<pre class="codehilite"><code class="language-bash"># Liste simple des utilisateurs connectés
 who
 
 # Détails (idle, process, terminal)
@@ -24,12 +50,10 @@ lastlog
 
 # Qui est actuellemnt connecté et depuis où
 who -H
-```
+</code></pre>
 
-### Analyser les sessions
-
-```bash
-# Voir tous les processus d'un utilisateur
+<h3>Analyser les sessions</h3>
+<pre class="codehilite"><code class="language-bash"># Voir tous les processus d'un utilisateur
 ps -u nom_utilisateur
 
 # Tuer une session
@@ -37,16 +61,12 @@ pkill -KILL -u nom_utilisateur
 
 # Voir l'activité récente
 ac -p                    # Temps de connexion total par utilisateur
-```
+</code></pre>
 
----
-
-## 2. Gestion des mots de passe
-
-### Commandes de base
-
-```bash
-# Changer son mot de passe
+<hr />
+<h2>2. Gestion des mots de passe</h2>
+<h3>Commandes de base</h3>
+<pre class="codehilite"><code class="language-bash"># Changer son mot de passe
 passwd
 
 # Changer le mot de passe d'un utilisateur (root)
@@ -64,12 +84,10 @@ sudo passwd -u nom_utilisateur          # Déverrouiller
 
 # Statut du mot de passe
 sudo passwd -S nom_utilisateur
-```
+</code></pre>
 
-### Politique de mots de passe (PAM)
-
-```bash
-# Installer libpam-pwquality
+<h3>Politique de mots de passe (PAM)</h3>
+<pre class="codehilite"><code class="language-bash"># Installer libpam-pwquality
 sudo apt install libpam-pwquality
 
 # Configurer (/etc/security/pwquality.conf)
@@ -81,16 +99,12 @@ sudo nano /etc/security/pwquality.conf
 # ucredit = -1 (au moins 1 majuscule)
 # lcredit = -1 (au moins 1 minuscule)
 # ocredit = -1 (au moins 1 caractère spécial)
-```
+</code></pre>
 
----
-
-## 3. Analyse des ports et connexions
-
-### ss - Socket Statistics (moderne)
-
-```bash
-# Ports en écoute
+<hr />
+<h2>3. Analyse des ports et connexions</h2>
+<h3>ss - Socket Statistics (moderne)</h3>
+<pre class="codehilite"><code class="language-bash"># Ports en écoute
 ss -tuln
 ss -tulnp
 
@@ -107,12 +121,10 @@ ss -s
 # Filtrer par port
 ss -tn sport = :22
 ss -tn dport = :80
-```
+</code></pre>
 
-### netstat (legacy)
-
-```bash
-# Ports ouverts
+<h3>netstat (legacy)</h3>
+<pre class="codehilite"><code class="language-bash"># Ports ouverts
 netstat -tuln
 netstat -tulnp
 
@@ -121,12 +133,10 @@ netstat -rn
 
 # Connexions actives
 netstat -an
-```
+</code></pre>
 
-### Nmap - Scanner de ports
-
-```bash
-# Installer
+<h3>Nmap - Scanner de ports</h3>
+<pre class="codehilite"><code class="language-bash"># Installer
 sudo apt install nmap
 
 # Scanner local
@@ -141,16 +151,12 @@ nmap 192.168.1.0/24
 
 # Scan rapide
 nmap -F 192.168.1.1
-```
+</code></pre>
 
----
-
-## 4. Pare-feu UFW
-
-### Installation et activation
-
-```bash
-# Installer
+<hr />
+<h2>4. Pare-feu UFW</h2>
+<h3>Installation et activation</h3>
+<pre class="codehilite"><code class="language-bash"># Installer
 sudo apt install ufw
 
 # Statut
@@ -160,12 +166,10 @@ sudo ufw status numbered
 # Activer/désactiver
 sudo ufw enable
 sudo ufw disable
-```
+</code></pre>
 
-### Règles de base
-
-```bash
-# Autoriser par port
+<h3>Règles de base</h3>
+<pre class="codehilite"><code class="language-bash"># Autoriser par port
 sudo ufw allow 22          # SSH
 sudo ufw allow 80/tcp       # HTTP
 sudo ufw allow 443/tcp     # HTTPS
@@ -182,12 +186,10 @@ sudo ufw delete deny 23
 sudo ufw allow ssh
 sudo ufw allow http
 sudo ufw allow 'Apache Full'
-```
+</code></pre>
 
-### Règles avancées
-
-```bash
-# Autoriser depuis IP spécifique
+<h3>Règles avancées</h3>
+<pre class="codehilite"><code class="language-bash"># Autoriser depuis IP spécifique
 sudo ufw allow from 192.168.1.100
 sudo ufw allow from 192.168.1.0/24 to any port 22
 
@@ -199,33 +201,46 @@ sudo ufw limit ssh
 
 # Ports spécifiques
 sudo ufw allow 8000:9000/tcp
-```
+</code></pre>
 
-### Configuration par défaut
-
-```bash
-# Politique par défaut
+<h3>Configuration par défaut</h3>
+<pre class="codehilite"><code class="language-bash"># Politique par défaut
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
 sudo ufw default allow routed
-```
+</code></pre>
 
----
-
-## 5. Permissions spéciales
-
-### Les 3 bits spéciaux
-
-| Bit | Description | Effet |
-|-----|-------------|-------|
-| **SetUID (4000)** | s au lieu de x | Exécuter avec droits owner |
-| **SetGID (2000)** | s au lieu de x | Exécuter avec droits groupe |
-| **Sticky Bit (1000)** | t | Sauvegarde protégé dans répertoire |
-
-### Commandes
-
-```bash
-# Ajouter setuid
+<hr />
+<h2>5. Permissions spéciales</h2>
+<h3>Les 3 bits spéciaux</h3>
+<table>
+<thead>
+<tr>
+<th>Bit</th>
+<th>Description</th>
+<th>Effet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SetUID (4000)</strong></td>
+<td>s au lieu de x</td>
+<td>Exécuter avec droits owner</td>
+</tr>
+<tr>
+<td><strong>SetGID (2000)</strong></td>
+<td>s au lieu de x</td>
+<td>Exécuter avec droits groupe</td>
+</tr>
+<tr>
+<td><strong>Sticky Bit (1000)</strong></td>
+<td>t</td>
+<td>Sauvegarde protégé dans répertoire</td>
+</tr>
+</tbody>
+</table>
+<h3>Commandes</h3>
+<pre class="codehilite"><code class="language-bash"># Ajouter setuid
 chmod u+s fichier
 chmod 4755 fichier
 
@@ -238,37 +253,29 @@ chmod +t /tmp
 chmod 1777 /tmp
 
 # Voir les fichiers setuid
-sudo find / -perm -4000 2>/dev/null
-sudo find / -perm -2000 2>/dev/null
-```
+sudo find / -perm -4000 2&gt;/dev/null
+sudo find / -perm -2000 2&gt;/dev/null
+</code></pre>
 
-### Exemples pratiques
-
-```bash
-# ping a besoin de setuid (pour accès réseau)
+<h3>Exemples pratiques</h3>
+<pre class="codehilite"><code class="language-bash"># ping a besoin de setuid (pour accès réseau)
 ls -l /bin/ping
 # -rwsr-xr-x 1 root root ... /bin/ping
 
 # Répertoire partagé avec sticky bit
 ls -ld /tmp
 # drwxrwxrwt 10 root root ... /tmp
-```
+</code></pre>
 
----
-
-## 6. Sécurisation SSH
-
-### Configuration sécurisée
-
-```bash
-# Éditer la configuration
+<hr />
+<h2>6. Sécurisation SSH</h2>
+<h3>Configuration sécurisée</h3>
+<pre class="codehilite"><code class="language-bash"># Éditer la configuration
 sudo nano /etc/ssh/sshd_config
-```
+</code></pre>
 
-Modifier ces lignes:
-
-```bash
-Port 2222                              # Changer le port
+<p>Modifier ces lignes:</p>
+<pre class="codehilite"><code class="language-bash">Port 2222                              # Changer le port
 PermitRootLogin no                     # Pas de root
 PubkeyAuthentication yes              # Clés uniquement
 PasswordAuthentication no             # Pas de mot de passe
@@ -277,96 +284,103 @@ X11Forwarding no                       # Désactiver X11 si pas besoin
 MaxAuthTries 3                         # Tentatives max
 ClientAliveInterval 300               # Timeout
 ClientAliveCountMax 2                 # Nombre de checks
-```
+</code></pre>
 
-### Générer des clés SSH
-
-```bash
-# Clé ED25519 (recommandée)
-ssh-keygen -t ed25519 -C "mon@email.com"
+<h3>Générer des clés SSH</h3>
+<pre class="codehilite"><code class="language-bash"># Clé ED25519 (recommandée)
+ssh-keygen -t ed25519 -C &quot;mon@email.com&quot;
 
 # Clé RSA (legacy)
-ssh-keygen -t rsa -b 4096 -C "mon@email.com"
+ssh-keygen -t rsa -b 4096 -C &quot;mon@email.com&quot;
 
 # Avec passphrase (fortement recommandé)
 # Entrez une passphrase forte quand demandé
-```
+</code></pre>
 
-### Déployer la clé
-
-```bash
-# Copie automatique
+<h3>Déployer la clé</h3>
+<pre class="codehilite"><code class="language-bash"># Copie automatique
 ssh-copy-id user@serveur
 
 # Ajouter manuellement
-cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"
-```
+cat ~/.ssh/id_ed25519.pub | ssh user@serveur &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys&quot;
+</code></pre>
 
----
-
-## 7. Analyse des logs de sécurité
-
-### Fichiers de logs importants
-
-| Fichier | Description |
-|---------|-------------|
-| `/var/log/auth.log` | Connexions, sudo |
-| `/var/log/syslog` | Messages système |
-| `/var/log/kern.log` | Messages du noyau |
-| `/var/log/faillog` | Échecs de connexion |
-| `/var/log/btmp` | Mauvaises connexions |
-
-### Commandes de анализ
-
-```bash
-# Rechercher les échecs
-grep "Failed" /var/log/auth.log
-grep "Failed" /var/log/auth.log | tail -20
+<hr />
+<h2>7. Analyse des logs de sécurité</h2>
+<h3>Fichiers de logs importants</h3>
+<table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/var/log/auth.log</code></td>
+<td>Connexions, sudo</td>
+</tr>
+<tr>
+<td><code>/var/log/syslog</code></td>
+<td>Messages système</td>
+</tr>
+<tr>
+<td><code>/var/log/kern.log</code></td>
+<td>Messages du noyau</td>
+</tr>
+<tr>
+<td><code>/var/log/faillog</code></td>
+<td>Échecs de connexion</td>
+</tr>
+<tr>
+<td><code>/var/log/btmp</code></td>
+<td>Mauvaises connexions</td>
+</tr>
+</tbody>
+</table>
+<h3>Commandes de анализ</h3>
+<pre class="codehilite"><code class="language-bash"># Rechercher les échecs
+grep &quot;Failed&quot; /var/log/auth.log
+grep &quot;Failed&quot; /var/log/auth.log | tail -20
 
 # Rechercher les succès
-grep "Accepted" /var/log/auth.log
+grep &quot;Accepted&quot; /var/log/auth.log
 
 # Voir les sudo
-sudo grep "COMMAND" /var/log/auth.log
+sudo grep &quot;COMMAND&quot; /var/log/auth.log
 
 # Surveiller en temps réel
 sudo tail -f /var/log/auth.log
 
 # Compter les tentatives
-grep "Failed password" /var/log/auth.log | wc -l
+grep &quot;Failed password&quot; /var/log/auth.log | wc -l
 
 # Voir qui a utilisé sudo
-sudo grep "SESSION" /var/log/auth.log
-```
+sudo grep &quot;SESSION&quot; /var/log/auth.log
+</code></pre>
 
-### Utiliser journalctl
-
-```bash
-# Logs d'authentification
+<h3>Utiliser journalctl</h3>
+<pre class="codehilite"><code class="language-bash"># Logs d'authentification
 journalctl -u ssh
 
 # Logs kernel
 journalctl -k
 
 #Dernières heures
-journalctl --since "1 hour ago"
+journalctl --since &quot;1 hour ago&quot;
 
 # Filtrer par priorité
 journalctl -p err
-```
+</code></pre>
 
----
-
-## 8. Détection des intrusion basiques
-
-### Signes d'alerte
-
-```bash
-# Fichiers créés récemment
-sudo find / -mtime -1 -type f 2>/dev/null
+<hr />
+<h2>8. Détection des intrusion basiques</h2>
+<h3>Signes d'alerte</h3>
+<pre class="codehilite"><code class="language-bash"># Fichiers créés récemment
+sudo find / -mtime -1 -type f 2&gt;/dev/null
 
 # Fichiers avec setuid root
-sudo find / -perm -4000 -type f 2>/dev/null
+sudo find / -perm -4000 -type f 2&gt;/dev/null
 
 # Connexions étrange
 ss -tnp
@@ -376,47 +390,39 @@ ps auxf
 
 # Utilisateurs suspects
 last | head -20
-```
+</code></pre>
 
-### Scripts de surveillance
-
-```bash
-#!/bin/bash
+<h3>Scripts de surveillance</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
 # script secu.sh
 
-LOG="/var/log/securite.log"
+LOG=&quot;/var/log/securite.log&quot;
 
-echo "=== Vérification sécurité $(date) ===" >> $LOG
+echo &quot;=== Vérification sécurité $(date) ===&quot; &gt;&gt; $LOG
 
 # Vérifier échecs de connexion
-echo "Tentatives échouées:" >> $LOG
-grep "Failed" /var/log/auth.log | tail -5 >> $LOG
+echo &quot;Tentatives échouées:&quot; &gt;&gt; $LOG
+grep &quot;Failed&quot; /var/log/auth.log | tail -5 &gt;&gt; $LOG
 
 # Vérifier nouveaux fichiers setuid
-echo "Fichiers setuid:" >> $LOG
-find / -perm -4000 2>/dev/null >> $LOG
+echo &quot;Fichiers setuid:&quot; &gt;&gt; $LOG
+find / -perm -4000 2&gt;/dev/null &gt;&gt; $LOG
 
 # Vérifier utilisateurs connectés
-echo "Utilisateurs:" >> $LOG
-who >> $LOG
+echo &quot;Utilisateurs:&quot; &gt;&gt; $LOG
+who &gt;&gt; $LOG
 
-echo "---" >> $LOG
-```
+echo &quot;---&quot; &gt;&gt; $LOG
+</code></pre>
 
----
+<hr />
+<h2>9. Fail2ban - Protection brute force</h2>
+<h3>Installation</h3>
+<pre class="codehilite"><code class="language-bash">sudo apt install fail2ban
+</code></pre>
 
-## 9. Fail2ban - Protection brute force
-
-### Installation
-
-```bash
-sudo apt install fail2ban
-```
-
-### Configuration
-
-```bash
-# Copier config
+<h3>Configuration</h3>
+<pre class="codehilite"><code class="language-bash"># Copier config
 sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 
 # Éditer
@@ -431,12 +437,10 @@ maxretry = 5
 [sshd]
 enabled = true
 port = ssh
-```
+</code></pre>
 
-### Commandes
-
-```bash
-# Statut
+<h3>Commandes</h3>
+<pre class="codehilite"><code class="language-bash"># Statut
 sudo fail2ban-client status
 sudo fail2ban-client status sshd
 
@@ -446,40 +450,75 @@ sudo fail2ban-client set sshd unbanip 192.168.1.100
 
 # Redémarrer
 sudo systemctl restart fail2ban
-```
+</code></pre>
 
----
-
-## 10. Checklist sécurité
-
-- [ ] Modifier le port SSH par défaut
-- [ ] Désactiver l'authentification root
-- [ ] Utiliser clés SSH uniquement
-- [ ] Configurer UFW (ports ouverts au minimum)
-- [ ] Vérifier régulièrement les logs
-- [ ] Installer fail2ban
-- [ ] Mettre à jour le système régulièrement
-- [ ] Vérifier les permissions setuid
-- [ ]监控 les utilisateurs connectés
-- [ ] Changer les mots de passe régulièrement
-
----
-
-## 11. Tableau résumé
-
-| Commande | Description |
-|----------|-------------|
-| `who/w` | Utilisateurs connectés |
-| `passwd` | Gérer mots de passe |
-| `ss/netstat` | Ports ouverts |
-| `ufw` | Pare-feu |
-| `chmod u+s` | SetUID |
-| `chmod g+s` | SetGID |
-| `chmod +t` | Sticky bit |
-| `ssh-keygen` | Générer clé SSH |
-| `grep auth.log` | Analyser sécurité |
-| `fail2ban` | Protéger brute force |
-
----
-
-Sécurise ton Linux ! 🔐
+<hr />
+<h2>10. Checklist sécurité</h2>
+<ul>
+<li>[ ] Modifier le port SSH par défaut</li>
+<li>[ ] Désactiver l'authentification root</li>
+<li>[ ] Utiliser clés SSH uniquement</li>
+<li>[ ] Configurer UFW (ports ouverts au minimum)</li>
+<li>[ ] Vérifier régulièrement les logs</li>
+<li>[ ] Installer fail2ban</li>
+<li>[ ] Mettre à jour le système régulièrement</li>
+<li>[ ] Vérifier les permissions setuid</li>
+<li>[ ]监控 les utilisateurs connectés</li>
+<li>[ ] Changer les mots de passe régulièrement</li>
+</ul>
+<hr />
+<h2>11. Tableau résumé</h2>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>who/w</code></td>
+<td>Utilisateurs connectés</td>
+</tr>
+<tr>
+<td><code>passwd</code></td>
+<td>Gérer mots de passe</td>
+</tr>
+<tr>
+<td><code>ss/netstat</code></td>
+<td>Ports ouverts</td>
+</tr>
+<tr>
+<td><code>ufw</code></td>
+<td>Pare-feu</td>
+</tr>
+<tr>
+<td><code>chmod u+s</code></td>
+<td>SetUID</td>
+</tr>
+<tr>
+<td><code>chmod g+s</code></td>
+<td>SetGID</td>
+</tr>
+<tr>
+<td><code>chmod +t</code></td>
+<td>Sticky bit</td>
+</tr>
+<tr>
+<td><code>ssh-keygen</code></td>
+<td>Générer clé SSH</td>
+</tr>
+<tr>
+<td><code>grep auth.log</code></td>
+<td>Analyser sécurité</td>
+</tr>
+<tr>
+<td><code>fail2ban</code></td>
+<td>Protéger brute force</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Sécurise ton Linux ! 🔐</p>
+</body>
+</html>

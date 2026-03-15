@@ -1,56 +1,92 @@
-# Leçon 14 : Gestion des utilisateurs et groupes
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gestion-utilisateurs-groupes - Cours Linux</title>
 
-Dans cette leçon, tu vas maîtriser la gestion des utilisateurs et groupes sous Linux, essentiel pour l'administration système.
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
 
----
-
-## 1. Concepts de base
-
-### Utilisateur
-
-Un utilisateur Linux possède :
-- **UID** : Identifiant unique
-- **GID** : Groupe principal
-- **Répertoire personnel** : /home/username
-- **Shell** : Interpréteur par défaut
-- **Mot de passe** : Stocké dans /etc/shadow
-
-### Groupe
-
-Un groupe permet de :
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 14 : Gestion des utilisateurs et groupes</h1>
+<p>Dans cette leçon, tu vas maîtriser la gestion des utilisateurs et groupes sous Linux, essentiel pour l'administration système.</p>
+<hr />
+<h2>1. Concepts de base</h2>
+<h3>Utilisateur</h3>
+<p>Un utilisateur Linux possède :
+- <strong>UID</strong> : Identifiant unique
+- <strong>GID</strong> : Groupe principal
+- <strong>Répertoire personnel</strong> : /home/username
+- <strong>Shell</strong> : Interpréteur par défaut
+- <strong>Mot de passe</strong> : Stocké dans /etc/shadow</p>
+<h3>Groupe</h3>
+<p>Un groupe permet de :
 - Partager des fichiers entre utilisateurs
-- Gérer des permissions collectivement
-
-### Fichiers système importants
-
-| Fichier | Description |
-|---------|-------------|
-| `/etc/passwd` | Infos utilisateurs |
-| `/etc/shadow` | Mots de passe chiffrés |
-| `/etc/group` | Infos groupes |
-| `/etc/skel/` | Modèle pour nouveaux utilisateurs |
-
----
-
-## 2. Commandes utilisateur
-
-### Ajouter un utilisateur
-
-```bash
-# Créer un utilisateur
+- Gérer des permissions collectivement</p>
+<h3>Fichiers système importants</h3>
+<table>
+<thead>
+<tr>
+<th>Fichier</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/etc/passwd</code></td>
+<td>Infos utilisateurs</td>
+</tr>
+<tr>
+<td><code>/etc/shadow</code></td>
+<td>Mots de passe chiffrés</td>
+</tr>
+<tr>
+<td><code>/etc/group</code></td>
+<td>Infos groupes</td>
+</tr>
+<tr>
+<td><code>/etc/skel/</code></td>
+<td>Modèle pour nouveaux utilisateurs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. Commandes utilisateur</h2>
+<h3>Ajouter un utilisateur</h3>
+<pre class="codehilite"><code class="language-bash"># Créer un utilisateur
 sudo useradd -m nom_utilisateur
 
 # Avec options
-sudo useradd -m -s /bin/bash -c "Description" -G groupe1,groupe2 nom
+sudo useradd -m -s /bin/bash -c &quot;Description&quot; -G groupe1,groupe2 nom
 
 #交互式
 sudo adduser nom_utilisateur
-```
+</code></pre>
 
-### Modifier un utilisateur
-
-```bash
-# Changer le shell
+<h3>Modifier un utilisateur</h3>
+<pre class="codehilite"><code class="language-bash"># Changer le shell
 sudo usermod -s /bin/zsh nom
 
 # Ajouter à un groupe
@@ -62,12 +98,10 @@ sudo usermod -d /nouveau/chemin -m nom
 # Verrouiller/déverrouiller un compte
 sudo usermod -L nom           # Verrouiller
 sudo usermod -U nom           # Déverrouiller
-```
+</code></pre>
 
-### Supprimer un utilisateur
-
-```bash
-# Supprimer (garde les fichiers)
+<h3>Supprimer un utilisateur</h3>
+<pre class="codehilite"><code class="language-bash"># Supprimer (garde les fichiers)
 sudo userdel nom
 
 # Supprimer avec fichiers
@@ -75,12 +109,10 @@ sudo userdel -r nom
 
 # Supprimer avec confirmation
 sudo userdel -r -f nom
-```
+</code></pre>
 
-### Changer le mot de passe
-
-```bash
-# Changer son mot de passe
+<h3>Changer le mot de passe</h3>
+<pre class="codehilite"><code class="language-bash"># Changer son mot de passe
 passwd
 
 # Changer mot de passe d'un autre utilisateur (root)
@@ -91,39 +123,29 @@ sudo passwd -d nom_utilisateur
 
 # Expirer le mot de passe
 sudo passwd -e nom_utilisateur
-```
+</code></pre>
 
----
-
-## 3. Commandes groupe
-
-### Créer un groupe
-
-```bash
-sudo groupadd nom_groupe
+<hr />
+<h2>3. Commandes groupe</h2>
+<h3>Créer un groupe</h3>
+<pre class="codehilite"><code class="language-bash">sudo groupadd nom_groupe
 sudo groupadd -g 1005 nom_groupe   # Avec GID spécifique
-```
+</code></pre>
 
-### Modifier un groupe
-
-```bash
-# Renommer un groupe
+<h3>Modifier un groupe</h3>
+<pre class="codehilite"><code class="language-bash"># Renommer un groupe
 sudo groupmod -n nouveau_nom ancien_nom
 
 # Changer le GID
 sudo groupmod -g 1006 nom_groupe
-```
+</code></pre>
 
-### Supprimer un groupe
+<h3>Supprimer un groupe</h3>
+<pre class="codehilite"><code class="language-bash">sudo groupdel nom_groupe
+</code></pre>
 
-```bash
-sudo groupdel nom_groupe
-```
-
-### Gérer les membres
-
-```bash
-# Ajouter un utilisateur à un groupe
+<h3>Gérer les membres</h3>
+<pre class="codehilite"><code class="language-bash"># Ajouter un utilisateur à un groupe
 sudo usermod -aG groupe utilisateur
 
 # Retirer d'un groupe
@@ -131,16 +153,12 @@ sudo gpasswd -d utilisateur groupe
 
 # Voir les membres d'un groupe
 getent group groupe
-```
+</code></pre>
 
----
-
-## 4. Informations et listing
-
-### Voir les utilisateurs
-
-```bash
-# Liste des utilisateurs
+<hr />
+<h2>4. Informations et listing</h2>
+<h3>Voir les utilisateurs</h3>
+<pre class="codehilite"><code class="language-bash"># Liste des utilisateurs
 cat /etc/passwd
 # ou
 getent passwd
@@ -150,12 +168,10 @@ getent passwd | cut -d: -f1
 
 # Derniers utilisateurs créés
 lastlog
-```
+</code></pre>
 
-### Voir les groupes
-
-```bash
-# Liste des groupes
+<h3>Voir les groupes</h3>
+<pre class="codehilite"><code class="language-bash"># Liste des groupes
 cat /etc/group
 # ou
 getent group
@@ -163,23 +179,17 @@ getent group
 # groupes d'un utilisateur
 groups nom_utilisateur
 id nom_utilisateur
-```
+</code></pre>
 
-### Voir l'UID et GID
-
-```bash
-id                       # Ses propres IDs
+<h3>Voir l'UID et GID</h3>
+<pre class="codehilite"><code class="language-bash">id                       # Ses propres IDs
 id nom_utilisateur       # IDs d'un utilisateur
-```
+</code></pre>
 
----
-
-## 5. Commandes avancées
-
-### sudoers - Permissions sudo
-
-```bash
-# Éditer le fichier sudoers (TOUJOURS avec visudo!)
+<hr />
+<h2>5. Commandes avancées</h2>
+<h3>sudoers - Permissions sudo</h3>
+<pre class="codehilite"><code class="language-bash"># Éditer le fichier sudoers (TOUJOURS avec visudo!)
 sudo visudo
 
 # Ajouter un utilisateur au groupe sudo
@@ -187,12 +197,10 @@ sudo usermod -aG sudo nom
 
 # Voir qui a sudo
 getent group sudo
-```
+</code></pre>
 
-### Expiration de compte
-
-```bash
-# Définir une date d'expiration
+<h3>Expiration de compte</h3>
+<pre class="codehilite"><code class="language-bash"># Définir une date d'expiration
 sudo usermod -e 2024-12-31 nom
 
 # Voir la date d'expiration
@@ -200,12 +208,10 @@ sudo chage -l nom
 
 #Forcer changement mot de passe
 sudo chage -d 0 nom
-```
+</code></pre>
 
-### Verrouillage de compte
-
-```bash
-# Verrouiller
+<h3>Verrouillage de compte</h3>
+<pre class="codehilite"><code class="language-bash"># Verrouiller
 sudo passwd -l nom
 
 # Déverrouiller
@@ -213,117 +219,159 @@ sudo passwd -u nom
 
 # Voir le statut
 sudo passwd -S nom
-```
+</code></pre>
 
----
-
-## 6. Gestion des mots de passe
-
-### Politiques de mot de passe
-
-```bash
-# Installer libpam-pwquality
+<hr />
+<h2>6. Gestion des mots de passe</h2>
+<h3>Politiques de mot de passe</h3>
+<pre class="codehilite"><code class="language-bash"># Installer libpam-pwquality
 sudo apt install libpam-pwquality
 
 # Configurer (/etc/security/pwquality.conf)
 sudo nano /etc/security/pwquality.conf
-```
+</code></pre>
 
-### Exigences communes
-
-```
-minlen = 12
+<h3>Exigences communes</h3>
+<pre class="codehilite"><code>minlen = 12
 dcredit = -1          # Au moins 1 chiffre
 ucredit = -1          # Au moins 1 majuscule
 lcredit = -1          # Au moins 1 minuscule
 ocredit = -1          # Au moins 1 caractère spécial
-```
+</code></pre>
 
-### Historique et expiration
-
-```bash
-# Configuration dans /etc/login.defs
+<h3>Historique et expiration</h3>
+<pre class="codehilite"><code class="language-bash"># Configuration dans /etc/login.defs
 # ou avec chage
 sudo chage -m 7 nom       # Minimum 7 jours
 sudo chage -M 90 nom      # Maximum 90 jours
 sudo chage -W 7 nom       # Avertissement 7 jours avant expiration
 sudo chage -I 30 nom      # Verrouillage 30 jours après expiration
-```
+</code></pre>
 
----
-
-## 7. Scripts pratiques
-
-### Créer un nouvel utilisateur avec tout
-
-```bash
-#!/bin/bash
+<hr />
+<h2>7. Scripts pratiques</h2>
+<h3>Créer un nouvel utilisateur avec tout</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
 
 # Variables
-USERNAME="nouvelutilisateur"
-FULLNAME="Nouvel Utilisateur"
-SHELL="/bin/bash"
-GROUPES="sudo,users"
+USERNAME=&quot;nouvelutilisateur&quot;
+FULLNAME=&quot;Nouvel Utilisateur&quot;
+SHELL=&quot;/bin/bash&quot;
+GROUPES=&quot;sudo,users&quot;
 
 # Créer le groupe principal s'il n'existe pas
-sudo groupadd $USERNAME 2>/dev/null
+sudo groupadd $USERNAME 2&gt;/dev/null
 
 # Créer l'utilisateur
-sudo useradd -m -s $SHELL -c "$FULLNAME" -G $GROUPES $USERNAME
+sudo useradd -m -s $SHELL -c &quot;$FULLNAME&quot; -G $GROUPES $USERNAME
 
 # Définir le mot de passe
 sudo passwd $USERNAME
 
-echo "Utilisateur $USERNAME créé avec succès!"
-```
+echo &quot;Utilisateur $USERNAME créé avec succès!&quot;
+</code></pre>
 
-### Script de suppression
+<h3>Script de suppression</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
 
-```bash
-#!/bin/bash
-
-USERNAME="utilisateur_a_supprimer"
+USERNAME=&quot;utilisateur_a_supprimer&quot;
 
 # Demander confirmation
-read -p "Supprimer l'utilisateur $USERNAME? (o/n): " confirm
+read -p &quot;Supprimer l'utilisateur $USERNAME? (o/n): &quot; confirm
 
-if [ "$confirm" = "o" ]; then
+if [ &quot;$confirm&quot; = &quot;o&quot; ]; then
     sudo userdel -r $USERNAME
-    echo "Utilisateur supprimé."
+    echo &quot;Utilisateur supprimé.&quot;
 else
-    echo "Annulé."
+    echo &quot;Annulé.&quot;
 fi
-```
+</code></pre>
 
----
-
-## 8. Bonnes pratiques
-
-| Pratique | Description |
-|----------|-------------|
-| Utiliser sudo | Pas de connection root directe |
-| Mots de passe forts | Minimum 12 caractères, mélange |
-| Groupes logiques | Regrouper par projet/fonction |
-| Audit régulier | Vérifier les utilisateurs |
-| Désactiver compte | Jamais supprimer (garder UID) |
-| Limiter sudo | Seulement utilisateurs nécessaires |
-
----
-
-## 9. Résumé
-
-| Commande | Description |
-|----------|-------------|
-| `useradd` | Créer utilisateur |
-| `usermod` | Modifier utilisateur |
-| `userdel` | Supprimer utilisateur |
-| `passwd` | Changer mot de passe |
-| `groupadd` | Créer groupe |
-| `groupdel` | Supprimer groupe |
-| `groups` | Lister ses groupes |
-| `id` | Voir UID/GID |
-| `getent` | Consulter base |
-
----
-
-Maîtrise la gestion des utilisateurs pour administrer Linux correctement ! 👤
+<hr />
+<h2>8. Bonnes pratiques</h2>
+<table>
+<thead>
+<tr>
+<th>Pratique</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Utiliser sudo</td>
+<td>Pas de connection root directe</td>
+</tr>
+<tr>
+<td>Mots de passe forts</td>
+<td>Minimum 12 caractères, mélange</td>
+</tr>
+<tr>
+<td>Groupes logiques</td>
+<td>Regrouper par projet/fonction</td>
+</tr>
+<tr>
+<td>Audit régulier</td>
+<td>Vérifier les utilisateurs</td>
+</tr>
+<tr>
+<td>Désactiver compte</td>
+<td>Jamais supprimer (garder UID)</td>
+</tr>
+<tr>
+<td>Limiter sudo</td>
+<td>Seulement utilisateurs nécessaires</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>9. Résumé</h2>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>useradd</code></td>
+<td>Créer utilisateur</td>
+</tr>
+<tr>
+<td><code>usermod</code></td>
+<td>Modifier utilisateur</td>
+</tr>
+<tr>
+<td><code>userdel</code></td>
+<td>Supprimer utilisateur</td>
+</tr>
+<tr>
+<td><code>passwd</code></td>
+<td>Changer mot de passe</td>
+</tr>
+<tr>
+<td><code>groupadd</code></td>
+<td>Créer groupe</td>
+</tr>
+<tr>
+<td><code>groupdel</code></td>
+<td>Supprimer groupe</td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td>Lister ses groupes</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>Voir UID/GID</td>
+</tr>
+<tr>
+<td><code>getent</code></td>
+<td>Consulter base</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Maîtrise la gestion des utilisateurs pour administrer Linux correctement ! 👤</p>
+</body>
+</html>

@@ -1,25 +1,78 @@
-# Leçon 7 : Gestion des fichiers et dossiers
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>gestion-fichiers - Cours Linux</title>
 
-Dans cette leçon, tu vas apprendre à créer, copier, déplacer, supprimer et manipuler des fichiers et dossiers sous Linux de manière professionnelle.
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
 
----
-
-## 1. Chemins et navigation
-
-### Types de chemins
-
-| Type | Description | Exemple |
-|------|-------------|---------|
-| **Absolu** | Depuis la racine `/` | `/home/david/Documents/fichier.txt` |
-| **Relatif** | Depuis le répertoire courant | `Documents/fichier.txt` |
-| **`.`** | Répertoire courant | `./script.sh` |
-| **`..`** | Répertoire parent | `../autredossier` |
-| **`~`** | Home de l'utilisateur | `~/Documents` |
-
-### Commandes de navigation
-
-```bash
-pwd                 # Afficher le répertoire courant
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 7 : Gestion des fichiers et dossiers</h1>
+<p>Dans cette leçon, tu vas apprendre à créer, copier, déplacer, supprimer et manipuler des fichiers et dossiers sous Linux de manière professionnelle.</p>
+<hr />
+<h2>1. Chemins et navigation</h2>
+<h3>Types de chemins</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Exemple</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Absolu</strong></td>
+<td>Depuis la racine <code>/</code></td>
+<td><code>/home/david/Documents/fichier.txt</code></td>
+</tr>
+<tr>
+<td><strong>Relatif</strong></td>
+<td>Depuis le répertoire courant</td>
+<td><code>Documents/fichier.txt</code></td>
+</tr>
+<tr>
+<td><strong><code>.</code></strong></td>
+<td>Répertoire courant</td>
+<td><code>./script.sh</code></td>
+</tr>
+<tr>
+<td><strong><code>..</code></strong></td>
+<td>Répertoire parent</td>
+<td><code>../autredossier</code></td>
+</tr>
+<tr>
+<td><strong><code>~</code></strong></td>
+<td>Home de l'utilisateur</td>
+<td><code>~/Documents</code></td>
+</tr>
+</tbody>
+</table>
+<h3>Commandes de navigation</h3>
+<pre class="codehilite"><code class="language-bash">pwd                 # Afficher le répertoire courant
 cd /chemin/        # Aller dans un répertoire
 cd                # Retourner au home (~)
 cd -              # Retourner au répertoire précédent
@@ -29,168 +82,198 @@ ls -a             # Inclure fichiers cachés
 ls -la            # Tout lister
 ls -lh            # Tailles lisibles (Ko, Mo)
 ls -R             # Récursif (sous-dossiers)
-```
+</code></pre>
 
----
-
-## 2. Créer des fichiers et dossiers
-
-### Créer un dossier
-
-```bash
-mkdir mondossier                    # Un dossier
+<hr />
+<h2>2. Créer des fichiers et dossiers</h2>
+<h3>Créer un dossier</h3>
+<pre class="codehilite"><code class="language-bash">mkdir mondossier                    # Un dossier
 mkdir -p dossier1/dossier2/dossier3  # Création récursive (avec parents)
 mkdir -p ~/backup/{documents,images,config}  # Plusieurs dossiers
-```
+</code></pre>
 
-### Créer un fichier vide
-
-```bash
-touch fichier.txt        # Créer un fichier vide
+<h3>Créer un fichier vide</h3>
+<pre class="codehilite"><code class="language-bash">touch fichier.txt        # Créer un fichier vide
 touch file1.txt file2.txt  # Plusieurs fichiers
-touch -d "2024-01-01" fichier.txt  # Avec date spécifique
-```
+touch -d &quot;2024-01-01&quot; fichier.txt  # Avec date spécifique
+</code></pre>
 
-### Créer un fichier avec contenu
+<h3>Créer un fichier avec contenu</h3>
+<pre class="codehilite"><code class="language-bash">echo &quot;Bonjour&quot; &gt; bonjour.txt       # Écrase le fichier
+echo &quot;Ligne 1&quot; &gt;&gt; bonjour.txt       # Ajoute à la fin
+cat &gt; fichier.txt                    # Saisie multiligne (Ctrl+D pour quitter)
+printf &quot;Texte %s\n&quot; &quot;test&quot;          # Formaté
+</code></pre>
 
-```bash
-echo "Bonjour" > bonjour.txt       # Écrase le fichier
-echo "Ligne 1" >> bonjour.txt       # Ajoute à la fin
-cat > fichier.txt                    # Saisie multiligne (Ctrl+D pour quitter)
-printf "Texte %s\n" "test"          # Formaté
-```
-
-### Créer depuis un autre fichier
-
-```bash
-cp source.txt destination.txt       # Copier
+<h3>Créer depuis un autre fichier</h3>
+<pre class="codehilite"><code class="language-bash">cp source.txt destination.txt       # Copier
 mv ancien.txt nouveau.txt            # Déplacer (crée si n'existe pas)
-```
+</code></pre>
 
----
+<hr />
+<h2>3. Copier des fichiers et dossiers</h2>
+<h3>Syntaxe de base</h3>
+<pre class="codehilite"><code class="language-bash">cp [options] source destination
+</code></pre>
 
-## 3. Copier des fichiers et dossiers
-
-### Syntaxe de base
-
-```bash
-cp [options] source destination
-```
-
-### Options essentielles
-
-| Option | Description |
-|--------|-------------|
-| `-i` | Demander confirmation si destination existe |
-| `-n` | Ne pas écraser |
-| `-v` | Mode verbeux (affiche ce qu'il fait) |
-| `-r` ou `-R` | Copie récursive (dossiers) |
-| `-p` | Préserver les permissions, dates, propriétaire |
-| `-a` | Archive = -dR --preserve=all |
-| `-u` | Copier seulement si source plus récent |
-
-### Exemples
-
-```bash
-cp fichier.txt dossier/              # Copier vers dossier
+<h3>Options essentielles</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i</code></td>
+<td>Demander confirmation si destination existe</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>Ne pas écraser</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>Mode verbeux (affiche ce qu'il fait)</td>
+</tr>
+<tr>
+<td><code>-r</code> ou <code>-R</code></td>
+<td>Copie récursive (dossiers)</td>
+</tr>
+<tr>
+<td><code>-p</code></td>
+<td>Préserver les permissions, dates, propriétaire</td>
+</tr>
+<tr>
+<td><code>-a</code></td>
+<td>Archive = -dR --preserve=all</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>Copier seulement si source plus récent</td>
+</tr>
+</tbody>
+</table>
+<h3>Exemples</h3>
+<pre class="codehilite"><code class="language-bash">cp fichier.txt dossier/              # Copier vers dossier
 cp fichier1.txt fichier2.txt         # Copier avec nouveau nom
 cp -r mondossier copie_mondossier   # Copier dossier récursif
 cp -p fichier.txt backup/            # Préserver attributs
 cp -i *.txt dossier/                # Confirmation pour chaque fichier
 cp ../dossier/* .                   # Copier tous les fichiers du parent
 cp fichier{,.bak}                   # Raccourci: fichier et fichier.bak
-```
+</code></pre>
 
----
+<hr />
+<h2>4. Déplacer et renommer</h2>
+<h3>La commande <code>mv</code></h3>
+<pre class="codehilite"><code class="language-bash">mv [options] source destination
+</code></pre>
 
-## 4. Déplacer et renommer
-
-### La commande `mv`
-
-```bash
-mv [options] source destination
-```
-
-### Options
-
-| Option | Description |
-|--------|-------------|
-| `-i` | Demander confirmation |
-| `-n` | Ne pas écraser |
-| `-v` | Verbeux |
-| `-f` | Forcer (écraser sans demander) |
-| `-u` | Déplacer seulement si plus récent |
-
-### Exemples
-
-```bash
-mv fichier.txt /autre/dossier/       # Déplacer vers un dossier
+<h3>Options</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-i</code></td>
+<td>Demander confirmation</td>
+</tr>
+<tr>
+<td><code>-n</code></td>
+<td>Ne pas écraser</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>Verbeux</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>Forcer (écraser sans demander)</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>Déplacer seulement si plus récent</td>
+</tr>
+</tbody>
+</table>
+<h3>Exemples</h3>
+<pre class="codehilite"><code class="language-bash">mv fichier.txt /autre/dossier/       # Déplacer vers un dossier
 mv ancien_nom.txt nouveau_nom.txt    # Renommer
 mv fichier1 fichier2 dossier/       # Plusieurs fichiers
 mv *.txt ~/Documents/                # Tous les .txt vers Documents
 mv dossier/ ..                       # Monter d'un niveau
-```
+</code></pre>
 
----
-
-## 5. Supprimer
-
-### Commandes de suppression
-
-```bash
-rm [options] fichier          # Supprimer fichier
+<hr />
+<h2>5. Supprimer</h2>
+<h3>Commandes de suppression</h3>
+<pre class="codehilite"><code class="language-bash">rm [options] fichier          # Supprimer fichier
 rm -r dossier/               # Supprimer récursif (dossier + contenu)
 rmdir dossier               # Supprimer dossier vide uniquement
-```
+</code></pre>
 
-### Options dangereuses à connaître
-
-| Option | Description |
-|--------|-------------|
-| `-f` | Forcer (sans confirmation) |
-| `-i` | Confirmer avant chaque suppression |
-| `-r` | Récursif (dossiers) |
-| `-v` | Verbeux |
-
-### ⚠️ COMMANDES TRÈS DANGEREUSES - NE JAMAIS EXÉCUTER
-
-```bash
-rm -rf /          # SUPPRIMER TOUT LE DISQUE - DANGER!
+<h3>Options dangereuses à connaître</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-f</code></td>
+<td>Forcer (sans confirmation)</td>
+</tr>
+<tr>
+<td><code>-i</code></td>
+<td>Confirmer avant chaque suppression</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>Récursif (dossiers)</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>Verbeux</td>
+</tr>
+</tbody>
+</table>
+<h3>⚠️ COMMANDES TRÈS DANGEREUSES - NE JAMAIS EXÉCUTER</h3>
+<pre class="codehilite"><code class="language-bash">rm -rf /          # SUPPRIMER TOUT LE DISQUE - DANGER!
 rm -rf *          # Supprimer TOUT dans le dossier courant
 rm -rf .*         # Supprimer fichiers cachés aussi
 rm -rf ~/         # Supprimer son propre home - DANGER!
-```
+</code></pre>
 
-### Exemples sûrs
-
-```bash
-rm fichier.txt              # Supprimer un fichier
+<h3>Exemples sûrs</h3>
+<pre class="codehilite"><code class="language-bash">rm fichier.txt              # Supprimer un fichier
 rm -r mondossier           # Supprimer dossier + contenu
 rm -ri *.txt               # Confirmer pour chaque .txt
 rm -v fichier.txt          # Afficher ce qui est supprimé
 rmdir dossier_vide         # Supprime seulement si vide
-```
+</code></pre>
 
----
-
-## 6. Commandes avancées
-
-### Lister avec détails
-
-```bash
-ls -l     # Permissions, owner, taille, date
+<hr />
+<h2>6. Commandes avancées</h2>
+<h3>Lister avec détails</h3>
+<pre class="codehilite"><code class="language-bash">ls -l     # Permissions, owner, taille, date
 ls -la    # + fichiers cachés
 ls -lh    # Tailles humaines (1K, 1M)
 ls -lt    # Tri par date modification
 ls -lS    # Tri par taille
 ls -1     # Un fichier par ligne
 ls -d */  # Lister seulement les répertoires
-```
+</code></pre>
 
-### Permissions détaillées (ls -l)
-
-```bash
--rw-r--r-- 1 david david 1234 Mar 12 10:00 fichier.txt
+<h3>Permissions détaillées (ls -l)</h3>
+<pre class="codehilite"><code class="language-bash">-rw-r--r-- 1 david david 1234 Mar 12 10:00 fichier.txt
 ^ ^  ^   ^  ^   ^     ^    ^     ^
 | |  |   |  |   |     |    |     +-- Nom du fichier
 | |  |   |  |   |     |    +-- Taille en octets
@@ -199,102 +282,147 @@ ls -d */  # Lister seulement les répertoires
 | |  |   |  +-- Date de modification
 | |  +----+-- Permissions (rwx pour owner, group, others)
 +-- Type de fichier (- = fichier, d = dossier, l = lien)
-```
+</code></pre>
 
-### Commandes utiles supplémentaires
-
-```bash
-file fichier.txt        # Tipo de fichier (texte, image, etc.)
+<h3>Commandes utiles supplémentaires</h3>
+<pre class="codehilite"><code class="language-bash">file fichier.txt        # Tipo de fichier (texte, image, etc.)
 stat fichier            # Informations détaillées (dates, permissions)
 rename 's/old/new/' *   # Renommer en masse (regex)
 ln -s target lien       # Créer un lien symbolique
 ls -li                  # Afficher numéro inode
-```
+</code></pre>
 
----
-
-## 7. Caractères spéciaux (Wildcards)
-
-| Wildcard | Signification | Exemple |
-|----------|---------------|---------|
-| `*` | N'importe quels caractères | `*.txt` = tous les .txt |
-| `?` | Un caractère | `fich?.txt` = fich1.txt |
-| `[]` | Un caractère parmi | `[abc]*` = a*, b*, c* |
-| `[!]` | Pas ces caractères | `[!a]*` = pas ceux commençant par a |
-| `{...}` | Ensemble | `{a,b,c}.txt` = a.txt, b.txt, c.txt |
-
-### Exemples
-
-```bash
-ls *.pdf                 # Tous les PDF
+<hr />
+<h2>7. Caractères spéciaux (Wildcards)</h2>
+<table>
+<thead>
+<tr>
+<th>Wildcard</th>
+<th>Signification</th>
+<th>Exemple</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*</code></td>
+<td>N'importe quels caractères</td>
+<td><code>*.txt</code> = tous les .txt</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>Un caractère</td>
+<td><code>fich?.txt</code> = fich1.txt</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>Un caractère parmi</td>
+<td><code>[abc]*</code> = a<em>, b</em>, c*</td>
+</tr>
+<tr>
+<td><code>[!]</code></td>
+<td>Pas ces caractères</td>
+<td><code>[!a]*</code> = pas ceux commençant par a</td>
+</tr>
+<tr>
+<td><code>{...}</code></td>
+<td>Ensemble</td>
+<td><code>{a,b,c}.txt</code> = a.txt, b.txt, c.txt</td>
+</tr>
+</tbody>
+</table>
+<h3>Exemples</h3>
+<pre class="codehilite"><code class="language-bash">ls *.pdf                 # Tous les PDF
 ls rapport-202*.pdf       # rapport-2020.pdf, rapport-2021.pdf
 ls fichier?.txt          # fichier1.txt, fichier2.txt
 ls [*]                   # Commençant par [
 rm *~                    # Supprimer tous les fichiers de sauvegarde (~)
 cp {file1,file2,file3}.txt dossier/  # Copier 3 fichiers
-```
+</code></pre>
 
----
-
-## 8. Exercices pratiques
-
-### Exercice 1 : Créer une structure de projet
-```bash
-# Créer une structure de projet web
+<hr />
+<h2>8. Exercices pratiques</h2>
+<h3>Exercice 1 : Créer une structure de projet</h3>
+<pre class="codehilite"><code class="language-bash"># Créer une structure de projet web
 mkdir -p projet/{css,js,images,html}
 touch projet/css/style.css
 touch projet/js/main.js
 ls -R projet
-```
+</code></pre>
 
-### Exercice 2 : Sauvegarde sécurisée
-```bash
-# Créer une backup avec date
+<h3>Exercice 2 : Sauvegarde sécurisée</h3>
+<pre class="codehilite"><code class="language-bash"># Créer une backup avec date
 mkdir -p ~/backups
 cp -a ~/Documents ~/backups/documents_$(date +%Y%m%d)
 ls -lh ~/backups/
-```
+</code></pre>
 
-### Exercice 3 : Nettoyer un dossier
-```bash
-# Déplacer tous les PDF vers un dossier
+<h3>Exercice 3 : Nettoyer un dossier</h3>
+<pre class="codehilite"><code class="language-bash"># Déplacer tous les PDF vers un dossier
 mkdir -p PDF
 mv *.pdf PDF/
 # Supprimer toutes les sauvegardes (~)
 rm *~
-```
+</code></pre>
 
-### Exercice 4 : Renommer en masse
-```bash
-# Ajouter un préfixe à tous les fichiers
-for f in *.txt; do mv "$f" "backup_$f"; done
+<h3>Exercice 4 : Renommer en masse</h3>
+<pre class="codehilite"><code class="language-bash"># Ajouter un préfixe à tous les fichiers
+for f in *.txt; do mv &quot;$f&quot; &quot;backup_$f&quot;; done
 
 # Ou avec rename
 rename 's/^/backup_/' *.txt
-```
+</code></pre>
 
----
-
-## 9. Résumé
-
-| Commande | Action |
-|----------|--------|
-| `mkdir -p` | Créer dossier avec parents |
-| `touch` | Créer fichier vide |
-| `cp -r` | Copier dossier récursif |
-| `cp -p` | Préserver attributs |
-| `mv` | Déplacer ou renommer |
-| `rm -rf` | Supprimer récursif (DANGEREUX) |
-| `rmdir` | Supprimer dossier vide |
-| `ln -s` | Créer lien symbolique |
-| `ls -lR` | Lister récursif |
-
----
-
-## 10. Trucs et Astuces
-
-```bash
-# Raccourcis pratiques
+<hr />
+<h2>9. Résumé</h2>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mkdir -p</code></td>
+<td>Créer dossier avec parents</td>
+</tr>
+<tr>
+<td><code>touch</code></td>
+<td>Créer fichier vide</td>
+</tr>
+<tr>
+<td><code>cp -r</code></td>
+<td>Copier dossier récursif</td>
+</tr>
+<tr>
+<td><code>cp -p</code></td>
+<td>Préserver attributs</td>
+</tr>
+<tr>
+<td><code>mv</code></td>
+<td>Déplacer ou renommer</td>
+</tr>
+<tr>
+<td><code>rm -rf</code></td>
+<td>Supprimer récursif (DANGEREUX)</td>
+</tr>
+<tr>
+<td><code>rmdir</code></td>
+<td>Supprimer dossier vide</td>
+</tr>
+<tr>
+<td><code>ln -s</code></td>
+<td>Créer lien symbolique</td>
+</tr>
+<tr>
+<td><code>ls -lR</code></td>
+<td>Lister récursif</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>10. Trucs et Astuces</h2>
+<pre class="codehilite"><code class="language-bash"># Raccourcis pratiques
 mkdir -p ~/tmp/{a,b,c}       # Créer plusieurs dossiers
 cp fichier{,.bak}            # Copie + backup
 mv *.txt ../                 # Tout mover vers parent
@@ -302,8 +430,9 @@ rm -rf *                     # Vider un dossier (attention!)
 
 # Historique des suppressions (si activé)
 # Sous Zsh avec rm -v, les fichiers vont dans ~/.local/share/Trash/
-```
+</code></pre>
 
----
-
-Maîtrise ces commandes — elles sont le quotidien de tout administrateur Linux ! 💪
+<hr />
+<p>Maîtrise ces commandes — elles sont le quotidien de tout administrateur Linux ! 💪</p>
+</body>
+</html>
