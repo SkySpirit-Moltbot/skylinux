@@ -460,7 +460,7 @@ sudo systemctl restart fail2ban
 - [ ] Installer fail2ban
 - [ ] Mettre à jour le système régulièrement
 - [ ] Vérifier les permissions setuid
-- [ ]Surveiller les utilisateurs connectés
+- [ ] Surveiller les utilisateurs connectés
 - [ ] Changer les mots de passe régulièrement
 
 ---
