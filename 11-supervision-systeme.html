@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>supervision-systeme - Cours Linux</title>
+
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
+
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 11 : Surveillance et supervision système</h1>
+<p>Dans cette leçon, tu vas maîtriser tous les outils de surveillance Linux : CPU, mémoire, disque, processus et services. Indispensable pour diagnostiquer les problèmes.</p>
+<hr />
+<h2>1. Surveillance CPU</h2>
+<h3>Commande top</h3>
+<pre class="codehilite"><code class="language-bash">top                  # Vue en temps réel
+top -u david         # Filtrer par utilisateur
+top -p 1234          # Surveiller un processus spécifique
+top -1               # Rafraîchir chaque seconde
+</code></pre>
+
+<h3>Comprendre la sortie de top</h3>
+<pre class="codehilite"><code>top - 10:30:15 up  5:42,  1 user,  load average: 0.52, 0.58, 0.59
+Tasks: 245 total,   1 running, 244 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  5.3 us,  2.1 sy,  0.0 ni, 92.1 id,  0.0 wa,  0.0 hi,  0.6 si,  0.0 st
+MiB Mem :  7938.5 total,  2345.2 free,  4120.0 used,  1473.3 buff/cache
+MiB Swap:  2048.0 total,  1024.0 free,  1024.0 used.  5800.0 avail Mem
+</code></pre>
+
+<h3>Commandes interactives de top</h3>
+<table>
+<thead>
+<tr>
+<th>Touche</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>q</code></td>
+<td>Quitter</td>
+</tr>
+<tr>
+<td><code>M</code></td>
+<td>Trier par mémoire</td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td>Trier par CPU</td>
+</tr>
+<tr>
+<td><code>k</code></td>
+<td>Tuer un processus</td>
+</tr>
+<tr>
+<td><code>r</code></td>
+<td>Modifier la priorité (renice)</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Afficher tous les CPUs</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Changer les colonnes</td>
+</tr>
+<tr>
+<td><code>x</code></td>
+<td>Surbrillance colonne tri</td>
+</tr>
+</tbody>
+</table>
+<h3>Load Average</h3>
+<p>Le <strong>load average</strong> indique la charge système sur 1, 5 et 15 minutes.</p>
+<table>
+<thead>
+<tr>
+<th>Load</th>
+<th>1 cœur</th>
+<th>4 cœurs</th>
+<th>Interprétation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>100%</td>
+<td>25%</td>
+<td>1 processus en cours</td>
+</tr>
+<tr>
+<td>4.0</td>
+<td>400%</td>
+<td>100%</td>
+<td>Système à pleine capacité</td>
+</tr>
+<tr>
+<td>8.0</td>
+<td>800%</td>
+<td>200%</td>
+<td>Surcharge (processus en attente)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. Surveillance mémoire</h2>
+<h3>free - Mémoire vive</h3>
+<pre class="codehilite"><code class="language-bash">free                # En octets
+free -h             # Format lisible (Ko, Mo, Go)
+free -m             # En mégaoctets
+free -g             # En gigaoctets
+free -s 1           # Rafraîchir chaque seconde
+</code></pre>
+
+<h3>Comprendre la sortie</h3>
+<pre class="codehilite"><code>              total        used        free      shared  buff/cache   available
+Mem:        8.0Gi       4.1Gi       2.3Gi       150Mi       1.5Gi       3.5Gi
+Swap:       2.0Gi       512Mi       1.5Gi
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Colonne</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>total</strong></td>
+<td>Mémoire totale</td>
+</tr>
+<tr>
+<td><strong>used</strong></td>
+<td>Mémoire utilisée (vraiment)</td>
+</tr>
+<tr>
+<td><strong>free</strong></td>
+<td>Mémoire totally libre</td>
+</tr>
+<tr>
+<td><strong>buff/cache</strong></td>
+<td>Mémoire pour les buffers/disque</td>
+</tr>
+<tr>
+<td><strong>available</strong></td>
+<td>Mémoire disponible pour les apps</td>
+</tr>
+<tr>
+<td><strong>Swap</strong></td>
+<td>Mémoire virtuelle sur disque</td>
+</tr>
+</tbody>
+</table>
+<h3>Calcul du pourcentage</h3>
+<pre class="codehilite"><code class="language-bash"># Calculer le pourcentage utilisé
+free | grep Mem | awk '{printf(&quot;%.1f\n&quot;, $3/$2 * 100)}'
+</code></pre>
+
+<hr />
+<h2>3. Surveillance disque</h2>
+<h3>df - Espace disque</h3>
+<pre class="codehilite"><code class="language-bash">df                  # En octets
+df -h               # Format lisible
+df -H               # FormatIEC (1000 au lieu de 1024)
+df -T               # Avec type de système de fichiers
+df -i               # Inodes au lieu de blocs
+</code></pre>
+
+<h3>Analyser l'espace</h3>
+<pre class="codehilite"><code class="language-bash"># Partition la plus pleine
+df -h | grep -v tmpfs | sort -k5 -h | tail -5
+
+# Espace par type de filesystem
+df -Th | grep -v tmpfs
+</code></pre>
+
+<h3>du - Taille des dossiers</h3>
+<pre class="codehilite"><code class="language-bash">du -sh dossier/           # Taille totale
+du -h --max-depth=1       # Sous-dossiers (1 niveau)
+du -h --max-depth=2       # Sous-dossiers (2 niveaux)
+du -ah dossier/           # Avec fichiers cachés
+du -d 1 -h               # Profondeur 1
+du -sh */                 # Tous les sous-dossiers
+</code></pre>
+
+<h3>ncdu - Interface interactive</h3>
+<pre class="codehilite"><code class="language-bash"># Installer
+sudo apt install ncdu
+
+# Utiliser
+ncdu                    # Répertoire courant
+ncdu /home             # Dossier spécifique
+</code></pre>
+
+<hr />
+<h2>4. Surveillance processus</h2>
+<h3>ps - Liste des processus</h3>
+<pre class="codehilite"><code class="language-bash">ps              # Basique
+ps aux          # Tous les utilisateurs
+ps -ef          # Format étendu
+ps -eo pid,ppid,%mem,%cpu,cmd  # Colonnes personnalisées
+ps --sort=-%cpu | head -10    # Top CPU
+ps --sort=-%mem | head -10    # Top mémoire
+</code></pre>
+
+<h3>Rechercher un processus</h3>
+<pre class="codehilite"><code class="language-bash">ps aux | grep firefox              # Trouver firefox
+pgrep -a firefox                   # Juste les PIDs
+pidof firefox                      # PID principal
+pstree                             # Vue arborescence
+</code></pre>
+
+<h3>Stat d'un processus</h3>
+<pre class="codehilite"><code class="language-bash"># Ressources utilisées
+pidstat -p 1234 1
+
+# Fichiers ouverts
+lsof -p 1234
+
+# Connexions réseau
+ss -tp | grep 1234
+</code></pre>
+
+<hr />
+<h2>5. Tuer et gérer les processus</h2>
+<h3>kill - Envoyer un signal</h3>
+<pre class="codehilite"><code class="language-bash">kill 1234                    # SIGTERM (propre)
+kill -15 1234                # Identique
+kill -9 1234                 # SIGKILL (forcement)
+kill -SIGTERM -1234          # Groupe de processus
+</code></pre>
+
+<h3>killall et pkill</h3>
+<pre class="codehilite"><code class="language-bash">killall firefox              # Par nom
+pkill firefox                 # Par pattern
+pkill -9 -f &quot;python script&quot; # Forcé avec pattern
+</code></pre>
+
+<h3>Modifier la priorité</h3>
+<pre class="codehilite"><code class="language-bash">nice -n 10 commande          # Priorité basse
+renice 5 -p 1234            # Changer priorité
+renice -5 -p 1234           # Priorité haute (root)
+renice 0 -u david           # Tous les processus d'un user
+</code></pre>
+
+<hr />
+<h2>6. Surveillance réseau</h2>
+<h3>Commandes utiles</h3>
+<pre class="codehilite"><code class="language-bash"># Connexions actives
+ss -tuln                    # TCP/UDP en écoute
+ss -tnp                     # Connexions établies
+ss -tp | grep ESTAB         # Connections actives
+
+# Statistiques réseau
+netstat -s                   # Stats complètes
+netstat -i                   # Stats par interface
+
+# Monitoring temps réel
+nload                       # Bande passante
+iftop                       # Connexions par hôte
+bmon                        # Surveillance graphique
+</code></pre>
+
+<hr />
+<h2>7. Surveillance des services (systemd)</h2>
+<h3>systemctl</h3>
+<pre class="codehilite"><code class="language-bash"># État d'un service
+systemctl status nginx
+
+# Services actifs
+systemctl list-units --type=service --state=running
+
+# Services échoués
+systemctl --failed
+
+# Logs d'un service
+journalctl -u nginx -n 50
+journalctl -u nginx -f
+</code></pre>
+
+<hr />
+<h2>8. Métriques système avancées</h2>
+<h3>vmstat - Statistiques virtuelles</h3>
+<pre class="codehilite"><code class="language-bash">vmstat 1                    # Rafraîchir chaque seconde
+vmstat -S M 1               # En Mo
+vmstat 1 5                  # 5 snapshots
+</code></pre>
+
+<h3>iostat - Statistiques I/O</h3>
+<pre class="codehilite"><code class="language-bash"># Installer
+sudo apt install sysstat
+
+# Utiliser
+iostat -x 1                 # Stats détaillées
+iostat -dxh 1              # Disques en format lisible
+</code></pre>
+
+<h3>sar - System Activity Reporter</h3>
+<pre class="codehilite"><code class="language-bash">sar -u 1 10                 # CPU chaque seconde, 10 fois
+sar -r 1 10                 # Mémoire
+sar -d 1 10                 # Disque
+sar -n DEV 1 10             # Réseau
+</code></pre>
+
+<hr />
+<h2>9. Scripts de surveillance</h2>
+<h3>Script d'alerte disque</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+
+DISK_USAGE=$(df -h / | tail -1 | awk '{print $5}' | sed 's/%//')
+
+if [ $DISK_USAGE -gt 90 ]; then
+    echo &quot;ALERTE: Disque à ${DISK_USAGE}%&quot; | mail -s &quot;Alerte Disque&quot; admin@email.com
+fi
+</code></pre>
+
+<h3>Script d'alerte mémoire</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+
+MEM_USAGE=$(free | grep Mem | awk '{printf(&quot;%.0f&quot;, $3/$2 * 100)}')
+
+if [ $MEM_USAGE -gt 85 ]; then
+    logger &quot;Alerte: Mémoire à ${MEM_USAGE}%&quot;
+fi
+</code></pre>
+
+<h3>Surveillance continue</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+
+while true; do
+    clear
+    echo &quot;=== $(date) ===&quot;
+    echo &quot;&quot;
+    echo &quot;--- CPU ---&quot;
+    top -bn1 | head -5
+    echo &quot;&quot;
+    echo &quot;--- Mémoire ---&quot;
+    free -h
+    echo &quot;&quot;
+    echo &quot;--- Disque ---&quot;
+    df -h / | tail -1
+    sleep 5
+done
+</code></pre>
+
+<hr />
+<h2>10. Tableau résumé</h2>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>top</code></td>
+<td>Surveillance CPU/mémoire temps réel</td>
+</tr>
+<tr>
+<td><code>htop</code></td>
+<td>top avec interface améliorée</td>
+</tr>
+<tr>
+<td><code>free</code></td>
+<td>Mémoire RAM</td>
+</tr>
+<tr>
+<td><code>df</code></td>
+<td>Espace disque</td>
+</tr>
+<tr>
+<td><code>du</code></td>
+<td>Taille dossiers</td>
+</tr>
+<tr>
+<td><code>ps</code></td>
+<td>Liste processus</td>
+</tr>
+<tr>
+<td><code>kill</code></td>
+<td>Terminer processus</td>
+</tr>
+<tr>
+<td><code>ss</code></td>
+<td>Connexions réseau</td>
+</tr>
+<tr>
+<td><code>systemctl</code></td>
+<td>Gérer services</td>
+</tr>
+<tr>
+<td><code>journalctl</code></td>
+<td>Logs systemd</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Maîtrise ces outils pour devenir un pro de la supervision Linux ! 📊</p>
+</body>
+</html>

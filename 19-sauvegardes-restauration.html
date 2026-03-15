@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sauvegardes-restauration - Cours Linux</title>
+
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
+
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 19 : Sauvegardes et restauration</h1>
+<p>Dans cette leçon, tu vas maîtriser toutes les stratégies et outils de sauvegarde sous Linux. La perte de données peut arriver à tout moment — une bonne sauvegarde peut tout sauver !</p>
+<hr />
+<h2>1. Stratégies de sauvegarde</h2>
+<h3>La règle 3-2-1</h3>
+<table>
+<thead>
+<tr>
+<th>Règle</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>3 copies</strong></td>
+<td>Données originales + 2 sauvegardes</td>
+</tr>
+<tr>
+<td><strong>2 supports</strong></td>
+<td>Disque différent, supportcloud</td>
+</tr>
+<tr>
+<td><strong>1 hors site</strong></td>
+<td>Copie géographique différente</td>
+</tr>
+</tbody>
+</table>
+<h3>Types de sauvegardes</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+<th>Avantage</th>
+<th>Inconvénient</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Complète</strong></td>
+<td>Tout copier</td>
+<td>Restaurer simple</td>
+<td>Temps, espace</td>
+</tr>
+<tr>
+<td><strong>Incrémentale</strong></td>
+<td>Modifiés depuis dernière</td>
+<td>Rapide, petit</td>
+<td>Restauration longue</td>
+</tr>
+<tr>
+<td><strong>Différentielle</strong></td>
+<td>Modifiés depuis complète</td>
+<td>Compromis</td>
+<td>Moyen</td>
+</tr>
+<tr>
+<td><strong>Mirror</strong></td>
+<td>Clone exact</td>
+<td>Simple</td>
+<td>Risque d'effacement erreurs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. TAR - Archivage de base</h2>
+<h3>Créer des sauvegardes</h3>
+<pre class="codehilite"><code class="language-bash"># Archive gzip (rapide)
+tar -czvf backup.tar.gz dossier/
+
+# Archive bzip2 (meilleure compression)
+tar -cjvf backup.tar.bz2 dossier/
+
+# Archive xz (meilleure encore)
+tar -cJvf backup.tar.xz dossier/
+
+# Avec date automatique
+tar -czvf backup-$(date +%Y%m%d).tar.gz dossier/
+
+# Exclure des dossiers
+tar -czvf backup.tar.gz /home/ \
+    --exclude='*.log' \
+    --exclude='.cache' \
+    --exclude='node_modules'
+</code></pre>
+
+<h3>Lister le contenu</h3>
+<pre class="codehilite"><code class="language-bash">tar -tvf backup.tar.gz           # Détails
+tar -tf backup.tar.gz            # Simplement noms
+tar -tf backup.tar.gz | wc -l    # Compter fichiers
+</code></pre>
+
+<h3>Extraire/Restaurer</h3>
+<pre class="codehilite"><code class="language-bash"># Extraire tout
+tar -xzvf backup.tar.gz
+tar -xjf backup.tar.bz2
+tar -xJf backup.tar.xz
+
+# Extraire dans un dossier spécifique
+tar -xzvf backup.tar.gz -C /tmp/restauration/
+
+# Extraire un fichier spécifique
+tar -xzvf backup.tar.gz -C /tmp chemin/fichier.txt
+
+# Mode interactif
+tar -xzvf backup.tar.gz --checkpoint=1
+</code></pre>
+
+<hr />
+<h2>3. RSYNC - Synchronisation</h2>
+<h3>Commandes de base</h3>
+<pre class="codehilite"><code class="language-bash"># Sync locale
+rsync -av source/ destination/
+
+# Avec options courantes
+rsync -avz source/ destination/    # z = compression
+rsync -av --delete source/ dest/   # Supprimer si absent source
+rsync -av --exclude='*.log' src/ dst/  # Exclure
+rsync -av --exclude-from='exclusions.txt' src/ dst/
+
+# dry-run (simulation)
+rsync -avn source/ destination/
+
+# Progress et stats
+rsync -av --progress source/ destination/
+rsync -av --stats source/ destination/
+</code></pre>
+
+<h3>RSYNC distant (SSH)</h3>
+<pre class="codehilite"><code class="language-bash"># Vers serveur distant
+rsync -avz -e ssh dossier/ user@serveur:/backup/
+
+# Depuis serveur distant
+rsync -avz -e ssh user@serveur:/backup/ dossier-local/
+
+# Port SSH personnalisé
+rsync -avz -e 'ssh -p 2222' dossier/ user@serveur:/backup/
+</code></pre>
+
+<h3>Sauvegarde incrémentale</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+# Script backup incrémental
+
+BACKUP_DIR=&quot;/backup&quot;
+SOURCE=&quot;/home&quot;
+DATE=$(date +%Y%m%d)
+
+# Première sauvegarde complète
+if [ ! -d &quot;$BACKUP_DIR/full&quot; ]; then
+    rsync -av $SOURCE/ $BACKUP_DIR/full/
+fi
+
+# Sauvegardes incrémentales
+rsync -av --delete --link-dest=$BACKUP_DIR/full $SOURCE/ $BACKUP_DIR/incr-$DATE/
+
+# Mettre à jour le lien &quot;latest&quot;
+rm -f $BACKUP_DIR/latest
+ln -s $BACKUP_DIR/incr-$DATE $BACKUP_DIR/latest
+</code></pre>
+
+<hr />
+<h2>4. Restic - Backup moderne (recommandé)</h2>
+<h3>Installation</h3>
+<pre class="codehilite"><code class="language-bash"># Download depuis GitHub
+sudo wget https://github.com/restic/restic/releases/latest/download/restic_linux_amd64 -O /usr/local/bin/restic
+sudo chmod +x /usr/local/bin/restic
+
+#Ou via package manager
+sudo apt install restic
+</code></pre>
+
+<h3>Configuration initiale</h3>
+<pre class="codehilite"><code class="language-bash"># Initialiser un dépôt
+restic -r /backup/myrepo init
+
+# Avec mot de passe
+restic -r /backup/myrepo init --password-command &quot;echo monmotdepasse&quot;
+
+# Repository cloud (S3)
+restic -r s3:s3.amazonaws.com/bucketname init
+</code></pre>
+
+<h3>Commandes Restic</h3>
+<pre class="codehilite"><code class="language-bash"># Sauvegarder
+restic -r /backup/myrepo backup /home
+restic -r /backup/myrepo backup /home --exclude='*.log'
+
+# Lister les snapshots
+restic -r /backup/myrepo snapshots
+
+# Restaurer
+restic -r /backup/myrepo restore latest --target /restoration/
+
+# Restaurer fichier spécifique
+restic -r /backup/myrepo restore latest --path /home/fichier.txt --target /tmp/
+
+# Supprimer anciens snapshots (garde 7 jours)
+restic -r /backup/myrepo forget --keep-daily 7 --prune
+
+# Vérifier intégrité
+restic -r /backup/myrepo check
+</code></pre>
+
+<hr />
+<h2>5. Borg Backup</h2>
+<h3>Installation</h3>
+<pre class="codehilite"><code class="language-bash">sudo apt install borgbackup
+</code></pre>
+
+<h3>Utilisation</h3>
+<pre class="codehilite"><code class="language-bash"># Initialiser
+borg init --encryption=repokey /backup/borg_repo
+
+# Créer sauvegarde
+borg create /backup/borg_repo::archive-$(date +%Y%m%d) /home
+
+# Lister
+borg list /backup/borg_repo
+
+# Restaurer
+borg extract /backup/borg_repo::archive-20240314 /restoration/
+
+# Nettoyage (garde 7 quotidiens, 4 hebdomadaires)
+borg prune /backup/borg_repo --keep-daily=7 --keep-weekly=4
+</code></pre>
+
+<hr />
+<h2>6. Scripts de sauvegarde automatisés</h2>
+<h3>Script complet avec rotation</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+
+# ========== Configuration ==========
+SOURCE=&quot;/home&quot;
+DESTINATION=&quot;/backup&quot;
+RETENTION_JOURS=7
+LOGFILE=&quot;/var/log/backup.log&quot;
+
+# ========== Fonctions ==========
+log() {
+    echo &quot;[$(date '+%Y-%m-%d %H:%M:%S')] $1&quot; | tee -a $LOGFILE
+}
+
+# ========== Début ==========
+log &quot;=== Début de la sauvegarde ===&quot;
+
+# Créer le dossier de destination
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_PATH=&quot;$DESTINATION/backup-$DATE&quot;
+mkdir -p $BACKUP_PATH
+
+# ========== Sauvegarde ==========
+if rsync -av --delete \
+    --exclude='.cache' \
+    --exclude='.local/share/Trash' \
+    --exclude='node_modules' \
+    --exclude='*.log' \
+    &quot;$SOURCE/&quot; &quot;$BACKUP_PATH/&quot; 2&gt;&amp;1 | tee -a $LOGFILE; then
+
+    log &quot;Sauvegarde terminée avec succès&quot;
+
+    # Créer lien symbolique latest
+    rm -f &quot;$DESTINATION/latest&quot;
+    ln -s &quot;$BACKUP_PATH&quot; &quot;$DESTINATION/latest&quot;
+
+else
+    log &quot;ERREUR lors de la sauvegarde&quot;
+    exit 1
+fi
+
+# ========== Rotation ==========
+log &quot;Nettoyage des anciennes sauvegardes...&quot;
+find $DESTINATION -maxdepth 1 -type d -name &quot;backup-*&quot; -mtime +$RETENTION_JOURS -exec rm -rf {} \; 2&gt;&amp;1 | tee -a $LOGFILE
+
+log &quot;=== Sauvegarde terminée ===&quot;
+</code></pre>
+
+<h3>Script avec notification Telegram</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+
+# ... (code de backup) ...
+
+if [ $? -eq 0 ]; then
+    curl -s -X POST &quot;https://api.telegram.org/bot$TOKEN/sendMessage&quot; \
+        -d &quot;chat_id=$CHAT_ID&quot; \
+        -d &quot;text=✅ Backup terminé avec succès&quot;
+else
+    curl -s -X POST &quot;https://api.telegram.org/bot$TOKEN/sendMessage&quot; \
+        -d &quot;chat_id=$CHAT_ID&quot; \
+        -d &quot;text=❌ ERREUR backup&quot;
+fi
+</code></pre>
+
+<hr />
+<h2>7. Planification avec Cron</h2>
+<h3>Exemples cron</h3>
+<pre class="codehilite"><code class="language-bash"># Ajouter au crontab
+crontab -e
+
+# Sauvegarde quotidienne à 3h du matin
+0 3 * * * /home/user/scripts/backup.sh
+
+# Toutes les 6 heures
+0 */6 * * * /home/user/scripts/backup.sh
+
+# Tous les dimanches à 2h (complète)
+0 2 * * 0 /home/user/scripts/backup-full.sh
+
+# Tous les jours à midi (incrémentale)
+0 12 * * * /home/user/scripts/backup-incr.sh
+</code></pre>
+
+<hr />
+<h2>8. Restauration</h2>
+<h3>Depuis TAR</h3>
+<pre class="codehilite"><code class="language-bash"># Restaurer tout
+tar -xzvf backup.tar.gz -C /
+
+# Fichier spécifique
+tar -xzvf backup.tar.gz -C /tmp home/user/fichier.txt
+
+# Vérifier avant
+tar -tzvf backup.tar.gz | grep fichier
+</code></pre>
+
+<h3>Depuis RSYNC</h3>
+<pre class="codehilite"><code class="language-bash"># Sens inverse !
+rsync -av /backup/ /home/
+</code></pre>
+
+<h3>Depuis Restic</h3>
+<pre class="codehilite"><code class="language-bash"># Dernier snapshot
+restic -r /backup/myrepo restore latest --target /restoration/
+
+# Snapshot spécifique
+restic -r /backup/myrepo restore &lt;snapshot-id&gt; --target /restoration/
+</code></pre>
+
+<hr />
+<h2>9. Services Cloud</h2>
+<h3>rclone - Cloud sync</h3>
+<pre class="codehilite"><code class="language-bash"># Configurer
+rclone config
+
+# Sync vers cloud
+rclone sync /local backup-remote:backup
+
+# Lister remote
+rclone listremotes
+
+# Vérifier size
+rclone size backup-remote:backup
+</code></pre>
+
+<h3>Backblaze, Wasabi, etc.</h3>
+<pre class="codehilite"><code class="language-bash"># Avec rclone
+rclone sync /home wasabi:mon-backup
+
+# Avec restic + S3
+restic -r s3:s3.eu-central-003.backblazeb2.com/bucket backup /home
+</code></pre>
+
+<hr />
+<h2>10. Checklist bonnes pratiques</h2>
+<ul>
+<li>[ ] <strong>Automatiser</strong> — Cron ou systemd timer</li>
+<li>[ ] <strong>Vérifier</strong> — Tester restauration régulièrement</li>
+<li>[ ] <strong>Chiffrer</strong> — Données sensibles (GPG, VeraCrypt)</li>
+<li>[ ] <strong>Hors site</strong> — Copie cloud ou autre machine</li>
+<li>[ ] <strong>Monitoring</strong> — Alertes si échec</li>
+<li>[ ] <strong>Rotation</strong> — Supprimer anciens backups</li>
+<li>[ ] <strong>Documenter</strong> — Procédure de restauration</li>
+<li>[ ] <strong>Tester</strong> — Restoration complète trimestrielle</li>
+</ul>
+<hr />
+<h2>11. Tableau résumé</h2>
+<table>
+<thead>
+<tr>
+<th>Outil</th>
+<th>Usage</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tar</code></td>
+<td>Archives locales</td>
+<td>Manuel</td>
+</tr>
+<tr>
+<td><code>rsync</code></td>
+<td>Sync incrémentale</td>
+<td>Flexible</td>
+</tr>
+<tr>
+<td><code>restic</code></td>
+<td>Backup moderne</td>
+<td>Automatisé</td>
+</tr>
+<tr>
+<td><code>borg</code></td>
+<td>Dédupliqué</td>
+<td>Avancé</td>
+</tr>
+<tr>
+<td><code>rclone</code></td>
+<td>Cloud sync</td>
+<td>Cloud</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Maîtrise les sauvegardes pour protéger tes données ! 💾</p>
+</body>
+</html>

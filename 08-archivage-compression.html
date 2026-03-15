@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>archivage-compression - Cours Linux</title>
+
+<style>
+body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #1a1a2e, #16213e); min-height: 100vh; color: #fff; padding: 30px; max-width: 900px; margin: 0 auto; }
+h1 { color: #00d9ff; font-size: 2em; border-bottom: 2px solid #00d9ff; padding-bottom: 10px; }
+h2 { color: #00ff88; margin-top: 30px; }
+h3 { color: #ffd700; }
+code { background: rgba(0,217,255,0.1); padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+pre { background: #0d0d1a; padding: 15px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+ul, ol { margin: 15px 0; padding-left: 30px; }
+li { margin: 8px 0; }
+.back { display: inline-block; margin-bottom: 20px; color: #00d9ff; }
+.warning { background: rgba(255,165,0,0.2); border-left: 4px solid orange; padding: 10px; margin: 15px 0; }
+.danger { background: rgba(255,0,0,0.2); border-left: 4px solid red; padding: 10px; margin: 15px 0; }
+.note { background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; padding: 10px; margin: 15px 0; }
+</style>
+
+</head>
+<body>
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 8 : Archivage et compression</h1>
+<p>Dans cette leçon, nous allons apprendre à <strong>archiver</strong> et <strong>compresser</strong> des fichiers sous Linux. Ces compétences sont essentielles pour :
+- Sauvegarder des données
+- Réduire la taille pour le transfert
+- Archiver des logs
+- Packageur des applications</p>
+<hr />
+<h2>1. Comprendre la différence</h2>
+<table>
+<thead>
+<tr>
+<th>Terme</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Archiver</strong></td>
+<td>Combiner plusieurs fichiers/dossiers en un seul fichier</td>
+</tr>
+<tr>
+<td><strong>Compresser</strong></td>
+<td>Réduire la taille des données avec un algorithme</td>
+</tr>
+</tbody>
+</table>
+<p><strong>tar</strong> fait l'archiving, <strong>gzip/bzip2/xz</strong> font la compression.</p>
+<hr />
+<h2>2. TAR - L'archivage</h2>
+<h3>Présentation</h3>
+<p><code>tar</code> (Tape Archive) est la commande standard d'archivage sous Linux. Elle combine plusieurs fichiers en un seul, sans compression par défaut.</p>
+<h3>Syntaxe de base</h3>
+<pre class="codehilite"><code class="language-bash">tar [OPTIONS] [ARCHIVE] [FICHIERS]
+</code></pre>
+
+<h3>Options principales</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-c</code></td>
+<td>Créer une archive</td>
+</tr>
+<tr>
+<td><code>-x</code></td>
+<td>Extraire (eXtract)</td>
+</tr>
+<tr>
+<td><code>-t</code></td>
+<td>Lister le contenu</td>
+</tr>
+<tr>
+<td><code>-v</code></td>
+<td>Mode verbeux</td>
+</tr>
+<tr>
+<td><code>-f</code></td>
+<td>Nom du fichier archive</td>
+</tr>
+<tr>
+<td><code>-r</code></td>
+<td>Ajouter des fichiers à une archive existante</td>
+</tr>
+<tr>
+<td><code>-u</code></td>
+<td>Mettre à jour seulement si plus récent</td>
+</tr>
+<tr>
+<td><code>-d</code></td>
+<td>Diff entre archive et système de fichiers</td>
+</tr>
+</tbody>
+</table>
+<h3>Créer une archive (sans compression)</h3>
+<pre class="codehilite"><code class="language-bash">tar -cvf archive.tar dossier/
+# -c = créer, -v = verbeux, -f = nom du fichier
+
+tar -cvf backup.tar ~/Documents ~/Images
+# Archiver plusieurs dossiers
+</code></pre>
+
+<h3>Lister le contenu d'une archive</h3>
+<pre class="codehilite"><code class="language-bash">tar -tvf archive.tar          # Liste détaillée
+tar -tvf archive.tar | less   # Paginer
+tar -tf archive.tar           # Liste simple
+</code></pre>
+
+<h3>Extraire une archive</h3>
+<pre class="codehilite"><code class="language-bash">tar -xvf archive.tar                  # Extraire tout
+tar -xvf archive.tar -C /autre/dossier/  # Extraire ailleurs
+tar -xvf archive.tar fichier.txt      # Extraire un seul fichier
+tar -xvf archive.tar --wildcards '*.txt'  # Extraire par pattern
+</code></pre>
+
+<hr />
+<h2>3. Compression avec TAR</h2>
+<h3>GZIP (.tar.gz ou .tgz)</h3>
+<p><strong>Compression rapide, taille moyenne</strong></p>
+<pre class="codehilite"><code class="language-bash"># Créer
+tar -cvzf archive.tar.gz dossier/
+tar -cvzf backup.tgz dossier/    # Extension alternative
+
+# Lister
+tar -tvzf archive.tar.gz
+
+# Extraire
+tar -xvzf archive.tar.gz
+tar -xvzf archive.tar.gz -C /tmp/
+</code></pre>
+
+<h3>BZIP2 (.tar.bz2 ou .tbz2)</h3>
+<p><strong>Compression meilleure, plus lent</strong></p>
+<pre class="codehilite"><code class="language-bash"># Créer
+tar -cvjf archive.tar.bz2 dossier/
+tar -cvjf backup.tbz2 dossier/
+
+# Lister
+tar -tvjf archive.tar.bz2
+
+# Extraire
+tar -xvjf archive.tar.bz2
+</code></pre>
+
+<h3>XZ (.tar.xz) - Recommandé</h3>
+<p><strong>Meilleure compression, plus lent</strong></p>
+<pre class="codehilite"><code class="language-bash"># Créer
+tar -cvJf archive.tar.xz dossier/
+
+# Lister
+tar -tvJf archive.tar.xz
+
+# Extraire
+tar -xvJf archive.tar.xz
+</code></pre>
+
+<h3>Tableau comparatif</h3>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Extension</th>
+<th>Compression</th>
+<th>Vitesse</th>
+<th>Utilisation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gzip</td>
+<td>.gz</td>
+<td>Moyenne</td>
+<td>Rapide</td>
+<td>Fichiers log, transfert rapide</td>
+</tr>
+<tr>
+<td>bzip2</td>
+<td>.bz2</td>
+<td>Bonne</td>
+<td>Moyen</td>
+<td>_backup_archives</td>
+</tr>
+<tr>
+<td>xz</td>
+<td>.xz</td>
+<td>Excellente</td>
+<td>Lent</td>
+<td>Distribution, sauvegarde longue</td>
+</tr>
+<tr>
+<td>zstd</td>
+<td>.zst</td>
+<td>Excellente</td>
+<td>Rapide</td>
+<td>Nouveau, recommandé</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. Créer des archives compressées - Guide complet</h2>
+<h3>Exemple pratique complet</h3>
+<pre class="codehilite"><code class="language-bash"># Créer une archive compressée de votre home
+tar -cvzf ~/backup_home_$(date +%Y%m%d).tar.gz ~/
+
+# Archiver avec exclusion de certains dossiers
+tar -cvzf backup.tar.gz dossier/ \
+    --exclude='*.log' \
+    --exclude='.cache' \
+    --exclude='node_modules'
+
+# Archiver plusieurs dossiers avec date
+tar -cvzf &quot;backup_$(date +%Y%m%d_%H%M).tar.gz&quot; \
+    ~/Documents \
+    ~/Images \
+    ~/Vidéos
+</code></pre>
+
+<h3>Commandes modernes avec pigz/pbzip2 (parallèle)</h3>
+<pre class="codehilite"><code class="language-bash"># Si installé: compression parallèle (plus rapide sur multi-core)
+tar -cvf archive.tar dossier/ --use-compress-program=pigz
+tar -cvf archive.tar dossier/ --use-compress-program=pbzip2
+</code></pre>
+
+<hr />
+<h2>5. ZIP et UNZIP</h2>
+<h3>Présentation</h3>
+<p>Le format ZIP est universel et fonctionne sur tous les操作系统.</p>
+<h3>Commandes de base</h3>
+<pre class="codehilite"><code class="language-bash"># Créer une archive ZIP
+zip -r archive.zip dossier/
+zip -r backup.zip file1.txt file2.txt
+
+# Options utiles
+zip -r -9 archive.zip dossier/    # Compression maximale (1-9)
+zip -r -e archive.zip dossier/    # Chiffré (mot de passe)
+zip -r -v archive.zip dossier/    # Verbeux
+zip -r --exclude='*.log' archive.zip dossier/
+
+# Lister le contenu
+unzip -l archive.zip
+
+# Extraire
+unzip archive.zip                  # Extraire tout
+unzip archive.zip -d /destination/ # Extraire ailleurs
+unzip archive.zip fichier.txt      # Un seul fichier
+unzip -p archive.zip fichier.txt   # Vers stdout
+
+# Extraire avec mot de passe
+unzip -P motdepasse archive.zip
+</code></pre>
+
+<hr />
+<h2>6. Formats avancés</h2>
+<h3>7Z (7-Zip)</h3>
+<pre class="codehilite"><code class="language-bash"># Installer si besoin
+sudo apt install p7zip-full
+
+# Créer
+7z a archive.7z dossier/
+7z a -mx=9 archive.7z dossier/   # Compression maximale
+
+# Lister
+7z l archive.7z
+
+# Extraire
+7z x archive.7z
+
+# Avec mot de passe
+7z a -p archive.7z dossier/
+</code></pre>
+
+<h3>ZSTD (recommandé - rapide et bon)</h3>
+<pre class="codehilite"><code class="language-bash"># Installer
+sudo apt install zstd
+
+# Créer
+tar -cvzf - dossier/ | zstd &gt; archive.tar.zst
+# ou
+tar -I zstd -cvf archive.tar.zst dossier/
+
+# Extraire
+tar -I zstd -xvf archive.tar.zst
+</code></pre>
+
+<hr />
+<h2>7. Manipulations avancées</h2>
+<h3>Ajouter des fichiers à une archive existante</h3>
+<pre class="codehilite"><code class="language-bash"># Avec tar et gzip
+gzip -d archive.tar.gz
+tar -rvf archive.tar nouveau_fichier.txt
+gzip archive.tar
+
+# Avec zip
+zip -r archive.zip nouveau_fichier.txt
+</code></pre>
+
+<h3>Mise à jour incrémentale</h3>
+<pre class="codehilite"><code class="language-bash"># Sauvegarde complète
+tar -cvzf backup-full.tar.gz dossier/
+
+# Sauvegarde incrémentale (uniquement fichiers modifiés)
+tar -cvzf backup-$(date +%Y%m%d).tar.gz \
+    -N &quot;2024-01-01&quot; dossier/
+</code></pre>
+
+<h3>Vérifier l'intégrité</h3>
+<pre class="codehilite"><code class="language-bash"># Vérifier tar.gz
+gzip -t archive.tar.gz
+tar -tzf archive.tar.gz
+
+# Vérifier zip
+zip -T archive.zip
+
+# Vérifier 7z
+7z t archive.7z
+</code></pre>
+
+<hr />
+<h2>8. Exercices pratiques</h2>
+<h3>Exercice 1 : Créer une backup complète</h3>
+<pre class="codehilite"><code class="language-bash"># Backup de ~/Documents avec exclusions
+tar -cvzf ~/backup_documents_$(date +%Y%m%d).tar.gz \
+    ~/Documents \
+    --exclude='.cache' \
+    --exclude='.local' \
+    --exclude='*.tmp'
+
+# Vérifier
+tar -tvzf ~/backup_documents_*.tar.gz | head -20
+</code></pre>
+
+<h3>Exercice 2 : Restaurer sélectivement</h3>
+<pre class="codehilite"><code class="language-bash"># Lister d'abord
+tar -tvzf backup.tar.gz | grep important
+
+# Extraire juste ce fichier
+tar -xvzf backup.tar.gz chemin/vers/important.txt
+</code></pre>
+
+<h3>Exercice 3 : Archiver et déplacer sur un autre serveur</h3>
+<pre class="codehilite"><code class="language-bash"># Sur la machine source
+tar -cvzf - dossier/ | ssh user@serveur &quot;cat &gt; backup.tar.gz&quot;
+
+# Sur le serveur distant
+ssh user@serveur &quot;tar -cvzf - dossier/&quot; &gt; local-backup.tar.gz
+</code></pre>
+
+<h3>Exercice 4 : Créer une archive horodatée</h3>
+<pre class="codehilite"><code class="language-bash">#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M)
+tar -cvzf &quot;/backup/backup_$DATE.tar.gz&quot; ~/Documents
+echo &quot;Backup créé: backup_$DATE.tar.gz&quot;
+</code></pre>
+
+<hr />
+<h2>9. Tableau résumé</h2>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>gzip</th>
+<th>bzip2</th>
+<th>xz</th>
+<th>zip</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archiver + compresser</td>
+<td><code>tar -cvzf file.tar.gz dir/</code></td>
+<td><code>tar -cvjf file.tar.bz2 dir/</code></td>
+<td><code>tar -cvJf file.tar.xz dir/</code></td>
+<td><code>zip -r file.zip dir/</code></td>
+</tr>
+<tr>
+<td>Lister</td>
+<td><code>tar -tvzf file.tar.gz</code></td>
+<td><code>tar -tvjf file.tar.bz2</code></td>
+<td><code>tar -tvJf file.tar.xz</code></td>
+<td><code>unzip -l file.zip</code></td>
+</tr>
+<tr>
+<td>Extraire</td>
+<td><code>tar -xvzf file.tar.gz</code></td>
+<td><code>tar -xvjf file.tar.bz2</code></td>
+<td><code>tar -xvJf file.tar.xz</code></td>
+<td><code>unzip file.zip</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>10. Bonnes pratiques</h2>
+<ol>
+<li><strong>Utilisez .tar.xz</strong> pour l'archivage long terme (meilleure compression)</li>
+<li><strong>Utilisez .tar.gz</strong> pour les transferts rapides</li>
+<li><strong>Utilisez zip</strong> pour partager avec Windows/Mac</li>
+<li><strong>Vérifiez toujours</strong> l'archive après création</li>
+<li><strong>Excluez les fichiers inutiles</strong> (cache, node_modules, .git)</li>
+<li><strong>Gardez des sauvegardes incrémentales</strong></li>
+<li><strong>Testez la restauration</strong> régulièrement !</li>
+</ol>
+<hr />
+<p>Ces commandes sont essentielles pour tout administrateur Linux ! 💪</p>
+</body>
+</html>
