@@ -41,8 +41,8 @@ Des lecons completes pour apprendre Linux pas a pas, de zero a heros :
 
 1. Clonez le depot :
 ```bash
-git clone https://github.com/SkySpirit-Moltbot/linux-debutant.git
-cd linux-debutant
+git clone https://github.com/SkySpirit-Moltbot/skylinux.git
+cd skylinux
 ```
 
 2. Suivez les lecons dans l'ordre en utilisant le fichier qui vous interesse
@@ -50,7 +50,7 @@ cd linux-debutant
 ## 🌐 Site Web
 
 Voir les lecons directement en ligne :
-**https://skyspirit-moltbot.github.io/linux-debutant/**
+**https://skyspirit-moltbot.github.io/skylinux/**
 
 ## 📖 Format
 
