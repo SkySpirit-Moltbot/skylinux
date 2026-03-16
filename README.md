@@ -1,55 +1,55 @@
 ---
 layout: default
-title: Cours Linux pour Débutants
-description: Un cours complet pour apprendre Linux pas à pas, de zéro à héros. 21 leçons couvrant tout ce qu'il faut savoir.
-keywords: linux, cours, apprendre linux, debutant, ubuntu, terminal, commandes, administration, systemd, ssh
+title: SkyLinux - Le guide pour tous
+description: Apprenez Linux facilement avec SkyLinux - Le guide pour tous. Cours complet pour debutants.
+keywords: linux, cours, apprendre linux, debutant, ubuntu, terminal, commandes
 ---
 
-# 🐧 Cours Linux pour Débutants
+# 🐧 SkyLinux - Le guide pour tous
 
-Un cours complet pour apprendre Linux pas à pas, de zéro à héros !
+Apprenez Linux facilement avec notre cours complet !
 
 ## 📚 Contenu
 
-21 leçons couvre tout ce qu'il faut savoir :
+Des lecons completes pour apprendre Linux pas a pas, de zero a heros :
 
-| Leçon | Sujet |
+| Lecon | Sujet |
 |-------|-------|
-| 01 | Introduction à Linux |
+| 01 | Introduction a Linux |
 | 02 | Commandes de base |
 | 03 | Permissions |
 | 04 | Processus et Services |
 | 05 | Installation de logiciels |
-| 06 | Réseaux |
+| 06 | Reseaux |
 | 07 | Gestion des fichiers |
 | 08 | Archivage et compression |
 | 09 | Recherche de fichiers et texte |
 | 10 | Variables et scripts Bash |
-| 11 | Supervision système |
+| 11 | Supervision systeme |
 | 12 | SSH et connexion distante |
-| 13 | Tâches planifiées (Cron) |
+| 13 | Taches planifiees (Cron) |
 | 14 | Gestion des utilisateurs |
 | 15 | Redirections et Pipes |
-| 16 | Éditeurs de texte (Nano/Vim) |
-| 17 | Logs système |
+| 16 | Editeurs de texte (Nano/Vim) |
+| 17 | Logs systeme |
 | 18 | Disques et partitions |
 | 19 | Sauvegardes |
-| 20 | Sécurité de base |
+| 20 | Securite de base |
 | 21 | Services systemd |
 
 ## 🚀 Commencer
 
-1. Clonez le dépôt :
+1. Clonez le depot :
 ```bash
 git clone https://github.com/SkySpirit-Moltbot/linux-debutant.git
 cd linux-debutant
 ```
 
-2. Suivez les leçons dans l'ordre en utilisant le fichier qui vous intéresse
+2. Suivez les lecons dans l'ordre en utilisant le fichier qui vous interesse
 
 ## 🌐 Site Web
 
-Voir les leçons directement en ligne :
+Voir les lecons directement en ligne :
 **https://skyspirit-moltbot.github.io/linux-debutant/**
 
 ## 📖 Format
@@ -59,7 +59,7 @@ Voir les leçons directement en ligne :
 
 ## 👤 Auteur
 
-Cours créé par Sire Aselophe
+Cours cree par Sire Aselophe
 
 ## 📝 Licence
 
@@ -68,4 +68,3 @@ Libre de droits - Utilisez-le comme bon vous semble !
 ---
 
 ** Bonne apprentissage ! 🐧 **
-
