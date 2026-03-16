@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Introduction - SkyLinux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/01-introduction.html">
 <meta property="og:title" content="Introduction - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
 <meta name="description" content="Introduction - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
 <meta name="keywords" content="linux, cours, Introduction, debutant, ubuntu">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -17,22 +17,355 @@ body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; mi
 h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
 a { color: #00d9ff; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
-.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.header a { color: #666; text-decoration: none; }
 </style>
 </head>
 <body>
-<div class="header">
-<a href="index.html">&larr; Sommaire</a>
-<span class="logo">SkyLinux</span>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-<h1>Lecon 1 : Introduction a Linux</h1>
-<p>Bienvenue dans ce cours Linux!</p>
+<h1>Leçon 1 : Introduction à Linux</h1>
+<p>Bienvenue dans ce cours complet de Linux ! Cette première leçon pose les fondations.</p>
+<hr />
+<h2>1. Qu'est-ce que Linux ?</h2>
+<h3>Présentation</h3>
+<p><strong>Linux</strong> est un système d'exploitation <strong>open-source</strong> gratuit, créé par Linus Torvalds en 1991. Il est aujourd'hui partout :</p>
+<table>
+<thead>
+<tr>
+<th>Domaine</th>
+<th>Part de marché</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Serveurs web</td>
+<td><strong>97%</strong></td>
+</tr>
+<tr>
+<td>Supercalculateurs</td>
+<td><strong>100%</strong></td>
+</tr>
+<tr>
+<td>Smartphones (Android)</td>
+<td><strong>85%</strong></td>
+</tr>
+<tr>
+<td>Objets connectés</td>
+<td>~70%</td>
+</tr>
+</tbody>
+</table>
+<h3>Les composants</h3>
+<p>Un système Linux se compose de :
+- <strong>Noyau (Kernel)</strong> : Le cœur du système
+- <strong>Shell</strong> : L'interpréteur de commandes (bash, zsh)
+- <strong>Système de fichiers</strong> : Organisation des fichiers
+- <strong>Utilitaires</strong> : Outils de base (ls, cp, mv, etc.)</p>
+<h3>Distributions Linux</h3>
+<p>Il existe des centaines de <strong>distributions</strong> (distros). Les principales :</p>
+<table>
+<thead>
+<tr>
+<th>Distribution</th>
+<th>Public</th>
+<th>Base</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ubuntu</strong></td>
+<td>Débutants</td>
+<td>Debian</td>
+</tr>
+<tr>
+<td><strong>Debian</strong></td>
+<td>Avancés</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Linux Mint</strong></td>
+<td>Débutants</td>
+<td>Ubuntu</td>
+</tr>
+<tr>
+<td><strong>Fedora</strong></td>
+<td>Avancés</td>
+<td>RHEL</td>
+</tr>
+<tr>
+<td><strong>Arch</strong></td>
+<td>Experts</td>
+<td>-</td>
+</tr>
+<tr>
+<td><strong>Raspberry Pi OS</strong></td>
+<td>Raspberry Pi</td>
+<td>Debian</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. Pourquoi apprendre Linux ?</h2>
+<h3>Avantages</h3>
+<ol>
+<li><strong>Gratuit et open-source</strong> : Code accessible et modifiable</li>
+<li><strong>Stable et sécurisé</strong> : Moins de virus, moins de plantages</li>
+<li><strong>Léger</strong> : Fonctionne sur de vieux ordinateurs</li>
+<li><strong>Puissant</strong> : Contrôle total du système</li>
+<li><strong>Communauté</strong> : Aide abundant disponible</li>
+<li><strong>Professionnel</strong> : 90% des offres d'emploi système</li>
+</ol>
+<h3>Utilisations courantes</h3>
+<ul>
+<li>Serveurs web et bases de données</li>
+<li>Développement software</li>
+<li>Administration système</li>
+<li>Cybersécurité</li>
+<li>Docker/Kubernetes</li>
+<li>Raspberry Pi et projets DIY</li>
+</ul>
+<hr />
+<h2>3. Architecture Linux</h2>
+<h3>Structure des répertoires</h3>
+<pre class="codehilite"><code>/
+├── bin/       # Commandes essentielles
+├── boot/      # Fichiers de démarrage
+├── dev/       # Périphériques
+├── etc/       # Configuration
+├── home/      # Répertoires utilisateurs
+├── lib/       # Bibliothèques partagées
+├── media/     # Points de montage amovibles
+├── mnt/       # Points de montage temporaires
+├── opt/       # Logiciels optionnels
+├── proc/      # Informations processus (virtuel)
+├── root/      # Répertoire admin
+├── run/       # Données temporaires
+├── sbin/      # Commandes système
+├── srv/       # Données services
+├── sys/       # Infos système (virtuel)
+├── tmp/       # Fichiers temporaires
+├── usr/       # Programmes utilisateur
+└── var/       # Données variables (logs)
+</code></pre>
+
+<h3>Répertoires importants</h3>
+<table>
+<thead>
+<tr>
+<th>Chemin</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/home/user/</code></td>
+<td>Répertoire personnel</td>
+</tr>
+<tr>
+<td><code>/etc/</code></td>
+<td>Fichiers de configuration</td>
+</tr>
+<tr>
+<td><code>/var/log/</code></td>
+<td>Journaux système</td>
+</tr>
+<tr>
+<td><code>/usr/bin/</code></td>
+<td>Programmes</td>
+</tr>
+<tr>
+<td><code>/tmp/</code></td>
+<td>Fichiers temporaires</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. Le Terminal</h2>
+<h3>Qu'est-ce que le terminal ?</h3>
+<p>Le terminal (ou console/shell) est une interface <strong>texte</strong> pour interagir avec Linux. Plus puissant et plus rapide que l'interface graphique.</p>
+<h3>Ouvrir un terminal</h3>
+<ul>
+<li><strong>Ubuntu</strong> : Ctrl + Alt + T</li>
+<li><strong>Raspberry Pi</strong> : déjà ouvert par défaut</li>
+<li><strong>macOS</strong> : Cmd + Espace, taper "Terminal"</li>
+</ul>
+<h3>Commandes de base</h3>
+<pre class="codehilite"><code class="language-bash">ls              # Lister les fichiers
+cd dossier     # Changer de répertoire
+pwd             # Répertoire courant
+mkdir dossier  # Créer un dossier
+touch fichier  # Créer un fichier
+rm fichier     # Supprimer
+cp source dest # Copier
+mv source dest # Déplacer/renommer
+</code></pre>
+
+<hr />
+<h2>5. Premier pas : Commandes essentielles</h2>
+<h3>Navigation</h3>
+<pre class="codehilite"><code class="language-bash">pwd                 # Où suis-je ?
+ls                  # Liste fichiers
+ls -l               # Liste détaillée
+ls -a               # Inclure cachés
+ls -la              # Tout
+cd /                # Aller à la racine
+cd ~                # Retourner au home
+cd ..               # Répertoire parent
+cd -                # Revenir en arrière
+</code></pre>
+
+<h3>Manipulation de fichiers</h3>
+<pre class="codehilite"><code class="language-bash">mkdir mon_dossier   # Créer dossier
+rmdir mon_dossier   # Supprimer dossier vide
+touch fichier       # Créer fichier
+cp fichier copie    # Copier
+mv fichier nouveau  # Renommer/déplacer
+rm fichier          # Supprimer
+rm -rf dossier     # Supprimer récursif (DANGER!)
+</code></pre>
+
+<h3>Lire les fichiers</h3>
+<pre class="codehilite"><code class="language-bash">cat fichier         # Afficher contenu
+less fichier        # Afficher page par page
+head -n 10 fichier # 10 premières lignes
+tail -n 10 fichier # 10 dernières lignes
+tail -f fichier    # Suivre en temps réel
+</code></pre>
+
+<h3>Recherche</h3>
+<pre class="codehilite"><code class="language-bash">which commande      # Trouver une commande
+man commande        # Manuel
+--help              # Aide
+</code></pre>
+
+<hr />
+<h2>6. Notions de droits et permissions</h2>
+<h3>Les permissions</h3>
+<p>Chaque fichier a des permissions :</p>
+<pre class="codehilite"><code>-rw-r--r-- 1 user group 1234 Mar 10 10:00 fichier
+</code></pre>
+
+<table>
+<thead>
+<tr>
+<th>Partie</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-</code></td>
+<td>Type (fichier)</td>
+</tr>
+<tr>
+<td><code>rw-</code></td>
+<td>Propriétaire (read, write, execute)</td>
+</tr>
+<tr>
+<td><code>r--</code></td>
+<td>Groupe</td>
+</tr>
+<tr>
+<td><code>r--</code></td>
+<td>Autres</td>
+</tr>
+</tbody>
+</table>
+<h3>Modifier les permissions</h3>
+<pre class="codehilite"><code class="language-bash">chmod +x fichier     # Rendre exécutable
+chmod 644 fichier    # rw-r--r--
+chmod 755 dossier/   # rwxr-xr-x
+chmod -R 777 dossier # Plein accès (DANGER!)
+</code></pre>
+
+<hr />
+<h2>7.root et sudo</h2>
+<h3>Utilisateur root</h3>
+<p>root est le <strong>super-utilisateur</strong> avec tous les droits. Linux demande souvent confirmation.</p>
+<h3>sudo</h3>
+<p><code>sudo</code> (Super User Do) permet d'exécuter une commande avec les droits admin :</p>
+<pre class="codehilite"><code class="language-bash">sudo apt update      # Mettre à jour les paquets
+sudo mkdir /test     # Créer dans /
+sudo rm -rf /        # DANGER!
+</code></pre>
+
+<blockquote>
+<p>⚠️ <strong>Attention</strong> : root peut tout faire, y compris détruire le système !</p>
+</blockquote>
+<hr />
+<h2>8. Installation de logiciels</h2>
+<h3>Avec APT (Debian/Ubuntu)</h3>
+<pre class="codehilite"><code class="language-bash">sudo apt update          # Mettre à jour
+sudo apt install NomPaquet    # Installer
+sudo apt upgrade         # Mettre à jour
+sudo apt remove NomPaquet    # Supprimer
+</code></pre>
+
+<hr />
+<h2>9. Aide et documentation</h2>
+<h3>Obtenir de l'aide</h3>
+<pre class="codehilite"><code class="language-bash">commande --help         # Aide rapide
+man commande            # Manuel complet
+info commande           # Documentation info
+</code></pre>
+
+<h3>Ressources en ligne</h3>
+<ul>
+<li><strong>askubuntu.com</strong> : Questions/réponses</li>
+<li><strong>linux.die.net</strong> : Manuels en ligne</li>
+<li><strong>github.com</strong> : Code source</li>
+</ul>
+<hr />
+<h2>10. Résumé et prochaines lépések</h2>
+<h3>Points clés</h3>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Distribution</strong></td>
+<td>Version de Linux</td>
+</tr>
+<tr>
+<td><strong>Terminal</strong></td>
+<td>Interface texte</td>
+</tr>
+<tr>
+<td><strong>Shell</strong></td>
+<td>Interpréteur de commandes</td>
+</tr>
+<tr>
+<td><strong>root</strong></td>
+<td>Super-utilisateur</td>
+</tr>
+<tr>
+<td><strong>sudo</strong></td>
+<td>Exécuter en admin</td>
+</tr>
+<tr>
+<td><strong>Permissions</strong></td>
+<td>Contrôle d'accès</td>
+</tr>
+</tbody>
+</table>
+<h3>Prochaine leçon</h3>
+<p>Dans la prochaine leçon, nous aborderons les <strong>commandes de base</strong> en détail.</p>
+<hr />
+<p><strong>Bienvenue dans le monde de Linux !</strong> 🐧</p>
+
 <nav>
 <span></span>
 <a href="02-commandes-base.html">Commandes Base &rarr;</a>
