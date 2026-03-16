@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services systemd - Cours Linux</title>
+<meta name="description" content="Lecon Services systemd - Cours Linux - Apprenez Linux pas a pas.">
+<meta name="keywords" content="linux, cours, services, systemd, debutant, ubuntu">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+a.back { display: inline-flex; align-items: center; gap: 8px; color: #666; text-decoration: none; font-size: 0.9rem; margin-bottom: 30px; }
+a.back:hover { color: #00d9ff; }
+h1 { font-size: 1.8rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+h2 { color: #00d9ff; font-size: 1.3rem; margin: 30px 0 15px; font-weight: 600; }
+h3 { color: #00ff88; font-size: 1.1rem; margin: 25px 0 10px; }
+p { line-height: 1.7; margin: 12px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 3px 8px; border-radius: 6px; font-family: monospace; }
+pre { background: #111118; padding: 20px; border-radius: 12px; overflow-x: auto; margin: 15px 0; border: 1px solid rgba(255,255,255,0.05); }
+pre code { background: none; padding: 0; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 8px 0; color: #bbb; }
+a { color: #00d9ff; text-decoration: none; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+th, td { border: 1px solid #333; padding: 12px; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+</style>
+</head>
+<body>
+<div class="container">
+<a href="index.html" class="back">← Retour au sommaire</a>
+<h1>Leçon 21 : Gestion des services avec systemd</h1>
+<h2>Introduction</h2>
+<p><strong>systemd</strong> est le système d'initialisation et le gestionnaire de services le plus utilisé dans les distributions Linux modernes (Ubuntu, Debian, Fedora, CentOS, etc.). Il permet de démarrer, arrêter, redémarrer et gérer les services (daemons) du système.</p>
+<p>Dans cette leçon, nous allons apprendre à utiliser la commande <code>systemctl</code> pour gérer les services.</p>
+<h2>Concepts de base</h2>
+<h3>Qu'est-ce qu'un service ?</h3>
+<p>Un service (ou daemon) est un programme qui tourne en arrière-plan et qui est démarré automatiquement au démarrage du système. Exemples :
+- <code>nginx</code> : serveur web
+- <code>sshd</code> : serveur SSH
+- <code>cron</code> : gestionnaire de tâches planifiées
+- <code>systemd-logind</code> : gestion des connexions utilisateur</p>
+<h3>Les cibles (targets)</h3>
+<p>Les cibles (<code>targets</code>) sont des groupes de services qui définissent un état du système. Les plus courantes :
+- <code>multi-user.target</code> : système multi-utilisateur sans interface graphique
+- <code>graphical.target</code> : système avec interface graphique
+- <code>rescue.target</code> : mode rescue (单用户模式)
+- <code>poweroff.target</code> : arrêt du système</p>
+<h2>Commandes de base avec systemctl</h2>
+<h3>Voir le statut d'un service</h3>
+<pre class="codehilite"><code class="language-bash"># Voir le statut d'un service spécifique
+sudo systemctl status nginx
+
+# Statut sans les détails (plus concis)
+sudo systemctl is-active nginx
+
+# Vérifier si un service est activé au démarrage
+sudo systemctl is-enabled nginx
+</code></pre>
+
+<h3>Démarrer et arrêter un service</h3>
+<pre class="codehilite"><code class="language-bash"># Démarrer un service
+sudo systemctl start nginx
+
+# Arrêter un service
+sudo systemctl stop nginx
+
+# Redémarrer un service (arrêt + démarrage)
+sudo systemctl restart nginx
+
+# Recharger la configuration sans arrêter le service
+sudo systemctl reload nginx
+</code></pre>
+
+<h3>Activer ou désactiver un service</h3>
+<pre class="codehilite"><code class="language-bash"># Activer un service au démarrage (démarrage automatique)
+sudo systemctl enable nginx
+
+# Désactiver un service au démarrage
+sudo systemctl disable nginx
+
+# Activer et démarrer immédiatement
+sudo systemctl enable --now nginx
+</code></pre>
+
+<h3>Lister les services</h3>
+<pre class="codehilite"><code class="language-bash"># Lister tous les services actifs
+systemctl list-units --type=service
+
+# Lister tous les services (actifs et inactifs)
+systemctl list-units --type=service --all
+
+# Lister les services qui ont échoué
+systemctl --failed --type=service
+</code></pre>
+
+<h3>Voir les journaux d'un service</h3>
+<pre class="codehilite"><code class="language-bash"># Voir les journaux d'un service (logs)
+sudo journalctl -u nginx
+
+# Suivre les journaux en temps réel
+sudo journalctl -u nginx -f
+
+# Voir les journaux depuis le dernier démarrage
+sudo journalctl -u nginx --since today
+</code></pre>
+
+<h2>Exemples pratiques</h2>
+<h3>Exemple 1 : Gestion du service SSH</h3>
+<pre class="codehilite"><code class="language-bash"># Vérifier le statut de SSH
+sudo systemctl status ssh
+
+# Démarrer SSH
+sudo systemctl start ssh
+
+# Activer SSH au démarrage
+sudo systemctl enable ssh
+
+# Voir les journaux SSH
+sudo journalctl -u ssh
+</code></pre>
+
+<h3>Exemple 2 : Gestion du service Cron</h3>
+<pre class="codehilite"><code class="language-bash"># Statut de cron
+sudo systemctl status cron
+
+# Redémarrer cron pour prendre en compte les changements
+sudo systemctl restart cron
+
+# Vérifier si cron est actif
+systemctl is-active cron
+</code></pre>
+
+<h3>Exemple 3 : Analyser pourquoi un service ne démarre pas</h3>
+<pre class="codehilite"><code class="language-bash"># Voir le statut détaillé
+sudo systemctl status nginx
+
+# Voir les dernières lignes de journal
+sudo journalctl -xe -u nginx
+
+# Voir la configuration du service
+sudo systemctl cat nginx
+</code></pre>
+
+<h2>Exercice pratique</h2>
+<ol>
+<li>
+<p><strong>Vérifier le statut de votre service cron</strong> :
+   <code>bash
+   systemctl status cron</code></p>
+</li>
+<li>
+<p><strong>Activer le service cron au démarrage</strong> :
+   <code>bash
+   sudo systemctl enable cron</code></p>
+</li>
+<li>
+<p><strong>Créer un script de test</strong> dans <code>/tmp/test_service.sh</code> :
+   <code>bash
+   #!/bin/bash
+   echo "Mon script de test" &gt;&gt; /tmp/test.log</code></p>
+</li>
+<li>
+<p><strong>Créer un service systemd</strong> dans <code>/etc/systemd/system/test.service</code> :
+   ```bash
+   [Unit]
+   Description=Mon service de test</p>
+</li>
+</ol>
+<p>[Service]
+   Type=oneshot
+   ExecStart=/tmp/test_service.sh</p>
+<p>[Install]
+   WantedBy=multi-user.target
+   ```</p>
+<ol>
+<li><strong>Tester le service</strong> :
+   <code>bash
+   sudo systemctl daemon-reload
+   sudo systemctl start test
+   cat /tmp/test.log
+   sudo systemctl enable test</code></li>
+</ol>
+<h2>Résumé</h2>
+<ul>
+<li><strong>systemd</strong> est le gestionnaire de services standard sous Linux</li>
+<li><strong><code>systemctl</code></strong> est la commande principale pour gérer les services</li>
+<li><strong>Démarrer/arrêter</strong> : <code>systemctl start/stop [service]</code></li>
+<li><strong>Redémarrer</strong> : <code>systemctl restart [service]</code></li>
+<li><strong>Statut</strong> : <code>systemctl status [service]</code></li>
+<li><strong>Activer au démarrage</strong> : <code>systemctl enable [service]</code></li>
+<li><strong>Désactiver au démarrage</strong> : <code>systemctl disable [service]</code></li>
+<li><strong>Journaux</strong> : <code>journalctl -u [service]</code></li>
+<li><strong>Lister les services</strong> : <code>systemctl list-units --type=service</code></li>
+</ul>
+<p>La maîtrise de systemd est essentielle pour administrer un système Linux moderne. Les commandes vues dans cette leçon vous permettront de gérer efficacement les services de votre système.</p>
+</div>
+</body></html>
