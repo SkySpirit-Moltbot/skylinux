@@ -11,7 +11,9 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Inter', sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
 .container { max-width: 700px; margin: 0 auto; }
-h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; text-align: center; }
+h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; text-align: center; }
+.subtitle { text-align: center; color: #888; font-size: 1.1rem; margin-bottom: 30px; }
+.desc { text-align: center; color: #aaa; font-size: 1rem; margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 .list { display: flex; flex-direction: column; gap: 8px; }
 .item { display: flex; align-items: center; padding: 16px 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; text-decoration: none; color: #e0e0e0; transition: all 0.2s ease; }
 .item:hover { background: rgba(0,217,255,0.08); border-color: rgba(0,217,255,0.3); transform: translateX(6px); }
@@ -19,12 +21,16 @@ h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #00d
 .title { font-size: 0.95rem; font-weight: 500; }
 .arrow { margin-left: auto; opacity: 0; transition: opacity 0.2s; color: #00d9ff; }
 .item:hover .arrow { opacity: 1; }
-.count { text-align: center; color: #444; font-size: 0.85rem; margin-top: 30px; }
+.footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #222; color: #555; font-size: 0.85rem; }
+.footer a { color: #00d9ff; text-decoration: none; }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>🐧 SkyLinux - Le guide pour tous</h1>
+<h1>🐧 SkyLinux</h1>
+<p class="subtitle">Le guide pour tous</p>
+<p class="desc">Apprenez Linux pas a pas. Des lecons completes et gratuites pour debuter avec confiance.</p>
+
 <div class="list">
 <a href="01-introduction.html" class="item"><span class="num">01</span><span class="title">Introduction</span><span class="arrow">→</span></a>
 <a href="02-commandes-base.html" class="item"><span class="num">02</span><span class="title">Commandes de base</span><span class="arrow">→</span></a>
@@ -48,6 +54,7 @@ h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #00d
 <a href="20-securite-base.html" class="item"><span class="num">20</span><span class="title">Securite</span><span class="arrow">→</span></a>
 <a href="21-services-systemd.html" class="item"><span class="num">21</span><span class="title">Services systemd</span><span class="arrow">→</span></a>
 </div>
-<p class="count">Mise a jour quotidienne</p>
+
+<p class="footer">Par <a href="#">Sire Aselophe</a> - Mise a jour quotidienne</p>
 </div>
 </body></html>
