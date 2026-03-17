@@ -11,7 +11,7 @@ Apprenez Linux facilement avec notre cours complet !
 
 ## Contenu
 
-22 lecons completes pour apprendre Linux pas a pas :
+23 lecons completes pour apprendre Linux pas a pas :
 
 | Lecon | Sujet |
 |-------|-------|
@@ -37,6 +37,7 @@ Apprenez Linux facilement avec notre cours complet !
 | 20 | Securite de base |
 | 21 | Services systemd |
 | 22 | Conteneurs Docker |
+| 23 | Outils de diagnostic et depannage |
 
 ## Commencer
 
