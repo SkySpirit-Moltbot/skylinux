@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outils de diagnostic - SkyLinux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/23-outils-diagnostic.html">
+<meta property="og:title" content="Outils de diagnostic et depannage - SkyLinux">
+<meta property="og:description" content="Apprenez les outils de diagnostic Linux facilement">
+<meta name="description" content="Outils de diagnostic et depannage - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, diagnostic, depannage, debutant">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #00ff88; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
+a { color: #00d9ff; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 23 : Outils de diagnostic et dépannage</h1>
+<h2>Introduction</h2>
+<p>Quando votre système Linux rencontre des problèmes, il est essentiel de savoir diagnostiquer la cause du problème. Cette leçon présente les outils les plus utiles pour identifier et résoudre les problèmes courants sur un système Linux.</p>
+<h2>Les commandes de diagnostic essentielles</h2>
+<h3>top et htop - Surveillance des processus</h3>
+<p>La commande <code>top</code> affiche les processus en cours d'exécution en temps réel :</p>
+<pre class="codehilite"><code class="language-bash">top
+</code></pre>
+
+<p>Pour une interface plus conviviale, utilisez <code>htop</code> :</p>
+<pre class="codehilite"><code class="language-bash">htop
+</code></pre>
+
+<p>Dans <code>top</code> ou <code>htop</code>, vous pouvez voir :
+- L'utilisation CPU par processus
+- L'utilisation mémoire
+- Le temps d'exécution
+- L'utilisateur propriétaire</p>
+<h3>free - Mémoire vive</h3>
+<p>Affiche la mémoire RAM disponible et utilisée :</p>
+<pre class="codehilite"><code class="language-bash">free -h
+</code></pre>
+
+<p>L'option <code>-h</code> rend l'affichage lisible (Ko, Mo, Go).</p>
+<h3>df - Espace disque</h3>
+<p>Vérifie l'espace disque disponible :</p>
+<pre class="codehilite"><code class="language-bash">df -h
+</code></pre>
+
+<p>L'option <code>-h</code> affiche les tailles en format lisible.</p>
+<h3>du - Utilisation de l'espace par fichier/répertoire</h3>
+<pre class="codehilite"><code class="language-bash">du -sh /home/*        # Taille de chaque répertoire dans /home
+du -h --max-depth=1  # Tailles des répertoires courants
+</code></pre>
+
+<h3>lsblk - Liste des partitions</h3>
+<p>Affiche les partitions disponibles :</p>
+<pre class="codehilite"><code class="language-bash">lsblk
+</code></pre>
+
+<h2>Outils de réseau</h2>
+<h3>ping - Tester la connectivité</h3>
+<pre class="codehilite"><code class="language-bash">ping google.com
+ping -c 4 google.com  # Arrêt après 4 paquets
+</code></pre>
+
+<h3>ip ou ifconfig - Informations réseau</h3>
+<pre class="codehilite"><code class="language-bash">ip addr show
+ip route show
+</code></pre>
+
+<h3>netstat ou ss - Connexions réseau</h3>
+<pre class="codehilite"><code class="language-bash">ss -tuln    # Connexions en écoute
+netstat -tuln
+</code></pre>
+
+<h3>curl et wget - Tester un serveur web</h3>
+<pre class="codehilite"><code class="language-bash">curl -I https://google.com
+wget -qO- https://google.com
+</code></pre>
+
+<h2>Journalisation et logs</h2>
+<h3>journalctl - Logs systemd</h3>
+<pre class="codehilite"><code class="language-bash">journalctl -xe          # Logs récents avec détails
+journalctl -u nginx     # Logs d'un service spécifique
+journalctl --since &quot;1 hour ago&quot;
+journalctl -p err       # Logs de niveau erreur
+</code></pre>
+
+<h3>/var/log - Fichiers de logs traditionnels</h3>
+<pre class="codehilite"><code class="language-bash">/var/log/syslog    # Messages système
+/var/log/auth.log # Connexions et authentifications
+/var/log/kern.log # Messages du noyau
+</code></pre>
+
+<h3>dmesg - Messages du noyau</h3>
+<pre class="codehilite"><code class="language-bash">dmesg | less
+dmesg | grep -i error
+</code></pre>
+
+<h2>Outils de diagnostic avancés</h2>
+<h3>strace - Suivre les appels système</h3>
+<pre class="codehilite"><code class="language-bash">strace -e open ls /home
+strace -p &lt;pid&gt;  # Suivre un processus spécifique
+</code></pre>
+
+<h3>lsof - Fichiers ouverts</h3>
+<pre class="codehilite"><code class="language-bash">lsof              # Tous les fichiers ouverts
+lsof -i :80       # Fichiers utilisant le port 80
+lsof -u &lt;user&gt;    # Fichiers d'un utilisateur
+</code></pre>
+
+<h3>ps et pgrep - Recherche de processus</h3>
+<pre class="codehilite"><code class="language-bash">ps aux | grep nginx
+pgrep -a nginx
+</code></pre>
+
+<h3>kill et killall - Terminer un processus</h3>
+<pre class="codehilite"><code class="language-bash">kill &lt;PID&gt;           # Terminer normalement
+kill -9 &lt;PID&gt;        # Forcer la terminaison
+killall nginx        # Terminer tous les processus nginx
+</code></pre>
+
+<h2>Résumé des commandes</h2>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Utilité</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>top</code> / <code>htop</code></td>
+<td>Surveillance des processus en temps réel</td>
+</tr>
+<tr>
+<td><code>free -h</code></td>
+<td>Mémoire RAM disponible</td>
+</tr>
+<tr>
+<td><code>df -h</code></td>
+<td>Espace disque disponible</td>
+</tr>
+<tr>
+<td><code>ping</code></td>
+<td>Tester la connectivité réseau</td>
+</tr>
+<tr>
+<td><code>ip addr</code></td>
+<td>Informations sur les interfaces réseau</td>
+</tr>
+<tr>
+<td><code>ss -tuln</code></td>
+<td>Connexions réseau actives</td>
+</tr>
+<tr>
+<td><code>journalctl</code></td>
+<td>Logs systemd</td>
+</tr>
+<tr>
+<td><code>dmesg</code></td>
+<td>Messages du noyau</td>
+</tr>
+<tr>
+<td><code>lsof</code></td>
+<td>Fichiers ouverts</td>
+</tr>
+<tr>
+<td><code>strace</code></td>
+<td>Suivre les appels système</td>
+</tr>
+</tbody>
+</table>
+<h2>Exercice pratique</h2>
+<ol>
+<li>Vérifiez l'utilisation de la mémoire avec <code>free -h</code></li>
+<li>Vérifiez l'espace disque avec <code>df -h</code></li>
+<li>Testez votre connexion internet avec <code>ping -c 3 google.com</code></li>
+<li>Affichez les processus les plus consommateurs avec <code>top</code> (ou <code>htop</code>)</li>
+<li>Trouvez quels processus utilisent le port 80 avec <code>ss -tuln | grep :80</code></li>
+<li>Consultez les logs récents de votre système avec <code>journalctl -n 20</code></li>
+</ol>
+<h2>Conclusion</h2>
+<p>Ces outils de diagnostic sont essentiels pour tout administrateur Linux. La maîtrise de ces commandes vous permettra d'identifier rapidement la source des problèmes et de les résoudre efficacement. N'hésitez pas à consulter les pages de manuel (<code>man &lt;commande&gt;</code>) pour en savoir plus sur chaque outil.</p>
+<nav>
+<a href="21-services-systemd.html" style="color:#00d9ff;text-decoration:none;">&larr; Leçon 21</a>
+<span style="color:#666;">Fin</span>
+</nav>
+</div>
+</body>
+</html>
