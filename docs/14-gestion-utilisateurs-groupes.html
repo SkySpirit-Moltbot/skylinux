@@ -3,385 +3,268 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestion utilisateurs et groupes Linux - useradd, groupadd | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/14-gestion-utilisateurs-groupes.html">
-<meta property="og:title" content="Gestion Utilisateurs Groupes - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Gestion utilisateurs et groupes Linux | SkyLinux</title>
+<meta name="description" content="Gérez les utilisateurs et groupes sous Linux.">
+<meta name="keywords" content="utilisateur linux, groupe linux, useradd, usermod, groupadd">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Gérez les utilisateurs et groupes sous Linux. Commandes useradd, usermod, groupadd, passwd pour administrer les accès.">
-<meta name="keywords" content="utilisateur linux, groupe linux, useradd, usermod, groupadd, gestion utilisateurs, droits, sudo">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>14 - gestion utilisateurs groupes : Gestion des utilisateurs et groupes</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 14 : Gestion des utilisateurs et groupes</h1>
 <p>Dans cette leçon, tu vas maîtriser la gestion des utilisateurs et groupes sous Linux, essentiel pour l'administration système.</p>
-<hr />
+<hr>
 <h2>1. Concepts de base</h2>
 <h3>Utilisateur</h3>
-<p>Un utilisateur Linux possède :
-- <strong>UID</strong> : Identifiant unique
-- <strong>GID</strong> : Groupe principal
-- <strong>Répertoire personnel</strong> : /home/username
-- <strong>Shell</strong> : Interpréteur par défaut
-- <strong>Mot de passe</strong> : Stocké dans /etc/shadow</p>
+<p>Un utilisateur Linux possède :</p>
+<ul><li><strong>UID</strong> : Identifiant unique</li>
+<li><strong>GID</strong> : Groupe principal</li>
+<li><strong>Répertoire personnel</strong> : /home/username</li>
+<li><strong>Shell</strong> : Interpréteur par défaut</li>
+<li><strong>Mot de passe</strong> : Stocké dans /etc/shadow</li>
+<p></ul></p>
 <h3>Groupe</h3>
-<p>Un groupe permet de :
-- Partager des fichiers entre utilisateurs
-- Gérer des permissions collectivement</p>
+<p>Un groupe permet de :</p>
+<ul><li>Partager des fichiers entre utilisateurs</li>
+<li>Gérer des permissions collectivement</li>
+<p></ul></p>
 <h3>Fichiers système importants</h3>
-<table>
-<thead>
-<tr>
-<th>Fichier</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/etc/passwd</code></td>
-<td>Infos utilisateurs</td>
-</tr>
-<tr>
-<td><code>/etc/shadow</code></td>
-<td>Mots de passe chiffrés</td>
-</tr>
-<tr>
-<td><code>/etc/group</code></td>
-<td>Infos groupes</td>
-</tr>
-<tr>
-<td><code>/etc/skel/</code></td>
-<td>Modèle pour nouveaux utilisateurs</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>/etc/passwd</code></td><td>Infos utilisateurs</td></tr></p>
+<p><tr><td><code>/etc/shadow</code></td><td>Mots de passe chiffrés</td></tr></p>
+<p><tr><td><code>/etc/group</code></td><td>Infos groupes</td></tr></p>
+<p><tr><td><code>/etc/skel/</code></td><td>Modèle pour nouveaux utilisateurs</td></tr></p>
+<p></table></p>
+<hr>
 <h2>2. Commandes utilisateur</h2>
 <h3>Ajouter un utilisateur</h3>
-<pre class="codehilite"><code class="language-bash"># Créer un utilisateur
-sudo useradd -m nom_utilisateur
-
-# Avec options
-sudo useradd -m -s /bin/bash -c &quot;Description&quot; -G groupe1,groupe2 nom
-
-#交互式
-sudo adduser nom_utilisateur
-</code></pre>
-
+<pre><code><h1>Créer un utilisateur</h1>
+<p>sudo useradd -m nom_utilisateur</p>
+<h1>Avec options</h1>
+<p>sudo useradd -m -s /bin/bash -c "Description" -G groupe1,groupe2 nom</p>
+<p>#交互式</p>
+<p>sudo adduser nom_utilisateur</p>
+<p></code></pre></p>
 <h3>Modifier un utilisateur</h3>
-<pre class="codehilite"><code class="language-bash"># Changer le shell
-sudo usermod -s /bin/zsh nom
-
-# Ajouter à un groupe
-sudo usermod -aG groupe nom
-
-# Changer le répertoire home
-sudo usermod -d /nouveau/chemin -m nom
-
-# Verrouiller/déverrouiller un compte
-sudo usermod -L nom           # Verrouiller
-sudo usermod -U nom           # Déverrouiller
-</code></pre>
-
+<pre><code><h1>Changer le shell</h1>
+<p>sudo usermod -s /bin/zsh nom</p>
+<h1>Ajouter à un groupe</h1>
+<p>sudo usermod -aG groupe nom</p>
+<h1>Changer le répertoire home</h1>
+<p>sudo usermod -d /nouveau/chemin -m nom</p>
+<h1>Verrouiller/déverrouiller un compte</h1>
+<p>sudo usermod -L nom           # Verrouiller</p>
+<p>sudo usermod -U nom           # Déverrouiller</p>
+<p></code></pre></p>
 <h3>Supprimer un utilisateur</h3>
-<pre class="codehilite"><code class="language-bash"># Supprimer (garde les fichiers)
-sudo userdel nom
-
-# Supprimer avec fichiers
-sudo userdel -r nom
-
-# Supprimer avec confirmation
-sudo userdel -r -f nom
-</code></pre>
-
+<pre><code><h1>Supprimer (garde les fichiers)</h1>
+<p>sudo userdel nom</p>
+<h1>Supprimer avec fichiers</h1>
+<p>sudo userdel -r nom</p>
+<h1>Supprimer avec confirmation</h1>
+<p>sudo userdel -r -f nom</p>
+<p></code></pre></p>
 <h3>Changer le mot de passe</h3>
-<pre class="codehilite"><code class="language-bash"># Changer son mot de passe
-passwd
-
-# Changer mot de passe d'un autre utilisateur (root)
-sudo passwd nom_utilisateur
-
-# Vider le mot de passe
-sudo passwd -d nom_utilisateur
-
-# Expirer le mot de passe
-sudo passwd -e nom_utilisateur
-</code></pre>
-
-<hr />
+<pre><code><h1>Changer son mot de passe</h1>
+<p>passwd</p>
+<h1>Changer mot de passe d'un autre utilisateur (root)</h1>
+<p>sudo passwd nom_utilisateur</p>
+<h1>Vider le mot de passe</h1>
+<p>sudo passwd -d nom_utilisateur</p>
+<h1>Expirer le mot de passe</h1>
+<p>sudo passwd -e nom_utilisateur</p>
+<p></code></pre></p>
+<hr>
 <h2>3. Commandes groupe</h2>
 <h3>Créer un groupe</h3>
-<pre class="codehilite"><code class="language-bash">sudo groupadd nom_groupe
-sudo groupadd -g 1005 nom_groupe   # Avec GID spécifique
-</code></pre>
-
+<pre><code>sudo groupadd nom_groupe
+<p>sudo groupadd -g 1005 nom_groupe   # Avec GID spécifique</p>
+<p></code></pre></p>
 <h3>Modifier un groupe</h3>
-<pre class="codehilite"><code class="language-bash"># Renommer un groupe
-sudo groupmod -n nouveau_nom ancien_nom
-
-# Changer le GID
-sudo groupmod -g 1006 nom_groupe
-</code></pre>
-
+<pre><code><h1>Renommer un groupe</h1>
+<p>sudo groupmod -n nouveau_nom ancien_nom</p>
+<h1>Changer le GID</h1>
+<p>sudo groupmod -g 1006 nom_groupe</p>
+<p></code></pre></p>
 <h3>Supprimer un groupe</h3>
-<pre class="codehilite"><code class="language-bash">sudo groupdel nom_groupe
-</code></pre>
-
+<pre><code>sudo groupdel nom_groupe
+<p></code></pre></p>
 <h3>Gérer les membres</h3>
-<pre class="codehilite"><code class="language-bash"># Ajouter un utilisateur à un groupe
-sudo usermod -aG groupe utilisateur
-
-# Retirer d'un groupe
-sudo gpasswd -d utilisateur groupe
-
-# Voir les membres d'un groupe
-getent group groupe
-</code></pre>
-
-<hr />
+<pre><code><h1>Ajouter un utilisateur à un groupe</h1>
+<p>sudo usermod -aG groupe utilisateur</p>
+<h1>Retirer d'un groupe</h1>
+<p>sudo gpasswd -d utilisateur groupe</p>
+<h1>Voir les membres d'un groupe</h1>
+<p>getent group groupe</p>
+<p></code></pre></p>
+<hr>
 <h2>4. Informations et listing</h2>
 <h3>Voir les utilisateurs</h3>
-<pre class="codehilite"><code class="language-bash"># Liste des utilisateurs
-cat /etc/passwd
-# ou
-getent passwd
-
-# Filtrer
-getent passwd | cut -d: -f1
-
-# Derniers utilisateurs créés
-lastlog
-</code></pre>
-
+<pre><code><h1>Liste des utilisateurs</h1>
+<p>cat /etc/passwd</p>
+<h1>ou</h1>
+<p>getent passwd</p>
+<h1>Filtrer</h1>
+<p>getent passwd | cut -d: -f1</p>
+<h1>Derniers utilisateurs créés</h1>
+<p>lastlog</p>
+<p></code></pre></p>
 <h3>Voir les groupes</h3>
-<pre class="codehilite"><code class="language-bash"># Liste des groupes
-cat /etc/group
-# ou
-getent group
-
-# groupes d'un utilisateur
-groups nom_utilisateur
-id nom_utilisateur
-</code></pre>
-
+<pre><code><h1>Liste des groupes</h1>
+<p>cat /etc/group</p>
+<h1>ou</h1>
+<p>getent group</p>
+<h1>groupes d'un utilisateur</h1>
+<p>groups nom_utilisateur</p>
+<p>id nom_utilisateur</p>
+<p></code></pre></p>
 <h3>Voir l'UID et GID</h3>
-<pre class="codehilite"><code class="language-bash">id                       # Ses propres IDs
-id nom_utilisateur       # IDs d'un utilisateur
-</code></pre>
-
-<hr />
+<pre><code>id                       # Ses propres IDs
+<p>id nom_utilisateur       # IDs d'un utilisateur</p>
+<p></code></pre></p>
+<hr>
 <h2>5. Commandes avancées</h2>
 <h3>sudoers - Permissions sudo</h3>
-<pre class="codehilite"><code class="language-bash"># Éditer le fichier sudoers (TOUJOURS avec visudo!)
-sudo visudo
-
-# Ajouter un utilisateur au groupe sudo
-sudo usermod -aG sudo nom
-
-# Voir qui a sudo
-getent group sudo
-</code></pre>
-
+<pre><code><h1>Éditer le fichier sudoers (TOUJOURS avec visudo!)</h1>
+<p>sudo visudo</p>
+<h1>Ajouter un utilisateur au groupe sudo</h1>
+<p>sudo usermod -aG sudo nom</p>
+<h1>Voir qui a sudo</h1>
+<p>getent group sudo</p>
+<p></code></pre></p>
 <h3>Expiration de compte</h3>
-<pre class="codehilite"><code class="language-bash"># Définir une date d'expiration
-sudo usermod -e 2024-12-31 nom
-
-# Voir la date d'expiration
-sudo chage -l nom
-
-#Forcer changement mot de passe
-sudo chage -d 0 nom
-</code></pre>
-
+<pre><code><h1>Définir une date d'expiration</h1>
+<p>sudo usermod -e 2024-12-31 nom</p>
+<h1>Voir la date d'expiration</h1>
+<p>sudo chage -l nom</p>
+<p>#Forcer changement mot de passe</p>
+<p>sudo chage -d 0 nom</p>
+<p></code></pre></p>
 <h3>Verrouillage de compte</h3>
-<pre class="codehilite"><code class="language-bash"># Verrouiller
-sudo passwd -l nom
-
-# Déverrouiller
-sudo passwd -u nom
-
-# Voir le statut
-sudo passwd -S nom
-</code></pre>
-
-<hr />
+<pre><code><h1>Verrouiller</h1>
+<p>sudo passwd -l nom</p>
+<h1>Déverrouiller</h1>
+<p>sudo passwd -u nom</p>
+<h1>Voir le statut</h1>
+<p>sudo passwd -S nom</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Gestion des mots de passe</h2>
 <h3>Politiques de mot de passe</h3>
-<pre class="codehilite"><code class="language-bash"># Installer libpam-pwquality
-sudo apt install libpam-pwquality
-
-# Configurer (/etc/security/pwquality.conf)
-sudo nano /etc/security/pwquality.conf
-</code></pre>
-
+<pre><code><h1>Installer libpam-pwquality</h1>
+<p>sudo apt install libpam-pwquality</p>
+<h1>Configurer (/etc/security/pwquality.conf)</h1>
+<p>sudo nano /etc/security/pwquality.conf</p>
+<p></code></pre></p>
 <h3>Exigences communes</h3>
-<pre class="codehilite"><code>minlen = 12
-dcredit = -1          # Au moins 1 chiffre
-ucredit = -1          # Au moins 1 majuscule
-lcredit = -1          # Au moins 1 minuscule
-ocredit = -1          # Au moins 1 caractère spécial
-</code></pre>
-
+<pre><code>minlen = 12
+<p>dcredit = -1          # Au moins 1 chiffre</p>
+<p>ucredit = -1          # Au moins 1 majuscule</p>
+<p>lcredit = -1          # Au moins 1 minuscule</p>
+<p>ocredit = -1          # Au moins 1 caractère spécial</p>
+<p></code></pre></p>
 <h3>Historique et expiration</h3>
-<pre class="codehilite"><code class="language-bash"># Configuration dans /etc/login.defs
-# ou avec chage
-sudo chage -m 7 nom       # Minimum 7 jours
-sudo chage -M 90 nom      # Maximum 90 jours
-sudo chage -W 7 nom       # Avertissement 7 jours avant expiration
-sudo chage -I 30 nom      # Verrouillage 30 jours après expiration
-</code></pre>
-
-<hr />
+<pre><code><h1>Configuration dans /etc/login.defs</h1>
+<h1>ou avec chage</h1>
+<p>sudo chage -m 7 nom       # Minimum 7 jours</p>
+<p>sudo chage -M 90 nom      # Maximum 90 jours</p>
+<p>sudo chage -W 7 nom       # Avertissement 7 jours avant expiration</p>
+<p>sudo chage -I 30 nom      # Verrouillage 30 jours après expiration</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Scripts pratiques</h2>
 <h3>Créer un nouvel utilisateur avec tout</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-# Variables
-USERNAME=&quot;nouvelutilisateur&quot;
-FULLNAME=&quot;Nouvel Utilisateur&quot;
-SHELL=&quot;/bin/bash&quot;
-GROUPES=&quot;sudo,users&quot;
-
-# Créer le groupe principal s'il n'existe pas
-sudo groupadd $USERNAME 2&gt;/dev/null
-
-# Créer l'utilisateur
-sudo useradd -m -s $SHELL -c &quot;$FULLNAME&quot; -G $GROUPES $USERNAME
-
-# Définir le mot de passe
-sudo passwd $USERNAME
-
-echo &quot;Utilisateur $USERNAME créé avec succès!&quot;
-</code></pre>
-
+<pre><code>#!/bin/bash
+<h1>Variables</h1>
+<p>USERNAME="nouvelutilisateur"</p>
+<p>FULLNAME="Nouvel Utilisateur"</p>
+<p>SHELL="/bin/bash"</p>
+<p>GROUPES="sudo,users"</p>
+<h1>Créer le groupe principal s'il n'existe pas</h1>
+<p>sudo groupadd $USERNAME 2>/dev/null</p>
+<h1>Créer l'utilisateur</h1>
+<p>sudo useradd -m -s $SHELL -c "$FULLNAME" -G $GROUPES $USERNAME</p>
+<h1>Définir le mot de passe</h1>
+<p>sudo passwd $USERNAME</p>
+<p>echo "Utilisateur $USERNAME créé avec succès!"</p>
+<p></code></pre></p>
 <h3>Script de suppression</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-USERNAME=&quot;utilisateur_a_supprimer&quot;
-
-# Demander confirmation
-read -p &quot;Supprimer l'utilisateur $USERNAME? (o/n): &quot; confirm
-
-if [ &quot;$confirm&quot; = &quot;o&quot; ]; then
-    sudo userdel -r $USERNAME
-    echo &quot;Utilisateur supprimé.&quot;
-else
-    echo &quot;Annulé.&quot;
-fi
-</code></pre>
-
-<hr />
+<pre><code>#!/bin/bash
+<p>USERNAME="utilisateur_a_supprimer"</p>
+<h1>Demander confirmation</h1>
+<p>read -p "Supprimer l'utilisateur $USERNAME? (o/n): " confirm</p>
+<p>if [ "$confirm" = "o" ]; then</p>
+<p>    sudo userdel -r $USERNAME</p>
+<p>    echo "Utilisateur supprimé."</p>
+<p>else</p>
+<p>    echo "Annulé."</p>
+<p>fi</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Bonnes pratiques</h2>
-<table>
-<thead>
-<tr>
-<th>Pratique</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Utiliser sudo</td>
-<td>Pas de connection root directe</td>
-</tr>
-<tr>
-<td>Mots de passe forts</td>
-<td>Minimum 12 caractères, mélange</td>
-</tr>
-<tr>
-<td>Groupes logiques</td>
-<td>Regrouper par projet/fonction</td>
-</tr>
-<tr>
-<td>Audit régulier</td>
-<td>Vérifier les utilisateurs</td>
-</tr>
-<tr>
-<td>Désactiver compte</td>
-<td>Jamais supprimer (garder UID)</td>
-</tr>
-<tr>
-<td>Limiter sudo</td>
-<td>Seulement utilisateurs nécessaires</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Utiliser sudo</td><td>Pas de connection root directe</td></tr></p>
+<p><tr><td>Mots de passe forts</td><td>Minimum 12 caractères, mélange</td></tr></p>
+<p><tr><td>Groupes logiques</td><td>Regrouper par projet/fonction</td></tr></p>
+<p><tr><td>Audit régulier</td><td>Vérifier les utilisateurs</td></tr></p>
+<p><tr><td>Désactiver compte</td><td>Jamais supprimer (garder UID)</td></tr></p>
+<p><tr><td>Limiter sudo</td><td>Seulement utilisateurs nécessaires</td></tr></p>
+<p></table></p>
+<hr>
 <h2>9. Résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>useradd</code></td>
-<td>Créer utilisateur</td>
-</tr>
-<tr>
-<td><code>usermod</code></td>
-<td>Modifier utilisateur</td>
-</tr>
-<tr>
-<td><code>userdel</code></td>
-<td>Supprimer utilisateur</td>
-</tr>
-<tr>
-<td><code>passwd</code></td>
-<td>Changer mot de passe</td>
-</tr>
-<tr>
-<td><code>groupadd</code></td>
-<td>Créer groupe</td>
-</tr>
-<tr>
-<td><code>groupdel</code></td>
-<td>Supprimer groupe</td>
-</tr>
-<tr>
-<td><code>groups</code></td>
-<td>Lister ses groupes</td>
-</tr>
-<tr>
-<td><code>id</code></td>
-<td>Voir UID/GID</td>
-</tr>
-<tr>
-<td><code>getent</code></td>
-<td>Consulter base</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>useradd</code></td><td>Créer utilisateur</td></tr></p>
+<p><tr><td><code>usermod</code></td><td>Modifier utilisateur</td></tr></p>
+<p><tr><td><code>userdel</code></td><td>Supprimer utilisateur</td></tr></p>
+<p><tr><td><code>passwd</code></td><td>Changer mot de passe</td></tr></p>
+<p><tr><td><code>groupadd</code></td><td>Créer groupe</td></tr></p>
+<p><tr><td><code>groupdel</code></td><td>Supprimer groupe</td></tr></p>
+<p><tr><td><code>groups</code></td><td>Lister ses groupes</td></tr></p>
+<p><tr><td><code>id</code></td><td>Voir UID/GID</td></tr></p>
+<p><tr><td><code>getent</code></td><td>Consulter base</td></tr></p>
+<p></table></p>
+<hr>
 <p>Maîtrise la gestion des utilisateurs pour administrer Linux correctement ! 👤</p>
-
-
-</div>
 <nav>
 <a href="13-taches-planifiees-cron.html" style="color:#666;text-decoration:none;">&larr; 13 - Tâches planifiées avec Cron</a>
 <a href="15-redirections-pipes.html" style="color:#00d9ff;text-decoration:none;">15 - Redirections et Pipes &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

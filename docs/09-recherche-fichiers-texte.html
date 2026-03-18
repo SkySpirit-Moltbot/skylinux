@@ -3,372 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recherche de fichiers et texte Linux - grep, find, locate | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/09-recherche-fichiers-texte.html">
-<meta property="og:title" content="Recherche Fichiers Texte - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Recherche de fichiers et texte Linux - grep, find | SkyLinux</title>
+<meta name="description" content="Maîtrisez la recherche sous Linux. Commandes grep, find, locate.">
+<meta name="keywords" content="recherche linux, grep, find, locate, awk, sed">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Maîtrisez la recherche sous Linux. Commandes grep, find, locate, awk, sed pour trouver des fichiers et du texte rapidement.">
-<meta name="keywords" content="recherche linux, grep, find, locate, awk, sed, rechercher texte, trouver fichier">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
 <h1>Leçon 9 : Recherche de fichiers et texte</h1>
 <p>Dans cette leçon, nous allons maîtriser les outils de recherche sous Linux. Ces commandes sont essentielles pour tout administrateur ou développeur.</p>
-<hr />
+<hr>
 <h2>1. FIND - Recherche de fichiers</h2>
 <p><code>find</code> est l'outil de recherche le plus puissant sous Linux. Il recherche récursivement selon de nombreux critères.</p>
 <h3>Syntaxe de base</h3>
-<pre class="codehilite"><code class="language-bash">find [chemin] [expression]
-</code></pre>
-
+<pre><code>find [chemin] [expression]
+<p></code></pre></p>
 <h3>Rechercher par nom</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;fichier.txt&quot;              # Nom exact
-find . -name &quot;*.txt&quot;                    # Par extension
-find . -name &quot;fichier*&quot;                 # Par début de nom
-find . -iname &quot;Fichier.txt&quot;             # Insensible à la casse
-find . -name &quot;*.log&quot; -o -name &quot;*.txt&quot;   # OU (plusieurs extensions)
-</code></pre>
-
+<pre><code>find . -name "fichier.txt"              # Nom exact
+<p>find . -name "*.txt"                    # Par extension</p>
+<p>find . -name "fichier*"                 # Par début de nom</p>
+<p>find . -iname "Fichier.txt"             # Insensible à la casse</p>
+<p>find . -name "*.log" -o -name "*.txt"   # OU (plusieurs extensions)</p>
+<p></code></pre></p>
 <h3>Rechercher par type</h3>
-<pre class="codehilite"><code class="language-bash">find . -type f          # Fichiers seulement
-find . -type d          # Répertoires seulement
-find . -type l          # Liens symboliques
-find . -type s          # Sockets
-find . -type p          # Pipes nommés
-</code></pre>
-
+<pre><code>find . -type f          # Fichiers seulement
+<p>find . -type d          # Répertoires seulement</p>
+<p>find . -type l          # Liens symboliques</p>
+<p>find . -type s          # Sockets</p>
+<p>find . -type p          # Pipes nommés</p>
+<p></code></pre></p>
 <h3>Rechercher par taille</h3>
-<pre class="codehilite"><code class="language-bash">find . -size +100M              # Plus de 100 Mo
-find . -size -1G                # Moins de 1 Go
-find . -size +100k -size -1M    # Entre 100 Ko et 1 Mo
-</code></pre>
-
+<pre><code>find . -size +100M              # Plus de 100 Mo
+<p>find . -size -1G                # Moins de 1 Go</p>
+<p>find . -size +100k -size -1M    # Entre 100 Ko et 1 Mo</p>
+<p></code></pre></p>
 <h3>Rechercher par date</h3>
-<pre class="codehilite"><code class="language-bash">find . -mtime -7           # Modifiés dans les 7 derniers jours
-find . -mtime +30          # Modifiés il y a plus de 30 jours
-find . -atime -1           # Accédés dans les 24h
-find . -ctime -1           # Changés dans les 24h (permissions, contenu)
-find . -newer fichier.txt  # Plus récents que fichier.txt
-</code></pre>
-
+<pre><code>find . -mtime -7           # Modifiés dans les 7 derniers jours
+<p>find . -mtime +30          # Modifiés il y a plus de 30 jours</p>
+<p>find . -atime -1           # Accédés dans les 24h</p>
+<p>find . -ctime -1           # Changés dans les 24h (permissions, contenu)</p>
+<p>find . -newer fichier.txt  # Plus récents que fichier.txt</p>
+<p></code></pre></p>
 <h3>Rechercher par permissions</h3>
-<pre class="codehilite"><code class="language-bash">find . -perm 644           # Permissions exactement 644
-find . -perm -u+x          # Avec bit exécutable pour owner
-find . -perm -g=w          # Avec bit écriture pour groupe
-</code></pre>
-
+<pre><code>find . -perm 644           # Permissions exactement 644
+<p>find . -perm -u+x          # Avec bit exécutable pour owner</p>
+<p>find . -perm -g=w          # Avec bit écriture pour groupe</p>
+<p></code></pre></p>
 <h3>Rechercher par propriétaire</h3>
-<pre class="codehilite"><code class="language-bash">find . -user david         # Propriétaire david
-find . -group admin        # Groupe admin
-find . -uid 1000           # UID 1000
-</code></pre>
-
+<pre><code>find . -user david         # Propriétaire david
+<p>find . -group admin        # Groupe admin</p>
+<p>find . -uid 1000           # UID 1000</p>
+<p></code></pre></p>
 <h3>Rechercher par profondeur</h3>
-<pre class="codehilite"><code class="language-bash">find . -maxdepth 2         # Maximum 2 niveaux
-find . -mindepth 2        # Au moins 2 niveaux
-find . -depth 2           # Exactement 2 niveaux
-</code></pre>
-
+<pre><code>find . -maxdepth 2         # Maximum 2 niveaux
+<p>find . -mindepth 2        # Au moins 2 niveaux</p>
+<p>find . -depth 2           # Exactement 2 niveaux</p>
+<p></code></pre></p>
 <h3>Actions avec find</h3>
-<pre class="codehilite"><code class="language-bash"># Lister (par défaut -print)
-find . -name &quot;*.txt&quot; -print
-
-# Supprimer
-find . -name &quot;*.tmp&quot; -delete
-
-# Exécuter une commande
-find . -name &quot;*.log&quot; -exec rm {} \;         # Supprimer tous les .log
-find . -name &quot;*.txt&quot; -exec wc -l {} \;      # Compter lignes
-find . -type f -exec chmod 644 {} \;        # Changer permissions
-
-# Confirmation avant action (-ok)
-find . -name &quot;*.bak&quot; -ok rm {} \;            # Demande confirmation
-
-# Plusieurs fichiers
-find . -name &quot;*.txt&quot; -exec cp {} {}.bak \;
-</code></pre>
-
-<hr />
+<pre><code><h1>Lister (par défaut -print)</h1>
+<p>find . -name "*.txt" -print</p>
+<h1>Supprimer</h1>
+<p>find . -name "*.tmp" -delete</p>
+<h1>Exécuter une commande</h1>
+<p>find . -name "*.log" -exec rm {} \;         # Supprimer tous les .log</p>
+<p>find . -name "*.txt" -exec wc -l {} \;      # Compter lignes</p>
+<p>find . -type f -exec chmod 644 {} \;        # Changer permissions</p>
+<h1>Confirmation avant action (-ok)</h1>
+<p>find . -name "*.bak" -ok rm {} \;            # Demande confirmation</p>
+<h1>Plusieurs fichiers</h1>
+<p>find . -name "*.txt" -exec cp {} {}.bak \;</p>
+<p></code></pre></p>
+<hr>
 <h2>2. GREP - Recherche de texte</h2>
 <p><code>grep</code> recherche des motifs (patterns) dans des fichiers.</p>
 <h3>Syntaxe de base</h3>
-<pre class="codehilite"><code class="language-bash">grep [options] &quot;motif&quot; [fichiers]
-</code></pre>
-
+<pre><code>grep [options] "motif" [fichiers]
+<p></code></pre></p>
 <h3>Options essentielles</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-i</code></td>
-<td>Insensible à la casse</td>
-</tr>
-<tr>
-<td><code>-n</code></td>
-<td>Afficher numéros de ligne</td>
-</tr>
-<tr>
-<td><code>-l</code></td>
-<td>Afficher seulement noms de fichiers</td>
-</tr>
-<tr>
-<td><code>-c</code></td>
-<td>Compter les occurrences</td>
-</tr>
-<tr>
-<td><code>-v</code></td>
-<td>Inverser la recherche</td>
-</tr>
-<tr>
-<td><code>-r</code></td>
-<td>Récursif</td>
-</tr>
-<tr>
-<td><code>-w</code></td>
-<td>Mot entier</td>
-</tr>
-<tr>
-<td><code>-x</code></td>
-<td>Ligne entière</td>
-</tr>
-<tr>
-<td><code>-A n</code></td>
-<td>Afficher n lignes après</td>
-</tr>
-<tr>
-<td><code>-B n</code></td>
-<td>Afficher n lignes avant</td>
-</tr>
-<tr>
-<td><code>-C n</code></td>
-<td>Contexte (avant et après)</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>-i</code></td><td>Insensible à la casse</td></tr></p>
+<p><tr><td><code>-n</code></td><td>Afficher numéros de ligne</td></tr></p>
+<p><tr><td><code>-l</code></td><td>Afficher seulement noms de fichiers</td></tr></p>
+<p><tr><td><code>-c</code></td><td>Compter les occurrences</td></tr></p>
+<p><tr><td><code>-v</code></td><td>Inverser la recherche</td></tr></p>
+<p><tr><td><code>-r</code></td><td>Récursif</td></tr></p>
+<p><tr><td><code>-w</code></td><td>Mot entier</td></tr></p>
+<p><tr><td><code>-x</code></td><td>Ligne entière</td></tr></p>
+<p><tr><td><code>-A n</code></td><td>Afficher n lignes après</td></tr></p>
+<p><tr><td><code>-B n</code></td><td>Afficher n lignes avant</td></tr></p>
+<p><tr><td><code>-C n</code></td><td>Contexte (avant et après)</td></tr></p>
+<p></table></p>
 <h3>Exemples pratiques</h3>
-<pre class="codehilite"><code class="language-bash"># Recherche basique
-grep &quot;erreur&quot; log.txt
-
-# Avec contexte
-grep -n &quot;erreur&quot; log.txt              # Numéros de ligne
-grep -C 2 &quot;erreur&quot; log.txt           # 2 lignes avant et après
-grep -A 3 &quot;error&quot; log.txt            # 3 lignes après
-
-# Plusieurs fichiers
-grep -r &quot;function&quot; *.js              # Dans tous les JS
-grep -l &quot;TODO&quot; *                     # Fichiers contenant TODO
-
-# Compter
-grep -c &quot;erreur&quot; log.txt              # Nombre d'occurrences
-grep -w -c &quot;mot&quot; fichier.txt         # Mots entiers
-
-# Inverser
-grep -v &quot;^#&quot; config.txt              # Lignes qui ne commencent pas par #
-
-# Expressions régulières
-grep &quot;^debut&quot; fichier.txt             # Ligne commençant par &quot;debut&quot;
-grep &quot;fin$&quot; fichier.txt               # Ligne finissant par &quot;fin&quot;
-grep &quot;colou?r&quot; fichier.txt            # color ou colour
-grep &quot;[0-9]&quot; fichier.txt             # Contient un chiffre
-grep -E &quot;[a-z]+@[a-z.]+&quot; fichier.txt # Email simple
-</code></pre>
-
+<pre><code><h1>Recherche basique</h1>
+<p>grep "erreur" log.txt</p>
+<h1>Avec contexte</h1>
+<p>grep -n "erreur" log.txt              # Numéros de ligne</p>
+<p>grep -C 2 "erreur" log.txt           # 2 lignes avant et après</p>
+<p>grep -A 3 "error" log.txt            # 3 lignes après</p>
+<h1>Plusieurs fichiers</h1>
+<p>grep -r "function" *.js              # Dans tous les JS</p>
+<p>grep -l "TODO" *                     # Fichiers contenant TODO</p>
+<h1>Compter</h1>
+<p>grep -c "erreur" log.txt              # Nombre d'occurrences</p>
+<p>grep -w -c "mot" fichier.txt         # Mots entiers</p>
+<h1>Inverser</h1>
+<p>grep -v "^#" config.txt              # Lignes qui ne commencent pas par #</p>
+<h1>Expressions régulières</h1>
+<p>grep "^debut" fichier.txt             # Ligne commençant par "debut"</p>
+<p>grep "fin$" fichier.txt               # Ligne finissant par "fin"</p>
+<p>grep "colou?r" fichier.txt            # color ou colour</p>
+<p>grep "[0-9]" fichier.txt             # Contient un chiffre</p>
+<p>grep -E "[a-z]+@[a-z.]+" fichier.txt # Email simple</p>
+<p></code></pre></p>
 <h3>EGREP et FGREP</h3>
-<pre class="codehilite"><code class="language-bash">egrep &quot;mot1|mot2|mot3&quot; fichier.txt   # Étendu (équivalent grep -E)
-fgrep &quot;texte.literal&quot; fichier.txt    # Littéral (équivalent grep -F)
-</code></pre>
-
-<hr />
+<pre><code>egrep "mot1|mot2|mot3" fichier.txt   # Étendu (équivalent grep -E)
+<p>fgrep "texte.literal" fichier.txt    # Littéral (équivalent grep -F)</p>
+<p></code></pre></p>
+<hr>
 <h2>3. LOCATE - Recherche rapide</h2>
 <p><code>locate</code> utilise une base de données pré-construite (updatedb), ce qui le rend très rapide.</p>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash">locate fichier.txt           # Rechercher par nom
-locate -i fichier.txt        # Insensible à la casse
-locate &quot;*.txt&quot;              # Avec wildcard
-</code></pre>
-
+<pre><code>locate fichier.txt           # Rechercher par nom
+<p>locate -i fichier.txt        # Insensible à la casse</p>
+<p>locate "*.txt"              # Avec wildcard</p>
+<p></code></pre></p>
 <h3>Options utiles</h3>
-<pre class="codehilite"><code class="language-bash">locate -c                    # Compter les résultats
-locate -l 10                 # Limiter à 10 résultats
-locate -i -l 5 &quot;document&quot;   # Limiter et insensible
-</code></pre>
-
+<pre><code>locate -c                    # Compter les résultats
+<p>locate -l 10                 # Limiter à 10 résultats</p>
+<p>locate -i -l 5 "document"   # Limiter et insensible</p>
+<p></code></pre></p>
 <h3>Mettre à jour la base</h3>
-<pre class="codehilite"><code class="language-bash">sudo updatedb               # Mettre à jour la base (nécessite root)
-</code></pre>
-
-<blockquote>
-<p>⚠️ <strong>Note</strong> : locate ne trouve pas les fichiers créés depuis la dernière mise à jour de la base.</p>
-</blockquote>
-<hr />
+<pre><code>sudo updatedb               # Mettre à jour la base (nécessite root)
+<p></code></pre></p>
+<p>> ⚠️ <strong>Note</strong> : locate ne trouve pas les fichiers créés depuis la dernière mise à jour de la base.</p>
+<hr>
 <h2>4. WHICH, WHEREIS, TYPE - Recherche de commandes</h2>
 <h3>which - Trouver une commande</h3>
-<pre class="codehilite"><code class="language-bash">which python                 # Chemin de python
-which -a python              # Toutes les occurrences
-which -s python             # Silence (0 si trouvé)
-</code></pre>
-
+<pre><code>which python                 # Chemin de python
+<p>which -a python              # Toutes les occurrences</p>
+<p>which -s python             # Silence (0 si trouvé)</p>
+<p></code></pre></p>
 <h3>whereis - Localiser binary, source, man</h3>
-<pre class="codehilite"><code class="language-bash">whereis python              # Binary, source et man
-whereis -m python           # Seulement les pages man
-whereis -s python           # Seulement les sources
-whereis -b python           # Seulement les binaires
-</code></pre>
-
+<pre><code>whereis python              # Binary, source et man
+<p>whereis -m python           # Seulement les pages man</p>
+<p>whereis -s python           # Seulement les sources</p>
+<p>whereis -b python           # Seulement les binaires</p>
+<p></code></pre></p>
 <h3>type - Type de commande</h3>
-<pre class="codehilite"><code class="language-bash">type ls                     # alias, function, ou builtin
-type -t ls                  # Alias, builtin, file, function
-type -a ls                  # Toutes les définitions
-</code></pre>
-
-<hr />
+<pre><code>type ls                     # alias, function, ou builtin
+<p>type -t ls                  # Alias, builtin, file, function</p>
+<p>type -a ls                  # Toutes les définitions</p>
+<p></code></pre></p>
+<hr>
 <h2>5. Statistiques et comptage</h2>
 <h3>wc - Compter lignes, mots, caractères</h3>
-<pre class="codehilite"><code class="language-bash">wc fichier.txt              # Lignes mots octets
-wc -l fichier.txt           # Nombre de lignes
-wc -w fichier.txt           # Nombre de mots
-wc -c fichier.txt           # Nombre d'octets
-wc -m fichier.txt           # Nombre de caractères
-</code></pre>
-
+<pre><code>wc fichier.txt              # Lignes mots octets
+<p>wc -l fichier.txt           # Nombre de lignes</p>
+<p>wc -w fichier.txt           # Nombre de mots</p>
+<p>wc -c fichier.txt           # Nombre d'octets</p>
+<p>wc -m fichier.txt           # Nombre de caractères</p>
+<p></code></pre></p>
 <h3>sort - Trier</h3>
-<pre class="codehilite"><code class="language-bash">sort fichier.txt            # Trier alphabétiquement
-sort -n fichier.txt         # Trier numériquement
-sort -r fichier.txt         # Inverser l'ordre
-sort -u fichier.txt         # Trier et supprimer doublons
-sort -k2 fichier.txt        # Trier par colonne 2
-</code></pre>
-
+<pre><code>sort fichier.txt            # Trier alphabétiquement
+<p>sort -n fichier.txt         # Trier numériquement</p>
+<p>sort -r fichier.txt         # Inverser l'ordre</p>
+<p>sort -u fichier.txt         # Trier et supprimer doublons</p>
+<p>sort -k2 fichier.txt        # Trier par colonne 2</p>
+<p></code></pre></p>
 <h3>uniq - Lignes uniques</h3>
-<pre class="codehilite"><code class="language-bash">uniq fichier.txt            # Supprimer doublons adjacents
-uniq -c fichier.txt         # Avec compteur
-uniq -d fichier.txt        # Afficher seulement doublons
-uniq -u fichier.txt        # Afficher lignes uniques
-</code></pre>
-
-<hr />
+<pre><code>uniq fichier.txt            # Supprimer doublons adjacents
+<p>uniq -c fichier.txt         # Avec compteur</p>
+<p>uniq -d fichier.txt        # Afficher seulement doublons</p>
+<p>uniq -u fichier.txt        # Afficher lignes uniques</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Recherche avancée combinée</h2>
 <h3>Rechercher et traiter</h3>
-<pre class="codehilite"><code class="language-bash"># Trouver puis exécuter
-find . -name &quot;*.log&quot; -exec wc -l {} \; | sort -n
-
-# Rechercher du texte dans les résultats
-find . -name &quot;*.txt&quot; | xargs grep &quot;erreur&quot;
-
-# Rechercher avec confirmation
-find . -name &quot;*.bak&quot; -ok rm {} \;
-
-# Compter occurrences dans plusieurs fichiers
-grep -r &quot;error&quot; . --include=&quot;*.log&quot; | wc -l
-
-# Lister fichiers modifiés récemment
-find . -mtime -1 -type f
-</code></pre>
-
-<hr />
+<pre><code><h1>Trouver puis exécuter</h1>
+<p>find . -name "*.log" -exec wc -l {} \; | sort -n</p>
+<h1>Rechercher du texte dans les résultats</h1>
+<p>find . -name "*.txt" | xargs grep "erreur"</p>
+<h1>Rechercher avec confirmation</h1>
+<p>find . -name "*.bak" -ok rm {} \;</p>
+<h1>Compter occurrences dans plusieurs fichiers</h1>
+<p>grep -r "error" . --include="*.log" | wc -l</p>
+<h1>Lister fichiers modifiés récemment</h1>
+<p>find . -mtime -1 -type f</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Exercices pratiques</h2>
 <h3>Exercice 1 : Trouver tous les fichiers PHP modifiés récemment</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;*.php&quot; -mtime -7
-</code></pre>
-
+<pre><code>find . -name "*.php" -mtime -7
+<p></code></pre></p>
 <h3>Exercice 2 : Rechercher une fonction dans le code</h3>
-<pre class="codehilite"><code class="language-bash">grep -rn &quot;function maFonction&quot; --include=&quot;*.js&quot; .
-</code></pre>
-
+<pre><code>grep -rn "function maFonction" --include="*.js" .
+<p></code></pre></p>
 <h3>Exercice 3 : Compter les lignes de code</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;*.py&quot; -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
-</code></pre>
-
+<pre><code>find . -name "*.py" -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
+<p></code></pre></p>
 <h3>Exercice 4 : Supprimer tous les fichiers temporaires</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;*.tmp&quot; -type f -delete
-</code></pre>
-
+<pre><code>find . -name "*.tmp" -type f -delete
+<p></code></pre></p>
 <h3>Exercice 5 : Rechercher dans les logs d'erreurs</h3>
-<pre class="codehilite"><code class="language-bash">grep -i &quot;error\|fail\|critical&quot; /var/log/syslog | tail -20
-</code></pre>
-
-<hr />
+<pre><code>grep -i "error\|fail\|critical" /var/log/syslog | tail -20
+<p></code></pre></p>
+<hr>
 <h2>8. Tableau résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Utilisation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>find</code></td>
-<td>Recherche multicritères de fichiers</td>
-</tr>
-<tr>
-<td><code>grep</code></td>
-<td>Recherche de texte dans fichiers</td>
-</tr>
-<tr>
-<td><code>locate</code></td>
-<td>Recherche rapide par base de données</td>
-</tr>
-<tr>
-<td><code>which</code></td>
-<td>Trouver le chemin d'une commande</td>
-</tr>
-<tr>
-<td><code>whereis</code></td>
-<td>Localiser binary, source, man</td>
-</tr>
-<tr>
-<td><code>type</code></td>
-<td>Déterminer le type de commande</td>
-</tr>
-<tr>
-<td><code>wc</code></td>
-<td>Compter lignes/mots/caractères</td>
-</tr>
-<tr>
-<td><code>sort</code></td>
-<td>Trier un fichier</td>
-</tr>
-<tr>
-<td><code>uniq</code></td>
-<td>Lignes uniques</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>find</code></td><td>Recherche multicritères de fichiers</td></tr></p>
+<p><tr><td><code>grep</code></td><td>Recherche de texte dans fichiers</td></tr></p>
+<p><tr><td><code>locate</code></td><td>Recherche rapide par base de données</td></tr></p>
+<p><tr><td><code>which</code></td><td>Trouver le chemin d'une commande</td></tr></p>
+<p><tr><td><code>whereis</code></td><td>Localiser binary, source, man</td></tr></p>
+<p><tr><td><code>type</code></td><td>Déterminer le type de commande</td></tr></p>
+<p><tr><td><code>wc</code></td><td>Compter lignes/mots/caractères</td></tr></p>
+<p><tr><td><code>sort</code></td><td>Trier un fichier</td></tr></p>
+<p><tr><td><code>uniq</code></td><td>Lignes uniques</td></tr></p>
+<p></table></p>
+<hr>
 <p>Maîtrise ces outils et tu pourras trouver n'importe quoi sur ton système Linux ! 🔍</p>
-
-
-</div>
 <nav>
 <a href="08-archivage-compression.html" style="color:#666;text-decoration:none;">&larr; 08 - Archivage et compression</a>
 <a href="10-variables-scripts.html" style="color:#00d9ff;text-decoration:none;">10 - Variables d'environnement et scripts Bash &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

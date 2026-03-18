@@ -3,472 +3,341 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SSH et connexion distante Linux - ssh, scp, clés SSH | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/12-ssh-connexion-distante.html">
-<meta property="og:title" content="Ssh Connexion Distante - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>SSH et connexion distante Linux | SkyLinux</title>
+<meta name="description" content="Apprenez à vous connecter à distance sur Linux avec SSH.">
+<meta name="keywords" content="ssh linux, connexion distante, scp, sftp, cle ssh">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Apprenez à vous connecter à distance sur Linux avec SSH. Générez des clés SSH,配置lez l'authentification sécurisée et transférez des fichiers.">
-<meta name="keywords" content="ssh linux, connexion distante, scp, sftp, cle ssh, authentification, remote, tunnel ssh">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>12 - ssh connexion distante : SSH et connexion distante</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 12 : SSH et connexion distante</h1>
 <p>SSH (Secure Shell) est le protocole indispensable pour administrer des serveurs Linux à distance. Dans cette leçon, tu vas maîtriser SSH, les clés, le transfert de fichiers et les tunnels.</p>
-<hr />
+<hr>
 <h2>1. Comprendre SSH</h2>
 <h3>Qu'est-ce que SSH ?</h3>
 <p>SSH est un protocole <strong>crypté</strong> pour se connecter à distance à un serveur Linux. Il a remplacé les anciens protocoles insecure (telnet, rsh).</p>
 <h3>Caractéristiques</h3>
-<ul>
-<li><strong>Chiffrement</strong> : Toutes les données sont chiffrées</li>
+<ul><li><strong>Chiffrement</strong> : Toutes les données sont chiffrées</li>
 <li><strong>Authentification</strong> : Mot de passe ou clés RSA/ED25519</li>
 <li><strong>Tunnel</strong> : Créer des tunnels sécurisés</li>
 <li><strong>Transfert</strong> : Fichiers via SCP/SFTP</li>
-</ul>
+<p></ul></p>
 <h3>Concepts clés</h3>
-<table>
-<thead>
-<tr>
-<th>Terme</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>SSH</strong></td>
-<td>Protocole</td>
-</tr>
-<tr>
-<td><strong>ssh</strong></td>
-<td>Client (commande)</td>
-</tr>
-<tr>
-<td><strong>sshd</strong></td>
-<td>Serveur (daemon)</td>
-</tr>
-<tr>
-<td><strong>~/.ssh/</strong></td>
-<td>Répertoire de config et clés</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><strong>SSH</strong></td><td>Protocole</td></tr></p>
+<p><tr><td><strong>ssh</strong></td><td>Client (commande)</td></tr></p>
+<p><tr><td><strong>sshd</strong></td><td>Serveur (daemon)</td></tr></p>
+<p><tr><td><strong>~/.ssh/</strong></td><td>Répertoire de config et clés</td></tr></p>
+<p></table></p>
+<hr>
 <h2>2. Installation du serveur SSH</h2>
 <h3>Installer OpenSSH Server</h3>
-<pre class="codehilite"><code class="language-bash"># Debian/Ubuntu
-sudo apt install openssh-server
-
-# Démarrer le service
-sudo systemctl start ssh
-
-# Activer au boot
-sudo systemctl enable ssh
-
-# Voir le statut
-sudo systemctl status ssh
-</code></pre>
-
+<pre><code><h1>Debian/Ubuntu</h1>
+<p>sudo apt install openssh-server</p>
+<h1>Démarrer le service</h1>
+<p>sudo systemctl start ssh</p>
+<h1>Activer au boot</h1>
+<p>sudo systemctl enable ssh</p>
+<h1>Voir le statut</h1>
+<p>sudo systemctl status ssh</p>
+<p></code></pre></p>
 <h3>Configuration</h3>
-<pre class="codehilite"><code class="language-bash"># Fichier de configuration
-sudo nano /etc/ssh/sshd_config
-
-# Options importantes
-Port 22                    # Changer le port
-PermitRootLogin no         # Interdire root
-PasswordAuthentication yes # Auth par mot de passe
-PubkeyAuthentication yes  # Auth par clé
-</code></pre>
-
+<pre><code><h1>Fichier de configuration</h1>
+<p>sudo nano /etc/ssh/sshd_config</p>
+<h1>Options importantes</h1>
+<p>Port 22                    # Changer le port</p>
+<p>PermitRootLogin no         # Interdire root</p>
+<p>PasswordAuthentication yes # Auth par mot de passe</p>
+<p>PubkeyAuthentication yes  # Auth par clé</p>
+<p></code></pre></p>
 <h3>Redémarrer après modification</h3>
-<pre class="codehilite"><code class="language-bash">sudo systemctl restart ssh
-</code></pre>
-
-<hr />
+<pre><code>sudo systemctl restart ssh
+<p></code></pre></p>
+<hr>
 <h2>3. Connexion SSH de base</h2>
 <h3>Syntaxe simple</h3>
-<pre class="codehilite"><code class="language-bash">ssh utilisateur@adresse_ip
-ssh user@192.168.1.100
-ssh user@mondomaine.com
-</code></pre>
-
+<pre><code>ssh utilisateur@adresse_ip
+<p>ssh user@192.168.1.100</p>
+<p>ssh user@mondomaine.com</p>
+<p></code></pre></p>
 <h3>Options courantes</h3>
-<pre class="codehilite"><code class="language-bash"># Port personnalisé
-ssh -p 2222 user@serveur
-
-# Avec clé spécifique
-ssh -i ~/.ssh/ma_cle user@serveur
-
-# Mode verbeux (debug)
-ssh -v user@serveur
-
-# Forward agent SSH
-ssh -A user@serveur
-</code></pre>
-
+<pre><code><h1>Port personnalisé</h1>
+<p>ssh -p 2222 user@serveur</p>
+<h1>Avec clé spécifique</h1>
+<p>ssh -i ~/.ssh/ma_cle user@serveur</p>
+<h1>Mode verbeux (debug)</h1>
+<p>ssh -v user@serveur</p>
+<h1>Forward agent SSH</h1>
+<p>ssh -A user@serveur</p>
+<p></code></pre></p>
 <h3>Premier accès</h3>
-<pre class="codehilite"><code class="language-bash"># Accepter la clé hôte (première connexion)
-ssh user@serveur
-
-# Réponses aux questions :
-# &quot;Are you sure you want to continue connecting (yes/no)?&quot;
-# Taper &quot;yes&quot;
-</code></pre>
-
-<hr />
+<pre><code><h1>Accepter la clé hôte (première connexion)</h1>
+<p>ssh user@serveur</p>
+<h1>Réponses aux questions :</h1>
+<h1>"Are you sure you want to continue connecting (yes/no)?"</h1>
+<h1>Taper "yes"</h1>
+<p></code></pre></p>
+<hr>
 <h2>4. Clés SSH - Configuration sécurisée</h2>
 <h3>Pourquoi utiliser des clés ?</h3>
-<table>
-<thead>
-<tr>
-<th>Mot de passe</th>
-<th>Clé SSH</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Vulnérable aux attaques brute force</td>
-<td>Impossibles à pirater</td>
-</tr>
-<tr>
-<td>À retenir</td>
-<td>Stockée localement</td>
-</tr>
-<tr>
-<td>Transmission sur le réseau</td>
-<td>Jamais transmise</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Vulnérable aux attaques brute force</td><td>Impossibles à pirater</td></tr></p>
+<p><tr><td>À retenir</td><td>Stockée localement</td></tr></p>
+<p><tr><td>Transmission sur le réseau</td><td>Jamais transmise</td></tr></p>
+<p></table></p>
 <h3>Générer une clé SSH</h3>
-<pre class="codehilite"><code class="language-bash"># Clé ED25519 (recommandée - moderne et sécurisée)
-ssh-keygen -t ed25519 -C &quot;mon@email.com&quot;
-
-# Clé RSA (legacy)
-ssh-keygen -t rsa -b 4096 -C &quot;mon@email.com&quot;
-
-# Avec commentaire personnalisé
-ssh-keygen -t ed25519 -C &quot;serveur-maison&quot;
-</code></pre>
-
+<pre><code><h1>Clé ED25519 (recommandée - moderne et sécurisée)</h1>
+<p>ssh-keygen -t ed25519 -C "mon@email.com"</p>
+<h1>Clé RSA (legacy)</h1>
+<p>ssh-keygen -t rsa -b 4096 -C "mon@email.com"</p>
+<h1>Avec commentaire personnalisé</h1>
+<p>ssh-keygen -t ed25519 -C "serveur-maison"</p>
+<p></code></pre></p>
 <h3>Questions lors de la génération</h3>
-<pre class="codehilite"><code>Generating public/private ed25519 key pair.
-Enter file in which to save the key (/home/user/.ssh/id_ed25519): 
-Enter passphrase (empty for no passphrase):      # Mot de passe pour protéger la clé
-Enter same passphrase again: 
-</code></pre>
-
-<blockquote>
-<p>⚠️ <strong>Conseil</strong> : Utilise une passphrase pour sécuriser ta clé !</p>
-</blockquote>
+<pre><code>Generating public/private ed25519 key pair.
+<p>Enter file in which to save the key (/home/user/.ssh/id_ed25519): </p>
+<p>Enter passphrase (empty for no passphrase):      # Mot de passe pour protéger la clé</p>
+<p>Enter same passphrase again: </p>
+<p></code></pre></p>
+<p>> ⚠️ <strong>Conseil</strong> : Utilise une passphrase pour sécuriser ta clé !</p>
 <h3>Copier la clé sur le serveur</h3>
-<pre class="codehilite"><code class="language-bash"># Méthode automatique (recommandée)
-ssh-copy-id user@serveur
-
-# Methode manuelle
-cat ~/.ssh/id_ed25519.pub | ssh user@serveur &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys&quot;
-
-# Ou avec ssh-id
-ssh-copy-id -i ~/.ssh/id_ed25519.pub user@serveur
-</code></pre>
-
+<pre><code><h1>Méthode automatique (recommandée)</h1>
+<p>ssh-copy-id user@serveur</p>
+<h1>Methode manuelle</h1>
+<p>cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"</p>
+<h1>Ou avec ssh-id</h1>
+<p>ssh-copy-id -i ~/.ssh/id_ed25519.pub user@serveur</p>
+<p></code></pre></p>
 <h3>Connexion avec clé</h3>
-<pre class="codehilite"><code class="language-bash">ssh user@serveur
-# Plus de mot de passe demandé !
-</code></pre>
-
+<pre><code>ssh user@serveur
+<h1>Plus de mot de passe demandé !</h1>
+<p></code></pre></p>
 <h3>Agent SSH</h3>
-<pre class="codehilite"><code class="language-bash"># Démarrer l'agent
-eval &quot;$(ssh-agent -s)&quot;
-
-# Ajouter la clé
-ssh-add ~/.ssh/id_ed25519
-
-# Ajouter avec passphrase
-ssh-add
-
-# Lister les clés chargées
-ssh-add -l
-
-# Supprimer toutes les clés
-ssh-add -D
-</code></pre>
-
-<hr />
+<pre><code><h1>Démarrer l'agent</h1>
+<p>eval "$(ssh-agent -s)"</p>
+<h1>Ajouter la clé</h1>
+<p>ssh-add ~/.ssh/id_ed25519</p>
+<h1>Ajouter avec passphrase</h1>
+<p>ssh-add</p>
+<h1>Lister les clés chargées</h1>
+<p>ssh-add -l</p>
+<h1>Supprimer toutes les clés</h1>
+<p>ssh-add -D</p>
+<p></code></pre></p>
+<hr>
 <h2>5. Fichiers de configuration SSH</h2>
 <h3>~/.ssh/config</h3>
-<pre class="codehilite"><code class="language-bash">nano ~/.ssh/config
-</code></pre>
-
+<pre><code>nano ~/.ssh/config
+<p></code></pre></p>
 <p>Contenu :</p>
-<pre class="codehilite"><code># Serveur personnel
-Host maison
-    HostName 192.168.1.100
-    User pi
-    Port 22
-    IdentityFile ~/.ssh/id_ed25519
-
-# Serveur cloud
-Host cloud
-    HostName mondomaine.com
-    User admin
-    Port 2222
-    IdentityFile ~/.ssh/cloud_key
-
-# GitHub
-Host github.com
-    HostName github.com
-    User git
-    IdentityFile ~/.ssh/github_ed25519
-</code></pre>
-
+<pre><code><h1>Serveur personnel</h1>
+<p>Host maison</p>
+<p>    HostName 192.168.1.100</p>
+<p>    User pi</p>
+<p>    Port 22</p>
+<p>    IdentityFile ~/.ssh/id_ed25519</p>
+<h1>Serveur cloud</h1>
+<p>Host cloud</p>
+<p>    HostName mondomaine.com</p>
+<p>    User admin</p>
+<p>    Port 2222</p>
+<p>    IdentityFile ~/.ssh/cloud_key</p>
+<h1>GitHub</h1>
+<p>Host github.com</p>
+<p>    HostName github.com</p>
+<p>    User git</p>
+<p>    IdentityFile ~/.ssh/github_ed25519</p>
+<p></code></pre></p>
 <h3>Utiliser les alias</h3>
-<pre class="codehilite"><code class="language-bash">ssh maison        # Au lieu de ssh pi@192.168.1.100
-scp fichier maison:/home/pi/
-</code></pre>
-
+<pre><code>ssh maison        # Au lieu de ssh pi@192.168.1.100
+<p>scp fichier maison:/home/pi/</p>
+<p></code></pre></p>
 <h3>Permissions</h3>
-<pre class="codehilite"><code class="language-bash">chmod 700 ~/.ssh
-chmod 600 ~/.ssh/config
-chmod 600 ~/.ssh/id_ed25519
-chmod 644 ~/.ssh/id_ed25519.pub
-</code></pre>
-
-<hr />
+<pre><code>chmod 700 ~/.ssh
+<p>chmod 600 ~/.ssh/config</p>
+<p>chmod 600 ~/.ssh/id_ed25519</p>
+<p>chmod 644 ~/.ssh/id_ed25519.pub</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Transfert de fichiers</h2>
 <h3>SCP - Copy</h3>
-<pre class="codehilite"><code class="language-bash"># Copier vers le serveur
-scp fichier.txt user@serveur:/home/user/
-scp -r dossier/ user@serveur:/home/user/
-
-# Copier depuis le serveur
-scp user@serveur:/home/user/fichier.txt ./
-scp -r user@serveur:/home/user/dossier/ ./
-
-# Options utiles
-scp -P 2222 fichier.txt user@serveur:/dossier/  # Port
-scp -C fichier.txt user@serveur:/dossier/      # Compression
-scp -v fichier.txt user@serveur:/dossier/      # Verbeux
-scp -p fichier.txt user@serveur:/dossier/      # Préserver dates
-</code></pre>
-
+<pre><code><h1>Copier vers le serveur</h1>
+<p>scp fichier.txt user@serveur:/home/user/</p>
+<p>scp -r dossier/ user@serveur:/home/user/</p>
+<h1>Copier depuis le serveur</h1>
+<p>scp user@serveur:/home/user/fichier.txt ./</p>
+<p>scp -r user@serveur:/home/user/dossier/ ./</p>
+<h1>Options utiles</h1>
+<p>scp -P 2222 fichier.txt user@serveur:/dossier/  # Port</p>
+<p>scp -C fichier.txt user@serveur:/dossier/      # Compression</p>
+<p>scp -v fichier.txt user@serveur:/dossier/      # Verbeux</p>
+<p>scp -p fichier.txt user@serveur:/dossier/      # Préserver dates</p>
+<p></code></pre></p>
 <h3>SFTP - Transfert interactif</h3>
-<pre class="codehilite"><code class="language-bash">sftp user@serveur
-
-# Commandes SFTP
-ls              # Lister
-cd dossier      # Changer dossier
-pwd             # Dossier actuel
-put fichier.txt # Envoyer
-get fichier.txt # Télécharger
-get -r dossier/ # Télécharger dossier
-rm fichier      # Supprimer
-mkdir dossier   # Créer dossier
-exit            # Quitter
-</code></pre>
-
+<pre><code>sftp user@serveur
+<h1>Commandes SFTP</h1>
+<p>ls              # Lister</p>
+<p>cd dossier      # Changer dossier</p>
+<p>pwd             # Dossier actuel</p>
+<p>put fichier.txt # Envoyer</p>
+<p>get fichier.txt # Télécharger</p>
+<p>get -r dossier/ # Télécharger dossier</p>
+<p>rm fichier      # Supprimer</p>
+<p>mkdir dossier   # Créer dossier</p>
+<p>exit            # Quitter</p>
+<p></code></pre></p>
 <h3>RSYNC - Synchronisation</h3>
-<pre class="codehilite"><code class="language-bash"># Synchroniser local vers distant
-rsync -avz dossier/ user@serveur:/home/user/backup/
-
-# Synchroniser avec suppression
-rsync -avz --delete dossier/ user@serveur:/backup/
-
-# Exclure des fichiers
-rsync -avz --exclude='*.log' dossier/ user@serveur:/backup/
-
-#dry-run (simulation)
-rsync -avzn dossier/ user@serveur:/backup/
-</code></pre>
-
-<hr />
+<pre><code><h1>Synchroniser local vers distant</h1>
+<p>rsync -avz dossier/ user@serveur:/home/user/backup/</p>
+<h1>Synchroniser avec suppression</h1>
+<p>rsync -avz --delete dossier/ user@serveur:/backup/</p>
+<h1>Exclure des fichiers</h1>
+<p>rsync -avz --exclude='*.log' dossier/ user@serveur:/backup/</p>
+<p>#dry-run (simulation)</p>
+<p>rsync -avzn dossier/ user@serveur:/backup/</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Port Forwarding (Tunnel SSH)</h2>
 <h3>Local Port Forwarding</h3>
 <p>Accéder à un service du serveur comme si localement.</p>
-<pre class="codehilite"><code class="language-bash">ssh -L [port_local]:[destination]:[port_destination] user@serveur
-</code></pre>
-
+<pre><code>ssh -L [port_local]:[destination]:[port_destination] user@serveur
+<p></code></pre></p>
 <h3>Exemples pratiques</h3>
-<pre class="codehilite"><code class="language-bash"># Accéder au serveur web du serveur (port 80)
-ssh -L 8080:localhost:80 user@serveur
-# → http://localhost:8080 sur ta machine
-
-# Accéder à MySQL sur le serveur
-ssh -L 3306:localhost:3306 user@serveur
-
-# Accéder à un service sur un autre serveur
-ssh -L 9000:autre-serveur:80 user@serveur
-</code></pre>
-
+<pre><code><h1>Accéder au serveur web du serveur (port 80)</h1>
+<p>ssh -L 8080:localhost:80 user@serveur</p>
+<h1>→ http://localhost:8080 sur ta machine</h1>
+<h1>Accéder à MySQL sur le serveur</h1>
+<p>ssh -L 3306:localhost:3306 user@serveur</p>
+<h1>Accéder à un service sur un autre serveur</h1>
+<p>ssh -L 9000:autre-serveur:80 user@serveur</p>
+<p></code></pre></p>
 <h3>Remote Port Forwarding</h3>
 <p>Exposer un service local vers internet via le serveur.</p>
-<pre class="codehilite"><code class="language-bash">ssh -R 8080:localhost:80 user@serveur
-</code></pre>
-
+<pre><code>ssh -R 8080:localhost:80 user@serveur
+<p></code></pre></p>
 <h3>Dynamic Port Forwarding (SOCKS Proxy)</h3>
-<pre class="codehilite"><code class="language-bash"># Créer un proxy SOCKS
-ssh -D 1080 user@serveur
-
-# Configurer le navigateur
-# SOCKS Proxy: localhost:1080
-</code></pre>
-
-<hr />
+<pre><code><h1>Créer un proxy SOCKS</h1>
+<p>ssh -D 1080 user@serveur</p>
+<h1>Configurer le navigateur</h1>
+<h1>SOCKS Proxy: localhost:1080</h1>
+<p></code></pre></p>
+<hr>
 <h2>8. SSH Bastion (Jump Host)</h2>
 <h3>Se connecter via un serveur bastion</h3>
-<pre class="codehilite"><code class="language-bash"># Direct via le bastion
-ssh -J user@bastion.com user@serveur-distant
-
-# Avec clé spécifique
-ssh -J -i ~/.ssh/bastion_key user@bastion.com user@serveur-interne
-
-# Configuration dans ~/.ssh/config
-Host serveur-distant
-    HostName 192.168.1.50
-    User admin
-    ProxyJump user@bastion.com
-</code></pre>
-
-<hr />
+<pre><code><h1>Direct via le bastion</h1>
+<p>ssh -J user@bastion.com user@serveur-distant</p>
+<h1>Avec clé spécifique</h1>
+<p>ssh -J -i ~/.ssh/bastion_key user@bastion.com user@serveur-interne</p>
+<h1>Configuration dans ~/.ssh/config</h1>
+<p>Host serveur-distant</p>
+<p>    HostName 192.168.1.50</p>
+<p>    User admin</p>
+<p>    ProxyJump user@bastion.com</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Sécurité SSH</h2>
 <h3>Meilleures pratiques</h3>
-<pre class="codehilite"><code class="language-bash"># 1. Désactiver root login
-# Dans /etc/ssh/sshd_config:
-PermitRootLogin no
-
-# 2. Changer le port par défaut
-Port 2222
-
-# 3. Utiliser only key authentication
-PasswordAuthentication no
-
-# 4. Limiter les utilisateurs
-AllowUsers user1 user2
-
-# 5. Fail2ban (anti-bruteforce)
-sudo apt install fail2ban
-</code></pre>
-
+<pre><code><h1>1. Désactiver root login</h1>
+<h1>Dans /etc/ssh/sshd_config:</h1>
+<p>PermitRootLogin no</p>
+<h1>2. Changer le port par défaut</h1>
+<p>Port 2222</p>
+<h1>3. Utiliser only key authentication</h1>
+<p>PasswordAuthentication no</p>
+<h1>4. Limiter les utilisateurs</h1>
+<p>AllowUsers user1 user2</p>
+<h1>5. Fail2ban (anti-bruteforce)</h1>
+<p>sudo apt install fail2ban</p>
+<p></code></pre></p>
 <h3>Authentification à deux facteurs</h3>
-<pre class="codehilite"><code class="language-bash"># Installer Google Authenticator
-sudo apt install libpam-google-authenticator
-
-# Configurer /etc/pam.d/sshd
-# Ajouter: auth required pam_google_authenticator.so
-
-# Activer dans /etc/ssh/sshd_config
-ChallengeResponseAuthentication yes
-AuthenticationMethods password,publickey
-</code></pre>
-
-<hr />
+<pre><code><h1>Installer Google Authenticator</h1>
+<p>sudo apt install libpam-google-authenticator</p>
+<h1>Configurer /etc/pam.d/sshd</h1>
+<h1>Ajouter: auth required pam_google_authenticator.so</h1>
+<h1>Activer dans /etc/ssh/sshd_config</h1>
+<p>ChallengeResponseAuthentication yes</p>
+<p>AuthenticationMethods password,publickey</p>
+<p></code></pre></p>
+<hr>
 <h2>10. Exercices pratiques</h2>
 <h3>Exercice 1 : Configurer clé SSH</h3>
-<pre class="codehilite"><code class="language-bash"># Générer une clé
-ssh-keygen -t ed25519 -C &quot;mon-serveur&quot;
-
-# Copier sur le serveur
-ssh-copy-id user@serveur
-
-# Se connecter sans mot de passe
-ssh user@serveur
-</code></pre>
-
+<pre><code><h1>Générer une clé</h1>
+<p>ssh-keygen -t ed25519 -C "mon-serveur"</p>
+<h1>Copier sur le serveur</h1>
+<p>ssh-copy-id user@serveur</p>
+<h1>Se connecter sans mot de passe</h1>
+<p>ssh user@serveur</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Tunnel vers MySQL</h3>
-<pre class="codehilite"><code class="language-bash"># Créer le tunnel
-ssh -L 3306:localhost:3306 user@serveur
-
-# Se connecter localement
-mysql -h localhost -u root -p
-</code></pre>
-
+<pre><code><h1>Créer le tunnel</h1>
+<p>ssh -L 3306:localhost:3306 user@serveur</p>
+<h1>Se connecter localement</h1>
+<p>mysql -h localhost -u root -p</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Transfert de backup</h3>
-<pre class="codehilite"><code class="language-bash"># Créer une archive
-tar -czf backup.tar.gz ~/Documents/
-
-# Transférer vers le serveur
-scp backup.tar.gz user@serveur:/backup/
-
-# Nettoyer local
-rm backup.tar.gz
-</code></pre>
-
-<hr />
+<pre><code><h1>Créer une archive</h1>
+<p>tar -czf backup.tar.gz ~/Documents/</p>
+<h1>Transférer vers le serveur</h1>
+<p>scp backup.tar.gz user@serveur:/backup/</p>
+<h1>Nettoyer local</h1>
+<p>rm backup.tar.gz</p>
+<p></code></pre></p>
+<hr>
 <h2>11. Tableau résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>ssh user@serveur</code></td>
-<td>Connexion basique</td>
-</tr>
-<tr>
-<td><code>ssh-keygen</code></td>
-<td>Générer clé</td>
-</tr>
-<tr>
-<td><code>ssh-copy-id</code></td>
-<td>Copier clé</td>
-</tr>
-<tr>
-<td><code>scp</code></td>
-<td>Copier fichiers</td>
-</tr>
-<tr>
-<td><code>sftp</code></td>
-<td>Transfert interactif</td>
-</tr>
-<tr>
-<td><code>rsync</code></td>
-<td>Synchronisation</td>
-</tr>
-<tr>
-<td><code>ssh -L</code></td>
-<td>Port forwarding local</td>
-</tr>
-<tr>
-<td><code>ssh -R</code></td>
-<td>Port forwarding remote</td>
-</tr>
-<tr>
-<td><code>ssh -J</code></td>
-<td>Jump host</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>ssh user@serveur</code></td><td>Connexion basique</td></tr></p>
+<p><tr><td><code>ssh-keygen</code></td><td>Générer clé</td></tr></p>
+<p><tr><td><code>ssh-copy-id</code></td><td>Copier clé</td></tr></p>
+<p><tr><td><code>scp</code></td><td>Copier fichiers</td></tr></p>
+<p><tr><td><code>sftp</code></td><td>Transfert interactif</td></tr></p>
+<p><tr><td><code>rsync</code></td><td>Synchronisation</td></tr></p>
+<p><tr><td><code>ssh -L</code></td><td>Port forwarding local</td></tr></p>
+<p><tr><td><code>ssh -R</code></td><td>Port forwarding remote</td></tr></p>
+<p><tr><td><code>ssh -J</code></td><td>Jump host</td></tr></p>
+<p></table></p>
+<hr>
 <p>Maîtrise SSH pour administrer tes serveurs comme un pro ! 🔐</p>
-
-
-</div>
 <nav>
 <a href="11-supervision-systeme.html" style="color:#666;text-decoration:none;">&larr; 11 - Surveillance et supervision système</a>
 <a href="13-taches-planifiees-cron.html" style="color:#00d9ff;text-decoration:none;">13 - Tâches planifiées avec Cron &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

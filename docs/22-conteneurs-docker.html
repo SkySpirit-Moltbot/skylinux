@@ -3,516 +3,353 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conteneurs Docker - Images, Containers, Docker Hub | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/22-conteneurs-docker.html">
-<meta property="og:title" content="Conteneurs Docker - SkyLinux">
-<meta property="og:description" content="Apprenez Docker facilement avec SkyLinux">
+<title>Conteneurs Docker | SkyLinux</title>
+<meta name="description" content="Découvrez Docker et la conteneurisation sous Linux.">
+<meta name="keywords" content="docker, conteneur, container, docker hub, image docker">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Découvrez Docker et la conteneurisation sous Linux. Apprenez à créer, lancer et gérer des conteneurs avec Docker.">
-<meta name="keywords" content="docker, conteneur, container, docker hub, image docker, dockerfile, docker-compose, conteneurisation">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-h3 { color: #00ff88; margin: 15px 0 8px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>22 - conteneurs docker : Conteneurs Docker</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 22 : Conteneurs Docker</h1>
 <h2>Introduction</h2>
 <p>Docker est une plateforme de conteneurisation qui permet d'empaqueter une application avec toutes ses dépendances. Les conteneurs sont légers, rapides et portables.</p>
-<p><strong>Pourquoi utiliser Docker ?</strong>
-- Isolation des applications
-- Portabilité (fonctionne partout)
-- Déploiement rapide
-- Ressources minimales</p>
+<p><strong>Pourquoi utiliser Docker ?</strong></p>
+<ul><li>Isolation des applications</li>
+<li>Portabilité (fonctionne partout)</li>
+<li>Déploiement rapide</li>
+<li>Ressources minimales</li>
+<p></ul></p>
 <h2>Installation de Docker</h2>
 <h3>Sur Debian/Ubuntu</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update
-sudo apt install -y docker.io docker-compose
-sudo systemctl start docker
-sudo systemctl enable docker
-</code></pre>
-
+<pre><code>sudo apt update
+<p>sudo apt install -y docker.io docker-compose</p>
+<p>sudo systemctl start docker</p>
+<p>sudo systemctl enable docker</p>
+<p></code></pre></p>
 <h3>Vérifier l'installation</h3>
-<pre class="codehilite"><code class="language-bash">docker --version
-docker-compose --version
-docker run hello-world
-</code></pre>
-
+<pre><code>docker --version
+<p>docker-compose --version</p>
+<p>docker run hello-world</p>
+<p></code></pre></p>
 <h2>Concepts fondamentaux</h2>
 <h3>Images vs Conteneurs</h3>
-<ul>
-<li><strong>Image</strong> : Modèle en lecture seule (template)</li>
+<ul><li><strong>Image</strong> : Modèle en lecture seule (template)</li>
 <li><strong>Conteneur</strong> : Instance en ejecución d'une image</li>
-</ul>
+<p></ul></p>
 <h3>Docker Hub</h3>
 <p>Registre public contenant des milliers d'images prédéfinies.</p>
 <h2>Commandes de base</h2>
 <h3>Gestion des images</h3>
-<pre class="codehilite"><code class="language-bash"># Télécharger une image
-docker pull nginx
-docker pull ubuntu:22.04
-docker pull python:3.11
-
-# Lister les images locales
-docker images
-docker images -a
-
-# Supprimer une image
-docker rmi nginx
-docker rmi -f nginx
-</code></pre>
-
+<pre><code><h1>Télécharger une image</h1>
+<p>docker pull nginx</p>
+<p>docker pull ubuntu:22.04</p>
+<p>docker pull python:3.11</p>
+<h1>Lister les images locales</h1>
+<p>docker images</p>
+<p>docker images -a</p>
+<h1>Supprimer une image</h1>
+<p>docker rmi nginx</p>
+<p>docker rmi -f nginx</p>
+<p></code></pre></p>
 <h3>Lancer des conteneurs</h3>
-<pre class="codehilite"><code class="language-bash"># Mode interactif
-docker run -it ubuntu /bin/bash
-
-# Mode détaché (arrière-plan)
-docker run -d --name mon_nginx -p 8080:80 nginx
-
-# Avec variables d'environnement
-docker run -d --name ma_db -e MYSQL_ROOT_PASSWORD=mdp123 mysql
-
-# Avec volume persisté
-docker run -d -v /data:/app --name mon_app ubuntu
-
-# Avec restart automatique
-docker run -d --restart=always --name nginx nginx
-</code></pre>
-
+<pre><code><h1>Mode interactif</h1>
+<p>docker run -it ubuntu /bin/bash</p>
+<h1>Mode détaché (arrière-plan)</h1>
+<p>docker run -d --name mon_nginx -p 8080:80 nginx</p>
+<h1>Avec variables d'environnement</h1>
+<p>docker run -d --name ma_db -e MYSQL_ROOT_PASSWORD=mdp123 mysql</p>
+<h1>Avec volume persisté</h1>
+<p>docker run -d -v /data:/app --name mon_app ubuntu</p>
+<h1>Avec restart automatique</h1>
+<p>docker run -d --restart=always --name nginx nginx</p>
+<p></code></pre></p>
 <h3>Options courantes</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-d</code></td>
-<td>Mode détaché</td>
-</tr>
-<tr>
-<td><code>-p</code></td>
-<td>Mapping de ports (hôte:conteneur)</td>
-</tr>
-<tr>
-<td><code>--name</code></td>
-<td>Nom du conteneur</td>
-</tr>
-<tr>
-<td><code>-v</code></td>
-<td>Volume</td>
-</tr>
-<tr>
-<td><code>-e</code></td>
-<td>Variable d'environnement</td>
-</tr>
-<tr>
-<td><code>--restart</code></td>
-<td>Politique de redémarrage</td>
-</tr>
-<tr>
-<td><code>--network</code></td>
-<td>Réseau Docker</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>-d</code></td><td>Mode détaché</td></tr></p>
+<p><tr><td><code>-p</code></td><td>Mapping de ports (hôte:conteneur)</td></tr></p>
+<p><tr><td><code>--name</code></td><td>Nom du conteneur</td></tr></p>
+<p><tr><td><code>-v</code></td><td>Volume</td></tr></p>
+<p><tr><td><code>-e</code></td><td>Variable d'environnement</td></tr></p>
+<p><tr><td><code>--restart</code></td><td>Politique de redémarrage</td></tr></p>
+<p><tr><td><code>--network</code></td><td>Réseau Docker</td></tr></p>
+<p></table></p>
 <h3>Gestion des conteneurs</h3>
-<pre class="codehilite"><code class="language-bash"># Lister les conteneurs
-docker ps              # actifs
-docker ps -a          # tous
-docker ps -q          # juste les IDs
-
-# Arrêter/démarrer
-docker stop mon_nginx
-docker start mon_nginx
-docker restart mon_nginx
-
-# Supprimer
-docker rm mon_nginx
-docker rm -f mon_nginx   # forcer
-
-# Voir les logs
-docker logs mon_nginx
-docker logs -f mon_nginx     # temps réel
-docker logs --tail 100 mon_nginx
-
-# Exécuter une commande
-docker exec -it mon_nginx bash
-docker exec mon_nginx cat /etc/hostname
-
-# Inspecter un conteneur
-docker inspect mon_nginx
-docker stats mon_nginx   # ressources en temps réel
-</code></pre>
-
+<pre><code><h1>Lister les conteneurs</h1>
+<p>docker ps              # actifs</p>
+<p>docker ps -a          # tous</p>
+<p>docker ps -q          # juste les IDs</p>
+<h1>Arrêter/démarrer</h1>
+<p>docker stop mon_nginx</p>
+<p>docker start mon_nginx</p>
+<p>docker restart mon_nginx</p>
+<h1>Supprimer</h1>
+<p>docker rm mon_nginx</p>
+<p>docker rm -f mon_nginx   # forcer</p>
+<h1>Voir les logs</h1>
+<p>docker logs mon_nginx</p>
+<p>docker logs -f mon_nginx     # temps réel</p>
+<p>docker logs --tail 100 mon_nginx</p>
+<h1>Exécuter une commande</h1>
+<p>docker exec -it mon_nginx bash</p>
+<p>docker exec mon_nginx cat /etc/hostname</p>
+<h1>Inspecter un conteneur</h1>
+<p>docker inspect mon_nginx</p>
+<p>docker stats mon_nginx   # ressources en temps réel</p>
+<p></code></pre></p>
 <h2>Créer une image personnalisée</h2>
 <h3>Le Dockerfile</h3>
-<pre class="codehilite"><code class="language-dockerfile"># Commentaire
-FROM ubuntu:22.04
-
-# Mise à jour et installation
-RUN apt update &amp;&amp; apt install -y python3 python3-pip
-
-# Variable d'environnement
-ENV APP_ENV=production
-
-# Répertoire de travail
-WORKDIR /app
-
-# Copier les fichiers
-COPY requirements.txt .
-COPY . .
-
-# Exposer un port
-EXPOSE 5000
-
-# Commande par défaut
-CMD [&quot;python3&quot;, &quot;app.py&quot;]
-</code></pre>
-
+<pre><code><h1>Commentaire</h1>
+<p>FROM ubuntu:22.04</p>
+<h1>Mise à jour et installation</h1>
+<p>RUN apt update && apt install -y python3 python3-pip</p>
+<h1>Variable d'environnement</h1>
+<p>ENV APP_ENV=production</p>
+<h1>Répertoire de travail</h1>
+<p>WORKDIR /app</p>
+<h1>Copier les fichiers</h1>
+<p>COPY requirements.txt .</p>
+<p>COPY . .</p>
+<h1>Exposer un port</h1>
+<p>EXPOSE 5000</p>
+<h1>Commande par défaut</h1>
+<p>CMD ["python3", "app.py"]</p>
+<p></code></pre></p>
 <h3>Instructions courantes du Dockerfile</h3>
-<table>
-<thead>
-<tr>
-<th>Instruction</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>FROM</td>
-<td>Image de base</td>
-</tr>
-<tr>
-<td>RUN</td>
-<td>Commande à exécuter</td>
-</tr>
-<tr>
-<td>COPY</td>
-<td>Copier des fichiers</td>
-</tr>
-<tr>
-<td>WORKDIR</td>
-<td>Répertoire de travail</td>
-</tr>
-<tr>
-<td>ENV</td>
-<td>Variable d'environnement</td>
-</tr>
-<tr>
-<td>EXPOSE</td>
-<td>Port à exposer</td>
-</tr>
-<tr>
-<td>CMD</td>
-<td>Commande par défaut</td>
-</tr>
-<tr>
-<td>ENTRYPOINT</td>
-<td>Point d'entrée</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>FROM</td><td>Image de base</td></tr></p>
+<p><tr><td>RUN</td><td>Commande à exécuter</td></tr></p>
+<p><tr><td>COPY</td><td>Copier des fichiers</td></tr></p>
+<p><tr><td>WORKDIR</td><td>Répertoire de travail</td></tr></p>
+<p><tr><td>ENV</td><td>Variable d'environnement</td></tr></p>
+<p><tr><td>EXPOSE</td><td>Port à exposer</td></tr></p>
+<p><tr><td>CMD</td><td>Commande par défaut</td></tr></p>
+<p><tr><td>ENTRYPOINT</td><td>Point d'entrée</td></tr></p>
+<p></table></p>
 <h3>Construire et utiliser son image</h3>
-<pre class="codehilite"><code class="language-bash"># Construire l'image
-docker build -t mon_app:latest .
-
-# Vérifier
-docker images | grep mon_app
-
-# Lancer
-docker run -d -p 5000:5000 --name mon_app mon_app:latest
-</code></pre>
-
+<pre><code><h1>Construire l'image</h1>
+<p>docker build -t mon_app:latest .</p>
+<h1>Vérifier</h1>
+<p>docker images | grep mon_app</p>
+<h1>Lancer</h1>
+<p>docker run -d -p 5000:5000 --name mon_app mon_app:latest</p>
+<p></code></pre></p>
 <h2>Les volumes</h2>
 <h3>Types de volumes</h3>
-<ol>
-<li><strong>Volumes nommés</strong></li>
-</ol>
-<pre class="codehilite"><code class="language-bash">docker volume create mes_donnees
-docker run -d -v mes_donnees:/data --name app ubuntu
-</code></pre>
-
-<ol>
-<li><strong>Bind mounts (répertoire hôte)</strong></li>
-</ol>
-<pre class="codehilite"><code class="language-bash">docker run -d -v ~/mon_repertoire:/app --name app ubuntu
-</code></pre>
-
-<ol>
-<li><strong>tmpfs (en mémoire)</strong></li>
-</ol>
-<pre class="codehilite"><code class="language-bash">docker run -d --tmpfs /tmp --name app ubuntu
-</code></pre>
-
+<p>1. <strong>Volumes nommés</strong></p>
+<pre><code>docker volume create mes_donnees
+<p>docker run -d -v mes_donnees:/data --name app ubuntu</p>
+<p></code></pre></p>
+<p>2. <strong>Bind mounts (répertoire hôte)</strong></p>
+<pre><code>docker run -d -v ~/mon_repertoire:/app --name app ubuntu
+<p></code></pre></p>
+<p>3. <strong>tmpfs (en mémoire)</strong></p>
+<pre><code>docker run -d --tmpfs /tmp --name app ubuntu
+<p></code></pre></p>
 <h3>Gestion des volumes</h3>
-<pre class="codehilite"><code class="language-bash"># Lister
-docker volume ls
-
-# Inspecter
-docker volume inspect mon_volume
-
-# Supprimer
-docker volume rm mon_volume
-docker volume prune  # nettoyer les volumes inutilisés
-</code></pre>
-
+<pre><code><h1>Lister</h1>
+<p>docker volume ls</p>
+<h1>Inspecter</h1>
+<p>docker volume inspect mon_volume</p>
+<h1>Supprimer</h1>
+<p>docker volume rm mon_volume</p>
+<p>docker volume prune  # nettoyer les volumes inutilisés</p>
+<p></code></pre></p>
 <h2>Réseau Docker</h2>
 <h3>Créer un réseau</h3>
-<pre class="codehilite"><code class="language-bash"># Lister les réseaux
-docker network ls
-
-# Créer un réseau personnalisé
-docker network create mon_reseau
-
-# Créer avec driver spécifique
-docker network create --driver bridge mon_reseau
-</code></pre>
-
+<pre><code><h1>Lister les réseaux</h1>
+<p>docker network ls</p>
+<h1>Créer un réseau personnalisé</h1>
+<p>docker network create mon_reseau</p>
+<h1>Créer avec driver spécifique</h1>
+<p>docker network create --driver bridge mon_reseau</p>
+<p></code></pre></p>
 <h3>Connecter des conteneurs</h3>
-<pre class="codehilite"><code class="language-bash"># Lancer sur un réseau
-docker run -d --network mon_reseau --name web nginx
-docker run -d --network mon_reseau --name db mysql
-
-# Les conteneurs peuvent maintenant se contacter par nom
-</code></pre>
-
+<pre><code><h1>Lancer sur un réseau</h1>
+<p>docker run -d --network mon_reseau --name web nginx</p>
+<p>docker run -d --network mon_reseau --name db mysql</p>
+<h1>Les conteneurs peuvent maintenant se contacter par nom</h1>
+<p></code></pre></p>
 <h3>DNS automatique</h3>
 <p>Les conteneurs sur le même réseau peuvent se trouver par leur nom.</p>
 <h2>Docker Compose</h2>
 <p>Docker Compose permet de définir et exécuter des applications multi-conteneurs.</p>
 <h3>Le fichier docker-compose.yml</h3>
-<pre class="codehilite"><code class="language-yaml">version: '3.8'
-
-services:
-  web:
-    image: nginx:alpine
-    ports:
-      - &quot;8080:80&quot;
-    volumes:
-      - ./html:/usr/share/nginx/html
-    depends_on:
-      - api
-    networks:
-      - frontend
-      - backend
-
-  api:
-    build: ./api
-    environment:
-      - DB_HOST=db
-    depends_on:
-      - db
-    networks:
-      - backend
-
-  db:
-    image: postgres:15
-    environment:
-      - POSTGRES_PASSWORD=mdp123
-      - POSTGRES_DB=mondb
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - backend
-
-networks:
-  frontend:
-  backend:
-
-volumes:
-  db_data:
-</code></pre>
-
+<pre><code>version: '3.8'
+<p>services:</p>
+<p>  web:</p>
+<p>    image: nginx:alpine</p>
+<p>    ports:</p>
+<p>      - "8080:80"</p>
+<p>    volumes:</p>
+<p>      - ./html:/usr/share/nginx/html</p>
+<p>    depends_on:</p>
+<p>      - api</p>
+<p>    networks:</p>
+<p>      - frontend</p>
+<p>      - backend</p>
+<p>  api:</p>
+<p>    build: ./api</p>
+<p>    environment:</p>
+<p>      - DB_HOST=db</p>
+<p>    depends_on:</p>
+<p>      - db</p>
+<p>    networks:</p>
+<p>      - backend</p>
+<p>  db:</p>
+<p>    image: postgres:15</p>
+<p>    environment:</p>
+<p>      - POSTGRES_PASSWORD=mdp123</p>
+<p>      - POSTGRES_DB=mondb</p>
+<p>    volumes:</p>
+<p>      - db_data:/var/lib/postgresql/data</p>
+<p>    networks:</p>
+<p>      - backend</p>
+<p>networks:</p>
+<p>  frontend:</p>
+<p>  backend:</p>
+<p>volumes:</p>
+<p>  db_data:</p>
+<p></code></pre></p>
 <h3>Commandes Docker Compose</h3>
-<pre class="codehilite"><code class="language-bash"># Lancer tous les services
-docker-compose up
-docker-compose up -d          # détaché
-
-# Arrêter
-docker-compose down
-docker-compose down -v         # supprimer aussi les volumes
-
-# Logs
-docker-compose logs -f
-docker-compose logs -f web     # service spécifique
-
-# Statut
-docker-compose ps
-docker-compose top
-
-# Reconstruire
-docker-compose build
-docker-compose up --build
-</code></pre>
-
+<pre><code><h1>Lancer tous les services</h1>
+<p>docker-compose up</p>
+<p>docker-compose up -d          # détaché</p>
+<h1>Arrêter</h1>
+<p>docker-compose down</p>
+<p>docker-compose down -v         # supprimer aussi les volumes</p>
+<h1>Logs</h1>
+<p>docker-compose logs -f</p>
+<p>docker-compose logs -f web     # service spécifique</p>
+<h1>Statut</h1>
+<p>docker-compose ps</p>
+<p>docker-compose top</p>
+<h1>Reconstruire</h1>
+<p>docker-compose build</p>
+<p>docker-compose up --build</p>
+<p></code></pre></p>
 <h2>Cas d'usage pratiques</h2>
 <h3>1. Serveur web Nginx</h3>
-<pre class="codehilite"><code class="language-bash">docker run -d -p 80:80 --name nginx nginx:alpine
-</code></pre>
-
+<pre><code>docker run -d -p 80:80 --name nginx nginx:alpine
+<p></code></pre></p>
 <h3>2. Base de données PostgreSQL</h3>
-<pre class="codehilite"><code class="language-bash">docker run -d \
-  --name postgres \
-  -e POSTGRES_PASSWORD=mdp123 \
-  -e POSTGRES_DB=mondb \
-  -v pgdata:/var/lib/postgresql/data \
-  postgres:15
-</code></pre>
-
+<pre><code>docker run -d \
+<p>  --name postgres \</p>
+<p>  -e POSTGRES_PASSWORD=mdp123 \</p>
+<p>  -e POSTGRES_DB=mondb \</p>
+<p>  -v pgdata:/var/lib/postgresql/data \</p>
+<p>  postgres:15</p>
+<p></code></pre></p>
 <h3>3. Serveur de développement Python</h3>
-<pre class="codehilite"><code class="language-bash">docker run -it -p 5000:5000 -v $(pwd):/app python:3.11 sh -c &quot;pip install flask &amp;&amp; cd /app &amp;&amp; flask run --host=0.0.0.0&quot;
-</code></pre>
-
+<pre><code>docker run -it -p 5000:5000 -v $(pwd):/app python:3.11 sh -c "pip install flask && cd /app && flask run --host=0.0.0.0"
+<p></code></pre></p>
 <h3>4. Monitoring avec Prometheus</h3>
-<pre class="codehilite"><code class="language-bash">docker run -d -p 9090:9090 --name prometheus prom/prometheus
-</code></pre>
-
+<pre><code>docker run -d -p 9090:9090 --name prometheus prom/prometheus
+<p></code></pre></p>
 <h2>Bonnes pratiques</h2>
 <h3>Sécurité</h3>
-<pre class="codehilite"><code class="language-bash"># Ne pas exécuter en root
-USER nobody
-
-# Scanner les vulnérabilités
-docker scan mon_image
-
-# Utiliser des images officielles
-docker pull nginx:latest
-</code></pre>
-
+<pre><code><h1>Ne pas exécuter en root</h1>
+<p>USER nobody</p>
+<h1>Scanner les vulnérabilités</h1>
+<p>docker scan mon_image</p>
+<h1>Utiliser des images officielles</h1>
+<p>docker pull nginx:latest</p>
+<p></code></pre></p>
 <h3>Optimisation</h3>
-<pre class="codehilite"><code class="language-bash"># Combiner les couches RUN
-RUN apt update &amp;&amp; apt install -y package1 package2 &amp;&amp; rm -rf /var/lib/apt/lists/*
-
-# Utiliser des images légères
-docker pull alpine
-docker pull nginx:alpine
-
-# Nettoyer les caches
-docker builder prune
-</code></pre>
-
+<pre><code><h1>Combiner les couches RUN</h1>
+<p>RUN apt update && apt install -y package1 package2 && rm -rf /var/lib/apt/lists/*</p>
+<h1>Utiliser des images légères</h1>
+<p>docker pull alpine</p>
+<p>docker pull nginx:alpine</p>
+<h1>Nettoyer les caches</h1>
+<p>docker builder prune</p>
+<p></code></pre></p>
 <h3>Utiliser .dockerignore</h3>
-<pre class="codehilite"><code>.git
-node_modules
-__pycache__
-*.log
-.env
-</code></pre>
-
+<pre><code>.git
+<p>node_modules</p>
+<p>__pycache__</p>
+<p>*.log</p>
+<p>.env</p>
+<p></code></pre></p>
 <h2>Dépannage</h2>
-<pre class="codehilite"><code class="language-bash"># Voir tous les conteneurs (même arrêtés)
-docker ps -a
-
-# Logs en temps réel
-docker logs -f --tail 50 conteneur
-
-# Ressources utilisées
-docker stats
-
-# Entrer dans le conteneur
-docker exec -it conteneur bash
-
-# Inspecter la configuration
-docker inspect conteneur
-
-# Voir les processus
-docker top conteneur
-
-# Redémarrer un conteneur planté
-docker restart conteneur
-
-# Nettoyer tout
-docker system prune -a
-</code></pre>
-
+<pre><code><h1>Voir tous les conteneurs (même arrêtés)</h1>
+<p>docker ps -a</p>
+<h1>Logs en temps réel</h1>
+<p>docker logs -f --tail 50 conteneur</p>
+<h1>Ressources utilisées</h1>
+<p>docker stats</p>
+<h1>Entrer dans le conteneur</h1>
+<p>docker exec -it conteneur bash</p>
+<h1>Inspecter la configuration</h1>
+<p>docker inspect conteneur</p>
+<h1>Voir les processus</h1>
+<p>docker top conteneur</p>
+<h1>Redémarrer un conteneur planté</h1>
+<p>docker restart conteneur</p>
+<h1>Nettoyer tout</h1>
+<p>docker system prune -a</p>
+<p></code></pre></p>
 <h2>Résumé des commandes</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>docker pull image</code></td>
-<td>Télécharger une image</td>
-</tr>
-<tr>
-<td><code>docker run -d -p 80:80 --name nom image</code></td>
-<td>Lancer un conteneur</td>
-</tr>
-<tr>
-<td><code>docker ps</code></td>
-<td>Lister les conteneurs actifs</td>
-</tr>
-<tr>
-<td><code>docker stop nom</code></td>
-<td>Arrêter</td>
-</tr>
-<tr>
-<td><code>docker rm nom</code></td>
-<td>Supprimer</td>
-</tr>
-<tr>
-<td><code>docker exec -it nom bash</code></td>
-<td>Terminal dans le conteneur</td>
-</tr>
-<tr>
-<td><code>docker logs -f nom</code></td>
-<td>Voir les logs</td>
-</tr>
-<tr>
-<td><code>docker build -t nom .</code></td>
-<td>Construire une image</td>
-</tr>
-<tr>
-<td><code>docker-compose up -d</code></td>
-<td>Lancer une application</td>
-</tr>
-<tr>
-<td><code>docker volume create nom</code></td>
-<td>Créer un volume</td>
-</tr>
-<tr>
-<td><code>docker network create nom</code></td>
-<td>Créer un réseau</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>docker pull image</code></td><td>Télécharger une image</td></tr></p>
+<p><tr><td><code>docker run -d -p 80:80 --name nom image</code></td><td>Lancer un conteneur</td></tr></p>
+<p><tr><td><code>docker ps</code></td><td>Lister les conteneurs actifs</td></tr></p>
+<p><tr><td><code>docker stop nom</code></td><td>Arrêter</td></tr></p>
+<p><tr><td><code>docker rm nom</code></td><td>Supprimer</td></tr></p>
+<p><tr><td><code>docker exec -it nom bash</code></td><td>Terminal dans le conteneur</td></tr></p>
+<p><tr><td><code>docker logs -f nom</code></td><td>Voir les logs</td></tr></p>
+<p><tr><td><code>docker build -t nom .</code></td><td>Construire une image</td></tr></p>
+<p><tr><td><code>docker-compose up -d</code></td><td>Lancer une application</td></tr></p>
+<p><tr><td><code>docker volume create nom</code></td><td>Créer un volume</td></tr></p>
+<p><tr><td><code>docker network create nom</code></td><td>Créer un réseau</td></tr></p>
+<p></table></p>
 <h2>Aller plus loin</h2>
-<ul>
-<li>Docker Swarm pour l'orchestration</li>
+<ul><li>Docker Swarm pour l'orchestration</li>
 <li>Kubernetes pour la production</li>
 <li>Portainer pour une interface graphique</li>
 <li>GitLab CI/CD pour l'intégration continue</li>
-</ul>
+<p></ul></p>
 
-</div>
 <nav>
 <a href="21-services-systemd.html" style="color:#666;text-decoration:none;">&larr; 21 - Gestion des services avec systemd</a>
 <a href="23-outils-diagnostic.html" style="color:#00d9ff;text-decoration:none;">23 - Outils de diagnostic et dépannage &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

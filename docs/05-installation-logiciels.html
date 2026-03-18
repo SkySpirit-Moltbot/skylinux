@@ -3,357 +3,256 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Installation logiciels Linux - apt, yum, dpkg | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/05-installation-logiciels.html">
-<meta property="og:title" content="Installation Logiciels - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Installation logiciels Linux - apt, yum | SkyLinux</title>
+<meta name="description" content="Découvrez comment installer des logiciels sur Linux avec apt, yum, dnf.">
+<meta name="keywords" content="installer linux, apt, yum, dnf, pacman, gestionnaire paquets">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Découvrez comment installer des logiciels sur Linux avec apt, yum, dnf, pacman. Gérez les paquets et dépendances sur votre système.">
-<meta name="keywords" content="installer linux, apt, yum, dnf, pacman, gestionnaire paquets, installer logiciel, depot">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
 <h1>Leçon 5 : Installation de logiciels</h1>
 <p>Dans cette leçon, tu vas maîtriser l'installation, la mise à jour et la suppression de logiciels sur Linux avec différents gestionnaires de paquets.</p>
-<hr />
+<hr>
 <h2>1. Gestionnaires de paquets</h2>
 <h3>Les principaux</h3>
-<table>
-<thead>
-<tr>
-<th>Gestionnaire</th>
-<th>Distributions</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>APT</strong></td>
-<td>Debian, Ubuntu, Mint</td>
-<td>.deb</td>
-</tr>
-<tr>
-<td><strong>DNF/YUM</strong></td>
-<td>Fedora, RHEL, CentOS</td>
-<td>.rpm</td>
-</tr>
-<tr>
-<td><strong>Pacman</strong></td>
-<td>Arch, Manjaro</td>
-<td>.pkg.tar</td>
-</tr>
-<tr>
-<td><strong>Zypper</strong></td>
-<td>openSUSE</td>
-<td>.rpm</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr><th>Distributions</th></tr></p>
+<p><tr><td><strong>APT</strong></td><td>Debian, Ubuntu, Mint</td><td>.deb</td></tr></p>
+<p><tr><td><strong>DNF/YUM</strong></td><td>Fedora, RHEL, CentOS</td><td>.rpm</td></tr></p>
+<p><tr><td><strong>Pacman</strong></td><td>Arch, Manjaro</td><td>.pkg.tar</td></tr></p>
+<p><tr><td><strong>Zypper</strong></td><td>openSUSE</td><td>.rpm</td></tr></p>
+<p></table></p>
 <p>Nous allonsfocuser sur <strong>APT</strong> car c'est le plus utilisé.</p>
-<hr />
+<hr>
 <h2>2. APT - Commandes de base</h2>
 <h3>Mettre à jour les dépôts</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update              # Mettre à jour la liste des paquets
-sudo apt update &amp;&amp; sudo apt upgrade  # Mise à jour complète
-</code></pre>
-
+<pre><code>sudo apt update              # Mettre à jour la liste des paquets
+<p>sudo apt update && sudo apt upgrade  # Mise à jour complète</p>
+<p></code></pre></p>
 <h3>Installer un logiciel</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt install firefox     # Installer un paquet
-sudo apt install firefox -y  # Confirmer automatiquement
-sudo apt install -y firefox vlc  # Plusieurs paquets
-</code></pre>
-
+<pre><code>sudo apt install firefox     # Installer un paquet
+<p>sudo apt install firefox -y  # Confirmer automatiquement</p>
+<p>sudo apt install -y firefox vlc  # Plusieurs paquets</p>
+<p></code></pre></p>
 <h3>Mettre à jour</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt upgrade             # Mettre à jour les paquets existants
-sudo apt full-upgrade        # Mise à jour complète (peut supprimer)
-sudo apt dist-upgrade        # Mise à jour de version
-</code></pre>
-
+<pre><code>sudo apt upgrade             # Mettre à jour les paquets existants
+<p>sudo apt full-upgrade        # Mise à jour complète (peut supprimer)</p>
+<p>sudo apt dist-upgrade        # Mise à jour de version</p>
+<p></code></pre></p>
 <h3>Supprimer</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt remove firefox      # Supprimer (garde config)
-sudo apt purge firefox       # Supprimer + config
-sudo apt autoremove          # Supprimer dépendances inutilisées
-sudo apt autopurge           # Supprimer config + dépendances
-</code></pre>
-
-<hr />
+<pre><code>sudo apt remove firefox      # Supprimer (garde config)
+<p>sudo apt purge firefox       # Supprimer + config</p>
+<p>sudo apt autoremove          # Supprimer dépendances inutilisées</p>
+<p>sudo apt autopurge           # Supprimer config + dépendances</p>
+<p></code></pre></p>
+<hr>
 <h2>3. Rechercher et informer</h2>
 <h3>Rechercher un paquet</h3>
-<pre class="codehilite"><code class="language-bash">apt search vlc               # Rechercher dans les dépôts
-apt search --names-only vlc  # Chercher seulement dans le nom
-apt-cache policy vlc         # Toutes les versions disponibles
-</code></pre>
-
+<pre><code>apt search vlc               # Rechercher dans les dépôts
+<p>apt search --names-only vlc  # Chercher seulement dans le nom</p>
+<p>apt-cache policy vlc         # Toutes les versions disponibles</p>
+<p></code></pre></p>
 <h3>Informations sur un paquet</h3>
-<pre class="codehilite"><code class="language-bash">apt show firefox             # Détails complets
-apt list --all-versions vlc  # Toutes les versions
-apt list --installed         # Tous les paquets installés
-apt list --upgradable        # Paquets avec mise à jour
-</code></pre>
-
+<pre><code>apt show firefox             # Détails complets
+<p>apt list --all-versions vlc  # Toutes les versions</p>
+<p>apt list --installed         # Tous les paquets installés</p>
+<p>apt list --upgradable        # Paquets avec mise à jour</p>
+<p></code></pre></p>
 <h3>Lister les fichiers d'un paquet</h3>
-<pre class="codehilite"><code class="language-bash">dpkg -L firefox             # Liste des fichiers installés
-dpkg -s firefox             # Statut du paquet
-</code></pre>
-
-<hr />
+<pre><code>dpkg -L firefox             # Liste des fichiers installés
+<p>dpkg -s firefox             # Statut du paquet</p>
+<p></code></pre></p>
+<hr>
 <h2>4. DPKG - Gestionnaire de base</h2>
 <p><code>dpkg</code> est le gestionnaire de bas niveau (.deb).</p>
 <h3>Installer un fichier .deb local</h3>
-<pre class="codehilite"><code class="language-bash">sudo dpkg -i paquet.deb          # Installer
-sudo dpkg -i -r paquet.deb       # Réparer les dépendances
-sudo dpkg -P paquet              # Purger complètement
-</code></pre>
-
+<pre><code>sudo dpkg -i paquet.deb          # Installer
+<p>sudo dpkg -i -r paquet.deb       # Réparer les dépendances</p>
+<p>sudo dpkg -P paquet              # Purger complètement</p>
+<p></code></pre></p>
 <h3>Lister les paquets</h3>
-<pre class="codehilite"><code class="language-bash">dpkg -l                     # Liste de tous les paquets
-dpkg -l | grep ^ii          # Seulement installés
-dpkg -l firefox             # Statut d'un paquet
-</code></pre>
-
-<hr />
+<pre><code>dpkg -l                     # Liste de tous les paquets
+<p>dpkg -l | grep ^ii          # Seulement installés</p>
+<p>dpkg -l firefox             # Statut d'un paquet</p>
+<p></code></pre></p>
+<hr>
 <h2>5. SNAP - Empaquetage universel</h2>
 <p>Snap fonctionne sur toutes les distributions.</p>
 <h3>Commandes snap</h3>
-<pre class="codehilite"><code class="language-bash">snap find vlc                 # Rechercher
-sudo snap install vlc        # Installer
-sudo snap remove vlc         # Supprimer
-snap list                    # Liste installées
-snap refresh                 # Mettre à jour
-snap refresh vlc             # Mettre à jour un seul
-snap revert vlc             # Revenir à la version précédente
-</code></pre>
-
+<pre><code>snap find vlc                 # Rechercher
+<p>sudo snap install vlc        # Installer</p>
+<p>sudo snap remove vlc         # Supprimer</p>
+<p>snap list                    # Liste installées</p>
+<p>snap refresh                 # Mettre à jour</p>
+<p>snap refresh vlc             # Mettre à jour un seul</p>
+<p>snap revert vlc             # Revenir à la version précédente</p>
+<p></code></pre></p>
 <h3>Avantages et inconvénients</h3>
-<table>
-<thead>
-<tr>
-<th>Avantages</th>
-<th>Inconvénients</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Fonctionne partout</td>
-<td>Plus lourd (sandbox)</td>
-</tr>
-<tr>
-<td>Versions récentes</td>
-<td>Démarrage plus lent</td>
-</tr>
-<tr>
-<td>Indépendance du système</td>
-<td>Espace disque supplémentaire</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Fonctionne partout</td><td>Plus lourd (sandbox)</td></tr></p>
+<p><tr><td>Versions récentes</td><td>Démarrage plus lent</td></tr></p>
+<p><tr><td>Indépendance du système</td><td>Espace disque supplémentaire</td></tr></p>
+<p></table></p>
+<hr>
 <h2>6. FLATPAK - Alternative moderne</h2>
-<pre class="codehilite"><code class="language-bash"># Installer flatpak
-sudo apt install flatpak
-
-# Ajouter un dépôt
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# Installer
-flatpak install flathub org.videolan.VLC
-flatpak install flathub org.mozilla.firefox
-
-# Mettre à jour
-flatpak update
-
-# Lister
-flatpak list
-</code></pre>
-
-<hr />
+<pre><code><h1>Installer flatpak</h1>
+<p>sudo apt install flatpak</p>
+<h1>Ajouter un dépôt</h1>
+<p>flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo</p>
+<h1>Installer</h1>
+<p>flatpak install flathub org.videolan.VLC</p>
+<p>flatpak install flathub org.mozilla.firefox</p>
+<h1>Mettre à jour</h1>
+<p>flatpak update</p>
+<h1>Lister</h1>
+<p>flatpak list</p>
+<p></code></pre></p>
+<hr>
 <h2>7. PIP - Packages Python</h2>
 <h3>Installer des packages Python</h3>
-<pre class="codehilite"><code class="language-bash">pip install nom_paquet              # Installer
-pip install -U nom_paquet          # Mettre à jour
-pip install -r requirements.txt   #Depuis requirements
-pip uninstall nom_paquet            # Désinstaller
-
-# Python 3 spécifique
-pip3 install nom_paquet
-</code></pre>
-
+<pre><code>pip install nom_paquet              # Installer
+<p>pip install -U nom_paquet          # Mettre à jour</p>
+<p>pip install -r requirements.txt   #Depuis requirements</p>
+<p>pip uninstall nom_paquet            # Désinstaller</p>
+<h1>Python 3 spécifique</h1>
+<p>pip3 install nom_paquet</p>
+<p></code></pre></p>
 <h3>Gérer les versions</h3>
-<pre class="codehilite"><code class="language-bash">pip freeze                         # Liste tous les packages
-pip freeze &gt; requirements.txt     # Sauvegarder dépendances
-pip list --outdated               # Packages obsolètes
-pip install --upgrade pip          # Mettre à jour pip
-</code></pre>
-
-<hr />
+<pre><code>pip freeze                         # Liste tous les packages
+<p>pip freeze > requirements.txt     # Sauvegarder dépendances</p>
+<p>pip list --outdated               # Packages obsolètes</p>
+<p>pip install --upgrade pip          # Mettre à jour pip</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Node.js (NPM)</h2>
-<pre class="codehilite"><code class="language-bash"># Installer un package global
-sudo npm install -g nom_paquet
-
-# Installer local
-npm install nom_paquet
-
-# Installer depuis package.json
-npm install
-
-# Mettre à jour
-npm update
-
-# Lister
-npm list -g --depth=0
-</code></pre>
-
-<hr />
+<pre><code><h1>Installer un package global</h1>
+<p>sudo npm install -g nom_paquet</p>
+<h1>Installer local</h1>
+<p>npm install nom_paquet</p>
+<h1>Installer depuis package.json</h1>
+<p>npm install</p>
+<h1>Mettre à jour</h1>
+<p>npm update</p>
+<h1>Lister</h1>
+<p>npm list -g --depth=0</p>
+<p></code></pre></p>
+<hr>
 <h2>9. RUBYGEMS</h2>
-<pre class="codehilite"><code class="language-bash">gem install nom_gem           # Installer
-gem update nom_gem            # Mettre à jour
-gem uninstall nom_gem         # Supprimer
-gem list                      # Lister
-gem list --local
-</code></pre>
-
-<hr />
+<pre><code>gem install nom_gem           # Installer
+<p>gem update nom_gem            # Mettre à jour</p>
+<p>gem uninstall nom_gem         # Supprimer</p>
+<p>gem list                      # Lister</p>
+<p>gem list --local</p>
+<p></code></pre></p>
+<hr>
 <h2>10. Installation depuis les sources</h2>
 <p>Parfois, il faut compiler depuis les sources.</p>
-<pre class="codehilite"><code class="language-bash"># Télécharger
-wget https://exemple.com/paquet.tar.gz
-tar -xzf paquet.tar.gz
-cd paquet/
-
-# Compiler
-./configure
-make
-sudo make install
-
-# ou avec cmake
-mkdir build &amp;&amp; cd build
-cmake ..
-make
-sudo make install
-</code></pre>
-
-<hr />
+<pre><code><h1>Télécharger</h1>
+<p>wget https://exemple.com/paquet.tar.gz</p>
+<p>tar -xzf paquet.tar.gz</p>
+<p>cd paquet/</p>
+<h1>Compiler</h1>
+<p>./configure</p>
+<p>make</p>
+<p>sudo make install</p>
+<h1>ou avec cmake</h1>
+<p>mkdir build && cd build</p>
+<p>cmake ..</p>
+<p>make</p>
+<p>sudo make install</p>
+<p></code></pre></p>
+<hr>
 <h2>11. Nettoyage et maintenance</h2>
 <h3>Nettoyer le système</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt clean                 # Vider le cache apt
-sudo apt autoclean           # Supprimer anciens .deb
-sudo apt autoremove           # Supprimer dépendances inutilisées
-sudo apt autopurge           # + fichiers config
-
-# Nettoyer les journaux
-sudo journalctl --vacuum-size=100M
-</code></pre>
-
+<pre><code>sudo apt clean                 # Vider le cache apt
+<p>sudo apt autoclean           # Supprimer anciens .deb</p>
+<p>sudo apt autoremove           # Supprimer dépendances inutilisées</p>
+<p>sudo apt autopurge           # + fichiers config</p>
+<h1>Nettoyer les journaux</h1>
+<p>sudo journalctl --vacuum-size=100M</p>
+<p></code></pre></p>
 <h3>Espace disque</h3>
-<pre class="codehilite"><code class="language-bash"># Voir ce qui prend de la place
-df -h                         # Disque
-du -sh /var/cache/apt/archives  # Cache apt
-du -sh /* 2&gt;/dev/null | sort -h  # Dossiers volumineux
-</code></pre>
-
-<hr />
+<pre><code><h1>Voir ce qui prend de la place</h1>
+<p>df -h                         # Disque</p>
+<p>du -sh /var/cache/apt/archives  # Cache apt</p>
+<p>du -sh /* 2>/dev/null | sort -h  # Dossiers volumineux</p>
+<p></code></pre></p>
+<hr>
 <h2>12. Exercices pratiques</h2>
 <h3>Exercice 1 : Installer htop</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update
-sudo apt install htop
-htop
-</code></pre>
-
+<pre><code>sudo apt update
+<p>sudo apt install htop</p>
+<p>htop</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Installer un logiciel depuis un .deb</h3>
-<pre class="codehilite"><code class="language-bash"># Télécharger un .deb (ex: from https://.deb)
-wget https://exemple.com/paquet.deb
-sudo dpkg -i paquet.deb
-# Si erreur dépendances:
-sudo apt install -f
-</code></pre>
-
+<pre><code><h1>Télécharger un .deb (ex: from https://.deb)</h1>
+<p>wget https://exemple.com/paquet.deb</p>
+<p>sudo dpkg -i paquet.deb</p>
+<h1>Si erreur dépendances:</h1>
+<p>sudo apt install -f</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Nettoyer le système</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update
-sudo apt upgrade
-sudo apt autoremove
-sudo apt clean
-</code></pre>
-
-<hr />
+<pre><code>sudo apt update
+<p>sudo apt upgrade</p>
+<p>sudo apt autoremove</p>
+<p>sudo apt clean</p>
+<p></code></pre></p>
+<hr>
 <h2>13. Résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>apt update</code></td>
-<td>Mettre à jour les listes</td>
-</tr>
-<tr>
-<td><code>apt install</code></td>
-<td>Installer un paquet</td>
-</tr>
-<tr>
-<td><code>apt remove</code></td>
-<td>Supprimer (garde config)</td>
-</tr>
-<tr>
-<td><code>apt purge</code></td>
-<td>Supprimer + config</td>
-</tr>
-<tr>
-<td><code>apt upgrade</code></td>
-<td>Mettre à jour</td>
-</tr>
-<tr>
-<td><code>apt search</code></td>
-<td>Rechercher</td>
-</tr>
-<tr>
-<td><code>dpkg -i</code></td>
-<td>Installer un .deb</td>
-</tr>
-<tr>
-<td><code>snap install</code></td>
-<td>Installer un snap</td>
-</tr>
-<tr>
-<td><code>pip install</code></td>
-<td>Installer package Python</td>
-</tr>
-<tr>
-<td><code>apt autoremove</code></td>
-<td>Nettoyer dépendances</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>apt update</code></td><td>Mettre à jour les listes</td></tr></p>
+<p><tr><td><code>apt install</code></td><td>Installer un paquet</td></tr></p>
+<p><tr><td><code>apt remove</code></td><td>Supprimer (garde config)</td></tr></p>
+<p><tr><td><code>apt purge</code></td><td>Supprimer + config</td></tr></p>
+<p><tr><td><code>apt upgrade</code></td><td>Mettre à jour</td></tr></p>
+<p><tr><td><code>apt search</code></td><td>Rechercher</td></tr></p>
+<p><tr><td><code>dpkg -i</code></td><td>Installer un .deb</td></tr></p>
+<p><tr><td><code>snap install</code></td><td>Installer un snap</td></tr></p>
+<p><tr><td><code>pip install</code></td><td>Installer package Python</td></tr></p>
+<p><tr><td><code>apt autoremove</code></td><td>Nettoyer dépendances</td></tr></p>
+<p></table></p>
+<hr>
 <p>Maîtrise ces commandes et tu pourras installer n'importe quel logiciel sur Linux ! 💪</p>
-
-
-</div>
 <nav>
 <a href="04-processus-services.html" style="color:#666;text-decoration:none;">&larr; 04 - Processus et Services</a>
 <a href="06-reseaux.html" style="color:#00d9ff;text-decoration:none;">06 - Réseaux de base &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

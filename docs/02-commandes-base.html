@@ -4,521 +4,344 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Commandes de base Linux - ls, cd, mkdir, rm | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/02-commandes-base.html">
-<meta property="og:title" content="Commandes Base - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="robots" content="index, follow">
-<meta name="description" content="Maîtrisez les commandes essentielles de Linux : ls, cd, mkdir, rm, cp, mv, cat, touch. Apprenez à naviguer et manipuler les fichiers depuis le terminal.">
+<meta name="description" content="Maîtrisez les commandes essentielles de Linux : ls, cd, mkdir, rm, cp, mv, cat, touch.">
 <meta name="keywords" content="commandes linux, ls, cd, mkdir, rm, cp, mv, terminal, shell, console, commandes de base">
+<meta name="robots" content="index, follow">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
 <h1>Leçon 2 : Commandes de base</h1>
 <p>Dans cette leçon, tu vas maîtriser les commandes essentielles de Linux pour naviguer, manipuler des fichiers et interagir avec le terminal. Ce sont les fondations de tout administrateur Linux.</p>
-<hr />
+<hr>
 <h2>1. Navigation dans le système de fichiers</h2>
 <h3>pwd - print working directory</h3>
 <p>Affiche le répertoire courant (où tu es).</p>
-<pre class="codehilite"><code class="language-bash">pwd                     # Résultat: /home/david
-pwd -P                  # Chemin physique (suivre les liens)
-pwd -L                  # Chemin logique (tel que tapé)
-</code></pre>
-
+<pre><code>pwd                     # Résultat: /home/david
+<p>pwd -P                  # Chemin physique (suivre les liens)</p>
+<p>pwd -L                  # Chemin logique (tel que tapé)</p>
+<p></code></pre></p>
 <h3>cd - change directory</h3>
 <p>Se déplacer dans l'arborescence.</p>
-<pre class="codehilite"><code class="language-bash">cd /home/david/Documents    # Chemin absolu
-cd Documents               # Chemin relatif
-cd ~                       # Home de l'utilisateur
-cd                         # Retour au home
-cd -                       # Répertoire précédent
-cd ..                      # Monter d'un niveau
-cd ../..                   # Monter de 2 niveaux
-cd /                       # Racine du système
-</code></pre>
-
-<p><strong>Raccourcis utiles :</strong>
-- <code>~</code> ou <code>$HOME</code> : Répertoire personnel
-- <code>..</code> : Répertoire parent
-- <code>.</code> : Répertoire courant
-- <code>-</code> : Répertoire précédent</p>
-<hr />
+<pre><code>cd /home/david/Documents    # Chemin absolu
+<p>cd Documents               # Chemin relatif</p>
+<p>cd ~                       # Home de l'utilisateur</p>
+<p>cd                         # Retour au home</p>
+<p>cd -                       # Répertoire précédent</p>
+<p>cd ..                      # Monter d'un niveau</p>
+<p>cd ../..                   # Monter de 2 niveaux</p>
+<p>cd /                       # Racine du système</p>
+<p></code></pre></p>
+<p><strong>Raccourcis utiles :</strong></p>
+<ul><li><code>~</code> ou <code>$HOME</code> : Répertoire personnel</li>
+<li><code>..</code> : Répertoire parent</li>
+<li><code>.</code> : Répertoire courant</li>
+<li><code>-</code> : Répertoire précédent</li>
+<p></ul></p>
+<hr>
 <h2>2. Lister les fichiers</h2>
 <h3>ls - list</h3>
-<pre class="codehilite"><code class="language-bash">ls                      # Liste basique
-ls -l                   # Format long (détails)
-ls -a                   # Inclure fichiers cachés
-ls -A                   # Cachés sauf . et ..
-ls -la                  # Tout ensemble
-ls -lh                  # Tailles humaines (Ko, Mo, Go)
-ls -lS                  # Trier par taille
-ls -lt                  # Trier par date
-ls -ltr                 # Trier par date inversé
-ls -1                   # Un fichier par ligne
-ls -d */                # Lister seulement les dossiers
-ls -F                   # Indicateurs de type
-ls -R                   # Récursif (sous-dossiers)
-</code></pre>
-
+<pre><code>ls                      # Liste basique
+<p>ls -l                   # Format long (détails)</p>
+<p>ls -a                   # Inclure fichiers cachés</p>
+<p>ls -A                   # Cachés sauf . et ..</p>
+<p>ls -la                  # Tout ensemble</p>
+<p>ls -lh                  # Tailles humaines (Ko, Mo, Go)</p>
+<p>ls -lS                  # Trier par taille</p>
+<p>ls -lt                  # Trier par date</p>
+<p>ls -ltr                 # Trier par date inversé</p>
+<p>ls -1                   # Un fichier par ligne</p>
+<p>ls -d */                # Lister seulement les dossiers</p>
+<p>ls -F                   # Indicateurs de type</p>
+<p>ls -R                   # Récursif (sous-dossiers)</p>
+<p></code></pre></p>
 <h3>Comprendre ls -l</h3>
-<pre class="codehilite"><code>-rw-r--r-- 1 david david 1234 Mar 10 10:00 fichier.txt
-^            ^    ^     ^   ^        ^
-|            |    |     |   |        +-- Nom
-|            |    |     |   +-- Date modification
-|            |    |     | +-- Taille (octets)
-|            |    |     +-- Groupe
-|            |    +-- Propriétaire
-|            +-- Permissions (rwx)
-+-- Type de fichier (- = fichier, d = dossier, l = lien)
-</code></pre>
-
+<pre><code>-rw-r--r-- 1 david david 1234 Mar 10 10:00 fichier.txt
+<p>^            ^    ^     ^   ^        ^</p>
+<p>|            |    |     |   |        +-- Nom</p>
+<p>|            |    |     |   +-- Date modification</p>
+<p>|            |    |     | +-- Taille (octets)</p>
+<p>|            |    |     +-- Groupe</p>
+<p>|            |    +-- Propriétaire</p>
+<p>|            +-- Permissions (rwx)</p>
+<p>+-- Type de fichier (- = fichier, d = dossier, l = lien)</p>
+<p></code></pre></p>
 <h3>Commandes complémentaires</h3>
-<pre class="codehilite"><code class="language-bash"># Lister par extension
-ls *.txt
-
-# Lister par motif
-ls fichier*
-
-# Lister avec couleur (si activé)
-ls --color=auto
-
-# Lister inode (numéro unique)
-ls -li
-</code></pre>
-
-<hr />
+<pre><code><h1>Lister par extension</h1>
+<p>ls *.txt</p>
+<h1>Lister par motif</h1>
+<p>ls fichier*</p>
+<h1>Lister avec couleur (si activé)</h1>
+<p>ls --color=auto</p>
+<h1>Lister inode (numéro unique)</h1>
+<p>ls -li</p>
+<p></code></pre></p>
+<hr>
 <h2>3. Créer des fichiers et dossiers</h2>
 <h3>mkdir - make directory</h3>
-<pre class="codehilite"><code class="language-bash">mkdir dossier                 # Créer un dossier
-mkdir -p a/b/c/d              # Créer récursif
-mkdir -p projet/{src,bin,doc} # Plusieurs dossiers
-mkdir -m 755 dossier          # Avec permissions
-</code></pre>
-
+<pre><code>mkdir dossier                 # Créer un dossier
+<p>mkdir -p a/b/c/d              # Créer récursif</p>
+<p>mkdir -p projet/{src,bin,doc} # Plusieurs dossiers</p>
+<p>mkdir -m 755 dossier          # Avec permissions</p>
+<p></code></pre></p>
 <h3>touch - créer un fichier vide</h3>
-<pre class="codehilite"><code class="language-bash">touch fichier.txt             # Créer fichier vide
-touch file1.txt file2.txt     # Plusieurs fichiers
-touch -d &quot;2024-01-01&quot; file    # Avec date
-touch -a file                # Modifier date accès
-touch -m file                # Modifier date modification
-</code></pre>
-
+<pre><code>touch fichier.txt             # Créer fichier vide
+<p>touch file1.txt file2.txt     # Plusieurs fichiers</p>
+<p>touch -d "2024-01-01" file    # Avec date</p>
+<p>touch -a file                # Modifier date accès</p>
+<p>touch -m file                # Modifier date modification</p>
+<p></code></pre></p>
 <h3>echo et printf - créer avec contenu</h3>
-<pre class="codehilite"><code class="language-bash">echo &quot;Bonjour&quot; &gt; fichier.txt         # Créer et écrire
-echo &quot;Ligne 1&quot; &gt;&gt; fichier.txt         # Ajouter
-printf &quot;Bonjour %s\n&quot; &quot;Monde&quot;        # Formaté
-</code></pre>
-
-<hr />
+<pre><code>echo "Bonjour" > fichier.txt         # Créer et écrire
+<p>echo "Ligne 1" >> fichier.txt         # Ajouter</p>
+<p>printf "Bonjour %s\n" "Monde"        # Formaté</p>
+<p></code></pre></p>
+<hr>
 <h2>4. Copier des fichiers</h2>
 <h3>cp - copy</h3>
-<pre class="codehilite"><code class="language-bash">cp source.txt destination.txt           # Copier fichier
-cp fichier.txt dossier/                  # Vers dossier
-cp -r dossier/ copie_dossier/           # Copier dossier
-cp -i fichier.txt dest.txt              # Confirmation
-cp -n fichier.txt dest.txt              # Pas écraser
-cp -p fichier.txt dest.txt              # Préserver attributs
-cp -a dossier/ copie/                   # Archive (tout préserver)
-cp -v fichier.txt dest.txt              # Verbeux
-cp -u fichier.txt dest.txt              # Copier si plus récent
-cp fichier{,.bak}                       # Raccourci: + .bak
-</code></pre>
-
+<pre><code>cp source.txt destination.txt           # Copier fichier
+<p>cp fichier.txt dossier/                  # Vers dossier</p>
+<p>cp -r dossier/ copie_dossier/           # Copier dossier</p>
+<p>cp -i fichier.txt dest.txt              # Confirmation</p>
+<p>cp -n fichier.txt dest.txt              # Pas écraser</p>
+<p>cp -p fichier.txt dest.txt              # Préserver attributs</p>
+<p>cp -a dossier/ copie/                   # Archive (tout préserver)</p>
+<p>cp -v fichier.txt dest.txt              # Verbeux</p>
+<p>cp -u fichier.txt dest.txt              # Copier si plus récent</p>
+<p>cp fichier{,.bak}                       # Raccourci: + .bak</p>
+<p></code></pre></p>
 <h3>Options détaillées</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-i</code></td>
-<td>Demander confirmation</td>
-</tr>
-<tr>
-<td><code>-n</code></td>
-<td>Ne pas écraser</td>
-</tr>
-<tr>
-<td><code>-v</code></td>
-<td>Afficher ce qui est fait</td>
-</tr>
-<tr>
-<td><code>-p</code></td>
-<td>Préserver permissions, propriétaire, timestamp</td>
-</tr>
-<tr>
-<td><code>-r</code></td>
-<td>Copier récursivement</td>
-</tr>
-<tr>
-<td><code>-a</code></td>
-<td>Archive = -dR --preserve=all</td>
-</tr>
-<tr>
-<td><code>-u</code></td>
-<td>Mettre à jour si plus récent</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>-i</code></td><td>Demander confirmation</td></tr></p>
+<p><tr><td><code>-n</code></td><td>Ne pas écraser</td></tr></p>
+<p><tr><td><code>-v</code></td><td>Afficher ce qui est fait</td></tr></p>
+<p><tr><td><code>-p</code></td><td>Préserver permissions, propriétaire, timestamp</td></tr></p>
+<p><tr><td><code>-r</code></td><td>Copier récursivement</td></tr></p>
+<p><tr><td><code>-a</code></td><td>Archive = -dR --preserve=all</td></tr></p>
+<p><tr><td><code>-u</code></td><td>Mettre à jour si plus récent</td></tr></p>
+<p></table></p>
+<hr>
 <h2>5. Déplacer et renommer</h2>
 <h3>mv - move</h3>
-<pre class="codehilite"><code class="language-bash">mv source.txt destination.txt       # Renommer
-mv fichier.txt dossier/              # Déplacer vers dossier
-mv fichier1.txt fichier2.txt dossier/  # Plusieurs fichiers
-mv -i fichier.txt dest.txt          # Confirmation
-mv -n fichier.txt dest.txt         # Pas écraser
-mv -v fichier.txt dest.txt         # Verbeux
-mv -f fichier.txt dest.txt         # Forcer
-mv *.txt dossier/                   #Tous les .txt
-</code></pre>
-
-<hr />
+<pre><code>mv source.txt destination.txt       # Renommer
+<p>mv fichier.txt dossier/              # Déplacer vers dossier</p>
+<p>mv fichier1.txt fichier2.txt dossier/  # Plusieurs fichiers</p>
+<p>mv -i fichier.txt dest.txt          # Confirmation</p>
+<p>mv -n fichier.txt dest.txt         # Pas écraser</p>
+<p>mv -v fichier.txt dest.txt         # Verbeux</p>
+<p>mv -f fichier.txt dest.txt         # Forcer</p>
+<p>mv *.txt dossier/                   #Tous les .txt</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Supprimer des fichiers</h2>
 <h3>rm - remove</h3>
-<pre class="codehilite"><code class="language-bash">rm fichier.txt                   # Supprimer fichier
-rm -r dossier/                   # Supprimer dossier
-rm -rf dossier/                  # Forcer (sans confirmation)
-rm -ri dossier/                  # Confirmer chaque
-rm -v fichier.txt                 # Verbeux
-
-# ⚠️ DANGEREUX - NE JAMAIS FAIRE :
-rm -rf /              # SUPPRIMER TOUT LE SYSTÈME !
-rm -rf .             # Supprimer tout dossier courant
-rm -rf *             # Supprimer TOUT le contenu
-</code></pre>
-
+<pre><code>rm fichier.txt                   # Supprimer fichier
+<p>rm -r dossier/                   # Supprimer dossier</p>
+<p>rm -rf dossier/                  # Forcer (sans confirmation)</p>
+<p>rm -ri dossier/                  # Confirmer chaque</p>
+<p>rm -v fichier.txt                 # Verbeux</p>
+<h1>⚠️ DANGEREUX - NE JAMAIS FAIRE :</h1>
+<p>rm -rf /              # SUPPRIMER TOUT LE SYSTÈME !</p>
+<p>rm -rf .             # Supprimer tout dossier courant</p>
+<p>rm -rf *             # Supprimer TOUT le contenu</p>
+<p></code></pre></p>
 <h3>rmdir - remove directory</h3>
-<pre class="codehilite"><code class="language-bash">rmdir dossier              # Supprimer dossier vide
-rmdir -p a/b/c/d           # Supprimer chemin vide
-</code></pre>
-
-<hr />
+<pre><code>rmdir dossier              # Supprimer dossier vide
+<p>rmdir -p a/b/c/d           # Supprimer chemin vide</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Lire le contenu des fichiers</h2>
 <h3>cat - concatenate</h3>
-<pre class="codehilite"><code class="language-bash">cat fichier.txt                    # Afficher tout
-cat -n fichier.txt                 # Avec numéros de ligne
-cat -b fichier.txt                 # Numéros lignes non-vides
-cat -s fichier.txt                 # Supprimer lignes vides multiples
-cat fichier1.txt fichier2.txt      # Concaténer
-cat -A fichier.txt                 # Afficher caractères spéciaux
-</code></pre>
-
+<pre><code>cat fichier.txt                    # Afficher tout
+<p>cat -n fichier.txt                 # Avec numéros de ligne</p>
+<p>cat -b fichier.txt                 # Numéros lignes non-vides</p>
+<p>cat -s fichier.txt                 # Supprimer lignes vides multiples</p>
+<p>cat fichier1.txt fichier2.txt      # Concaténer</p>
+<p>cat -A fichier.txt                 # Afficher caractères spéciaux</p>
+<p></code></pre></p>
 <h3>less - afficher page par page</h3>
-<pre class="codehilite"><code class="language-bash">less gros_fichier.log              # Afficher
-less -N gros_fichier              # Numéros de ligne
-less -S gros_fichier              # Sans retour à la ligne
-</code></pre>
-
+<pre><code>less gros_fichier.log              # Afficher
+<p>less -N gros_fichier              # Numéros de ligne</p>
+<p>less -S gros_fichier              # Sans retour à la ligne</p>
+<p></code></pre></p>
 <p><strong>Commandes dans less :</strong></p>
-<table>
-<thead>
-<tr>
-<th>Touche</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Espace</td>
-<td>Page suivante</td>
-</tr>
-<tr>
-<td>b</td>
-<td>Page précédente</td>
-</tr>
-<tr>
-<td>Entrée</td>
-<td>Ligne suivante</td>
-</tr>
-<tr>
-<td>q</td>
-<td>Quitter</td>
-</tr>
-<tr>
-<td>/motif</td>
-<td>Rechercher en avant</td>
-</tr>
-<tr>
-<td>?motif</td>
-<td>Rechercher en arrière</td>
-</tr>
-<tr>
-<td>n</td>
-<td>Résultat suivant</td>
-</tr>
-<tr>
-<td>N</td>
-<td>Résultat précédent</td>
-</tr>
-<tr>
-<td>g</td>
-<td>Début du fichier</td>
-</tr>
-<tr>
-<td>G</td>
-<td>Fin du fichier</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Espace</td><td>Page suivante</td></tr></p>
+<p><tr><td>b</td><td>Page précédente</td></tr></p>
+<p><tr><td>Entrée</td><td>Ligne suivante</td></tr></p>
+<p><tr><td>q</td><td>Quitter</td></tr></p>
+<p><tr><td>/motif</td><td>Rechercher en avant</td></tr></p>
+<p><tr><td>?motif</td><td>Rechercher en arrière</td></tr></p>
+<p><tr><td>n</td><td>Résultat suivant</td></tr></p>
+<p><tr><td>N</td><td>Résultat précédent</td></tr></p>
+<p><tr><td>g</td><td>Début du fichier</td></tr></p>
+<p><tr><td>G</td><td>Fin du fichier</td></tr></p>
+<p></table></p>
 <h3>head - début du fichier</h3>
-<pre class="codehilite"><code class="language-bash">head fichier.txt                   # 10 premières lignes
-head -n 20 fichier.txt            # 20 premières lignes
-head -c 100 fichier.txt            # 100 premiers octets
-head -q fichier1.txt fichier2.txt # Plusieurs fichiers
-</code></pre>
-
+<pre><code>head fichier.txt                   # 10 premières lignes
+<p>head -n 20 fichier.txt            # 20 premières lignes</p>
+<p>head -c 100 fichier.txt            # 100 premiers octets</p>
+<p>head -q fichier1.txt fichier2.txt # Plusieurs fichiers</p>
+<p></code></pre></p>
 <h3>tail - fin du fichier</h3>
-<pre class="codehilite"><code class="language-bash">tail fichier.txt                   # 10 dernières lignes
-tail -n 20 fichier.txt             # 20 dernières lignes
-tail -f fichier.log                # Suivre en temps réel
-tail -f -n 100 fichier.log         # 100 dernières lignes en direct
-tail -c 100 fichier.txt            # 100 derniers octets
-</code></pre>
-
+<pre><code>tail fichier.txt                   # 10 dernières lignes
+<p>tail -n 20 fichier.txt             # 20 dernières lignes</p>
+<p>tail -f fichier.log                # Suivre en temps réel</p>
+<p>tail -f -n 100 fichier.log         # 100 dernières lignes en direct</p>
+<p>tail -c 100 fichier.txt            # 100 derniers octets</p>
+<p></code></pre></p>
 <h3>nl - numbered lines</h3>
-<pre class="codehilite"><code class="language-bash">nl fichier.txt                     # Afficher avec numéros
-nl -ba fichier.txt                 # Numéros même lignes vides
-</code></pre>
-
-<hr />
+<pre><code>nl fichier.txt                     # Afficher avec numéros
+<p>nl -ba fichier.txt                 # Numéros même lignes vides</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Compter et analyser</h2>
 <h3>wc - word count</h3>
-<pre class="codehilite"><code class="language-bash">wc fichier.txt                     # Lignes mots octets
-wc -l fichier.txt                  # Nombre de lignes
-wc -w fichier.txt                  # Nombre de mots
-wc -c fichier.txt                  # Nombre d'octets
-wc -m fichier.txt                  # Nombre de caractères
-</code></pre>
-
+<pre><code>wc fichier.txt                     # Lignes mots octets
+<p>wc -l fichier.txt                  # Nombre de lignes</p>
+<p>wc -w fichier.txt                  # Nombre de mots</p>
+<p>wc -c fichier.txt                  # Nombre d'octets</p>
+<p>wc -m fichier.txt                  # Nombre de caractères</p>
+<p></code></pre></p>
 <h3>file - type de fichier</h3>
-<pre class="codehilite"><code class="language-bash">file fichier.txt
-file *
-file -z archive.tar.gz             # Contenu sans décompresser
-</code></pre>
-
-<hr />
+<pre><code>file fichier.txt
+<p>file *</p>
+<p>file -z archive.tar.gz             # Contenu sans décompresser</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Commandes d'information</h2>
 <h3>date - afficher la date</h3>
-<pre class="codehilite"><code class="language-bash">date                   # Date et heure
-date +%H:%M            # Juste l'heure
-date +%d/%m/%Y         # Format personnalisé
-date -d &quot;tomorrow&quot;     # Date future
-date -d &quot;2 days ago&quot;  # Date passée
-</code></pre>
-
+<pre><code>date                   # Date et heure
+<p>date +%H:%M            # Juste l'heure</p>
+<p>date +%d/%m/%Y         # Format personnalisé</p>
+<p>date -d "tomorrow"     # Date future</p>
+<p>date -d "2 days ago"  # Date passée</p>
+<p></code></pre></p>
 <h3>whoami - utilisateur courant</h3>
-<pre class="codehilite"><code class="language-bash">whoami                 # Nom de l'utilisateur
-whoami -r             # ID du groupe
-</code></pre>
-
+<pre><code>whoami                 # Nom de l'utilisateur
+<p>whoami -r             # ID du groupe</p>
+<p></code></pre></p>
 <h3>uptime - temps de fonctionnement</h3>
-<pre class="codehilite"><code class="language-bash">uptime                 # Heures de fonctionnement
-uptime -s              # Depuis quand allumé
-</code></pre>
-
+<pre><code>uptime                 # Heures de fonctionnement
+<p>uptime -s              # Depuis quand allumé</p>
+<p></code></pre></p>
 <h3>cal - calendrier</h3>
-<pre class="codehilite"><code class="language-bash">cal                    # Mois en cours
-cal 2024                #Année entière
-cal -3                 # 3 mois
-cal -m 1               # Janvier avec Lundi
-</code></pre>
-
-<hr />
+<pre><code>cal                    # Mois en cours
+<p>cal 2024                #Année entière</p>
+<p>cal -3                 # 3 mois</p>
+<p>cal -m 1               # Janvier avec Lundi</p>
+<p></code></pre></p>
+<hr>
 <h2>10. Alias et raccourcis</h2>
 <h3>Créer des alias</h3>
-<pre class="codehilite"><code class="language-bash"># Temporaire (session)
-alias ll='ls -la'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Permanent (ajouter à ~/.bashrc)
-echo &quot;alias ll='ls -la'&quot; &gt;&gt; ~/.bashrc
-source ~/.bashrc
-</code></pre>
-
+<pre><code><h1>Temporaire (session)</h1>
+<p>alias ll='ls -la'</p>
+<p>alias la='ls -A'</p>
+<p>alias l='ls -CF'</p>
+<h1>Permanent (ajouter à ~/.bashrc)</h1>
+<p>echo "alias ll='ls -la'" >> ~/.bashrc</p>
+<p>source ~/.bashrc</p>
+<p></code></pre></p>
 <h3>Raccourcis clavier</h3>
-<table>
-<thead>
-<tr>
-<th>Raccourci</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Tab</td>
-<td>Complétion automatique</td>
-</tr>
-<tr>
-<td>Ctrl+C</td>
-<td>Interrompre commande</td>
-</tr>
-<tr>
-<td>Ctrl+Z</td>
-<td>Suspendre commande</td>
-</tr>
-<tr>
-<td>Ctrl+L</td>
-<td>Effacer l'écran</td>
-</tr>
-<tr>
-<td>Ctrl+U</td>
-<td>Effacer la ligne</td>
-</tr>
-<tr>
-<td>Ctrl+K</td>
-<td>Effacer jusqu'à la fin</td>
-</tr>
-<tr>
-<td>Ctrl+A</td>
-<td>Début de ligne</td>
-</tr>
-<tr>
-<td>Ctrl+E</td>
-<td>Fin de ligne</td>
-</tr>
-<tr>
-<td>Ctrl+R</td>
-<td>Rechercher dans l'historique</td>
-</tr>
-<tr>
-<td>!!</td>
-<td>Dernière commande</td>
-</tr>
-<tr>
-<td>!$</td>
-<td>Dernier argument</td>
-</tr>
-<tr>
-<td>!!:gs/old/new</td>
-<td>Remplacer dans la dernière commande</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Tab</td><td>Complétion automatique</td></tr></p>
+<p><tr><td>Ctrl+C</td><td>Interrompre commande</td></tr></p>
+<p><tr><td>Ctrl+Z</td><td>Suspendre commande</td></tr></p>
+<p><tr><td>Ctrl+L</td><td>Effacer l'écran</td></tr></p>
+<p><tr><td>Ctrl+U</td><td>Effacer la ligne</td></tr></p>
+<p><tr><td>Ctrl+K</td><td>Effacer jusqu'à la fin</td></tr></p>
+<p><tr><td>Ctrl+A</td><td>Début de ligne</td></tr></p>
+<p><tr><td>Ctrl+E</td><td>Fin de ligne</td></tr></p>
+<p><tr><td>Ctrl+R</td><td>Rechercher dans l'historique</td></tr></p>
+<p><tr><td>!!</td><td>Dernière commande</td></tr></p>
+<p><tr><td>!$</td><td>Dernier argument</td></tr></p>
+<p><tr><td>!!:gs/old/new</td><td>Remplacer dans la dernière commande</td></tr></p>
+<p></table></p>
+<hr>
 <h2>11. Exercices pratiques</h2>
 <h3>Exercice 1 : Navigation</h3>
-<pre class="codehilite"><code class="language-bash">pwd                              # Où suis-je ?
-cd /tmp                          # Aller dans /tmp
-cd ~                             # Retour au home
-cd -                             # Revenir au précédent
-</code></pre>
-
+<pre><code>pwd                              # Où suis-je ?
+<p>cd /tmp                          # Aller dans /tmp</p>
+<p>cd ~                             # Retour au home</p>
+<p>cd -                             # Revenir au précédent</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Créer une structure</h3>
-<pre class="codehilite"><code class="language-bash">mkdir -p projet/{src,docs,tests}
-touch projet/src/main.py
-touch projet/tests/test_main.py
-ls -R projet/
-</code></pre>
-
+<pre><code>mkdir -p projet/{src,docs,tests}
+<p>touch projet/src/main.py</p>
+<p>touch projet/tests/test_main.py</p>
+<p>ls -R projet/</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Manipulation de fichiers</h3>
-<pre class="codehilite"><code class="language-bash">echo &quot;#!/bin/bash&quot; &gt; script.sh
-chmod +x script.sh
-cp script.sh script_backup.sh
-ls -l *.sh
-</code></pre>
-
+<pre><code>echo "#!/bin/bash" > script.sh
+<p>chmod +x script.sh</p>
+<p>cp script.sh script_backup.sh</p>
+<p>ls -l *.sh</p>
+<p></code></pre></p>
 <h3>Exercice 4 : Lire des logs</h3>
-<pre class="codehilite"><code class="language-bash">head -20 /var/log/syslog
-tail -f /var/log/syslog          # En temps réel
-grep -i error /var/log/syslog | head -10
-</code></pre>
-
-<hr />
+<pre><code>head -20 /var/log/syslog
+<p>tail -f /var/log/syslog          # En temps réel</p>
+<p>grep -i error /var/log/syslog | head -10</p>
+<p></code></pre></p>
+<hr>
 <h2>12. Tableau résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>pwd</code></td>
-<td>Répertoire courant</td>
-</tr>
-<tr>
-<td><code>ls</code></td>
-<td>Lister fichiers</td>
-</tr>
-<tr>
-<td><code>cd</code></td>
-<td>Changer répertoire</td>
-</tr>
-<tr>
-<td><code>mkdir</code></td>
-<td>Créer dossier</td>
-</tr>
-<tr>
-<td><code>touch</code></td>
-<td>Créer fichier</td>
-</tr>
-<tr>
-<td><code>cp</code></td>
-<td>Copier</td>
-</tr>
-<tr>
-<td><code>mv</code></td>
-<td>Déplacer/renommer</td>
-</tr>
-<tr>
-<td><code>rm</code></td>
-<td>Supprimer</td>
-</tr>
-<tr>
-<td><code>cat</code></td>
-<td>Afficher fichier</td>
-</tr>
-<tr>
-<td><code>less</code></td>
-<td>Afficher page par page</td>
-</tr>
-<tr>
-<td><code>head</code></td>
-<td>Début du fichier</td>
-</tr>
-<tr>
-<td><code>tail</code></td>
-<td>Fin du fichier</td>
-</tr>
-<tr>
-<td><code>wc</code></td>
-<td>Compter</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>pwd</code></td><td>Répertoire courant</td></tr></p>
+<p><tr><td><code>ls</code></td><td>Lister fichiers</td></tr></p>
+<p><tr><td><code>cd</code></td><td>Changer répertoire</td></tr></p>
+<p><tr><td><code>mkdir</code></td><td>Créer dossier</td></tr></p>
+<p><tr><td><code>touch</code></td><td>Créer fichier</td></tr></p>
+<p><tr><td><code>cp</code></td><td>Copier</td></tr></p>
+<p><tr><td><code>mv</code></td><td>Déplacer/renommer</td></tr></p>
+<p><tr><td><code>rm</code></td><td>Supprimer</td></tr></p>
+<p><tr><td><code>cat</code></td><td>Afficher fichier</td></tr></p>
+<p><tr><td><code>less</code></td><td>Afficher page par page</td></tr></p>
+<p><tr><td><code>head</code></td><td>Début du fichier</td></tr></p>
+<p><tr><td><code>tail</code></td><td>Fin du fichier</td></tr></p>
+<p><tr><td><code>wc</code></td><td>Compter</td></tr></p>
+<p></table></p>
+<hr>
 <p>Ces commandes sont ton quotidien sous Linux. Maîtrise-les ! 💪</p>
-
-
-</div>
 <nav>
 <a href="01-introduction.html" style="color:#666;text-decoration:none;">&larr; 01 - Introduction à Linux</a>
 <a href="03-permissions.html" style="color:#00d9ff;text-decoration:none;">03 - Permissions Linux &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

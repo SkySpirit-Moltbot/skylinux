@@ -3,433 +3,295 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redirections et Pipes Linux - >, >>, |, tee | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/15-redirections-pipes.html">
-<meta property="og:title" content="Redirections Pipes - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Redirections et Pipes Linux | SkyLinux</title>
+<meta name="description" content="Maîtrisez les redirections et pipes sous Linux.">
+<meta name="keywords" content="redirection linux, pipe, |, >, >>, tee, chainer commandes">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Maîtrisez les redirections et pipes sous Linux. Apprenez à rediriger la sortie, l'entrée et à chaîner les commandes avec |.">
-<meta name="keywords" content="redirection linux, pipe, |, >, >>, tee, chainer commandes, stdin, stdout, stderr">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>15 - redirections pipes : Redirections et Pipes</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 15 : Redirections et Pipes</h1>
 <p>Dans cette leçon, tu vas maîtriser le flux de données sous Linux : redirections et pipes. Ces outils sont fondamentaux pour traiter des données et créer des scripts puissants.</p>
-<hr />
+<hr>
 <h2>1. Entrée et sortie standard</h2>
 <h3>Les 3 flux</h3>
-<table>
-<thead>
-<tr>
-<th>Flux</th>
-<th>Numéro</th>
-<th>Description</th>
-<th>Par défaut</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>STDIN</strong></td>
-<td>0</td>
-<td>Entrée clavier</td>
-<td>Clavier</td>
-</tr>
-<tr>
-<td><strong>STDOUT</strong></td>
-<td>1</td>
-<td>Sortie normale</td>
-<td>Écran</td>
-</tr>
-<tr>
-<td><strong>STDERR</strong></td>
-<td>2</td>
-<td>Erreurs</td>
-<td>Écran</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr><th>Numéro</th><th>Description</th></tr></p>
+<p><tr><td><strong>STDIN</strong></td><td>0</td><td>Entrée clavier</td><td>Clavier</td></tr></p>
+<p><tr><td><strong>STDOUT</strong></td><td>1</td><td>Sortie normale</td><td>Écran</td></tr></p>
+<p><tr><td><strong>STDERR</strong></td><td>2</td><td>Erreurs</td><td>Écran</td></tr></p>
+<p></table></p>
 <h3>Exemple simple</h3>
-<pre class="codehilite"><code class="language-bash">cat              # Lit depuis stdin, écrit vers stdout
-ls &gt; fichier     # Redirige stdout vers fichier
-ls 2&gt; erreur    # Redirige stderr vers erreur
-</code></pre>
-
-<hr />
+<pre><code>cat              # Lit depuis stdin, écrit vers stdout
+<p>ls > fichier     # Redirige stdout vers fichier</p>
+<p>ls 2> erreur    # Redirige stderr vers erreur</p>
+<p></code></pre></p>
+<hr>
 <h2>2. Redirections de sortie</h2>
-<h3>&gt; - Rediriger (écraser)</h3>
-<pre class="codehilite"><code class="language-bash"># Écrire dans un fichier (écrase)
-echo &quot;Bonjour&quot; &gt; fichier.txt
-ls -l &gt; liste.txt
-
-# Rediriger stderr (2&gt;)
-ls /inexistant 2&gt; erreurs.txt
-</code></pre>
-
-<h3>&gt;&gt; - Rediriger (ajouter)</h3>
-<pre class="codehilite"><code class="language-bash"># Ajouter à la fin
-echo &quot;Ligne 1&quot; &gt; log.txt
-echo &quot;Ligne 2&quot; &gt;&gt; log.txt
-
-# Logger avec horodatage
-echo &quot;$(date): Démarrage&quot; &gt;&gt; /var/log/mon_script.log
-</code></pre>
-
-<h3>2&gt;&amp;1 - Combiner stdout et stderr</h3>
-<pre class="codehilite"><code class="language-bash"># Tout rediriger vers un fichier
-commande &gt; tout.log 2&gt;&amp;1
-commande &amp;&gt; tout.log              # Syntaxe courte
-
-# Vers /dev/null (jeter)
-commande &gt; /dev/null 2&gt;&amp;1
-</code></pre>
-
-<hr />
+<h3>> - Rediriger (écraser)</h3>
+<pre><code><h1>Écrire dans un fichier (écrase)</h1>
+<p>echo "Bonjour" > fichier.txt</p>
+<p>ls -l > liste.txt</p>
+<h1>Rediriger stderr (2>)</h1>
+<p>ls /inexistant 2> erreurs.txt</p>
+<p></code></pre></p>
+<h3>>> - Rediriger (ajouter)</h3>
+<pre><code><h1>Ajouter à la fin</h1>
+<p>echo "Ligne 1" > log.txt</p>
+<p>echo "Ligne 2" >> log.txt</p>
+<h1>Logger avec horodatage</h1>
+<p>echo "$(date): Démarrage" >> /var/log/mon_script.log</p>
+<p></code></pre></p>
+<h3>2>&1 - Combiner stdout et stderr</h3>
+<pre><code><h1>Tout rediriger vers un fichier</h1>
+<p>commande > tout.log 2>&1</p>
+<p>commande &> tout.log              # Syntaxe courte</p>
+<h1>Vers /dev/null (jeter)</h1>
+<p>commande > /dev/null 2>&1</p>
+<p></code></pre></p>
+<hr>
 <h2>3. Redirections d'entrée</h2>
-<h3>&lt; - Entrée depuis fichier</h3>
-<pre class="codehilite"><code class="language-bash"># Au lieu de taper au clavier
-cat &lt; fichier.txt
-
-# Trier un fichier
-sort &lt; fichier.txt
-
-# Utiliser un fichier comme entrée
-commande &lt; input.txt
-</code></pre>
-
-<h3>&lt;&lt; - Here Document</h3>
-<pre class="codehilite"><code class="language-bash"># Entrée multiligne
-cat &lt;&lt; EOF
-Ligne 1
-Ligne 2
-Ligne 3
-EOF
-
-# Avec変数
-NOM=&quot;David&quot;
-cat &lt;&lt; EOF
-Bonjour $NOM
-Bienvenue!
-EOF
-
-# Sans expansion (ici-document)
-cat &lt;&lt; 'EOF'
-$LITERAL ne sera pas expansé
-EOF
-</code></pre>
-
-<h3>&lt;&lt;&lt; - Here String</h3>
-<pre class="codehilite"><code class="language-bash"># Une seule ligne
-wc -w &lt;&lt;&lt; &quot;Bonjour le monde&quot;
-# Résultat: 3
-
-read -r nom &lt;&lt;&lt; &quot;Alice&quot;
-echo &quot;Salut $nom&quot;
-</code></pre>
-
-<hr />
+<h3>< - Entrée depuis fichier</h3>
+<pre><code><h1>Au lieu de taper au clavier</h1>
+<p>cat < fichier.txt</p>
+<h1>Trier un fichier</h1>
+<p>sort < fichier.txt</p>
+<h1>Utiliser un fichier comme entrée</h1>
+<p>commande < input.txt</p>
+<p></code></pre></p>
+<h3><< - Here Document</h3>
+<pre><code><h1>Entrée multiligne</h1>
+<p>cat << EOF</p>
+<p>Ligne 1</p>
+<p>Ligne 2</p>
+<p>Ligne 3</p>
+<p>EOF</p>
+<h1>Avec変数</h1>
+<p>NOM="David"</p>
+<p>cat << EOF</p>
+<p>Bonjour $NOM</p>
+<p>Bienvenue!</p>
+<p>EOF</p>
+<h1>Sans expansion (ici-document)</h1>
+<p>cat << 'EOF'</p>
+<p>$LITERAL ne sera pas expansé</p>
+<p>EOF</p>
+<p></code></pre></p>
+<h3><<< - Here String</h3>
+<pre><code><h1>Une seule ligne</h1>
+<p>wc -w <<< "Bonjour le monde"</p>
+<h1>Résultat: 3</h1>
+<p>read -r nom <<< "Alice"</p>
+<p>echo "Salut $nom"</p>
+<p></code></pre></p>
+<hr>
 <h2>4. Pipes (tubes)</h2>
 <h3>| - Chaîner les commandes</h3>
 <p>Le <strong>pipe</strong> envoie la sortie d'une commande vers l'entrée de la suivante.</p>
-<pre class="codehilite"><code class="language-bash"># Trier et afficher
-ls | sort
-
-# Compter les fichiers
-ls | wc -l
-
-# Chercher dans la sortie
-ls | grep &quot;.txt&quot;
-
-# Afficher les 10 premières lignes
-ls -l | head -10
-</code></pre>
-
+<pre><code><h1>Trier et afficher</h1>
+<p>ls | sort</p>
+<h1>Compter les fichiers</h1>
+<p>ls | wc -l</p>
+<h1>Chercher dans la sortie</h1>
+<p>ls | grep ".txt"</p>
+<h1>Afficher les 10 premières lignes</h1>
+<p>ls -l | head -10</p>
+<p></code></pre></p>
 <h3>Exemples pratiques</h3>
-<pre class="codehilite"><code class="language-bash"># Voir processus qui utilisent le plus de mémoire
-ps aux --sort=-%mem | head -10
-
-# Compter les lignes de code
-find . -name &quot;*.py&quot; | xargs wc -l | tail -1
-
-# Dernier utilisateur connecté
-last | head -1
-
-# Rechercher et limiter
-dmesg | grep -i error | tail -5
-
-# Pipeline complexe
-cat /var/log/syslog | grep -i error | sort | uniq -c | sort -rn | head -10
-</code></pre>
-
-<hr />
+<pre><code><h1>Voir processus qui utilisent le plus de mémoire</h1>
+<p>ps aux --sort=-%mem | head -10</p>
+<h1>Compter les lignes de code</h1>
+<p>find . -name "*.py" | xargs wc -l | tail -1</p>
+<h1>Dernier utilisateur connecté</h1>
+<p>last | head -1</p>
+<h1>Rechercher et limiter</h1>
+<p>dmesg | grep -i error | tail -5</p>
+<h1>Pipeline complexe</h1>
+<p>cat /var/log/syslog | grep -i error | sort | uniq -c | sort -rn | head -10</p>
+<p></code></pre></p>
+<hr>
 <h2>5. Commandes de traitement de texte</h2>
 <h3>head - Début du fichier</h3>
-<pre class="codehilite"><code class="language-bash">head fichier.txt              # 10 premières lignes
-head -n 20 fichier.txt        # 20 premières lignes
-head -c 100 fichier.txt       # 100 premiers octets
-</code></pre>
-
+<pre><code>head fichier.txt              # 10 premières lignes
+<p>head -n 20 fichier.txt        # 20 premières lignes</p>
+<p>head -c 100 fichier.txt       # 100 premiers octets</p>
+<p></code></pre></p>
 <h3>tail - Fin du fichier</h3>
-<pre class="codehilite"><code class="language-bash">tail fichier.txt              # 10 dernières lignes
-tail -n 20 fichier.txt        # 20 dernières lignes
-tail -f fichier.log           # Suivre en temps réel
-tail -f /var/log/syslog       # Logger en direct
-</code></pre>
-
+<pre><code>tail fichier.txt              # 10 dernières lignes
+<p>tail -n 20 fichier.txt        # 20 dernières lignes</p>
+<p>tail -f fichier.log           # Suivre en temps réel</p>
+<p>tail -f /var/log/syslog       # Logger en direct</p>
+<p></code></pre></p>
 <h3>wc - Compter</h3>
-<pre class="codehilite"><code class="language-bash">wc -l fichier                # Nombre de lignes
-wc -w fichier                # Nombre de mots
-wc -c fichier                # Nombre d'octets
-wc fichier                   # Les trois
-</code></pre>
-
+<pre><code>wc -l fichier                # Nombre de lignes
+<p>wc -w fichier                # Nombre de mots</p>
+<p>wc -c fichier                # Nombre d'octets</p>
+<p>wc fichier                   # Les trois</p>
+<p></code></pre></p>
 <h3>sort - Trier</h3>
-<pre class="codehilite"><code class="language-bash">sort fichier.txt             # Trier alphabétiquement
-sort -n fichier.txt          # Trier numériquement
-sort -r fichier.txt          # Inverser l'ordre
-sort -u fichier.txt          # Trier et supprimer doublons
-sort -k2 fichier.txt         # Trier par colonne 2
-</code></pre>
-
+<pre><code>sort fichier.txt             # Trier alphabétiquement
+<p>sort -n fichier.txt          # Trier numériquement</p>
+<p>sort -r fichier.txt          # Inverser l'ordre</p>
+<p>sort -u fichier.txt          # Trier et supprimer doublons</p>
+<p>sort -k2 fichier.txt         # Trier par colonne 2</p>
+<p></code></pre></p>
 <h3>uniq - Lignes uniques</h3>
-<pre class="codehilite"><code class="language-bash">uniq fichier.txt              # Supprimer doublons adjacents
-uniq -c fichier.txt           # Avec compteur
-uniq -d fichier.txt          # Afficher seulement doublons
-sort fichier | uniq          # Tous les uniques (triés)
-</code></pre>
-
+<pre><code>uniq fichier.txt              # Supprimer doublons adjacents
+<p>uniq -c fichier.txt           # Avec compteur</p>
+<p>uniq -d fichier.txt          # Afficher seulement doublons</p>
+<p>sort fichier | uniq          # Tous les uniques (triés)</p>
+<p></code></pre></p>
 <h3>cut - Extraire des colonnes</h3>
-<pre class="codehilite"><code class="language-bash">cut -d: -f1 /etc/passwd      # Première colonne (séparateur :)
-cut -c1-10 fichier.txt        # Caractères 1 à 10
-cut -f1,3 fichier.tsv        # Colonnes 1 et 3
-</code></pre>
-
+<pre><code>cut -d: -f1 /etc/passwd      # Première colonne (séparateur :)
+<p>cut -c1-10 fichier.txt        # Caractères 1 à 10</p>
+<p>cut -f1,3 fichier.tsv        # Colonnes 1 et 3</p>
+<p></code></pre></p>
 <h3>awk - Traitement puissant</h3>
-<pre class="codehilite"><code class="language-bash"># Afficher la première colonne
-awk '{print $1}' fichier.txt
-
-# Avec séparateur
-awk -F: '{print $1, $5}' /etc/passwd
-
-# Condition
-awk '$3 &gt; 1000' /etc/passwd
-
-# Somme
-awk '{sum+=$1} END {print sum}' fichier.txt
-</code></pre>
-
+<pre><code><h1>Afficher la première colonne</h1>
+<p>awk '{print $1}' fichier.txt</p>
+<h1>Avec séparateur</h1>
+<p>awk -F: '{print $1, $5}' /etc/passwd</p>
+<h1>Condition</h1>
+<p>awk '$3 > 1000' /etc/passwd</p>
+<h1>Somme</h1>
+<p>awk '{sum+=$1} END {print sum}' fichier.txt</p>
+<p></code></pre></p>
 <h3>sed - Éditeur de flux</h3>
-<pre class="codehilite"><code class="language-bash"># Remplacer
-sed 's/ancien/nouveau/' fichier.txt
-
-# Remplacer global
-sed 's/ancien/nouveau/g' fichier.txt
-
-# Supprimer lignes
-sed '/motif/d' fichier.txt
-
-# Numérotation
-sed = fichier.txt | sed 'N;s/\n/\t/'
-</code></pre>
-
-<hr />
+<pre><code><h1>Remplacer</h1>
+<p>sed 's/ancien/nouveau/' fichier.txt</p>
+<h1>Remplacer global</h1>
+<p>sed 's/ancien/nouveau/g' fichier.txt</p>
+<h1>Supprimer lignes</h1>
+<p>sed '/motif/d' fichier.txt</p>
+<h1>Numérotation</h1>
+<p>sed = fichier.txt | sed 'N;s/\n/\t/'</p>
+<p></code></pre></p>
+<hr>
 <h2>6. tee - Dupliquer le flux</h2>
 <h3>Afficher ET sauvegarder</h3>
-<pre class="codehilite"><code class="language-bash"># Afficher + écrire dans un fichier
-commande | tee fichier.txt
-
-# Ajouter + afficher
-commande | tee -a fichier.txt
-
-# Pipeline avec log
-make | tee build.log
-</code></pre>
-
-<hr />
+<pre><code><h1>Afficher + écrire dans un fichier</h1>
+<p>commande | tee fichier.txt</p>
+<h1>Ajouter + afficher</h1>
+<p>commande | tee -a fichier.txt</p>
+<h1>Pipeline avec log</h1>
+<p>make | tee build.log</p>
+<p></code></pre></p>
+<hr>
 <h2>7. xargs - Construire des commandes</h2>
 <h3>Construire des arguments</h3>
-<pre class="codehilite"><code class="language-bash"># Supprimer tous les fichiers .tmp
-find . -name &quot;*.tmp&quot; | xargs rm
-
-# Confirmation
-find . -name &quot;*.tmp&quot; | xargs -p rm
-
-# Limiter par lot
-cat fichiers.txt | xargs -n 10 commande
-
-# Avec placeholder
-find . -name &quot;*.txt&quot; | xargs -I {} cp {} /backup/
-</code></pre>
-
-<hr />
+<pre><code><h1>Supprimer tous les fichiers .tmp</h1>
+<p>find . -name "*.tmp" | xargs rm</p>
+<h1>Confirmation</h1>
+<p>find . -name "*.tmp" | xargs -p rm</p>
+<h1>Limiter par lot</h1>
+<p>cat fichiers.txt | xargs -n 10 commande</p>
+<h1>Avec placeholder</h1>
+<p>find . -name "*.txt" | xargs -I {} cp {} /backup/</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Exercices pratiques</h2>
 <h3>Exercice 1 : Pipeline de logs</h3>
-<pre class="codehilite"><code class="language-bash"># Rechercher les erreurs dans les logs
-tail -f /var/log/syslog | grep -i error
-</code></pre>
-
+<pre><code><h1>Rechercher les erreurs dans les logs</h1>
+<p>tail -f /var/log/syslog | grep -i error</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Statistiques</h3>
-<pre class="codehilite"><code class="language-bash"># Compter les fichiers par extension
-find . -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn
-</code></pre>
-
+<pre><code><h1>Compter les fichiers par extension</h1>
+<p>find . -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Nettoyage</h3>
-<pre class="codehilite"><code class="language-bash"># Supprimer les fichiers de plus de 30 jours
-find /tmp -mtime +30 | xargs rm -rf
-</code></pre>
-
+<pre><code><h1>Supprimer les fichiers de plus de 30 jours</h1>
+<p>find /tmp -mtime +30 | xargs rm -rf</p>
+<p></code></pre></p>
 <h3>Exercice 4 : Surveillance</h3>
-<pre class="codehilite"><code class="language-bash"># Voir les plus gros fichiers
-du -sh * | sort -rh | head -10
-</code></pre>
-
-<hr />
+<pre><code><h1>Voir les plus gros fichiers</h1>
+<p>du -sh * | sort -rh | head -10</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Tableaux résumés</h2>
 <h3>Symboles de redirection</h3>
-<table>
-<thead>
-<tr>
-<th>Symbole</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>&gt;</code></td>
-<td>Rediriger stdout (écrase)</td>
-</tr>
-<tr>
-<td><code>&gt;&gt;</code></td>
-<td>Rediriger stdout (ajoute)</td>
-</tr>
-<tr>
-<td><code>2&gt;</code></td>
-<td>Rediriger stderr</td>
-</tr>
-<tr>
-<td><code>2&gt;&amp;1</code></td>
-<td>Stdout + stderr</td>
-</tr>
-<tr>
-<td><code>&lt;</code></td>
-<td>Rediriger stdin</td>
-</tr>
-<tr>
-<td><code>&lt;&lt;</code></td>
-<td>Here document</td>
-</tr>
-<tr>
-<td><code>&lt;&lt;&lt;</code></td>
-<td>Here string</td>
-</tr>
-<tr>
-<td><code>|</code></td>
-<td>Pipe</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>></code></td><td>Rediriger stdout (écrase)</td></tr></p>
+<p><tr><td><code>>></code></td><td>Rediriger stdout (ajoute)</td></tr></p>
+<p><tr><td><code>2></code></td><td>Rediriger stderr</td></tr></p>
+<p><tr><td><code>2>&1</code></td><td>Stdout + stderr</td></tr></p>
+<p><tr><td><code><</code></td><td>Rediriger stdin</td></tr></p>
+<p><tr><td><code><<</code></td><td>Here document</td></tr></p>
+<p><tr><td><code><<<</code></td><td>Here string</td></tr></p>
+<p><tr><td><code></td><td></code></td><td>Pipe</td></tr></p>
+<p></table></p>
 <h3>Commandes utiles avec pipes</h3>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Utilisation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>head</code></td>
-<td>Début du fichier</td>
-</tr>
-<tr>
-<td><code>tail</code></td>
-<td>Fin du fichier</td>
-</tr>
-<tr>
-<td><code>grep</code></td>
-<td>Rechercher</td>
-</tr>
-<tr>
-<td><code>sort</code></td>
-<td>Trier</td>
-</tr>
-<tr>
-<td><code>uniq</code></td>
-<td>Dupliquer</td>
-</tr>
-<tr>
-<td><code>wc</code></td>
-<td>Compter</td>
-</tr>
-<tr>
-<td><code>cut</code></td>
-<td>Colonnes</td>
-</tr>
-<tr>
-<td><code>awk</code></td>
-<td>Traitement</td>
-</tr>
-<tr>
-<td><code>sed</code></td>
-<td>Édition</td>
-</tr>
-<tr>
-<td><code>tee</code></td>
-<td>Dupliquer</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>head</code></td><td>Début du fichier</td></tr></p>
+<p><tr><td><code>tail</code></td><td>Fin du fichier</td></tr></p>
+<p><tr><td><code>grep</code></td><td>Rechercher</td></tr></p>
+<p><tr><td><code>sort</code></td><td>Trier</td></tr></p>
+<p><tr><td><code>uniq</code></td><td>Dupliquer</td></tr></p>
+<p><tr><td><code>wc</code></td><td>Compter</td></tr></p>
+<p><tr><td><code>cut</code></td><td>Colonnes</td></tr></p>
+<p><tr><td><code>awk</code></td><td>Traitement</td></tr></p>
+<p><tr><td><code>sed</code></td><td>Édition</td></tr></p>
+<p><tr><td><code>tee</code></td><td>Dupliquer</td></tr></p>
+<p></table></p>
+<hr>
 <h2>10. Examples avancés</h2>
 <h3>Transformer des données</h3>
-<pre class="codehilite"><code class="language-bash"># Extraire et formater
-cat /etc/passwd | awk -F: '{print $1 &quot;:&quot; $5}' | sort
-
-# Compter par groupe
-groups * 2&gt;/dev/null | cut -d: -f2 | sort | uniq -c
-
-# Nettoyer et dédoublonner
-cat data.txt | sed '/^$/d' | sort | uniq &gt; clean.txt
-</code></pre>
-
+<pre><code><h1>Extraire et formater</h1>
+<p>cat /etc/passwd | awk -F: '{print $1 ":" $5}' | sort</p>
+<h1>Compter par groupe</h1>
+<p>groups * 2>/dev/null | cut -d: -f2 | sort | uniq -c</p>
+<h1>Nettoyer et dédoublonner</h1>
+<p>cat data.txt | sed '/^$/d' | sort | uniq > clean.txt</p>
+<p></code></pre></p>
 <h3>Surveillance système</h3>
-<pre class="codehilite"><code class="language-bash"># Top 10 processus mémoire
-ps aux --sort=-%mem | head -11
-
-# Connexions réseau par IP
-netstat -tn | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn
-
-# Fichiers les plus modifiés récemment
-find . -type f -mmin -60 | sort -k -M
-</code></pre>
-
-<hr />
+<pre><code><h1>Top 10 processus mémoire</h1>
+<p>ps aux --sort=-%mem | head -11</p>
+<h1>Connexions réseau par IP</h1>
+<p>netstat -tn | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn</p>
+<h1>Fichiers les plus modifiés récemment</h1>
+<p>find . -type f -mmin -60 | sort -k -M</p>
+<p></code></pre></p>
+<hr>
 <p>Maîtrise les redirections et pipes pour devenir un ninja du terminal ! 🔥</p>
-
-
-</div>
 <nav>
 <a href="14-gestion-utilisateurs-groupes.html" style="color:#666;text-decoration:none;">&larr; 14 - Gestion des utilisateurs et groupes</a>
 <a href="16-editeurs-texte.html" style="color:#00d9ff;text-decoration:none;">16 - Éditeurs de texte en ligne de commande &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

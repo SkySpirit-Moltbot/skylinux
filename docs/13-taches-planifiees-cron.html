@@ -3,355 +3,221 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tâches planifiées avec Cron Linux - crontab | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/13-taches-planifiees-cron.html">
-<meta property="og:title" content="Taches Planifiees Cron - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Tâches planifiées avec Cron Linux | SkyLinux</title>
+<meta name="description" content="Automatisez vos tâches avec Cron et crontab.">
+<meta name="keywords" content="cron linux, crontab, tache planifiee, automatique">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Automatisez vos tâches avec Cron et crontab. Apprenez à planifier l'exécution de scripts et commandes à intervalles réguliers.">
-<meta name="keywords" content="cron linux, crontab, tache planifiee, automatique, planification, job cron, cron job">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>13 - taches planifiees cron : Tâches planifiées avec Cron</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 13 : Tâches planifiées avec Cron</h1>
 <p>Cron est le planificateur de tâches de Linux. Dans cette leçon, tu vas maîtriser cron pour automatiser tes tâches.</p>
-<hr />
+<hr>
 <h2>1. Comprendre Cron</h2>
 <h3>Qu'est-ce que Cron ?</h3>
-<p>Cron est un <strong>daemon</strong> qui exécute des commandes à des moments précis. Il est indispensable pour :
-- Sauvegardes automatiques
-- Nettoyage de fichiers
-- Scripts de maintenance
-- Tâches récurrentes</p>
+<p>Cron est un <strong>daemon</strong> qui exécute des commandes à des moments précis. Il est indispensable pour :</p>
+<ul><li>Sauvegardes automatiques</li>
+<li>Nettoyage de fichiers</li>
+<li>Scripts de maintenance</li>
+<li>Tâches récurrentes</li>
+<p></ul></p>
 <h3>Le fichier Crontab</h3>
 <p>Chaque utilisateur a son propre fichier <strong>crontab</strong> contenant les tâches planifiées.</p>
-<hr />
+<hr>
 <h2>2. Commandes de base</h2>
-<pre class="codehilite"><code class="language-bash">crontab -l                # Lister les tâches
-crontab -e                # Éditer les tâches
-crontab -r                # Supprimer toutes les tâches
-crontab -i                # Confirmation avant suppression
-crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)
-</code></pre>
-
-<hr />
+<pre><code>crontab -l                # Lister les tâches
+<p>crontab -e                # Éditer les tâches</p>
+<p>crontab -r                # Supprimer toutes les tâches</p>
+<p>crontab -i                # Confirmation avant suppression</p>
+<p>crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)</p>
+<p></code></pre></p>
+<hr>
 <h2>3. Format d'une tâche Cron</h2>
-<pre class="codehilite"><code>┌───────────── Minute (0 - 59)
-│ ┌───────────── Heure (0 - 23)
-│ │ ┌───────────── Jour du mois (1 - 31)
-│ │ │ ┌───────────── Mois (1 - 12)
-│ │ │ │ ┌───────────── Jour de la semaine (0 - 7)
-│ │ │ │ │             (0 et 7 = dimanche)
-│ │ │ │ │
-* * * * * commande à exécuter
-</code></pre>
-
+<pre><code>┌───────────── Minute (0 - 59)
+<p>│ ┌───────────── Heure (0 - 23)</p>
+<p>│ │ ┌───────────── Jour du mois (1 - 31)</p>
+<p>│ │ │ ┌───────────── Mois (1 - 12)</p>
+<p>│ │ │ │ ┌───────────── Jour de la semaine (0 - 7)</p>
+<p>│ │ │ │ │             (0 et 7 = dimanche)</p>
+<p>│ │ │ │ │</p>
+<p>* * * * * commande à exécuter</p>
+<p></code></pre></p>
 <h3>Symboles spéciaux</h3>
-<table>
-<thead>
-<tr>
-<th>Symbole</th>
-<th>Signification</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>*</code></td>
-<td>N'importe quelle valeur</td>
-</tr>
-<tr>
-<td><code>,</code></td>
-<td>Liste de valeurs (1,3,5)</td>
-</tr>
-<tr>
-<td><code>-</code></td>
-<td>Intervalle (1-5)</td>
-</tr>
-<tr>
-<td><code>/</code></td>
-<td>Intervalle régulier (*/15 = toutes les 15)</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>*</code></td><td>N'importe quelle valeur</td></tr></p>
+<p><tr><td><code>,</code></td><td>Liste de valeurs (1,3,5)</td></tr></p>
+<p><tr><td><code>-</code></td><td>Intervalle (1-5)</td></tr></p>
+<p><tr><td><code>/</code></td><td>Intervalle régulier (*/15 = toutes les 15)</td></tr></p>
+<p></table></p>
+<hr>
 <h2>4. Exemples pratiques</h2>
 <h3>Planifications courantes</h3>
-<table>
-<thead>
-<tr>
-<th>Expression</th>
-<th>Signification</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>0 * * * *</code></td>
-<td>Chaque heure</td>
-</tr>
-<tr>
-<td><code>0 0 * * *</code></td>
-<td>Chaque jour à minuit</td>
-</tr>
-<tr>
-<td><code>0 9 * * 1-5</code></td>
-<td>Jour ouvrable à 9h</td>
-</tr>
-<tr>
-<td><code>0 9 * * *</code></td>
-<td>Chaque jour à 9h</td>
-</tr>
-<tr>
-<td><code>*/15 * * * *</code></td>
-<td>Toutes les 15 minutes</td>
-</tr>
-<tr>
-<td><code>*/5 * * * *</code></td>
-<td>Toutes les 5 minutes</td>
-</tr>
-<tr>
-<td><code>0 0 1 * *</code></td>
-<td>Premier du mois à minuit</td>
-</tr>
-<tr>
-<td><code>0 2 * * 0</code></td>
-<td>Chaque dimanche à 2h</td>
-</tr>
-<tr>
-<td><code>30 4 1,15 * *</code></td>
-<td>1er et 15 du mois à 4h30</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>0 * * * *</code></td><td>Chaque heure</td></tr></p>
+<p><tr><td><code>0 0 * * *</code></td><td>Chaque jour à minuit</td></tr></p>
+<p><tr><td><code>0 9 * * 1-5</code></td><td>Jour ouvrable à 9h</td></tr></p>
+<p><tr><td><code>0 9 * * *</code></td><td>Chaque jour à 9h</td></tr></p>
+<p><tr><td><code>*/15 * * * *</code></td><td>Toutes les 15 minutes</td></tr></p>
+<p><tr><td><code>*/5 * * * *</code></td><td>Toutes les 5 minutes</td></tr></p>
+<p><tr><td><code>0 0 1 * *</code></td><td>Premier du mois à minuit</td></tr></p>
+<p><tr><td><code>0 2 * * 0</code></td><td>Chaque dimanche à 2h</td></tr></p>
+<p><tr><td><code>30 4 1,15 * *</code></td><td>1er et 15 du mois à 4h30</td></tr></p>
+<p></table></p>
 <h3>Exemples concrets</h3>
-<pre class="codehilite"><code class="language-bash"># Sauvegarde quotidienne à 18h
-0 18 * * * rsync -av ~/Documents/ /media/backup/
-
-# Nettoyage des fichiers temporaires chaque semaine
-0 3 * * 0 find /tmp -type f -mtime +7 -delete
-
-# Surveillance du disque chaque matin à 7h
-0 7 * * * df -h &gt;&gt; ~/disk_usage.log
-
-# Redémarrer un service chaque nuit
-0 4 * * * sudo systemctl restart nginx
-
-# Script Python chaque heure
-0 * * * * /usr/bin/python3 /home/user/script.py
-
-# Vérification DNS chaque jour à 8h
-0 8 * * * ping -c 1 google.com || echo &quot;Pas de réseau&quot; | mail -s &quot;Alerte&quot; user@email.com
-</code></pre>
-
-<hr />
+<pre><code><h1>Sauvegarde quotidienne à 18h</h1>
+<p>0 18 * * * rsync -av ~/Documents/ /media/backup/</p>
+<h1>Nettoyage des fichiers temporaires chaque semaine</h1>
+<p>0 3 * * 0 find /tmp -type f -mtime +7 -delete</p>
+<h1>Surveillance du disque chaque matin à 7h</h1>
+<p>0 7 * * * df -h >> ~/disk_usage.log</p>
+<h1>Redémarrer un service chaque nuit</h1>
+<p>0 4 * * * sudo systemctl restart nginx</p>
+<h1>Script Python chaque heure</h1>
+<p>0 * * * * /usr/bin/python3 /home/user/script.py</p>
+<h1>Vérification DNS chaque jour à 8h</h1>
+<p>0 8 * * * ping -c 1 google.com || echo "Pas de réseau" | mail -s "Alerte" user@email.com</p>
+<p></code></pre></p>
+<hr>
 <h2>5. Variables d'environnement dans Cron</h2>
 <h3>Problème courant</h3>
 <p>Cron utilise un <strong>environnement minimal</strong>. Tes variables ($PATH, $HOME) peuvent ne pas fonctionner.</p>
 <h3>Solution</h3>
-<pre class="codehilite"><code class="language-bash"># Définir les variables dans la crontab
-SHELL=/bin/bash
-PATH=/usr/local/bin:/usr/bin:/bin
-HOME=/home/utilisateur
-
-# Ensuite les tâches...
-0 9 * * * /home/utilisateur/scripts/backup.sh
-</code></pre>
-
+<pre><code><h1>Définir les variables dans la crontab</h1>
+<p>SHELL=/bin/bash</p>
+<p>PATH=/usr/local/bin:/usr/bin:/bin</p>
+<p>HOME=/home/utilisateur</p>
+<h1>Ensuite les tâches...</h1>
+<p>0 9 * * * /home/utilisateur/scripts/backup.sh</p>
+<p></code></pre></p>
 <h3>Rediriger la sortie</h3>
-<pre class="codehilite"><code class="language-bash"># Ignorer la sortie
-0 9 * * * /script.sh &gt; /dev/null 2&gt;&amp;1
-
-# Envoyer vers un log
-0 9 * * * /script.sh &gt;&gt; /var/log/scripts.log 2&gt;&amp;1
-
-# Envoyer par email (si configuré)
-MAILTO=&quot;user@example.com&quot;
-0 9 * * * /script.sh
-</code></pre>
-
-<hr />
+<pre><code><h1>Ignorer la sortie</h1>
+<p>0 9 * * * /script.sh > /dev/null 2>&1</p>
+<h1>Envoyer vers un log</h1>
+<p>0 9 * * * /script.sh >> /var/log/scripts.log 2>&1</p>
+<h1>Envoyer par email (si configuré)</h1>
+<p>MAILTO="user@example.com"</p>
+<p>0 9 * * * /script.sh</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Système Cron</h2>
 <h3>Cron système (/etc/crontab)</h3>
-<pre class="codehilite"><code class="language-bash">sudo nano /etc/crontab
-</code></pre>
-
+<pre><code>sudo nano /etc/crontab
+<p></code></pre></p>
 <p>Format légèrement différent :</p>
-<pre class="codehilite"><code>minute hour day month weekday user command
-</code></pre>
-
+<pre><code>minute hour day month weekday user command
+<p></code></pre></p>
 <p>Exemple :</p>
-<pre class="codehilite"><code>0 3 * * * root /usr/bin/backup.sh
-</code></pre>
-
+<pre><code>0 3 * * * root /usr/bin/backup.sh
+<p></code></pre></p>
 <h3>Répertoires spéciaux</h3>
-<table>
-<thead>
-<tr>
-<th>Répertoire</th>
-<th>Fréquence</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/etc/cron.minutely</code></td>
-<td>Chaque minute</td>
-</tr>
-<tr>
-<td><code>/etc/cron.hourly</code></td>
-<td>Chaque heure</td>
-</tr>
-<tr>
-<td><code>/etc/cron.daily</code></td>
-<td>Chaque jour</td>
-</tr>
-<tr>
-<td><code>/etc/cron.weekly</code></td>
-<td>Chaque semaine</td>
-</tr>
-<tr>
-<td><code>/etc/cron.monthly</code></td>
-<td>Chaque mois</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>/etc/cron.minutely</code></td><td>Chaque minute</td></tr></p>
+<p><tr><td><code>/etc/cron.hourly</code></td><td>Chaque heure</td></tr></p>
+<p><tr><td><code>/etc/cron.daily</code></td><td>Chaque jour</td></tr></p>
+<p><tr><td><code>/etc/cron.weekly</code></td><td>Chaque semaine</td></tr></p>
+<p><tr><td><code>/etc/cron.monthly</code></td><td>Chaque mois</td></tr></p>
+<p></table></p>
+<hr>
 <h2>7. Commandes at (tâches uniques)</h2>
 <p>Pour une exécution unique, utilise <code>at</code> :</p>
-<pre class="codehilite"><code class="language-bash"># Planifier une tâche pour demain à 10h
-echo &quot;/script.sh&quot; | at 10:00 tomorrow
-
-# Planifier pour dans 2 heures
-echo &quot;/script.sh&quot; | at now +2 hours
-
-# Lister les tâches
-atq
-
-# Supprimer une tâche
-atrm 1
-</code></pre>
-
-<hr />
+<pre><code><h1>Planifier une tâche pour demain à 10h</h1>
+<p>echo "/script.sh" | at 10:00 tomorrow</p>
+<h1>Planifier pour dans 2 heures</h1>
+<p>echo "/script.sh" | at now +2 hours</p>
+<h1>Lister les tâches</h1>
+<p>atq</p>
+<h1>Supprimer une tâche</h1>
+<p>atrm 1</p>
+<p></code></pre></p>
+<hr>
 <h2>8. anacron - pour ordinateurs non allumés</h2>
 <p><code>anacron</code> exécute les tâches qui ont raté car l'ordinateur était éteint.</p>
-<pre class="codehilite"><code class="language-bash"># Installer
-sudo apt install anacron
-
-# Fichier de config
-sudo nano /etc/anacrontab
-</code></pre>
-
-<hr />
+<pre><code><h1>Installer</h1>
+<p>sudo apt install anacron</p>
+<h1>Fichier de config</h1>
+<p>sudo nano /etc/anacrontab</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Test basique</h3>
-<pre class="codehilite"><code class="language-bash">crontab -e
-# Ajouter:
-* * * * * echo &quot;$(date)&quot; &gt;&gt; ~/cron_test.txt
-# Attendre 1 minute, vérifier:
-cat ~/cron_test.txt
-</code></pre>
-
+<pre><code>crontab -e
+<h1>Ajouter:</h1>
+<p>* * * * * echo "$(date)" >> ~/cron_test.txt</p>
+<h1>Attendre 1 minute, vérifier:</h1>
+<p>cat ~/cron_test.txt</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Backup automatique</h3>
-<pre class="codehilite"><code class="language-bash">crontab -e
-# Ajouter (chaque jour à 20h):
-0 20 * * * rsync -avz ~/Documents/ /media/backup/ &gt;&gt; ~/backup.log 2&gt;&amp;1
-</code></pre>
-
+<pre><code>crontab -e
+<h1>Ajouter (chaque jour à 20h):</h1>
+<p>0 20 * * * rsync -avz ~/Documents/ /media/backup/ >> ~/backup.log 2>&1</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Nettoyage automatique</h3>
-<pre class="codehilite"><code class="language-bash">crontab -e
-# Chaque dimanche à 3h:
-0 3 * * 0 find ~/.cache -type f -mtime +30 -delete
-</code></pre>
-
-<hr />
+<pre><code>crontab -e
+<h1>Chaque dimanche à 3h:</h1>
+<p>0 3 * * 0 find ~/.cache -type f -mtime +30 -delete</p>
+<p></code></pre></p>
+<hr>
 <h2>10. Tableau résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>crontab -l</code></td>
-<td>Lister les tâches</td>
-</tr>
-<tr>
-<td><code>crontab -e</code></td>
-<td>Éditer les tâches</td>
-</tr>
-<tr>
-<td><code>crontab -r</code></td>
-<td>Supprimer tout</td>
-</tr>
-<tr>
-<td><code>at</code></td>
-<td>Tâche unique</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>crontab -l</code></td><td>Lister les tâches</td></tr></p>
+<p><tr><td><code>crontab -e</code></td><td>Éditer les tâches</td></tr></p>
+<p><tr><td><code>crontab -r</code></td><td>Supprimer tout</td></tr></p>
+<p><tr><td><code>at</code></td><td>Tâche unique</td></tr></p>
+<p></table></p>
 <h3>Format rapide</h3>
-<table>
-<thead>
-<tr>
-<th>Raccourci</th>
-<th>Équivalent</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>@yearly</code></td>
-<td><code>0 0 1 1 *</code></td>
-</tr>
-<tr>
-<td><code>@monthly</code></td>
-<td><code>0 0 1 * *</code></td>
-</tr>
-<tr>
-<td><code>@weekly</code></td>
-<td><code>0 0 * * 0</code></td>
-</tr>
-<tr>
-<td><code>@daily</code></td>
-<td><code>0 0 * * *</code></td>
-</tr>
-<tr>
-<td><code>@hourly</code></td>
-<td><code>0 * * * *</code></td>
-</tr>
-<tr>
-<td><code>@reboot</code></td>
-<td>Au démarrage</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>@yearly</code></td><td><code>0 0 1 1 *</code></td></tr></p>
+<p><tr><td><code>@monthly</code></td><td><code>0 0 1 * *</code></td></tr></p>
+<p><tr><td><code>@weekly</code></td><td><code>0 0 * * 0</code></td></tr></p>
+<p><tr><td><code>@daily</code></td><td><code>0 0 * * *</code></td></tr></p>
+<p><tr><td><code>@hourly</code></td><td><code>0 * * * *</code></td></tr></p>
+<p><tr><td><code>@reboot</code></td><td>Au démarrage</td></tr></p>
+<p></table></p>
+<hr>
 <p>Cron est ton meilleur ami pour l'automatisation ! Utilise-le sagesse. ⏰</p>
-
-
-</div>
 <nav>
 <a href="12-ssh-connexion-distante.html" style="color:#666;text-decoration:none;">&larr; 12 - SSH et connexion distante</a>
 <a href="14-gestion-utilisateurs-groupes.html" style="color:#00d9ff;text-decoration:none;">14 - Gestion des utilisateurs et groupes &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

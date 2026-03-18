@@ -4,428 +4,285 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Archivage et compression Linux - tar, gzip, zip | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/08-archivage-compression.html">
-<meta property="og:title" content="Archivage Compression - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<meta name="description" content="Apprenez à créer des archives et compresser des fichiers.">
+<meta name="keywords" content="archivage linux, tar, gzip, bzip2, zip, compression, archive">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Apprenez à créer des archives et compresser des fichiers avec tar, gzip, bzip2, zip. Sauvegardez et échangez vos données efficacement.">
-<meta name="keywords" content="archivage linux, tar, gzip, bzip2, zip, compression, archive, backup, sauvegarde">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
 <h1>Leçon 8 : Archivage et compression</h1>
-<p>Dans cette leçon, nous allons apprendre à <strong>archiver</strong> et <strong>compresser</strong> des fichiers sous Linux. Ces compétences sont essentielles pour :
-- Sauvegarder des données
-- Réduire la taille pour le transfert
-- Archiver des logs
-- Packageur des applications</p>
-<hr />
+<p>Dans cette leçon, nous allons apprendre à <strong>archiver</strong> et <strong>compresser</strong> des fichiers sous Linux. Ces compétences sont essentielles pour :</p>
+<ul><li>Sauvegarder des données</li>
+<li>Réduire la taille pour le transfert</li>
+<li>Archiver des logs</li>
+<li>Packageur des applications</li>
+<p></ul></p>
+<hr>
 <h2>1. Comprendre la différence</h2>
-<table>
-<thead>
-<tr>
-<th>Terme</th>
-<th>Signification</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Archiver</strong></td>
-<td>Combiner plusieurs fichiers/dossiers en un seul fichier</td>
-</tr>
-<tr>
-<td><strong>Compresser</strong></td>
-<td>Réduire la taille des données avec un algorithme</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><strong>Archiver</strong></td><td>Combiner plusieurs fichiers/dossiers en un seul fichier</td></tr></p>
+<p><tr><td><strong>Compresser</strong></td><td>Réduire la taille des données avec un algorithme</td></tr></p>
+<p></table></p>
 <p><strong>tar</strong> fait l'archiving, <strong>gzip/bzip2/xz</strong> font la compression.</p>
-<hr />
+<hr>
 <h2>2. TAR - L'archivage</h2>
 <h3>Présentation</h3>
 <p><code>tar</code> (Tape Archive) est la commande standard d'archivage sous Linux. Elle combine plusieurs fichiers en un seul, sans compression par défaut.</p>
 <h3>Syntaxe de base</h3>
-<pre class="codehilite"><code class="language-bash">tar [OPTIONS] [ARCHIVE] [FICHIERS]
-</code></pre>
-
+<pre><code>tar [OPTIONS] [ARCHIVE] [FICHIERS]
+<p></code></pre></p>
 <h3>Options principales</h3>
-<table>
-<thead>
-<tr>
-<th>Option</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-c</code></td>
-<td>Créer une archive</td>
-</tr>
-<tr>
-<td><code>-x</code></td>
-<td>Extraire (eXtract)</td>
-</tr>
-<tr>
-<td><code>-t</code></td>
-<td>Lister le contenu</td>
-</tr>
-<tr>
-<td><code>-v</code></td>
-<td>Mode verbeux</td>
-</tr>
-<tr>
-<td><code>-f</code></td>
-<td>Nom du fichier archive</td>
-</tr>
-<tr>
-<td><code>-r</code></td>
-<td>Ajouter des fichiers à une archive existante</td>
-</tr>
-<tr>
-<td><code>-u</code></td>
-<td>Mettre à jour seulement si plus récent</td>
-</tr>
-<tr>
-<td><code>-d</code></td>
-<td>Diff entre archive et système de fichiers</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>-c</code></td><td>Créer une archive</td></tr></p>
+<p><tr><td><code>-x</code></td><td>Extraire (eXtract)</td></tr></p>
+<p><tr><td><code>-t</code></td><td>Lister le contenu</td></tr></p>
+<p><tr><td><code>-v</code></td><td>Mode verbeux</td></tr></p>
+<p><tr><td><code>-f</code></td><td>Nom du fichier archive</td></tr></p>
+<p><tr><td><code>-r</code></td><td>Ajouter des fichiers à une archive existante</td></tr></p>
+<p><tr><td><code>-u</code></td><td>Mettre à jour seulement si plus récent</td></tr></p>
+<p><tr><td><code>-d</code></td><td>Diff entre archive et système de fichiers</td></tr></p>
+<p></table></p>
 <h3>Créer une archive (sans compression)</h3>
-<pre class="codehilite"><code class="language-bash">tar -cvf archive.tar dossier/
-# -c = créer, -v = verbeux, -f = nom du fichier
-
-tar -cvf backup.tar ~/Documents ~/Images
-# Archiver plusieurs dossiers
-</code></pre>
-
+<pre><code>tar -cvf archive.tar dossier/
+<h1>-c = créer, -v = verbeux, -f = nom du fichier</h1>
+<p>tar -cvf backup.tar ~/Documents ~/Images</p>
+<h1>Archiver plusieurs dossiers</h1>
+<p></code></pre></p>
 <h3>Lister le contenu d'une archive</h3>
-<pre class="codehilite"><code class="language-bash">tar -tvf archive.tar          # Liste détaillée
-tar -tvf archive.tar | less   # Paginer
-tar -tf archive.tar           # Liste simple
-</code></pre>
-
+<pre><code>tar -tvf archive.tar          # Liste détaillée
+<p>tar -tvf archive.tar | less   # Paginer</p>
+<p>tar -tf archive.tar           # Liste simple</p>
+<p></code></pre></p>
 <h3>Extraire une archive</h3>
-<pre class="codehilite"><code class="language-bash">tar -xvf archive.tar                  # Extraire tout
-tar -xvf archive.tar -C /autre/dossier/  # Extraire ailleurs
-tar -xvf archive.tar fichier.txt      # Extraire un seul fichier
-tar -xvf archive.tar --wildcards '*.txt'  # Extraire par pattern
-</code></pre>
-
-<hr />
+<pre><code>tar -xvf archive.tar                  # Extraire tout
+<p>tar -xvf archive.tar -C /autre/dossier/  # Extraire ailleurs</p>
+<p>tar -xvf archive.tar fichier.txt      # Extraire un seul fichier</p>
+<p>tar -xvf archive.tar --wildcards '*.txt'  # Extraire par pattern</p>
+<p></code></pre></p>
+<hr>
 <h2>3. Compression avec TAR</h2>
 <h3>GZIP (.tar.gz ou .tgz)</h3>
 <p><strong>Compression rapide, taille moyenne</strong></p>
-<pre class="codehilite"><code class="language-bash"># Créer
-tar -cvzf archive.tar.gz dossier/
-tar -cvzf backup.tgz dossier/    # Extension alternative
-
-# Lister
-tar -tvzf archive.tar.gz
-
-# Extraire
-tar -xvzf archive.tar.gz
-tar -xvzf archive.tar.gz -C /tmp/
-</code></pre>
-
+<pre><code><h1>Créer</h1>
+<p>tar -cvzf archive.tar.gz dossier/</p>
+<p>tar -cvzf backup.tgz dossier/    # Extension alternative</p>
+<h1>Lister</h1>
+<p>tar -tvzf archive.tar.gz</p>
+<h1>Extraire</h1>
+<p>tar -xvzf archive.tar.gz</p>
+<p>tar -xvzf archive.tar.gz -C /tmp/</p>
+<p></code></pre></p>
 <h3>BZIP2 (.tar.bz2 ou .tbz2)</h3>
 <p><strong>Compression meilleure, plus lent</strong></p>
-<pre class="codehilite"><code class="language-bash"># Créer
-tar -cvjf archive.tar.bz2 dossier/
-tar -cvjf backup.tbz2 dossier/
-
-# Lister
-tar -tvjf archive.tar.bz2
-
-# Extraire
-tar -xvjf archive.tar.bz2
-</code></pre>
-
+<pre><code><h1>Créer</h1>
+<p>tar -cvjf archive.tar.bz2 dossier/</p>
+<p>tar -cvjf backup.tbz2 dossier/</p>
+<h1>Lister</h1>
+<p>tar -tvjf archive.tar.bz2</p>
+<h1>Extraire</h1>
+<p>tar -xvjf archive.tar.bz2</p>
+<p></code></pre></p>
 <h3>XZ (.tar.xz) - Recommandé</h3>
 <p><strong>Meilleure compression, plus lent</strong></p>
-<pre class="codehilite"><code class="language-bash"># Créer
-tar -cvJf archive.tar.xz dossier/
-
-# Lister
-tar -tvJf archive.tar.xz
-
-# Extraire
-tar -xvJf archive.tar.xz
-</code></pre>
-
+<pre><code><h1>Créer</h1>
+<p>tar -cvJf archive.tar.xz dossier/</p>
+<h1>Lister</h1>
+<p>tar -tvJf archive.tar.xz</p>
+<h1>Extraire</h1>
+<p>tar -xvJf archive.tar.xz</p>
+<p></code></pre></p>
 <h3>Tableau comparatif</h3>
-<table>
-<thead>
-<tr>
-<th>Format</th>
-<th>Extension</th>
-<th>Compression</th>
-<th>Vitesse</th>
-<th>Utilisation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>gzip</td>
-<td>.gz</td>
-<td>Moyenne</td>
-<td>Rapide</td>
-<td>Fichiers log, transfert rapide</td>
-</tr>
-<tr>
-<td>bzip2</td>
-<td>.bz2</td>
-<td>Bonne</td>
-<td>Moyen</td>
-<td>_backup_archives</td>
-</tr>
-<tr>
-<td>xz</td>
-<td>.xz</td>
-<td>Excellente</td>
-<td>Lent</td>
-<td>Distribution, sauvegarde longue</td>
-</tr>
-<tr>
-<td>zstd</td>
-<td>.zst</td>
-<td>Excellente</td>
-<td>Rapide</td>
-<td>Nouveau, recommandé</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr><th>Extension</th><th>Compression</th><th>Vitesse</th></tr></p>
+<p><tr><td>gzip</td><td>.gz</td><td>Moyenne</td><td>Rapide</td><td>Fichiers log, transfert rapide</td></tr></p>
+<p><tr><td>bzip2</td><td>.bz2</td><td>Bonne</td><td>Moyen</td><td>_backup_archives</td></tr></p>
+<p><tr><td>xz</td><td>.xz</td><td>Excellente</td><td>Lent</td><td>Distribution, sauvegarde longue</td></tr></p>
+<p><tr><td>zstd</td><td>.zst</td><td>Excellente</td><td>Rapide</td><td>Nouveau, recommandé</td></tr></p>
+<p></table></p>
+<hr>
 <h2>4. Créer des archives compressées - Guide complet</h2>
 <h3>Exemple pratique complet</h3>
-<pre class="codehilite"><code class="language-bash"># Créer une archive compressée de votre home
-tar -cvzf ~/backup_home_$(date +%Y%m%d).tar.gz ~/
-
-# Archiver avec exclusion de certains dossiers
-tar -cvzf backup.tar.gz dossier/ \
-    --exclude='*.log' \
-    --exclude='.cache' \
-    --exclude='node_modules'
-
-# Archiver plusieurs dossiers avec date
-tar -cvzf &quot;backup_$(date +%Y%m%d_%H%M).tar.gz&quot; \
-    ~/Documents \
-    ~/Images \
-    ~/Vidéos
-</code></pre>
-
+<pre><code><h1>Créer une archive compressée de votre home</h1>
+<p>tar -cvzf ~/backup_home_$(date +%Y%m%d).tar.gz ~/</p>
+<h1>Archiver avec exclusion de certains dossiers</h1>
+<p>tar -cvzf backup.tar.gz dossier/ \</p>
+<p>    --exclude='*.log' \</p>
+<p>    --exclude='.cache' \</p>
+<p>    --exclude='node_modules'</p>
+<h1>Archiver plusieurs dossiers avec date</h1>
+<p>tar -cvzf "backup_$(date +%Y%m%d_%H%M).tar.gz" \</p>
+<p>    ~/Documents \</p>
+<p>    ~/Images \</p>
+<p>    ~/Vidéos</p>
+<p></code></pre></p>
 <h3>Commandes modernes avec pigz/pbzip2 (parallèle)</h3>
-<pre class="codehilite"><code class="language-bash"># Si installé: compression parallèle (plus rapide sur multi-core)
-tar -cvf archive.tar dossier/ --use-compress-program=pigz
-tar -cvf archive.tar dossier/ --use-compress-program=pbzip2
-</code></pre>
-
-<hr />
+<pre><code><h1>Si installé: compression parallèle (plus rapide sur multi-core)</h1>
+<p>tar -cvf archive.tar dossier/ --use-compress-program=pigz</p>
+<p>tar -cvf archive.tar dossier/ --use-compress-program=pbzip2</p>
+<p></code></pre></p>
+<hr>
 <h2>5. ZIP et UNZIP</h2>
 <h3>Présentation</h3>
 <p>Le format ZIP est universel et fonctionne sur tous les操作系统.</p>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash"># Créer une archive ZIP
-zip -r archive.zip dossier/
-zip -r backup.zip file1.txt file2.txt
-
-# Options utiles
-zip -r -9 archive.zip dossier/    # Compression maximale (1-9)
-zip -r -e archive.zip dossier/    # Chiffré (mot de passe)
-zip -r -v archive.zip dossier/    # Verbeux
-zip -r --exclude='*.log' archive.zip dossier/
-
-# Lister le contenu
-unzip -l archive.zip
-
-# Extraire
-unzip archive.zip                  # Extraire tout
-unzip archive.zip -d /destination/ # Extraire ailleurs
-unzip archive.zip fichier.txt      # Un seul fichier
-unzip -p archive.zip fichier.txt   # Vers stdout
-
-# Extraire avec mot de passe
-unzip -P motdepasse archive.zip
-</code></pre>
-
-<hr />
+<pre><code><h1>Créer une archive ZIP</h1>
+<p>zip -r archive.zip dossier/</p>
+<p>zip -r backup.zip file1.txt file2.txt</p>
+<h1>Options utiles</h1>
+<p>zip -r -9 archive.zip dossier/    # Compression maximale (1-9)</p>
+<p>zip -r -e archive.zip dossier/    # Chiffré (mot de passe)</p>
+<p>zip -r -v archive.zip dossier/    # Verbeux</p>
+<p>zip -r --exclude='*.log' archive.zip dossier/</p>
+<h1>Lister le contenu</h1>
+<p>unzip -l archive.zip</p>
+<h1>Extraire</h1>
+<p>unzip archive.zip                  # Extraire tout</p>
+<p>unzip archive.zip -d /destination/ # Extraire ailleurs</p>
+<p>unzip archive.zip fichier.txt      # Un seul fichier</p>
+<p>unzip -p archive.zip fichier.txt   # Vers stdout</p>
+<h1>Extraire avec mot de passe</h1>
+<p>unzip -P motdepasse archive.zip</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Formats avancés</h2>
 <h3>7Z (7-Zip)</h3>
-<pre class="codehilite"><code class="language-bash"># Installer si besoin
-sudo apt install p7zip-full
-
-# Créer
-7z a archive.7z dossier/
-7z a -mx=9 archive.7z dossier/   # Compression maximale
-
-# Lister
-7z l archive.7z
-
-# Extraire
-7z x archive.7z
-
-# Avec mot de passe
-7z a -p archive.7z dossier/
-</code></pre>
-
+<pre><code><h1>Installer si besoin</h1>
+<p>sudo apt install p7zip-full</p>
+<h1>Créer</h1>
+<p>7z a archive.7z dossier/</p>
+<p>7z a -mx=9 archive.7z dossier/   # Compression maximale</p>
+<h1>Lister</h1>
+<p>7z l archive.7z</p>
+<h1>Extraire</h1>
+<p>7z x archive.7z</p>
+<h1>Avec mot de passe</h1>
+<p>7z a -p archive.7z dossier/</p>
+<p></code></pre></p>
 <h3>ZSTD (recommandé - rapide et bon)</h3>
-<pre class="codehilite"><code class="language-bash"># Installer
-sudo apt install zstd
-
-# Créer
-tar -cvzf - dossier/ | zstd &gt; archive.tar.zst
-# ou
-tar -I zstd -cvf archive.tar.zst dossier/
-
-# Extraire
-tar -I zstd -xvf archive.tar.zst
-</code></pre>
-
-<hr />
+<pre><code><h1>Installer</h1>
+<p>sudo apt install zstd</p>
+<h1>Créer</h1>
+<p>tar -cvzf - dossier/ | zstd > archive.tar.zst</p>
+<h1>ou</h1>
+<p>tar -I zstd -cvf archive.tar.zst dossier/</p>
+<h1>Extraire</h1>
+<p>tar -I zstd -xvf archive.tar.zst</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Manipulations avancées</h2>
 <h3>Ajouter des fichiers à une archive existante</h3>
-<pre class="codehilite"><code class="language-bash"># Avec tar et gzip
-gzip -d archive.tar.gz
-tar -rvf archive.tar nouveau_fichier.txt
-gzip archive.tar
-
-# Avec zip
-zip -r archive.zip nouveau_fichier.txt
-</code></pre>
-
+<pre><code><h1>Avec tar et gzip</h1>
+<p>gzip -d archive.tar.gz</p>
+<p>tar -rvf archive.tar nouveau_fichier.txt</p>
+<p>gzip archive.tar</p>
+<h1>Avec zip</h1>
+<p>zip -r archive.zip nouveau_fichier.txt</p>
+<p></code></pre></p>
 <h3>Mise à jour incrémentale</h3>
-<pre class="codehilite"><code class="language-bash"># Sauvegarde complète
-tar -cvzf backup-full.tar.gz dossier/
-
-# Sauvegarde incrémentale (uniquement fichiers modifiés)
-tar -cvzf backup-$(date +%Y%m%d).tar.gz \
-    -N &quot;2024-01-01&quot; dossier/
-</code></pre>
-
+<pre><code><h1>Sauvegarde complète</h1>
+<p>tar -cvzf backup-full.tar.gz dossier/</p>
+<h1>Sauvegarde incrémentale (uniquement fichiers modifiés)</h1>
+<p>tar -cvzf backup-$(date +%Y%m%d).tar.gz \</p>
+<p>    -N "2024-01-01" dossier/</p>
+<p></code></pre></p>
 <h3>Vérifier l'intégrité</h3>
-<pre class="codehilite"><code class="language-bash"># Vérifier tar.gz
-gzip -t archive.tar.gz
-tar -tzf archive.tar.gz
-
-# Vérifier zip
-zip -T archive.zip
-
-# Vérifier 7z
-7z t archive.7z
-</code></pre>
-
-<hr />
+<pre><code><h1>Vérifier tar.gz</h1>
+<p>gzip -t archive.tar.gz</p>
+<p>tar -tzf archive.tar.gz</p>
+<h1>Vérifier zip</h1>
+<p>zip -T archive.zip</p>
+<h1>Vérifier 7z</h1>
+<p>7z t archive.7z</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Exercices pratiques</h2>
 <h3>Exercice 1 : Créer une backup complète</h3>
-<pre class="codehilite"><code class="language-bash"># Backup de ~/Documents avec exclusions
-tar -cvzf ~/backup_documents_$(date +%Y%m%d).tar.gz \
-    ~/Documents \
-    --exclude='.cache' \
-    --exclude='.local' \
-    --exclude='*.tmp'
-
-# Vérifier
-tar -tvzf ~/backup_documents_*.tar.gz | head -20
-</code></pre>
-
+<pre><code><h1>Backup de ~/Documents avec exclusions</h1>
+<p>tar -cvzf ~/backup_documents_$(date +%Y%m%d).tar.gz \</p>
+<p>    ~/Documents \</p>
+<p>    --exclude='.cache' \</p>
+<p>    --exclude='.local' \</p>
+<p>    --exclude='*.tmp'</p>
+<h1>Vérifier</h1>
+<p>tar -tvzf ~/backup_documents_*.tar.gz | head -20</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Restaurer sélectivement</h3>
-<pre class="codehilite"><code class="language-bash"># Lister d'abord
-tar -tvzf backup.tar.gz | grep important
-
-# Extraire juste ce fichier
-tar -xvzf backup.tar.gz chemin/vers/important.txt
-</code></pre>
-
+<pre><code><h1>Lister d'abord</h1>
+<p>tar -tvzf backup.tar.gz | grep important</p>
+<h1>Extraire juste ce fichier</h1>
+<p>tar -xvzf backup.tar.gz chemin/vers/important.txt</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Archiver et déplacer sur un autre serveur</h3>
-<pre class="codehilite"><code class="language-bash"># Sur la machine source
-tar -cvzf - dossier/ | ssh user@serveur &quot;cat &gt; backup.tar.gz&quot;
-
-# Sur le serveur distant
-ssh user@serveur &quot;tar -cvzf - dossier/&quot; &gt; local-backup.tar.gz
-</code></pre>
-
+<pre><code><h1>Sur la machine source</h1>
+<p>tar -cvzf - dossier/ | ssh user@serveur "cat > backup.tar.gz"</p>
+<h1>Sur le serveur distant</h1>
+<p>ssh user@serveur "tar -cvzf - dossier/" > local-backup.tar.gz</p>
+<p></code></pre></p>
 <h3>Exercice 4 : Créer une archive horodatée</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-DATE=$(date +%Y%m%d_%H%M)
-tar -cvzf &quot;/backup/backup_$DATE.tar.gz&quot; ~/Documents
-echo &quot;Backup créé: backup_$DATE.tar.gz&quot;
-</code></pre>
-
-<hr />
+<pre><code>#!/bin/bash
+<p>DATE=$(date +%Y%m%d_%H%M)</p>
+<p>tar -cvzf "/backup/backup_$DATE.tar.gz" ~/Documents</p>
+<p>echo "Backup créé: backup_$DATE.tar.gz"</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Tableau résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Action</th>
-<th>gzip</th>
-<th>bzip2</th>
-<th>xz</th>
-<th>zip</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Archiver + compresser</td>
-<td><code>tar -cvzf file.tar.gz dir/</code></td>
-<td><code>tar -cvjf file.tar.bz2 dir/</code></td>
-<td><code>tar -cvJf file.tar.xz dir/</code></td>
-<td><code>zip -r file.zip dir/</code></td>
-</tr>
-<tr>
-<td>Lister</td>
-<td><code>tar -tvzf file.tar.gz</code></td>
-<td><code>tar -tvjf file.tar.bz2</code></td>
-<td><code>tar -tvJf file.tar.xz</code></td>
-<td><code>unzip -l file.zip</code></td>
-</tr>
-<tr>
-<td>Extraire</td>
-<td><code>tar -xvzf file.tar.gz</code></td>
-<td><code>tar -xvjf file.tar.bz2</code></td>
-<td><code>tar -xvJf file.tar.xz</code></td>
-<td><code>unzip file.zip</code></td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr><th>gzip</th><th>bzip2</th><th>xz</th></tr></p>
+<p><tr><td>Archiver + compresser</td><td><code>tar -cvzf file.tar.gz dir/</code></td><td><code>tar -cvjf file.tar.bz2 dir/</code></td><td><code>tar -cvJf file.tar.xz dir/</code></td><td><code>zip -r file.zip dir/</code></td></tr></p>
+<p><tr><td>Lister</td><td><code>tar -tvzf file.tar.gz</code></td><td><code>tar -tvjf file.tar.bz2</code></td><td><code>tar -tvJf file.tar.xz</code></td><td><code>unzip -l file.zip</code></td></tr></p>
+<p><tr><td>Extraire</td><td><code>tar -xvzf file.tar.gz</code></td><td><code>tar -xvjf file.tar.bz2</code></td><td><code>tar -xvJf file.tar.xz</code></td><td><code>unzip file.zip</code></td></tr></p>
+<p></table></p>
+<hr>
 <h2>10. Bonnes pratiques</h2>
-<ol>
-<li><strong>Utilisez .tar.xz</strong> pour l'archivage long terme (meilleure compression)</li>
-<li><strong>Utilisez .tar.gz</strong> pour les transferts rapides</li>
-<li><strong>Utilisez zip</strong> pour partager avec Windows/Mac</li>
-<li><strong>Vérifiez toujours</strong> l'archive après création</li>
-<li><strong>Excluez les fichiers inutiles</strong> (cache, node_modules, .git)</li>
-<li><strong>Gardez des sauvegardes incrémentales</strong></li>
-<li><strong>Testez la restauration</strong> régulièrement !</li>
-</ol>
-<hr />
+<p>1. <strong>Utilisez .tar.xz</strong> pour l'archivage long terme (meilleure compression)</p>
+<p>2. <strong>Utilisez .tar.gz</strong> pour les transferts rapides</p>
+<p>3. <strong>Utilisez zip</strong> pour partager avec Windows/Mac</p>
+<p>4. <strong>Vérifiez toujours</strong> l'archive après création</p>
+<p>5. <strong>Excluez les fichiers inutiles</strong> (cache, node_modules, .git)</p>
+<p>6. <strong>Gardez des sauvegardes incrémentales</strong></p>
+<p>7. <strong>Testez la restauration</strong> régulièrement !</p>
+<hr>
 <p>Ces commandes sont essentielles pour tout administrateur Linux ! 💪</p>
-
-
-</div>
 <nav>
 <a href="07-gestion-fichiers.html" style="color:#666;text-decoration:none;">&larr; 07 - Gestion des fichiers et dossiers</a>
 <a href="09-recherche-fichiers-texte.html" style="color:#00d9ff;text-decoration:none;">09 - Recherche de fichiers et texte &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

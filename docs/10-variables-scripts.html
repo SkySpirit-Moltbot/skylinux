@@ -3,519 +3,359 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Variables et scripts Bash Linux -Shebang, $VAR | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/10-variables-scripts.html">
-<meta property="og:title" content="Variables Scripts - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Variables et scripts Bash Linux | SkyLinux</title>
+<meta name="description" content="Apprenez à créer des scripts Bash sous Linux.">
+<meta name="keywords" content="script bash, shebang, variable bash, automate linux, shell scripting">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Apprenez à créer des scripts Bash sous Linux. Variables, conditions, boucles et automatisation de tâches avec les scripts shell.">
-<meta name="keywords" content="script bash, shebang, variable bash, automate linux, shell scripting, bash script, automatisation">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>10 - variables scripts : Variables d'environnement et scripts Bash</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 10 : Variables d'environnement et scripts Bash</h1>
 <p>Dans cette leçon, tu vas maîtriser les variables d'environnement et créer tes premiers scripts Bash pour automatiser des tâches.</p>
-<hr />
+<hr>
 <h2>1. Variables d'environnement</h2>
 <h3>Qu'est-ce qu'une variable d'environnement ?</h3>
 <p>Une variable d'environnement est une paire <strong>nom=valeur</strong> que le système et les programmes utilisent pour configurer leur comportement. Elles sont héritées par tous les processus enfants.</p>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash"># Lister toutes les variables
-env
-printenv
-
-# Voir une variable spécifique
-echo $HOME
-echo $PATH
-echo $USER
-
-# Définir une variable (session actuelle)
-MA_VARIABLE=&quot;Bonjour&quot;
-echo $MA_VARIABLE
-
-# Exporter une variable (pour les sous-processus)
-export MA_VARIABLE
-# ou
-export MA_VARIABLE=&quot;Bonjour&quot;
-</code></pre>
-
+<pre><code><h1>Lister toutes les variables</h1>
+<p>env</p>
+<p>printenv</p>
+<h1>Voir une variable spécifique</h1>
+<p>echo $HOME</p>
+<p>echo $PATH</p>
+<p>echo $USER</p>
+<h1>Définir une variable (session actuelle)</h1>
+<p>MA_VARIABLE="Bonjour"</p>
+<p>echo $MA_VARIABLE</p>
+<h1>Exporter une variable (pour les sous-processus)</h1>
+<p>export MA_VARIABLE</p>
+<h1>ou</h1>
+<p>export MA_VARIABLE="Bonjour"</p>
+<p></code></pre></p>
 <h3>Portée des variables</h3>
-<pre class="codehilite"><code class="language-bash"># Variable locale (processus courant uniquement)
-MA_VAR=&quot;valeur&quot;
-
-# Variable exportée (héritée par les enfants)
-export MA_VAR=&quot;valeur&quot;
-
-# Variable persistante (à ajouter dans ~/.bashrc ou ~/.profile)
-echo 'export MA_VAR=&quot;valeur&quot;' &gt;&gt; ~/.bashrc
-source ~/.bashrc  # Recharger
-</code></pre>
-
-<hr />
+<pre><code><h1>Variable locale (processus courant uniquement)</h1>
+<p>MA_VAR="valeur"</p>
+<h1>Variable exportée (héritée par les enfants)</h1>
+<p>export MA_VAR="valeur"</p>
+<h1>Variable persistante (à ajouter dans ~/.bashrc ou ~/.profile)</h1>
+<p>echo 'export MA_VAR="valeur"' >> ~/.bashrc</p>
+<p>source ~/.bashrc  # Recharger</p>
+<p></code></pre></p>
+<hr>
 <h2>2. Variables système importantes</h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-<th>Exemple</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$HOME</code></td>
-<td>Répertoire personnel</td>
-<td><code>/home/david</code></td>
-</tr>
-<tr>
-<td><code>$USER</code></td>
-<td>Nom d'utilisateur</td>
-<td><code>david</code></td>
-</tr>
-<tr>
-<td><code>$PATH</code></td>
-<td>Chemins des commandes</td>
-<td><code>/usr/local/bin:/usr/bin</code></td>
-</tr>
-<tr>
-<td><code>$PWD</code></td>
-<td>Répertoire courant</td>
-<td><code>/home/david</code></td>
-</tr>
-<tr>
-<td><code>$SHELL</code></td>
-<td>Shell par défaut</td>
-<td><code>/bin/bash</code></td>
-</tr>
-<tr>
-<td><code>$LANG</code></td>
-<td>Langue</td>
-<td><code>fr_CH.UTF-8</code></td>
-</tr>
-<tr>
-<td><code>$TERM</code></td>
-<td>Type de terminal</td>
-<td><code>xterm-256color</code></td>
-</tr>
-<tr>
-<td><code>$HOSTNAME</code></td>
-<td>Nom de la machine</td>
-<td><code>raspberrypi</code></td>
-</tr>
-<tr>
-<td><code>$DISPLAY</code></td>
-<td>Écran X11</td>
-<td><code>:0</code></td>
-</tr>
-<tr>
-<td><code>$EDITOR</code></td>
-<td>Éditeur par défaut</td>
-<td><code>nano</code></td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr><th>Description</th></tr></p>
+<p><tr><td><code>$HOME</code></td><td>Répertoire personnel</td><td><code>/home/david</code></td></tr></p>
+<p><tr><td><code>$USER</code></td><td>Nom d'utilisateur</td><td><code>david</code></td></tr></p>
+<p><tr><td><code>$PATH</code></td><td>Chemins des commandes</td><td><code>/usr/local/bin:/usr/bin</code></td></tr></p>
+<p><tr><td><code>$PWD</code></td><td>Répertoire courant</td><td><code>/home/david</code></td></tr></p>
+<p><tr><td><code>$SHELL</code></td><td>Shell par défaut</td><td><code>/bin/bash</code></td></tr></p>
+<p><tr><td><code>$LANG</code></td><td>Langue</td><td><code>fr_CH.UTF-8</code></td></tr></p>
+<p><tr><td><code>$TERM</code></td><td>Type de terminal</td><td><code>xterm-256color</code></td></tr></p>
+<p><tr><td><code>$HOSTNAME</code></td><td>Nom de la machine</td><td><code>raspberrypi</code></td></tr></p>
+<p><tr><td><code>$DISPLAY</code></td><td>Écran X11</td><td><code>:0</code></td></tr></p>
+<p><tr><td><code>$EDITOR</code></td><td>Éditeur par défaut</td><td><code>nano</code></td></tr></p>
+<p></table></p>
 <h3>Modifier le PATH</h3>
-<pre class="codehilite"><code class="language-bash"># Ajouter un répertoire au PATH
-export PATH=$PATH:/nouveau/chemin
-
-# PATH temporaire
-export PATH=&quot;/home/david/scripts:$PATH&quot;
-
-# PATH permanent (ajouter à ~/.bashrc)
-echo 'export PATH=&quot;$PATH:/home/david/scripts&quot;' &gt;&gt; ~/.bashrc
-</code></pre>
-
-<hr />
+<pre><code><h1>Ajouter un répertoire au PATH</h1>
+<p>export PATH=$PATH:/nouveau/chemin</p>
+<h1>PATH temporaire</h1>
+<p>export PATH="/home/david/scripts:$PATH"</p>
+<h1>PATH permanent (ajouter à ~/.bashrc)</h1>
+<p>echo 'export PATH="$PATH:/home/david/scripts"' >> ~/.bashrc</p>
+<p></code></pre></p>
+<hr>
 <h2>3. Introduction aux scripts Bash</h2>
 <h3>Créer un script</h3>
-<pre class="codehilite"><code class="language-bash">nano mon_script.sh
-</code></pre>
-
+<pre><code>nano mon_script.sh
+<p></code></pre></p>
 <h3>Structure de base</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-# Commentaire : ce script fait quelque chose
-
-echo &quot;Hello World !&quot;
-</code></pre>
-
+<pre><code>#!/bin/bash
+<h1>Commentaire : ce script fait quelque chose</h1>
+<p>echo "Hello World !"</p>
+<p></code></pre></p>
 <h3>Rendre exécutable</h3>
-<pre class="codehilite"><code class="language-bash">chmod +x mon_script.sh
-./mon_script.sh
-</code></pre>
-
-<blockquote>
-<p>⚠️ <strong>Important</strong> : Le shebang <code>#!/bin/bash</code> indique quel interpréteur utiliser.</p>
-</blockquote>
-<hr />
+<pre><code>chmod +x mon_script.sh
+<p>./mon_script.sh</p>
+<p></code></pre></p>
+<p>> ⚠️ <strong>Important</strong> : Le shebang <code>#!/bin/bash</code> indique quel interpréteur utiliser.</p>
+<hr>
 <h2>4. Variables dans les scripts</h2>
 <h3>Variables utilisateur</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-NOM=&quot;David&quot;
-echo &quot;Bonjour $NOM !&quot;
-
-# Avec read
-echo -n &quot;Ton prénom: &quot;
-read prenom
-echo &quot;Salut $prenom !&quot;
-
-#read avec prompt
-read -p &quot;Ton âge: &quot; age
-echo &quot;Tu as $age ans&quot;
-</code></pre>
-
+<pre><code>#!/bin/bash
+<p>NOM="David"</p>
+<p>echo "Bonjour $NOM !"</p>
+<h1>Avec read</h1>
+<p>echo -n "Ton prénom: "</p>
+<p>read prenom</p>
+<p>echo "Salut $prenom !"</p>
+<p>#read avec prompt</p>
+<p>read -p "Ton âge: " age</p>
+<p>echo "Tu as $age ans"</p>
+<p></code></pre></p>
 <h3>Variables spéciales</h3>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$0</code></td>
-<td>Nom du script</td>
-</tr>
-<tr>
-<td><code>$1</code>, <code>$2</code>, ...</td>
-<td>Arguments positionnels</td>
-</tr>
-<tr>
-<td><code>$#</code></td>
-<td>Nombre d'arguments</td>
-</tr>
-<tr>
-<td><code>$@</code></td>
-<td>Tous les arguments</td>
-</tr>
-<tr>
-<td><code>$?</code></td>
-<td>Code de retour de la dernière commande</td>
-</tr>
-<tr>
-<td><code>$$</code></td>
-<td>PID du script</td>
-</tr>
-<tr>
-<td><code>$!</code></td>
-<td>PID du dernier processus en arrière-plan</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>$0</code></td><td>Nom du script</td></tr></p>
+<p><tr><td><code>$1</code>, <code>$2</code>, ...</td><td>Arguments positionnels</td></tr></p>
+<p><tr><td><code>$#</code></td><td>Nombre d'arguments</td></tr></p>
+<p><tr><td><code>$@</code></td><td>Tous les arguments</td></tr></p>
+<p><tr><td><code>$?</code></td><td>Code de retour de la dernière commande</td></tr></p>
+<p><tr><td><code>$$</code></td><td>PID du script</td></tr></p>
+<p><tr><td><code>$!</code></td><td>PID du dernier processus en arrière-plan</td></tr></p>
+<p></table></p>
 <h3>Exemple avec arguments</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-echo &quot;Script: $0&quot;
-echo &quot;Premier argument: $1&quot;
-echo &quot;Deuxième argument: $2&quot;
-echo &quot;Nombre d'arguments: $#&quot;
-echo &quot;Tous les arguments: $@&quot;
-</code></pre>
-
-<hr />
+<pre><code>#!/bin/bash
+<p>echo "Script: $0"</p>
+<p>echo "Premier argument: $1"</p>
+<p>echo "Deuxième argument: $2"</p>
+<p>echo "Nombre d'arguments: $#"</p>
+<p>echo "Tous les arguments: $@"</p>
+<p></code></pre></p>
+<hr>
 <h2>5. Conditions (if/else)</h2>
 <h3>Syntaxe</h3>
-<pre class="codehilite"><code class="language-bash">if [ condition ]; then
-    # commandes
-elif [ condition ]; then
-    # commandes
-else
-    # commandes
-fi
-</code></pre>
-
+<pre><code>if [ condition ]; then
+<p>    # commandes</p>
+<p>elif [ condition ]; then</p>
+<p>    # commandes</p>
+<p>else</p>
+<p>    # commandes</p>
+<p>fi</p>
+<p></code></pre></p>
 <h3>Comparaisons de nombres</h3>
-<pre class="codehilite"><code class="language-bash">if [ $a -eq $b ]; then    # Égal
-if [ $a -ne $b ]; then    # Différent
-if [ $a -gt $b ]; then    # Plus grand
-if [ $a -ge $b ]; then    # Plus grand ou égal
-if [ $a -lt $b ]; then    # Plus petit
-if [ $a -le $b ]; then    # Plus petit ou égal
-</code></pre>
-
+<pre><code>if [ $a -eq $b ]; then    # Égal
+<p>if [ $a -ne $b ]; then    # Différent</p>
+<p>if [ $a -gt $b ]; then    # Plus grand</p>
+<p>if [ $a -ge $b ]; then    # Plus grand ou égal</p>
+<p>if [ $a -lt $b ]; then    # Plus petit</p>
+<p>if [ $a -le $b ]; then    # Plus petit ou égal</p>
+<p></code></pre></p>
 <h3>Comparaisons de chaînes</h3>
-<pre class="codehilite"><code class="language-bash">if [ &quot;$a&quot; = &quot;$b&quot; ]; then    # Égal
-if [ &quot;$a&quot; != &quot;$b&quot; ]; then   # Différent
-if [ -z &quot;$a&quot; ]; then       # Vide
-if [ -n &quot;$a&quot; ]; then       # Non vide
-</code></pre>
-
+<pre><code>if [ "$a" = "$b" ]; then    # Égal
+<p>if [ "$a" != "$b" ]; then   # Différent</p>
+<p>if [ -z "$a" ]; then       # Vide</p>
+<p>if [ -n "$a" ]; then       # Non vide</p>
+<p></code></pre></p>
 <h3>Tests sur fichiers</h3>
-<pre class="codehilite"><code class="language-bash">if [ -f &quot;$fichier&quot; ]; then    # Fichier régulier
-if [ -d &quot;$dossier&quot; ]; then   # Répertoire
-if [ -e &quot;$fichier&quot; ]; then   # Existe
-if [ -r &quot;$fichier&quot; ]; then   # Lisible
-if [ -w &quot;$fichier&quot; ]; then   # Écriture
-if [ -x &quot;$fichier&quot; ]; then   # Exécutable
-if [ -s &quot;$fichier&quot; ]; then   # Non vide
-</code></pre>
-
+<pre><code>if [ -f "$fichier" ]; then    # Fichier régulier
+<p>if [ -d "$dossier" ]; then   # Répertoire</p>
+<p>if [ -e "$fichier" ]; then   # Existe</p>
+<p>if [ -r "$fichier" ]; then   # Lisible</p>
+<p>if [ -w "$fichier" ]; then   # Écriture</p>
+<p>if [ -x "$fichier" ]; then   # Exécutable</p>
+<p>if [ -s "$fichier" ]; then   # Non vide</p>
+<p></code></pre></p>
 <h3>Exemple complet</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-if [ $# -eq 0 ]; then
-    echo &quot;Usage: $0 &lt;nom&gt;&quot;
-    exit 1
-fi
-
-NOM=$1
-
-if [ -f &quot;$NOM.txt&quot; ]; then
-    echo &quot;Le fichier $NOM.txt existe&quot;
-else
-    echo &quot;Le fichier $NOM.txt n'existe pas&quot;
-    echo &quot;Je le crée...&quot;
-    touch &quot;$NOM.txt&quot;
-fi
-</code></pre>
-
-<hr />
+<pre><code>#!/bin/bash
+<p>if [ $# -eq 0 ]; then</p>
+<p>    echo "Usage: $0 <nom>"</p>
+<p>    exit 1</p>
+<p>fi</p>
+<p>NOM=$1</p>
+<p>if [ -f "$NOM.txt" ]; then</p>
+<p>    echo "Le fichier $NOM.txt existe"</p>
+<p>else</p>
+<p>    echo "Le fichier $NOM.txt n'existe pas"</p>
+<p>    echo "Je le crée..."</p>
+<p>    touch "$NOM.txt"</p>
+<p>fi</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Boucles</h2>
 <h3>Boucle for classique</h3>
-<pre class="codehilite"><code class="language-bash">for i in 1 2 3 4 5; do
-    echo &quot;Compteur: $i&quot;
-done
-
-# Parcourir un dossier
-for fichier in *.txt; do
-    echo &quot;Fichier: $fichier&quot;
-done
-
-# Suite numérique
-for i in {1..10}; do
-    echo $i
-done
-</code></pre>
-
+<pre><code>for i in 1 2 3 4 5; do
+<p>    echo "Compteur: $i"</p>
+<p>done</p>
+<h1>Parcourir un dossier</h1>
+<p>for fichier in *.txt; do</p>
+<p>    echo "Fichier: $fichier"</p>
+<p>done</p>
+<h1>Suite numérique</h1>
+<p>for i in {1..10}; do</p>
+<p>    echo $i</p>
+<p>done</p>
+<p></code></pre></p>
 <h3>Boucle for C-style</h3>
-<pre class="codehilite"><code class="language-bash">for ((i=0; i&lt;10; i++)); do
-    echo &quot;i = $i&quot;
-done
-</code></pre>
-
+<pre><code>for ((i=0; i<10; i++)); do
+<p>    echo "i = $i"</p>
+<p>done</p>
+<p></code></pre></p>
 <h3>Boucle while</h3>
-<pre class="codehilite"><code class="language-bash">compteur=1
-while [ $compteur -le 5 ]; do
-    echo &quot;Compteur: $compteur&quot;
-    compteur=$((compteur + 1))
-done
-</code></pre>
-
+<pre><code>compteur=1
+<p>while [ $compteur -le 5 ]; do</p>
+<p>    echo "Compteur: $compteur"</p>
+<p>    compteur=$((compteur + 1))</p>
+<p>done</p>
+<p></code></pre></p>
 <h3>Boucle until</h3>
-<pre class="codehilite"><code class="language-bash">compteur=1
-until [ $compteur -gt 5 ]; do
-    echo &quot;Compteur: $compteur&quot;
-    compteur=$((compteur + 1))
-done
-</code></pre>
-
-<hr />
+<pre><code>compteur=1
+<p>until [ $compteur -gt 5 ]; do</p>
+<p>    echo "Compteur: $compteur"</p>
+<p>    compteur=$((compteur + 1))</p>
+<p>done</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Case (switch)</h2>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-echo &quot;Choisis une option: &quot;
-read option
-
-case $option in
-    1)
-        echo &quot;Tu as choisi 1&quot;
-        ;;
-    2)
-        echo &quot;Tu as choisi 2&quot;
-        ;;
-    3)
-        echo &quot;Tu as choisi 3&quot;
-        ;;
-    *)
-        echo &quot;Choix invalide&quot;
-        ;;
-esac
-</code></pre>
-
-<hr />
+<pre><code>#!/bin/bash
+<p>echo "Choisis une option: "</p>
+<p>read option</p>
+<p>case $option in</p>
+<p>    1)</p>
+<p>        echo "Tu as choisi 1"</p>
+<p>        ;;</p>
+<p>    2)</p>
+<p>        echo "Tu as choisi 2"</p>
+<p>        ;;</p>
+<p>    3)</p>
+<p>        echo "Tu as choisi 3"</p>
+<p>        ;;</p>
+<p>    *)</p>
+<p>        echo "Choix invalide"</p>
+<p>        ;;</p>
+<p>esac</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Fonctions</h2>
 <h3>Définir une fonction</h3>
-<pre class="codehilite"><code class="language-bash"># Fonction sans paramètre
-dire_bonjour() {
-    echo &quot;Bonjour !&quot;
-}
-
-# Appeler
-dire_bonjour
-</code></pre>
-
+<pre><code><h1>Fonction sans paramètre</h1>
+<p>dire_bonjour() {</p>
+<p>    echo "Bonjour !"</p>
+<p>}</p>
+<h1>Appeler</h1>
+<p>dire_bonjour</p>
+<p></code></pre></p>
 <h3>Fonction avec paramètres</h3>
-<pre class="codehilite"><code class="language-bash">dire_bonjour_a() {
-    echo &quot;Bonjour $1 !&quot;  # $1 = premier argument
-}
-
-dire_bonjour_a &quot;David&quot;
-</code></pre>
-
+<pre><code>dire_bonjour_a() {
+<p>    echo "Bonjour $1 !"  # $1 = premier argument</p>
+<p>}</p>
+<p>dire_bonjour_a "David"</p>
+<p></code></pre></p>
 <h3>Fonction avec retour</h3>
-<pre class="codehilite"><code class="language-bash">additionner() {
-    resultat=$(($1 + $2))
-    echo $resultat
-}
-
-somme=$(additionner 5 3)
-echo &quot;5 + 3 = $somme&quot;
-</code></pre>
-
-<hr />
+<pre><code>additionner() {
+<p>    resultat=$(($1 + $2))</p>
+<p>    echo $resultat</p>
+<p>}</p>
+<p>somme=$(additionner 5 3)</p>
+<p>echo "5 + 3 = $somme"</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Tableaux</h2>
 <h3>Déclaration</h3>
-<pre class="codehilite"><code class="language-bash"># Tableau simple
-tableau=(valeur1 valeur2 valeur3)
-
-# Tableau avec indices
-tableau[0]=&quot;premier&quot;
-tableau[1]=&quot;deuxième&quot;
-</code></pre>
-
+<pre><code><h1>Tableau simple</h1>
+<p>tableau=(valeur1 valeur2 valeur3)</p>
+<h1>Tableau avec indices</h1>
+<p>tableau[0]="premier"</p>
+<p>tableau[1]="deuxième"</p>
+<p></code></pre></p>
 <h3>Accéder aux éléments</h3>
-<pre class="codehilite"><code class="language-bash">echo ${tableau[0]}      # Premier élément
-echo ${tableau[@]}      # Tous les éléments
-echo ${#tableau[@]}     # Nombre d'éléments
-</code></pre>
-
+<pre><code>echo ${tableau[0]}      # Premier élément
+<p>echo ${tableau[@]}      # Tous les éléments</p>
+<p>echo ${#tableau[@]}     # Nombre d'éléments</p>
+<p></code></pre></p>
 <h3>Parcourir un tableau</h3>
-<pre class="codehilite"><code class="language-bash">for element in &quot;${tableau[@]}&quot;; do
-    echo $element
-done
-</code></pre>
-
-<hr />
+<pre><code>for element in "${tableau[@]}"; do
+<p>    echo $element</p>
+<p>done</p>
+<p></code></pre></p>
+<hr>
 <h2>10. Exercices pratiques</h2>
 <h3>Exercice 1 : Script de backup</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-# Backup automatique
-
-DEST=&quot;$HOME/backup_$(date +%Y%m%d)&quot;
-mkdir -p $DEST
-cp -r ~/Documents/* $DEST/
-echo &quot;Backup créé dans $DEST&quot;
-</code></pre>
-
+<pre><code>#!/bin/bash
+<h1>Backup automatique</h1>
+<p>DEST="$HOME/backup_$(date +%Y%m%d)"</p>
+<p>mkdir -p $DEST</p>
+<p>cp -r ~/Documents/* $DEST/</p>
+<p>echo "Backup créé dans $DEST"</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Vérification système</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-echo &quot;=== État du système ===&quot;
-echo &quot;Uptime: $(uptime)&quot;
-echo &quot;Mémoire: $(free -h | grep Mem)&quot;
-echo &quot;Disque: $(df -h / | tail -1)&quot;
-</code></pre>
-
+<pre><code>#!/bin/bash
+<p>echo "=== État du système ==="</p>
+<p>echo "Uptime: $(uptime)"</p>
+<p>echo "Mémoire: $(free -h | grep Mem)"</p>
+<p>echo "Disque: $(df -h / | tail -1)"</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Menu interactif</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-echo &quot;1. Afficher la date&quot;
-echo &quot;2. Afficher qui est connecté&quot;
-echo &quot;3. Afficher l'espace disque&quot;
-
-read -p &quot;Choix: &quot; choix
-
-case $choix in
-    1) date ;;
-    2) who ;;
-    3) df -h ;;
-    *) echo &quot;Choix invalide&quot; ;;
-esac
-</code></pre>
-
-<hr />
+<pre><code>#!/bin/bash
+<p>echo "1. Afficher la date"</p>
+<p>echo "2. Afficher qui est connecté"</p>
+<p>echo "3. Afficher l'espace disque"</p>
+<p>read -p "Choix: " choix</p>
+<p>case $choix in</p>
+<p>    1) date ;;</p>
+<p>    2) who ;;</p>
+<p>    3) df -h ;;</p>
+<p>    *) echo "Choix invalide" ;;</p>
+<p>esac</p>
+<p></code></pre></p>
+<hr>
 <h2>11. Trucs et Astuces</h2>
-<pre class="codehilite"><code class="language-bash"># Debug un script
-bash -x script.sh
-
-# Ignorer les erreurs
-commande || true
-
-# Valeur par défaut
-echo ${VAR:-&quot;défaut&quot;}
-
-# Assigner si vide
-echo ${VAR:=&quot;défaut&quot;}
-
-# Opérations mathématiques
-result=$((5 + 3))    # Addition
-result=$((10 / 2))  # Division
-result=$((10 % 3))  # Modulo
-</code></pre>
-
-<hr />
+<pre><code><h1>Debug un script</h1>
+<p>bash -x script.sh</p>
+<h1>Ignorer les erreurs</h1>
+<p>commande || true</p>
+<h1>Valeur par défaut</h1>
+<p>echo ${VAR:-"défaut"}</p>
+<h1>Assigner si vide</h1>
+<p>echo ${VAR:="défaut"}</p>
+<h1>Opérations mathématiques</h1>
+<p>result=$((5 + 3))    # Addition</p>
+<p>result=$((10 / 2))  # Division</p>
+<p>result=$((10 % 3))  # Modulo</p>
+<p></code></pre></p>
+<hr>
 <h2>12. Résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Concept</th>
-<th>Commande/Syntaxe</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Variable</td>
-<td><code>VAR="valeur"</code></td>
-</tr>
-<tr>
-<td>Accéder</td>
-<td><code>$VAR</code></td>
-</tr>
-<tr>
-<td>Exporter</td>
-<td><code>export VAR</code></td>
-</tr>
-<tr>
-<td>Condition</td>
-<td><code>if [ $a -eq $b ]; then ... fi</code></td>
-</tr>
-<tr>
-<td>Boucle for</td>
-<td><code>for i in 1 2 3; do ... done</code></td>
-</tr>
-<tr>
-<td>Boucle while</td>
-<td><code>while [ condition ]; do ... done</code></td>
-</tr>
-<tr>
-<td>Fonction</td>
-<td><code>nom() { ... }</code></td>
-</tr>
-<tr>
-<td>Argument</td>
-<td><code>$1</code>, <code>$2</code>, <code>$@</code></td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Variable</td><td><code>VAR="valeur"</code></td></tr></p>
+<p><tr><td>Accéder</td><td><code>$VAR</code></td></tr></p>
+<p><tr><td>Exporter</td><td><code>export VAR</code></td></tr></p>
+<p><tr><td>Condition</td><td><code>if [ $a -eq $b ]; then ... fi</code></td></tr></p>
+<p><tr><td>Boucle for</td><td><code>for i in 1 2 3; do ... done</code></td></tr></p>
+<p><tr><td>Boucle while</td><td><code>while [ condition ]; do ... done</code></td></tr></p>
+<p><tr><td>Fonction</td><td><code>nom() { ... }</code></td></tr></p>
+<p><tr><td>Argument</td><td><code>$1</code>, <code>$2</code>, <code>$@</code></td></tr></p>
+<p></table></p>
+<hr>
 <p>Maîtrise ces bases et tu pourras créer des scripts puissants pour automatiser tes tâches Linux ! 🚀</p>
-
-
-</div>
 <nav>
 <a href="09-recherche-fichiers-texte.html" style="color:#666;text-decoration:none;">&larr; 09 - Recherche de fichiers et texte</a>
 <a href="11-supervision-systeme.html" style="color:#00d9ff;text-decoration:none;">11 - Surveillance et supervision système &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

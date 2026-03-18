@@ -3,430 +3,319 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Les logs système Linux - /var/log, journalctl | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/17-logs-systeme.html">
-<meta property="og:title" content="Logs Systeme - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Les logs système Linux | SkyLinux</title>
+<meta name="description" content="Analysez les logs système sous Linux.">
+<meta name="keywords" content="logs linux, var log, journalctl, dmesg, syslog">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Analysez les logs système sous Linux. Apprenez à utiliser /var/log, journalctl, dmesg pour diagnostiquer les problèmes.">
-<meta name="keywords" content="logs linux, var log, journalctl, dmesg, syslog, analyser logs, diagnostic, depannage">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>17 - logs systeme : Les logs système</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 17 : Les logs système</h1>
 <p>Dans cette leçon, tu vas maîtriser les logs sous Linux. Les logs sont essentiels pour le dépannage, la sécurité et la surveillance système.</p>
-<hr />
+<hr>
 <h2>1. Introduction aux logs</h2>
 <h3>Qu'est-ce qu'un log ?</h3>
-<p>Un <strong>log</strong> (journal) est un fichier qui enregistre les événements du système. C'est indispensable pour :
-- Diagnostiquer les problèmes
-- Surveiller la sécurité
-- Comprendre le comportement du système
-- Auditer les activités</p>
+<p>Un <strong>log</strong> (journal) est un fichier qui enregistre les événements du système. C'est indispensable pour :</p>
+<ul><li>Diagnostiquer les problèmes</li>
+<li>Surveiller la sécurité</li>
+<li>Comprendre le comportement du système</li>
+<li>Auditer les activités</li>
+<p></ul></p>
 <h3>Emplacement des logs</h3>
-<table>
-<thead>
-<tr>
-<th>Répertoire</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/var/log/</code></td>
-<td>Logs système principaux</td>
-</tr>
-<tr>
-<td><code>/var/log/syslog</code></td>
-<td>Messages système généraux</td>
-</tr>
-<tr>
-<td><code>/var/log/auth.log</code></td>
-<td>Authentification (Debian/Ubuntu)</td>
-</tr>
-<tr>
-<td><code>/var/log/secure</code></td>
-<td>Authentification (RHEL/CentOS)</td>
-</tr>
-<tr>
-<td><code>/var/log/kern.log</code></td>
-<td>Messages du noyau</td>
-</tr>
-<tr>
-<td><code>/var/log/dmesg</code></td>
-<td>Messages au démarrage</td>
-</tr>
-<tr>
-<td><code>/var/log/messages</code></td>
-<td>Messages généraux (RHEL)</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>/var/log/</code></td><td>Logs système principaux</td></tr></p>
+<p><tr><td><code>/var/log/syslog</code></td><td>Messages système généraux</td></tr></p>
+<p><tr><td><code>/var/log/auth.log</code></td><td>Authentification (Debian/Ubuntu)</td></tr></p>
+<p><tr><td><code>/var/log/secure</code></td><td>Authentification (RHEL/CentOS)</td></tr></p>
+<p><tr><td><code>/var/log/kern.log</code></td><td>Messages du noyau</td></tr></p>
+<p><tr><td><code>/var/log/dmesg</code></td><td>Messages au démarrage</td></tr></p>
+<p><tr><td><code>/var/log/messages</code></td><td>Messages généraux (RHEL)</td></tr></p>
+<p></table></p>
+<hr>
 <h2>2. Commandes de base</h2>
 <h3>tail - Suivre les logs</h3>
-<pre class="codehilite"><code class="language-bash"># Dernières lignes
-tail /var/log/syslog
-
-# Suivre en temps réel
-tail -f /var/log/syslog
-
-# Avec nombre de lignes
-tail -n 50 /var/log/syslog
-tail -f -n 50 /var/log/syslog
-</code></pre>
-
+<pre><code><h1>Dernières lignes</h1>
+<p>tail /var/log/syslog</p>
+<h1>Suivre en temps réel</h1>
+<p>tail -f /var/log/syslog</p>
+<h1>Avec nombre de lignes</h1>
+<p>tail -n 50 /var/log/syslog</p>
+<p>tail -f -n 50 /var/log/syslog</p>
+<p></code></pre></p>
 <h3>head - Début des logs</h3>
-<pre class="codehilite"><code class="language-bash">head /var/log/syslog
-head -n 20 /var/log/syslog
-</code></pre>
-
+<pre><code>head /var/log/syslog
+<p>head -n 20 /var/log/syslog</p>
+<p></code></pre></p>
 <h3>cat - Tout afficher</h3>
-<pre class="codehilite"><code class="language-bash">cat /var/log/syslog
-</code></pre>
-
+<pre><code>cat /var/log/syslog
+<p></code></pre></p>
 <h3>less - Naviguer</h3>
-<pre class="codehilite"><code class="language-bash">less /var/log/syslog
-# Touches: /rechercher, n=suivant, p=précédent, q=quitter
-</code></pre>
-
-<hr />
+<pre><code>less /var/log/syslog
+<h1>Touches: /rechercher, n=suivant, p=précédent, q=quitter</h1>
+<p></code></pre></p>
+<hr>
 <h2>3. grep et logs</h2>
 <h3>Rechercher dans les logs</h3>
-<pre class="codehilite"><code class="language-bash"># Rechercher un terme
-grep &quot;erreur&quot; /var/log/syslog
-
-# Insensible à la casse
-grep -i &quot;error&quot; /var/log/syslog
-
-# Afficher le contexte
-grep -C 3 &quot;erreur&quot; /var/log/syslog
-
-# Compter les occurrences
-grep -c &quot;failed&quot; /var/log/auth.log
-</code></pre>
-
+<pre><code><h1>Rechercher un terme</h1>
+<p>grep "erreur" /var/log/syslog</p>
+<h1>Insensible à la casse</h1>
+<p>grep -i "error" /var/log/syslog</p>
+<h1>Afficher le contexte</h1>
+<p>grep -C 3 "erreur" /var/log/syslog</p>
+<h1>Compter les occurrences</h1>
+<p>grep -c "failed" /var/log/auth.log</p>
+<p></code></pre></p>
 <h3>Recherches avancées</h3>
-<pre class="codehilite"><code class="language-bash"># Expressions régulières
-grep -E &quot;error|warning|critical&quot; /var/log/syslog
-
-# Plusieurs fichiers
-grep -r &quot;motif&quot; /var/log/
-
-# Inverser (lignes sans)
-grep -v &quot;debug&quot; /var/log/syslog
-</code></pre>
-
-<hr />
+<pre><code><h1>Expressions régulières</h1>
+<p>grep -E "error|warning|critical" /var/log/syslog</p>
+<h1>Plusieurs fichiers</h1>
+<p>grep -r "motif" /var/log/</p>
+<h1>Inverser (lignes sans)</h1>
+<p>grep -v "debug" /var/log/syslog</p>
+<p></code></pre></p>
+<hr>
 <h2>4. Journalctl - Le système de logs moderne</h2>
 <p>systemd utilise <strong>journald</strong> comme système de logs centralisé.</p>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash"># Voir tous les logs
-journalctl
-
-# Logs d'aujourd'hui
-journalctl --since today
-
-# Période précise
-journalctl --since &quot;2024-01-01&quot; --until &quot;2024-01-02&quot;
-
-# Dernières entrées
-journalctl -n 50
-journalctl -n 100 --no-pager
-
-# Suivre en temps réel
-journalctl -f
-</code></pre>
-
+<pre><code><h1>Voir tous les logs</h1>
+<p>journalctl</p>
+<h1>Logs d'aujourd'hui</h1>
+<p>journalctl --since today</p>
+<h1>Période précise</h1>
+<p>journalctl --since "2024-01-01" --until "2024-01-02"</p>
+<h1>Dernières entrées</h1>
+<p>journalctl -n 50</p>
+<p>journalctl -n 100 --no-pager</p>
+<h1>Suivre en temps réel</h1>
+<p>journalctl -f</p>
+<p></code></pre></p>
 <h3>Filtrer par service</h3>
-<pre class="codehilite"><code class="language-bash"># Logs d'un service
-journalctl -u nginx
-journalctl -u ssh
-
-# Logs depuis le démarrage
-journalctl -b
-
-# Logs du boot précédent
-journalctl -b -1
-
-# Priorité (0=emergency à 7=debug)
-journalctl -p err
-journalctl -p warning
-</code></pre>
-
+<pre><code><h1>Logs d'un service</h1>
+<p>journalctl -u nginx</p>
+<p>journalctl -u ssh</p>
+<h1>Logs depuis le démarrage</h1>
+<p>journalctl -b</p>
+<h1>Logs du boot précédent</h1>
+<p>journalctl -b -1</p>
+<h1>Priorité (0=emergency à 7=debug)</h1>
+<p>journalctl -p err</p>
+<p>journalctl -p warning</p>
+<p></code></pre></p>
 <h3>Options avancées</h3>
-<pre class="codehilite"><code class="language-bash"># Format lisible
-journalctl --no-pager
-
-# Format JSON
-journalctl -o json
-
-# Taille
-journalctl --disk-usage
-
-# Nettoyer
-journalctl --vacuum-size=100M
-journalctl --vacuum-time=2weeks
-</code></pre>
-
-<hr />
+<pre><code><h1>Format lisible</h1>
+<p>journalctl --no-pager</p>
+<h1>Format JSON</h1>
+<p>journalctl -o json</p>
+<h1>Taille</h1>
+<p>journalctl --disk-usage</p>
+<h1>Nettoyer</h1>
+<p>journalctl --vacuum-size=100M</p>
+<p>journalctl --vacuum-time=2weeks</p>
+<p></code></pre></p>
+<hr>
 <h2>5. dmesg - Logs du noyau</h2>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash"># Tous les messages du noyau
-dmesg
-
-# Suivre en temps réel
-dmesg -w
-
-# Avec horodatage lisible
-dmesg -T
-
-# Filtrer par niveau
-dmesg -l err
-dmesg -l warn
-dmesg -l info
-</code></pre>
-
+<pre><code><h1>Tous les messages du noyau</h1>
+<p>dmesg</p>
+<h1>Suivre en temps réel</h1>
+<p>dmesg -w</p>
+<h1>Avec horodatage lisible</h1>
+<p>dmesg -T</p>
+<h1>Filtrer par niveau</h1>
+<p>dmesg -l err</p>
+<p>dmesg -l warn</p>
+<p>dmesg -l info</p>
+<p></code></pre></p>
 <h3>Rechercher</h3>
-<pre class="codehilite"><code class="language-bash"># Rechercher un terme
-dmesg | grep -i error
-dmesg | grep -i usb
-dmesg | grep -i network
-</code></pre>
-
-<hr />
+<pre><code><h1>Rechercher un terme</h1>
+<p>dmesg | grep -i error</p>
+<p>dmesg | grep -i usb</p>
+<p>dmesg | grep -i network</p>
+<p></code></pre></p>
+<hr>
 <h2>6. Logs d'authentification</h2>
 <h3>Fichiers clés</h3>
-<pre class="codehilite"><code class="language-bash"># Debian/Ubuntu
-/var/log/auth.log
-
-# RHEL/CentOS
-/var/log/secure
-</code></pre>
-
+<pre><code><h1>Debian/Ubuntu</h1>
+<p>/var/log/auth.log</p>
+<h1>RHEL/CentOS</h1>
+<p>/var/log/secure</p>
+<p></code></pre></p>
 <h3>Recherches utiles</h3>
-<pre class="codehilite"><code class="language-bash"># Connexions réussies
-grep &quot;session opened&quot; /var/log/auth.log
-
-# Échecs de connexion
-grep &quot;Failed password&quot; /var/log/auth.log
-
-# Connexions SSH
-grep &quot;sshd&quot; /var/log/auth.log
-
-# Utilisation de sudo
-grep &quot;sudo&quot; /var/log/auth.log
-
-# Dernier utilisateur
-last
-lastlog
-</code></pre>
-
-<hr />
+<pre><code><h1>Connexions réussies</h1>
+<p>grep "session opened" /var/log/auth.log</p>
+<h1>Échecs de connexion</h1>
+<p>grep "Failed password" /var/log/auth.log</p>
+<h1>Connexions SSH</h1>
+<p>grep "sshd" /var/log/auth.log</p>
+<h1>Utilisation de sudo</h1>
+<p>grep "sudo" /var/log/auth.log</p>
+<h1>Dernier utilisateur</h1>
+<p>last</p>
+<p>lastlog</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Logs applicatifs</h2>
 <h3>Apache/Nginx</h3>
-<pre class="codehilite"><code class="language-bash"># Apache
-/var/log/apache2/access.log
-/var/log/apache2/error.log
-
-# Nginx
-/var/log/nginx/access.log
-/var/log/nginx/error.log
-</code></pre>
-
+<pre><code><h1>Apache</h1>
+<p>/var/log/apache2/access.log</p>
+<p>/var/log/apache2/error.log</p>
+<h1>Nginx</h1>
+<p>/var/log/nginx/access.log</p>
+<p>/var/log/nginx/error.log</p>
+<p></code></pre></p>
 <h3>MySQL/MariaDB</h3>
-<pre class="codehilite"><code class="language-bash">/var/log/mysql/error.log
-/var/log/mysql/slow-queries.log
-/var/log/mysql/general.log
-</code></pre>
-
+<pre><code>/var/log/mysql/error.log
+<p>/var/log/mysql/slow-queries.log</p>
+<p>/var/log/mysql/general.log</p>
+<p></code></pre></p>
 <h3>Autres services</h3>
-<pre class="codehilite"><code class="language-bash"># Docker
-/var/log/docker.log
-journalctl -u docker
-
-# Fail2ban
-/var/log/fail2ban.log
-
-# Cron
-/var/log/cron.log
-</code></pre>
-
-<hr />
+<pre><code><h1>Docker</h1>
+<p>/var/log/docker.log</p>
+<p>journalctl -u docker</p>
+<h1>Fail2ban</h1>
+<p>/var/log/fail2ban.log</p>
+<h1>Cron</h1>
+<p>/var/log/cron.log</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Analyser les logs</h2>
 <h3>Compter et trier</h3>
-<pre class="codehilite"><code class="language-bash"># Compter les erreurs
-grep -c &quot;error&quot; /var/log/syslog
-
-# Compter par type
-grep -oE &quot;error|warning|notice&quot; /var/log/syslog | sort | uniq -c | sort -rn
-
-# Top 10 IPs qui accèdent au serveur
-awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head -10
-</code></pre>
-
+<pre><code><h1>Compter les erreurs</h1>
+<p>grep -c "error" /var/log/syslog</p>
+<h1>Compter par type</h1>
+<p>grep -oE "error|warning|notice" /var/log/syslog | sort | uniq -c | sort -rn</p>
+<h1>Top 10 IPs qui accèdent au serveur</h1>
+<p>awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head -10</p>
+<p></code></pre></p>
 <h3>Créer un script de surveillance</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-LOG=&quot;/var/log/syslog&quot;
-ALERTES=0
-
-# Vérifier les erreurs récentes
-ERRORS=$(tail -n 100 $LOG | grep -c -i &quot;error&quot;)
-
-if [ $ERRORS -gt 10 ]; then
-    echo &quot;ALERTE: $ERRORS erreurs dans les dernières 100 lignes&quot;
-    #Notifier (email, Slack, etc.)
-fi
-</code></pre>
-
-<hr />
+<pre><code>#!/bin/bash
+<p>LOG="/var/log/syslog"</p>
+<p>ALERTES=0</p>
+<h1>Vérifier les erreurs récentes</h1>
+<p>ERRORS=$(tail -n 100 $LOG | grep -c -i "error")</p>
+<p>if [ $ERRORS -gt 10 ]; then</p>
+<p>    echo "ALERTE: $ERRORS erreurs dans les dernières 100 lignes"</p>
+<p>    #Notifier (email, Slack, etc.)</p>
+<p>fi</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Logrotate - Gestion des logs</h2>
 <h3>Configuration</h3>
-<pre class="codehilite"><code class="language-bash"># Fichier de config principal
-/etc/logrotate.conf
-
-# Configuration par service
-/etc/logrotate.d/nginx
-</code></pre>
-
+<pre><code><h1>Fichier de config principal</h1>
+<p>/etc/logrotate.conf</p>
+<h1>Configuration par service</h1>
+<p>/etc/logrotate.d/nginx</p>
+<p></code></pre></p>
 <h3>Exemple de configuration</h3>
-<pre class="codehilite"><code>/var/log/nginx/*.log {
-    daily              # Rotation quotidienne
-    missingok          # Pas d'erreur si absent
-    rotate 14          # Garder 14 fichiers
-    compress           # Compresser les anciens
-    delaycompress      # Compresser le lendemain
-    notifempty        # Ne pas créer si vide
-    create 0640 www-data adm
-    sharedscripts
-    postrotate
-        systemctl reload nginx &gt; /dev/null
-    endscript
-}
-</code></pre>
-
+<pre><code>/var/log/nginx/*.log {
+<p>    daily              # Rotation quotidienne</p>
+<p>    missingok          # Pas d'erreur si absent</p>
+<p>    rotate 14          # Garder 14 fichiers</p>
+<p>    compress           # Compresser les anciens</p>
+<p>    delaycompress      # Compresser le lendemain</p>
+<p>    notifempty        # Ne pas créer si vide</p>
+<p>    create 0640 www-data adm</p>
+<p>    sharedscripts</p>
+<p>    postrotate</p>
+<p>        systemctl reload nginx > /dev/null</p>
+<p>    endscript</p>
+<p>}</p>
+<p></code></pre></p>
 <h3>Commandes logrotate</h3>
-<pre class="codehilite"><code class="language-bash"># Tester sans exécuter
-logrotate -d /etc/logrotate.conf
-
-# Forcer la rotation
-sudo logrotate -f /etc/logrotate.conf
-</code></pre>
-
-<hr />
+<pre><code><h1>Tester sans exécuter</h1>
+<p>logrotate -d /etc/logrotate.conf</p>
+<h1>Forcer la rotation</h1>
+<p>sudo logrotate -f /etc/logrotate.conf</p>
+<p></code></pre></p>
+<hr>
 <h2>10. Créer son propre système de log</h2>
 <h3>Script simple</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
-
-LOGFILE=&quot;/var/log/mon_script.log&quot;
-
-echo &quot;$(date '+%Y-%m-%d %H:%M:%S') - Démarrage du script&quot; &gt;&gt; $LOGFILE
-
-# Votre logique ici
-echo &quot;$(date '+%Y-%m-%d %H:%M:%S') - Opération terminée&quot; &gt;&gt; $LOGFILE
-</code></pre>
-
+<pre><code>#!/bin/bash
+<p>LOGFILE="/var/log/mon_script.log"</p>
+<p>echo "$(date '+%Y-%m-%d %H:%M:%S') - Démarrage du script" >> $LOGFILE</p>
+<h1>Votre logique ici</h1>
+<p>echo "$(date '+%Y-%m-%d %H:%M:%S') - Opération terminée" >> $LOGFILE</p>
+<p></code></pre></p>
 <h3>Logger avec syslog</h3>
-<pre class="codehilite"><code class="language-bash"># Envoyer vers syslog
-logger -p user.info &quot;Mon message d'info&quot;
-logger -p user.warn &quot;Attention&quot;
-logger -p user.err &quot;Erreur&quot;
-
-# Avec tag personnalisé
-logger -t &quot;MONAPP&quot; -p user.info &quot;Message&quot;
-</code></pre>
-
-<hr />
+<pre><code><h1>Envoyer vers syslog</h1>
+<p>logger -p user.info "Mon message d'info"</p>
+<p>logger -p user.warn "Attention"</p>
+<p>logger -p user.err "Erreur"</p>
+<h1>Avec tag personnalisé</h1>
+<p>logger -t "MONAPP" -p user.info "Message"</p>
+<p></code></pre></p>
+<hr>
 <h2>11. Exercices pratiques</h2>
 <h3>Exercice 1 : Surveiller les erreurs</h3>
-<pre class="codehilite"><code class="language-bash"># Rechercher les erreurs dans syslog
-grep -i error /var/log/syslog | tail -20
-
-# Errors avec contexte
-grep -B2 -A2 &quot;error&quot; /var/log/syslog | head -30
-</code></pre>
-
+<pre><code><h1>Rechercher les erreurs dans syslog</h1>
+<p>grep -i error /var/log/syslog | tail -20</p>
+<h1>Errors avec contexte</h1>
+<p>grep -B2 -A2 "error" /var/log/syslog | head -30</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Connexions SSH</h3>
-<pre class="codehilite"><code class="language-bash"># Voir les connexions SSH
-grep &quot;sshd&quot; /var/log/auth.log | tail -20
-
-# Compter les échecs
-grep &quot;Failed password&quot; /var/log/auth.log | wc -l
-</code></pre>
-
+<pre><code><h1>Voir les connexions SSH</h1>
+<p>grep "sshd" /var/log/auth.log | tail -20</p>
+<h1>Compter les échecs</h1>
+<p>grep "Failed password" /var/log/auth.log | wc -l</p>
+<p></code></pre></p>
 <h3>Exercice 3 : Surveillance temps réel</h3>
-<pre class="codehilite"><code class="language-bash"># Suivre les logs en direct
-tail -f /var/log/syslog | grep -i error
-
-# Avec journalctl
-journalctl -f -u nginx
-</code></pre>
-
-<hr />
+<pre><code><h1>Suivre les logs en direct</h1>
+<p>tail -f /var/log/syslog | grep -i error</p>
+<h1>Avec journalctl</h1>
+<p>journalctl -f -u nginx</p>
+<p></code></pre></p>
+<hr>
 <h2>12. Résumé</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>tail -f</code></td>
-<td>Suivre en temps réel</td>
-</tr>
-<tr>
-<td><code>grep</code></td>
-<td>Rechercher</td>
-</tr>
-<tr>
-<td><code>journalctl</code></td>
-<td>Logs systemd</td>
-</tr>
-<tr>
-<td><code>dmesg</code></td>
-<td>Logs du noyau</td>
-</tr>
-<tr>
-<td><code>logrotate</code></td>
-<td>Rotation automatique</td>
-</tr>
-<tr>
-<td><code>logger</code></td>
-<td>Créer des logs</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>tail -f</code></td><td>Suivre en temps réel</td></tr></p>
+<p><tr><td><code>grep</code></td><td>Rechercher</td></tr></p>
+<p><tr><td><code>journalctl</code></td><td>Logs systemd</td></tr></p>
+<p><tr><td><code>dmesg</code></td><td>Logs du noyau</td></tr></p>
+<p><tr><td><code>logrotate</code></td><td>Rotation automatique</td></tr></p>
+<p><tr><td><code>logger</code></td><td>Créer des logs</td></tr></p>
+<p></table></p>
+<hr>
 <p>Maîtrise les logs pour diagnose et sécuriser ton système ! 📋</p>
-
-
-</div>
 <nav>
 <a href="16-editeurs-texte.html" style="color:#666;text-decoration:none;">&larr; 16 - Éditeurs de texte en ligne de commande</a>
 <a href="18-gestion-disques-partitions.html" style="color:#00d9ff;text-decoration:none;">18 - Gestion des disques et partitions &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

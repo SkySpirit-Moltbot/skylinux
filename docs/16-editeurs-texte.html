@@ -3,784 +3,422 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Éditeurs de texte Linux - Vim, Nano, VS Code | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/16-editeurs-texte.html">
-<meta property="og:title" content="Editeurs Texte - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<title>Éditeurs de texte Linux - Vim, Nano | SkyLinux</title>
+<meta name="description" content="Apprenez à utiliser les éditeurs de texte en ligne de commande.">
+<meta name="keywords" content="editeur texte linux, vim, nano, vi, editer fichier">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Apprenez à utiliser les éditeurs de texte en ligne de commande : Vim et Nano. Modifiez vos fichiers de configuration efficacement.">
-<meta name="keywords" content="editeur texte linux, vim, nano, vi, editer fichier, nano commandes, vim commandes, ide">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>16 - editeurs texte : Éditeurs de texte en ligne de commande</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 16 : Éditeurs de texte en ligne de commande</h1>
 <p>Dans cette leçon, tu vas maîtriser les deux éditeurs de texte essentiels sous Linux : <strong>Nano</strong> (simple) et <strong>Vim</strong> (puissant). Ces éditeurs sont indispensables pour modifier des fichiers de configuration, écrire des scripts et éditer du code.</p>
-<hr />
+<hr>
 <h2>1. Introduction aux éditeurs</h2>
 <h3>Pourquoi un éditeur en ligne de commande ?</h3>
-<ul>
-<li>Modifier des fichiers de configuration système</li>
+<ul><li>Modifier des fichiers de configuration système</li>
 <li>Écrire des scripts</li>
 <li>Éditer sur des serveurs distants (SSH)</li>
 <li>Rapidité et efficacité</li>
 <li>Pas besoin d'interface graphique</li>
-</ul>
+<p></ul></p>
 <h3>Les deux approches</h3>
-<table>
-<thead>
-<tr>
-<th>Nano</th>
-<th>Vim</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Simple, immédiat</td>
-<td>Puissant, nécessite apprentissage</td>
-</tr>
-<tr>
-<td>Raccourcis affichés</td>
-<td>Modes de fonctionnement</td>
-</tr>
-<tr>
-<td>Idéal débutants</td>
-<td>Idéal experts</td>
-</tr>
-<tr>
-<td>Édition linéaire</td>
-<td>Édition structurée</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Simple, immédiat</td><td>Puissant, nécessite apprentissage</td></tr></p>
+<p><tr><td>Raccourcis affichés</td><td>Modes de fonctionnement</td></tr></p>
+<p><tr><td>Idéal débutants</td><td>Idéal experts</td></tr></p>
+<p><tr><td>Édition linéaire</td><td>Édition structurée</td></tr></p>
+<p></table></p>
+<hr>
 <h2>2. NANO - L'éditeur simple</h2>
 <h3>Lancer Nano</h3>
-<pre class="codehilite"><code class="language-bash">nano                    # Nouveau fichier
-nano fichier.txt        # Ouvrir fichier existant
-nano -c fichier.txt     # Afficher position curseur
-nano -m fichier.txt     # Activer souris
-nano +10 fichier.txt    # Aller à la ligne 10
-nano -i fichier.txt    # Indentation automatique
-</code></pre>
-
+<pre><code>nano                    # Nouveau fichier
+<p>nano fichier.txt        # Ouvrir fichier existant</p>
+<p>nano -c fichier.txt     # Afficher position curseur</p>
+<p>nano -m fichier.txt     # Activer souris</p>
+<p>nano +10 fichier.txt    # Aller à la ligne 10</p>
+<p>nano -i fichier.txt    # Indentation automatique</p>
+<p></code></pre></p>
 <h3>Interface Nano</h3>
-<pre class="codehilite"><code> GNU nano 6.2           Modification de fichier.txt                          
-^G Aide    ^O Écrire   ^R Lire    ^X Quitter   ^C Position ^_ Recherche
-</code></pre>
-
+<pre><code> GNU nano 6.2           Modification de fichier.txt                          
+<p>^G Aide    ^O Écrire   ^R Lire    ^X Quitter   ^C Position ^_ Recherche</p>
+<p></code></pre></p>
 <p>Le <code>^</code> représente la touche <strong>Ctrl</strong>.</p>
 <h3>Raccourcis essentiels</h3>
-<table>
-<thead>
-<tr>
-<th>Raccourci</th>
-<th>Action</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Ctrl + O</strong></td>
-<td>Save</td>
-<td>Écrire/Sauvegarder</td>
-</tr>
-<tr>
-<td><strong>Ctrl + X</strong></td>
-<td>Exit</td>
-<td>Quitter</td>
-</tr>
-<tr>
-<td><strong>Ctrl + W</strong></td>
-<td>Where</td>
-<td>Rechercher</td>
-</tr>
-<tr>
-<td>*<em>Ctrl + *</em></td>
-<td>Replace</td>
-<td>Rechercher et remplacer</td>
-</tr>
-<tr>
-<td><strong>Ctrl + K</strong></td>
-<td>Cut</td>
-<td>Couper la ligne</td>
-</tr>
-<tr>
-<td><strong>Ctrl + U</strong></td>
-<td>Paste</td>
-<td>Coller la ligne</td>
-</tr>
-<tr>
-<td><strong>Ctrl + C</strong></td>
-<td>Location</td>
-<td>Afficher position</td>
-</tr>
-<tr>
-<td><strong>Ctrl + G</strong></td>
-<td>Help</td>
-<td>Aide</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr><th>Action</th></tr></p>
+<p><tr><td><strong>Ctrl + O</strong></td><td>Save</td><td>Écrire/Sauvegarder</td></tr></p>
+<p><tr><td><strong>Ctrl + X</strong></td><td>Exit</td><td>Quitter</td></tr></p>
+<p><tr><td><strong>Ctrl + W</strong></td><td>Where</td><td>Rechercher</td></tr></p>
+<p><tr><td><strong>Ctrl + \</strong></td><td>Replace</td><td>Rechercher et remplacer</td></tr></p>
+<p><tr><td><strong>Ctrl + K</strong></td><td>Cut</td><td>Couper la ligne</td></tr></p>
+<p><tr><td><strong>Ctrl + U</strong></td><td>Paste</td><td>Coller la ligne</td></tr></p>
+<p><tr><td><strong>Ctrl + C</strong></td><td>Location</td><td>Afficher position</td></tr></p>
+<p><tr><td><strong>Ctrl + G</strong></td><td>Help</td><td>Aide</td></tr></p>
+<p></table></p>
 <h3>Navigation</h3>
-<table>
-<thead>
-<tr>
-<th>Raccourci</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Ctrl + A</td>
-<td>Début de ligne</td>
-</tr>
-<tr>
-<td>Ctrl + E</td>
-<td>Fin de ligne</td>
-</tr>
-<tr>
-<td>Ctrl + Y</td>
-<td>Page précédente</td>
-</tr>
-<tr>
-<td>Ctrl + V</td>
-<td>Page suivante</td>
-</tr>
-<tr>
-<td>Ctrl + _</td>
-<td>Aller à une ligne</td>
-</tr>
-<tr>
-<td>Meta + \</td>
-<td>Aller au début</td>
-</tr>
-<tr>
-<td>Meta + /</td>
-<td>Aller à la fin</td>
-</tr>
-</tbody>
-</table>
-<blockquote>
-<p><strong>Note</strong> : Meta = Alt ou Échap</p>
-</blockquote>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Ctrl + A</td><td>Début de ligne</td></tr></p>
+<p><tr><td>Ctrl + E</td><td>Fin de ligne</td></tr></p>
+<p><tr><td>Ctrl + Y</td><td>Page précédente</td></tr></p>
+<p><tr><td>Ctrl + V</td><td>Page suivante</td></tr></p>
+<p><tr><td>Ctrl + _</td><td>Aller à une ligne</td></tr></p>
+<p><tr><td>Meta + \</td><td>Aller au début</td></tr></p>
+<p><tr><td>Meta + /</td><td>Aller à la fin</td></tr></p>
+<p></table></p>
+<p>> <strong>Note</strong> : Meta = Alt ou Échap</p>
 <h3>Rechercher et remplacer</h3>
-<pre class="codehilite"><code class="language-bash"># Rechercher
-Ctrl + W, taper le mot, Entrée
-# Suivant: Ctrl + W puis Entrée
-
-# Rechercher et remplacer
-Ctrl + \ , taper recherche, Entrée, taper remplacement, Entrée
-# Confirmer: A pour tous, Y pour un par un
-</code></pre>
-
-<h3>nano par défaut</h3>
-<pre class="codehilite"><code class="language-bash"># Créer ~/.nanorc
-set linenumbers      # Numéros de ligne
-set mouse           # Support souris
-set autoindent      # Indentation auto
-set noread          # Fichiers ouverts en lecture seule
-</code></pre>
-
-<hr />
+<pre><code><h1>Rechercher</h1>
+<p>Ctrl + W, taper le mot, Entrée</p>
+<h1>Suivant: Ctrl + W puis Entrée</h1>
+<h1>Rechercher et remplacer</h1>
+<p>Ctrl + \ , taper recherche, Entrée, taper remplacement, Entrée</p>
+<h1>Confirmer: A pour tous, Y pour un par un</h1>
+<p></code></pre></p>
+<p>###nano par défaut</p>
+<pre><code><h1>Créer ~/.nanorc</h1>
+<p>set linenumbers      # Numéros de ligne</p>
+<p>set mouse           # Support souris</p>
+<p>set autoindent      # Indentation auto</p>
+<p>set noread          # Fichiers ouverts en lecture seule</p>
+<p></code></pre></p>
+<hr>
 <h2>3. VIM - L'éditeur puissant</h2>
 <h3>Vim vs Vi</h3>
-<ul>
-<li><strong>Vi</strong> : Ancêtre, présent sur tous les Unix</li>
+<ul><li><strong>Vi</strong> : Ancêtre, présent sur tous les Unix</li>
 <li><strong>Vim</strong> : Vi Improved, version améliorée (la plus utilisée)</li>
-</ul>
+<p></ul></p>
 <h3>Lancer Vim</h3>
-<pre class="codehilite"><code class="language-bash">vim                     # Vim vide
-vim fichier.txt         # Ouvrir fichier
-vim +10 fichier.txt     # Ligne 10
-vim +/motif fichier     # Rechercher &quot;motif&quot;
-vim -R fichier.txt      # Lecture seule
-vim -d fichier1.txt fichier2.txt   # Comparer 2 fichiers
-</code></pre>
-
-<hr />
+<pre><code>vim                     # Vim vide
+<p>vim fichier.txt         # Ouvrir fichier</p>
+<p>vim +10 fichier.txt     # Ligne 10</p>
+<p>vim +/motif fichier     # Rechercher "motif"</p>
+<p>vim -R fichier.txt      # Lecture seule</p>
+<p>vim -d fichier1.txt fichier2.txt   # Comparer 2 fichiers</p>
+<p></code></pre></p>
+<hr>
 <h2>4. Les modes de Vim</h2>
 <p>C'est le concept le plus important à comprendre !</p>
 <h3>Les 3 modes principaux</h3>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Description</th>
-<th>Comment y entrer</th>
-<th>Comment en sortir</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>NORMAL</strong></td>
-<td>Navigation, commandes</td>
-<td>Par défaut</td>
-<td>Échap</td>
-</tr>
-<tr>
-<td><strong>INSERTION</strong></td>
-<td>Écrire du texte</td>
-<td><code>i</code>, <code>a</code>, <code>o</code></td>
-<td>Échap</td>
-</tr>
-<tr>
-<td><strong>COMMANDE</strong></td>
-<td>Commandes avancées</td>
-<td><code>:</code></td>
-<td>Échap</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr><th>Description</th><th>Comment y entrer</th></tr></p>
+<p><tr><td><strong>NORMAL</strong></td><td>Navigation, commandes</td><td>Par défaut</td><td>Échap</td></tr></p>
+<p><tr><td><strong>INSERTION</strong></td><td>Écrire du texte</td><td><code>i</code>, <code>a</code>, <code>o</code></td><td>Échap</td></tr></p>
+<p><tr><td><strong>COMMANDE</strong></td><td>Commandes avancées</td><td><code>:</code></td><td>Échap</td></tr></p>
+<p></table></p>
 <h3>Mode Normal</h3>
 <p>C'est le mode par défaut quand vous ouvrez Vim. Ici, chaque touche exécute une commande !</p>
-<pre class="codehilite"><code class="language-bash"># Quand vous tapez &quot;x&quot;, ça supprime le caractère, ça n'écrit pas &quot;x&quot; !
-# C'est normal, c'est le mode NORMAL.
-</code></pre>
-
+<pre><code><h1>Quand vous tapez "x", ça supprime le caractère, ça n'écrit pas "x" !</h1>
+<h1>C'est normal, c'est le mode NORMAL.</h1>
+<p></code></pre></p>
 <p><strong>Mouvements de base :</strong></p>
-<pre class="codehilite"><code class="language-bash">h j k l           # Gauche, Bas, Haut, Droite (ou flèches)
-w                 # Mot suivant
-b                 # Mot précédent
-e                 # Fin du mot
-0                 # Début de ligne
-$                 # Fin de ligne
-gg                # Début du fichier
-G                 # Fin du fichier
-:n                # Aller à la ligne n
-%                 # Aller à l'accolade opposante
-</code></pre>
-
+<pre><code>h j k l           # Gauche, Bas, Haut, Droite (ou flèches)
+<p>w                 # Mot suivant</p>
+<p>b                 # Mot précédent</p>
+<p>e                 # Fin du mot</p>
+<p>0                 # Début de ligne</p>
+<p>$                 # Fin de ligne</p>
+<p>gg                # Début du fichier</p>
+<p>G                 # Fin du fichier</p>
+<p>:n                # Aller à la ligne n</p>
+<p>%                 # Aller à l'accolade opposante</p>
+<p></code></pre></p>
 <h3>Passer en mode Insertion</h3>
-<pre class="codehilite"><code class="language-bash">i          # Insertion avant le curseur (le plus utilisé)
-I          # Insertion début de ligne
-a          # Insertion après le curseur
-A          # Insertion fin de ligne
-o          # Nouvelle ligne dessous
-O          # Nouvelle ligne dessus
-s          # Supprimer caractère et insérer
-S          # Supprimer ligne et insérer
-cc         # Supprimer ligne et insérer
-</code></pre>
-
+<pre><code>i          # Insertion avant le curseur (le plus utilisé)
+<p>I          # Insertion début de ligne</p>
+<p>a          # Insertion après le curseur</p>
+<p>A          # Insertion fin de ligne</p>
+<p>o          # Nouvelle ligne dessous</p>
+<p>O          # Nouvelle ligne dessus</p>
+<p>s          # Supprimer caractère et insérer</p>
+<p>S          # Supprimer ligne et insérer</p>
+<p>cc         # Supprimer ligne et insérer</p>
+<p></code></pre></p>
 <p><strong>Touche Échap</strong> ou <strong>Ctrl + [</strong> pour revenir au mode Normal !</p>
 <h3>Mode Commande</h3>
 <p>En mode Normal, taper <code>:</code> pour accéder aux commandes.</p>
-<pre class="codehilite"><code class="language-bash">:w             # Enregistrer (write)
-:wq            # Enregistrer et quitter
-:x             # Enregistrer et quitter (plus court)
-:q             # Quitter (si pas de changement)
-:q!            # Quitter sans enregistrer
-:wqa           # Enregistrer et quitter tous les fichiers
-:qa            # Quitter tous les fichiers
-</code></pre>
-
-<hr />
+<pre><code>:w             # Enregistrer (write)
+<p>:wq            # Enregistrer et quitter</p>
+<p>:x             # Enregistrer et quitter (plus court)</p>
+<p>:q             # Quitter (si pas de changement)</p>
+<p>:q!            # Quitter sans enregistrer</p>
+<p>:wqa           # Enregistrer et quitter tous les fichiers</p>
+<p>:qa            # Quitter tous les fichiers</p>
+<p></code></pre></p>
+<hr>
 <h2>5. Commandes du mode Normal</h2>
 <h3>Suppression et modification</h3>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>x</code></td>
-<td>Supprimer caractère</td>
-</tr>
-<tr>
-<td><code>X</code></td>
-<td>Supprimer caractère avant</td>
-</tr>
-<tr>
-<td><code>dd</code></td>
-<td>Supprimer ligne</td>
-</tr>
-<tr>
-<td><code>dw</code></td>
-<td>Supprimer mot</td>
-</tr>
-<tr>
-<td><code>d$</code></td>
-<td>Supprimer jusqu'à fin de ligne</td>
-</tr>
-<tr>
-<td><code>d0</code></td>
-<td>Supprimer jusqu'à début de ligne</td>
-</tr>
-<tr>
-<td><code>D</code></td>
-<td>Supprimer jusqu'à fin de ligne</td>
-</tr>
-<tr>
-<td><code>cc</code></td>
-<td>Supprimer ligne et passer en insertion</td>
-</tr>
-<tr>
-<td><code>C</code></td>
-<td>Supprimer et insérer</td>
-</tr>
-<tr>
-<td><code>r</code></td>
-<td>Remplacer un caractère</td>
-</tr>
-<tr>
-<td><code>R</code></td>
-<td>Mode remplacement</td>
-</tr>
-<tr>
-<td><code>~</code></td>
-<td>Inverser casse</td>
-</tr>
-<tr>
-<td><code>.</code></td>
-<td>Répéter dernière commande</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>x</code></td><td>Supprimer caractère</td></tr></p>
+<p><tr><td><code>X</code></td><td>Supprimer caractère avant</td></tr></p>
+<p><tr><td><code>dd</code></td><td>Supprimer ligne</td></tr></p>
+<p><tr><td><code>dw</code></td><td>Supprimer mot</td></tr></p>
+<p><tr><td><code>d$</code></td><td>Supprimer jusqu'à fin de ligne</td></tr></p>
+<p><tr><td><code>d0</code></td><td>Supprimer jusqu'à début de ligne</td></tr></p>
+<p><tr><td><code>D</code></td><td>Supprimer jusqu'à fin de ligne</td></tr></p>
+<p><tr><td><code>cc</code></td><td>Supprimer ligne et passer en insertion</td></tr></p>
+<p><tr><td><code>C</code></td><td>Supprimer et insérer</td></tr></p>
+<p><tr><td><code>r</code></td><td>Remplacer un caractère</td></tr></p>
+<p><tr><td><code>R</code></td><td>Mode remplacement</td></tr></p>
+<p><tr><td><code>~</code></td><td>Inverser casse</td></tr></p>
+<p><tr><td><code>.</code></td><td>Répéter dernière commande</td></tr></p>
+<p></table></p>
 <h3>Copier/Coller</h3>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>yy</code></td>
-<td>Copier ligne (yank)</td>
-</tr>
-<tr>
-<td><code>yw</code></td>
-<td>Copier mot</td>
-</tr>
-<tr>
-<td><code>y$</code></td>
-<td>Copier jusqu'à fin de ligne</td>
-</tr>
-<tr>
-<td><code>p</code></td>
-<td>Coller après curseur</td>
-</tr>
-<tr>
-<td><code>P</code></td>
-<td>Coller avant curseur</td>
-</tr>
-<tr>
-<td><code>"+y</code></td>
-<td>Copier vers presse-papiers système</td>
-</tr>
-<tr>
-<td><code>"+p</code></td>
-<td>Coller depuis presse-papiers système</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>yy</code></td><td>Copier ligne (yank)</td></tr></p>
+<p><tr><td><code>yw</code></td><td>Copier mot</td></tr></p>
+<p><tr><td><code>y$</code></td><td>Copier jusqu'à fin de ligne</td></tr></p>
+<p><tr><td><code>p</code></td><td>Coller après curseur</td></tr></p>
+<p><tr><td><code>P</code></td><td>Coller avant curseur</td></tr></p>
+<p><tr><td><code>"+y</code></td><td>Copier vers presse-papiers système</td></tr></p>
+<p><tr><td><code>"+p</code></td><td>Coller depuis presse-papiers système</td></tr></p>
+<p></table></p>
 <h3>Annuler/Rétablir</h3>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>u</code></td>
-<td>Annuler (undo)</td>
-</tr>
-<tr>
-<td>Ctrl + R</td>
-<td>Rétablir (redo)</td>
-</tr>
-<tr>
-<td><code>U</code></td>
-<td>Annuler tout sur la ligne</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>u</code></td><td>Annuler (undo)</td></tr></p>
+<p><tr><td>Ctrl + R</td><td>Rétablir (redo)</td></tr></p>
+<p><tr><td><code>U</code></td><td>Annuler tout sur la ligne</td></tr></p>
+<p></table></p>
 <h3>Recherche</h3>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/motif</code></td>
-<td>Rechercher en avant</td>
-</tr>
-<tr>
-<td><code>?motif</code></td>
-<td>Rechercher en arrière</td>
-</tr>
-<tr>
-<td><code>n</code></td>
-<td>Occurrence suivante</td>
-</tr>
-<tr>
-<td><code>N</code></td>
-<td>Occurrence précédente</td>
-</tr>
-<tr>
-<td><code>*</code></td>
-<td>Rechercher mot sous curseur</td>
-</tr>
-<tr>
-<td><code>#</code></td>
-<td>Rechercher mot sous curseur (arrière)</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>/motif</code></td><td>Rechercher en avant</td></tr></p>
+<p><tr><td><code>?motif</code></td><td>Rechercher en arrière</td></tr></p>
+<p><tr><td><code>n</code></td><td>Occurrence suivante</td></tr></p>
+<p><tr><td><code>N</code></td><td>Occurrence précédente</td></tr></p>
+<p><tr><td><code>*</code></td><td>Rechercher mot sous curseur</td></tr></p>
+<p><tr><td><code>#</code></td><td>Rechercher mot sous curseur (arrière)</td></tr></p>
+<p></table></p>
+<hr>
 <h2>6. Commandes du mode Commande</h2>
 <h3>Enregistrement et sauvegarde</h3>
-<pre class="codehilite"><code class="language-bash">:w             # Enregistrer
-:w fichier     # Enregistrer sous
-:wq            # Enregistrer et quitter
-:x             # Enregistrer et quitter
-:q             # Quitter
-:q!            # Quitter sans enregistrer
-:wqa           # Enregistrer et quitter tout
-:qa            # Quitter tout
-:qa!           # Forcer quitter tout
-</code></pre>
-
+<pre><code>:w             # Enregistrer
+<p>:w fichier     # Enregistrer sous</p>
+<p>:wq            # Enregistrer et quitter</p>
+<p>:x             # Enregistrer et quitter</p>
+<p>:q             # Quitter</p>
+<p>:q!            # Quitter sans enregistrer</p>
+<p>:wqa           # Enregistrer et quitter tout</p>
+<p>:qa            # Quitter tout</p>
+<p>:qa!           # Forcer quitter tout</p>
+<p></code></pre></p>
 <h3>Rechercher et remplacer</h3>
-<pre class="codehilite"><code class="language-bash">:/motif        # Rechercher
-:%s/old/new/   # Remplacer premiere occurrence
-:%s/old/new/g  # Remplacer toutes les occurrences
-:%s/old/new/gc # Confirmer chaque remplacement
-:s/old/new/    # Ligne actuelle seulement
-:5,10s/old/new/g  # Lignes 5 à 10
-</code></pre>
-
+<pre><code>:/motif        # Rechercher
+<p>:%s/old/new/   # Remplacer premiere occurrence</p>
+<p>:%s/old/new/g  # Remplacer toutes les occurrences</p>
+<p>:%s/old/new/gc # Confirmer chaque remplacement</p>
+<p>:s/old/new/    # Ligne actuelle seulement</p>
+<p>:5,10s/old/new/g  # Lignes 5 à 10</p>
+<p></code></pre></p>
 <h3>Édition avancée</h3>
-<pre class="codehilite"><code class="language-bash">:set nu         # Afficher numéros de ligne
-:set nonu       # Masquer numéros
-:set hlsearch   # Surligner recherches
-:set incsearch  # Recherche incrémentale
-:set syntax on  # Coloration syntaxique
-:set tabstop=4  # Taille tabulation
-:set expandtab  # Espaces au lieu de tab
-</code></pre>
-
-<hr />
+<pre><code>:set nu         # Afficher numéros de ligne
+<p>:set nonu       # Masquer numéros</p>
+<p>:set hlsearch   # Surligner recherches</p>
+<p>:set incsearch  # Recherche incrémentale</p>
+<p>:set syntax on  # Coloration syntaxique</p>
+<p>:set tabstop=4  # Taille tabulation</p>
+<p>:set expandtab  # Espaces au lieu de tab</p>
+<p></code></pre></p>
+<hr>
 <h2>7. Sélection visuelle</h2>
 <h3>Mode Visuel</h3>
-<pre class="codehilite"><code class="language-bash">v           # Mode visuel (caractère)
-V           # Mode visuel (ligne)
-Ctrl + V    # Mode visuel (bloc)
-</code></pre>
-
+<pre><code>v           # Mode visuel (caractère)
+<p>V           # Mode visuel (ligne)</p>
+<p>Ctrl + V    # Mode visuel (bloc)</p>
+<p></code></pre></p>
 <h3>Avec sélection</h3>
-<pre class="codehilite"><code class="language-bash">y           # Copier (yank)
-d           # Supprimer
-c           # Supprimer et insérer
-&gt;           # Indenter à droite
-&lt;           # Indenter à gauche
-!           # Filtrer avec commande externe
-</code></pre>
-
-<hr />
+<pre><code>y           # Copier (yank)
+<p>d           # Supprimer</p>
+<p>c           # Supprimer et insérer</p>
+<p>>           # Indenter à droite</p>
+<p><           # Indenter à gauche</p>
+<p>!           # Filtrer avec commande externe</p>
+<p></code></pre></p>
+<hr>
 <h2>8. Fenêtres et splits</h2>
 <h3>Splits horizontaux et verticaux</h3>
-<pre class="codehilite"><code class="language-bash">:split           # Split horizontal
-:vsplit          # Split vertical
-Ctrl + w + h     # Allergauche
-Ctrl + w + j     # Allerbas
-Ctrl + w + k     # Alleren haut
-Ctrl + w + l     # Allerdroite
-Ctrl + w + w     # Passer à la fenêtre suivante
-Ctrl + w + =     # Égaliser les fenêtres
-Ctrl + w + _     # Maximiser horizontale
-Ctrl + w + |    # Maximiser verticale
-:close           # Fermer la fenêtre
-</code></pre>
-
-<hr />
+<pre><code>:split           # Split horizontal
+<p>:vsplit          # Split vertical</p>
+<p>Ctrl + w + h     # Allergauche</p>
+<p>Ctrl + w + j     # Allerbas</p>
+<p>Ctrl + w + k     # Alleren haut</p>
+<p>Ctrl + w + l     # Allerdroite</p>
+<p>Ctrl + w + w     # Passer à la fenêtre suivante</p>
+<p>Ctrl + w + =     # Égaliser les fenêtres</p>
+<p>Ctrl + w + _     # Maximiser horizontale</p>
+<p>Ctrl + w + |    # Maximiser verticale</p>
+<p>:close           # Fermer la fenêtre</p>
+<p></code></pre></p>
+<hr>
 <h2>9. Macros</h2>
 <h3>Enregistrer et exécuter</h3>
-<pre class="codehilite"><code class="language-bash"># Commencer l'enregistrement (registre a)
-qa
-
-# Faire des actions
-I# &lt;Esc&gt;
-
-# Arrêter l'enregistrement
-q
-
-# Exécuter la macro
-@a
-
-# Exécuter 5 fois
-5@a
-</code></pre>
-
-<hr />
+<pre><code><h1>Commencer l'enregistrement (registre a)</h1>
+<p>qa</p>
+<h1>Faire des actions</h1>
+<p>I# <Esc></p>
+<h1>Arrêter l'enregistrement</h1>
+<p>q</p>
+<h1>Exécuter la macro</h1>
+<p>@a</p>
+<h1>Exécuter 5 fois</h1>
+<p>5@a</p>
+<p></code></pre></p>
+<hr>
 <h2>10. Fichiers de configuration Vim</h2>
 <h3>~/.vimrc basique</h3>
-<pre class="codehilite"><code class="language-syntax">&quot; Mon fichier .vimrc
-
-&quot; Basique
-set number          &quot; Numéros de ligne
-set relativenumber  &quot; Numéros relatifs
-set cursorline     &quot; Surbrillance ligne
-set showcmd         &quot; Commande en cours
-
-&quot; Indentation
-set autoindent     &quot; Indentation auto
-set smartindent    &quot; Indentation intelligente
-set shiftwidth=4   &quot; Taille indentation
-set tabstop=4      &quot; Taille tab
-
-&quot; Recherche
-set ignorecase     &quot; Ignorer casse
-set smartcase      &quot; Casse si majuscule
-set hlsearch       &quot; Surligner recherche
-set incsearch      &quot; Recherche incrémentale
-
-&quot; Couleurs
-syntax on          &quot; Coloration syntaxique
-colorscheme default
-
-&quot; Divers
-set mouse=a        &quot; Support souris
-set backspace=2    &quot; Backspace fonctionne
-</code></pre>
-
-<hr />
+<pre><code>" Mon fichier .vimrc
+<p>" Basique</p>
+<p>set number          " Numéros de ligne</p>
+<p>set relativenumber  " Numéros relatifs</p>
+<p>set cursorline     " Surbrillance ligne</p>
+<p>set showcmd         " Commande en cours</p>
+<p>" Indentation</p>
+<p>set autoindent     " Indentation auto</p>
+<p>set smartindent    " Indentation intelligente</p>
+<p>set shiftwidth=4   " Taille indentation</p>
+<p>set tabstop=4      " Taille tab</p>
+<p>" Recherche</p>
+<p>set ignorecase     " Ignorer casse</p>
+<p>set smartcase      " Casse si majuscule</p>
+<p>set hlsearch       " Surligner recherche</p>
+<p>set incsearch      " Recherche incrémentale</p>
+<p>" Couleurs</p>
+<p>syntax on          " Coloration syntaxique</p>
+<p>colorscheme default</p>
+<p>" Divers</p>
+<p>set mouse=a        " Support souris</p>
+<p>set backspace=2    " Backspace fonctionne</p>
+<p></code></pre></p>
+<hr>
 <h2>11. vimtutor - Le meilleur moyen d'apprendre</h2>
-<pre class="codehilite"><code class="language-bash"># Lancer le tutorial interactif
-vimtutor
-
-# Version française (si disponible)
-vimtutor fr
-</code></pre>
-
+<pre><code><h1>Lancer le tutorial interactif</h1>
+<p>vimtutor</p>
+<h1>Version française (si disponible)</h1>
+<p>vimtutor fr</p>
+<p></code></pre></p>
 <p>C'est un tutorial de 30 minutes directement dans le terminal. <strong>HIGHEMENT recommandé !</strong></p>
-<hr />
+<hr>
 <h2>12. Exercices pratiques</h2>
 <h3>Exercice 1 : Nano basique</h3>
-<pre class="codehilite"><code class="language-bash"># Créer un fichier
-nano test.txt
-
-# Écrire du texte
-# Utiliser Ctrl+O pour sauvegarder
-# Utiliser Ctrl+X pour quitter
-
-# Vérifier
-cat test.txt
-</code></pre>
-
+<pre><code><h1>Créer un fichier</h1>
+<p>nano test.txt</p>
+<h1>Écrire du texte</h1>
+<h1>Utiliser Ctrl+O pour sauvegarder</h1>
+<h1>Utiliser Ctrl+X pour quitter</h1>
+<h1>Vérifier</h1>
+<p>cat test.txt</p>
+<p></code></pre></p>
 <h3>Exercice 2 : Vim premier pas</h3>
-<pre class="codehilite"><code class="language-bash"># Ouvrir vim
-vim
-
-# Passer en mode insertion (i)
-# Écrire &quot;Bonjour&quot;
-# Échap pour revenir en mode normal
-# :wq pour sauvegarder et quitter
-</code></pre>
-
+<pre><code><h1>Ouvrir vim</h1>
+<p>vim</p>
+<h1>Passer en mode insertion (i)</h1>
+<h1>Écrire "Bonjour"</h1>
+<h1>Échap pour revenir en mode normal</h1>
+<h1>:wq pour sauvegarder et quitter</h1>
+<p></code></pre></p>
 <h3>Exercice 3 : Vim avancé</h3>
-<pre class="codehilite"><code class="language-bash"># Ouvrir un fichier
-vim fichier.txt
-
-# Naviguer: gg (début), G (fin)
-# Supprimer: dd, dw, x
-# Copier/Coller: yy, p
-# Rechercher: /motif
-# Remplacer: :%s/old/new/g
-</code></pre>
-
+<pre><code><h1>Ouvrir un fichier</h1>
+<p>vim fichier.txt</p>
+<h1>Naviguer: gg (début), G (fin)</h1>
+<h1>Supprimer: dd, dw, x</h1>
+<h1>Copier/Coller: yy, p</h1>
+<h1>Rechercher: /motif</h1>
+<h1>Remplacer: :%s/old/new/g</h1>
+<p></code></pre></p>
 <h3>Exercice 4 : vimtutor</h3>
-<pre class="codehilite"><code class="language-bash"># Faire le tutorial
-vimtutor
-
-# Faire les 2 premières leçons
-</code></pre>
-
-<hr />
+<pre><code><h1>Faire le tutorial</h1>
+<p>vimtutor</p>
+<h1>Faire les 2 premières leçons</h1>
+<p></code></pre></p>
+<hr>
 <h2>13. Tableau résumé Nano</h2>
-<table>
-<thead>
-<tr>
-<th>Raccourci</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Ctrl + O</td>
-<td>Écrire</td>
-</tr>
-<tr>
-<td>Ctrl + X</td>
-<td>Quitter</td>
-</tr>
-<tr>
-<td>Ctrl + W</td>
-<td>Rechercher</td>
-</tr>
-<tr>
-<td>Ctrl + K</td>
-<td>Couper ligne</td>
-</tr>
-<tr>
-<td>Ctrl + U</td>
-<td>Coller</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Ctrl + O</td><td>Écrire</td></tr></p>
+<p><tr><td>Ctrl + X</td><td>Quitter</td></tr></p>
+<p><tr><td>Ctrl + W</td><td>Rechercher</td></tr></p>
+<p><tr><td>Ctrl + K</td><td>Couper ligne</td></tr></p>
+<p><tr><td>Ctrl + U</td><td>Coller</td></tr></p>
+<p></table></p>
+<hr>
 <h2>14. Tableau résumé Vim</h2>
 <h3>Modes</h3>
-<table>
-<thead>
-<tr>
-<th>Mode</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Normal</td>
-<td>Par défaut, commandes</td>
-</tr>
-<tr>
-<td>Insertion</td>
-<td>Écrire du texte</td>
-</tr>
-<tr>
-<td>Visuel</td>
-<td>Sélection</td>
-</tr>
-<tr>
-<td>Commande</td>
-<td>:commandes</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Normal</td><td>Par défaut, commandes</td></tr></p>
+<p><tr><td>Insertion</td><td>Écrire du texte</td></tr></p>
+<p><tr><td>Visuel</td><td>Sélection</td></tr></p>
+<p><tr><td>Commande</td><td>:commandes</td></tr></p>
+<p></table></p>
 <h3>Touches essentielles</h3>
-<table>
-<thead>
-<tr>
-<th>Touche</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>i</code></td>
-<td>Mode insertion</td>
-</tr>
-<tr>
-<td>Échap</td>
-<td>Retour mode normal</td>
-</tr>
-<tr>
-<td><code>:wq</code></td>
-<td>Enregistrer et quitter</td>
-</tr>
-<tr>
-<td><code>dd</code></td>
-<td>Supprimer ligne</td>
-</tr>
-<tr>
-<td><code>yy</code></td>
-<td>Copier ligne</td>
-</tr>
-<tr>
-<td><code>p</code></td>
-<td>Coller</td>
-</tr>
-<tr>
-<td><code>/</code></td>
-<td>Rechercher</td>
-</tr>
-<tr>
-<td><code>u</code></td>
-<td>Annuler</td>
-</tr>
-<tr>
-<td>Ctrl + R</td>
-<td>Rétablir</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>i</code></td><td>Mode insertion</td></tr></p>
+<p><tr><td>Échap</td><td>Retour mode normal</td></tr></p>
+<p><tr><td><code>:wq</code></td><td>Enregistrer et quitter</td></tr></p>
+<p><tr><td><code>dd</code></td><td>Supprimer ligne</td></tr></p>
+<p><tr><td><code>yy</code></td><td>Copier ligne</td></tr></p>
+<p><tr><td><code>p</code></td><td>Coller</td></tr></p>
+<p><tr><td><code>/</code></td><td>Rechercher</td></tr></p>
+<p><tr><td><code>u</code></td><td>Annuler</td></tr></p>
+<p><tr><td>Ctrl + R</td><td>Rétablir</td></tr></p>
+<p></table></p>
+<hr>
 <h2>15. Quand utiliser quoi ?</h2>
-<table>
-<thead>
-<tr>
-<th>Situation</th>
-<th>Éditeur recommandé</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Édition rapide</td>
-<td>Nano</td>
-</tr>
-<tr>
-<td>Débutant</td>
-<td>Nano</td>
-</tr>
-<tr>
-<td>Fichier config système</td>
-<td>Nano ou Vim</td>
-</tr>
-<tr>
-<td>Programmation</td>
-<td>Vim (avec plugins)</td>
-</tr>
-<tr>
-<td>Gros fichiers</td>
-<td>Vim</td>
-</tr>
-<tr>
-<td>Édition sur serveur</td>
-<td>Vim</td>
-</tr>
-<tr>
-<td>Apprentisage</td>
-<td>vimtutor</td>
-</tr>
-</tbody>
-</table>
-<hr />
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td>Édition rapide</td><td>Nano</td></tr></p>
+<p><tr><td>Débutant</td><td>Nano</td></tr></p>
+<p><tr><td>Fichier config système</td><td>Nano ou Vim</td></tr></p>
+<p><tr><td>Programmation</td><td>Vim (avec plugins)</td></tr></p>
+<p><tr><td>Gros fichiers</td><td>Vim</td></tr></p>
+<p><tr><td>Édition sur serveur</td><td>Vim</td></tr></p>
+<p><tr><td>Apprentisage</td><td>vimtutor</td></tr></p>
+<p></table></p>
+<hr>
 <p>Maîtrise ces deux éditeurs et tu pourras éditer n'importe quel fichier sous Linux ! ✍️</p>
-
-
-</div>
 <nav>
 <a href="15-redirections-pipes.html" style="color:#666;text-decoration:none;">&larr; 15 - Redirections et Pipes</a>
 <a href="17-logs-systeme.html" style="color:#00d9ff;text-decoration:none;">17 - Les logs système &rarr;</a>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>

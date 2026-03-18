@@ -3,301 +3,233 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Configuration réseau avancée Linux - DHCP, DNS, Firewall | SkyLinux</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/24-reseaux-avances.html">
-<meta property="og:title" content="Configuration reseau avancee - SkyLinux">
-<meta property="og:description" content="Apprenez la configuration reseau avancee sous Linux">
+<title>Configuration réseau avancée Linux | SkyLinux</title>
+<meta name="description" content="Maîtrisez la configuration réseau avancée sous Linux.">
+<meta name="keywords" content="reseau avance linux, dhcp, dns, iptables, routage">
 <meta name="robots" content="index, follow">
-<meta name="description" content="Maîtrisez la configuration réseau avancée sous Linux. Configurez DHCP, DNS, pare-feu et routage sur votre serveur.">
-<meta name="keywords" content="reseau avance linux, dhcp, dns, iptables, nftables, routage, configuration reseau avancee, firewall advanced">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 20px; line-height: 1.7; }
 .container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-h3 { color: #00ff88; margin: 15px 0 8px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
+h1 { font-size: 1.8rem; margin-bottom: 20px; color: #00d9ff; }
+h2 { font-size: 1.4rem; margin: 30px 0 15px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 8px; }
+h3 { font-size: 1.15rem; margin: 20px 0 10px; color: #ddd; }
+p { margin: 12px 0; color: #ccc; }
+ul, ol { margin: 12px 0; padding-left: 25px; }
+li { margin: 6px 0; color: #bbb; }
+code { background: #1a1a24; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; color: #ff7b72; }
+pre { background: #1a1a24; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #333; }
+pre code { background: none; padding: 0; color: #e0e0e0; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+th, td { padding: 10px; text-align: left; border: 1px solid #333; }
+th { background: #1a1a24; color: #00d9ff; }
+hr { border: none; border-top: 1px solid #333; margin: 30px 0; }
+blockquote { border-left: 3px solid #00d9ff; padding-left: 15px; margin: 15px 0; color: #888; font-style: italic; }
+.header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; margin-bottom: 20px; border-bottom: 1px solid #333; }
+.header a { color: #666; text-decoration: none; }
+.header .logo { font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; }
+nav a { color: #00d9ff; text-decoration: none; }
+.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>24 - reseaux avances : Configuration réseau avancée</h1>
+<div class="header">
+<a href="index.html">&larr; Sommaire</a>
+<span class="logo">SkyLinux</span>
+</div>
+<h1>Leçon 24 : Configuration réseau avancée</h1>
 <h2>Introduction</h2>
 <p>Cette leçon aborde les concepts avancés de configuration réseau sous Linux. Vous apprendrez à configurer des interfaces réseau, mettre en place un serveur DHCP, un serveur DNS, et à comprendre le routage avancé.</p>
 <h2>Configuration des interfaces réseau</h2>
 <h3>IP statique vs DHCP</h3>
-<h4>Configuration avec ip (temporaire)</h4>
-<pre class="codehilite"><code class="language-bash"># Ajouter une adresse IP
-ip addr add 192.168.1.100/24 dev eth0
-
-# Activer l'interface
-ip link set eth0 up
-
-# Désactiver l'interface
-ip link set eth0 down
-
-# Supprimer une adresse IP
-ip addr del 192.168.1.100/24 dev eth0
-</code></pre>
-
-<h4>Configuration persistente (Debian/Ubuntu)</h4>
+<p>#### Configuration avec ip (temporaire)</p>
+<pre><code><h1>Ajouter une adresse IP</h1>
+<p>ip addr add 192.168.1.100/24 dev eth0</p>
+<h1>Activer l'interface</h1>
+<p>ip link set eth0 up</p>
+<h1>Désactiver l'interface</h1>
+<p>ip link set eth0 down</p>
+<h1>Supprimer une adresse IP</h1>
+<p>ip addr del 192.168.1.100/24 dev eth0</p>
+<p></code></pre></p>
+<p>#### Configuration persistente (Debian/Ubuntu)</p>
 <p>Éditez le fichier <code>/etc/network/interfaces</code> :</p>
-<pre class="codehilite"><code class="language-bash">auto eth0
-iface eth0 inet static
-    address 192.168.1.100
-    netmask 255.255.255.0
-    gateway 192.168.1.1
-    dns-nameservers 8.8.8.8 8.8.4.4
-</code></pre>
-
-<h4>Configuration avec systemd-networkd</h4>
+<pre><code>auto eth0
+<p>iface eth0 inet static</p>
+<p>    address 192.168.1.100</p>
+<p>    netmask 255.255.255.0</p>
+<p>    gateway 192.168.1.1</p>
+<p>    dns-nameservers 8.8.8.8 8.8.4.4</p>
+<p></code></pre></p>
+<p>#### Configuration avec systemd-networkd</p>
 <p>Créez un fichier dans <code>/etc/systemd/network/</code> :</p>
-<pre class="codehilite"><code class="language-bash">[Match]
-Name=eth0
-
-[Network]
-Address=192.168.1.100/24
-Gateway=192.168.1.1
-DNS=8.8.8.8
-</code></pre>
-
+<pre><code>[Match]
+<p>Name=eth0</p>
+<p>[Network]</p>
+<p>Address=192.168.1.100/24</p>
+<p>Gateway=192.168.1.1</p>
+<p>DNS=8.8.8.8</p>
+<p></code></pre></p>
 <h2>Serveur DHCP</h2>
 <h3>Installation et configuration de dnsmasq</h3>
 <p>Dnsmasq est un serveur DHCP et DNS léger :</p>
-<pre class="codehilite"><code class="language-bash"># Installation
-sudo apt install dnsmasq
-
-# Configuration (/etc/dnsmasq.conf)
-interface=eth0
-bind-interfaces
-dhcp-range=192.168.1.50,192.168.1.150,12h
-dhcp-option=option:router,192.168.1.1
-dhcp-option=option:dns-server,8.8.8.8
-</code></pre>
-
+<pre><code><h1>Installation</h1>
+<p>sudo apt install dnsmasq</p>
+<h1>Configuration (/etc/dnsmasq.conf)</h1>
+<p>interface=eth0</p>
+<p>bind-interfaces</p>
+<p>dhcp-range=192.168.1.50,192.168.1.150,12h</p>
+<p>dhcp-option=option:router,192.168.1.1</p>
+<p>dhcp-option=option:dns-server,8.8.8.8</p>
+<p></code></pre></p>
 <h3>Commandes de gestion DHCP</h3>
-<pre class="codehilite"><code class="language-bash"># Démarrer le service
-sudo systemctl start dnsmasq
-
-# Activer au démarrage
-sudo systemctl enable dnsmasq
-
-# Voir les baux DHCP actifs
-cat /var/lib/misc/dnsmasq.leases
-</code></pre>
-
+<pre><code><h1>Démarrer le service</h1>
+<p>sudo systemctl start dnsmasq</p>
+<h1>Activer au démarrage</h1>
+<p>sudo systemctl enable dnsmasq</p>
+<h1>Voir les baux DHCP actifs</h1>
+<p>cat /var/lib/misc/dnsmasq.leases</p>
+<p></code></pre></p>
 <h2>Serveur DNS</h2>
 <h3>Configuration locale (/etc/hosts)</h3>
-<pre class="codehilite"><code class="language-bash"># Fichier hosts local
-sudo nano /etc/hosts
-
-# Ajoutez vos entrées
-192.168.1.10    serveur.local
-192.168.1.20    mondomaine.com
-</code></pre>
-
+<pre><code><h1>Fichier hosts local</h1>
+<p>sudo nano /etc/hosts</p>
+<h1>Ajoutez vos entrées</h1>
+<p>192.168.1.10    serveur.local</p>
+<p>192.168.1.20    mondomaine.com</p>
+<p></code></pre></p>
 <h3>Configuration du resolve.conf</h3>
-<pre class="codehilite"><code class="language-bash">sudo nano /etc/resolv.conf
-
-nameserver 8.8.8.8
-nameserver 8.8.4.4
-search mondomaine.com
-</code></pre>
-
+<pre><code>sudo nano /etc/resolv.conf
+<p>nameserver 8.8.8.8</p>
+<p>nameserver 8.8.4.4</p>
+<p>search mondomaine.com</p>
+<p></code></pre></p>
 <h3>Serveur DNS avec bind9</h3>
-<pre class="codehilite"><code class="language-bash"># Installation
-sudo apt install bind9 bind9utils
-
-# Configuration de zone (/etc/bind/named.conf.local)
-zone "mondomaine.local" {
-    type master;
-    file "/etc/bind/db.mondomaine.local";
-};
-
-# Fichier de zone
-$TTL    604800
-@       IN      SOA     ns.mondomaine.local. admin.mondomaine.local. (
-                     2024031801         ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
-;
-@       IN      NS      ns.mondomaine.local.
-@       IN      A       192.168.1.10
-ns      IN      A       192.168.1.10
-www     IN      CNAME   @
-</code></pre>
-
+<pre><code><h1>Installation</h1>
+<p>sudo apt install bind9 bind9utils</p>
+<h1>Configuration de zone (/etc/bind/named.conf.local)</h1>
+<p>zone "mondomaine.local" {</p>
+<p>    type master;</p>
+<p>    file "/etc/bind/db.mondomaine.local";</p>
+<p>};</p>
+<h1>Fichier de zone</h1>
+<p>$TTL    604800</p>
+<p>@       IN      SOA     ns.mondomaine.local. admin.mondomaine.local. (</p>
+<p>                     2024031801         ; Serial</p>
+<p>                         604800         ; Refresh</p>
+<p>                          86400         ; Retry</p>
+<p>                        2419200         ; Expire</p>
+<p>                         604800 )       ; Negative Cache TTL</p>
+<p>;</p>
+<p>@       IN      NS      ns.mondomaine.local.</p>
+<p>@       IN      A       192.168.1.10</p>
+<p>ns      IN      A       192.168.1.10</p>
+<p>www     IN      CNAME   @</p>
+<p></code></pre></p>
 <h2>Routage avancé</h2>
 <h3>Table de routage</h3>
-<pre class="codehilite"><code class="language-bash"># Voir la table de routage
-ip route show
-ip route list
-
-# Ajouter une route statique
-ip route add 10.0.0.0/24 via 192.168.1.1 dev eth0
-
-# Route par défaut
-ip route add default via 192.168.1.1
-
-# Supprimer une route
-ip route del 10.0.0.0/24
-</code></pre>
-
+<pre><code><h1>Voir la table de routage</h1>
+<p>ip route show</p>
+<p>ip route list</p>
+<h1>Ajouter une route statique</h1>
+<p>ip route add 10.0.0.0/24 via 192.168.1.1 dev eth0</p>
+<h1>Route par défaut</h1>
+<p>ip route add default via 192.168.1.1</p>
+<h1>Supprimer une route</h1>
+<p>ip route del 10.0.0.0/24</p>
+<p></code></pre></p>
 <h3>IP forwarding (routeur)</h3>
-<pre class="codehilite"><code class="language-bash"># Activer le routage temporairement
-echo 1 > /proc/sys/net/ipv4/ip_forward
-
-# Configuration permanente (/etc/sysctl.conf)
-net.ipv4.ip_forward=1
-
-# Appliquer sans redémarrer
-sudo sysctl -p
-</code></pre>
-
+<pre><code><h1>Activer le routage temporairement</h1>
+<p>echo 1 > /proc/sys/net/ipv4/ip_forward</p>
+<h1>Configuration permanente (/etc/sysctl.conf)</h1>
+<p>net.ipv4.ip_forward=1</p>
+<h1>Appliquer sans redémarrer</h1>
+<p>sudo sysctl -p</p>
+<p></code></pre></p>
 <h3>NAT (Network Address Translation)</h3>
-<pre class="codehilite"><code class="language-bash"># NAT pour le traffic sortant
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-
-# Redirection de port
-iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
-
-# Sauvegarder les règles
-sudo iptables-save > /etc/iptables/rules.v4
-</code></pre>
-
+<pre><code><h1>NAT pour le traffic sortant</h1>
+<p>iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</p>
+<h1>Redirection de port</h1>
+<p>iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080</p>
+<h1>Sauvegarder les règles</h1>
+<p>sudo iptables-save > /etc/iptables/rules.v4</p>
+<p></code></pre></p>
 <h2>Pare-feu avec iptables</h2>
 <h3>Règles de base</h3>
-<pre class="codehilite"><code class="language-bash"># Politique par défaut : tout rejeter
-iptables -P INPUT DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT ACCEPT
-
-# Autoriser localhost
-iptables -A INPUT -i lo -j ACCEPT
-
-# Autoriser les connexions établies
-iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
-
-# Autoriser SSH
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT
-
-# Autoriser HTTP/HTTPS
-iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-iptables -A INPUT -p tcp --dport 443 -j ACCEPT
-
-# Voir les règles
-iptables -L -n -v
-</code></pre>
-
+<pre><code><h1>Politique par défaut : tout rejeter</h1>
+<p>iptables -P INPUT DROP</p>
+<p>iptables -P FORWARD DROP</p>
+<p>iptables -P OUTPUT ACCEPT</p>
+<h1>Autoriser localhost</h1>
+<p>iptables -A INPUT -i lo -j ACCEPT</p>
+<h1>Autoriser les connexions établies</h1>
+<p>iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT</p>
+<h1>Autoriser SSH</h1>
+<p>iptables -A INPUT -p tcp --dport 22 -j ACCEPT</p>
+<h1>Autoriser HTTP/HTTPS</h1>
+<p>iptables -A INPUT -p tcp --dport 80 -j ACCEPT</p>
+<p>iptables -A INPUT -p tcp --dport 443 -j ACCEPT</p>
+<h1>Voir les règles</h1>
+<p>iptables -L -n -v</p>
+<p></code></pre></p>
 <h3>Gestion du pare-feu</h3>
-<pre class="codehilite"><code class="language-bash"># Effacer toutes les règles
-iptables -F
-
-# Supprimer une règle spécifique
-iptables -D INPUT -p tcp --dport 22 -j ACCEPT
-
-# Sauvegarder les règles
-sudo iptables-save > /etc/iptables.rules
-
-# Restaurer les règles
-sudo iptables-restore < /etc/iptables.rules
-</code></pre>
-
+<pre><code><h1>Effacer toutes les règles</h1>
+<p>iptables -F</p>
+<h1>Supprimer une règle spécifique</h1>
+<p>iptables -D INPUT -p tcp --dport 22 -j ACCEPT</p>
+<h1>Sauvegarder les règles</h1>
+<p>sudo iptables-save > /etc/iptables.rules</p>
+<h1>Restaurer les règles</h1>
+<p>sudo iptables-restore < /etc/iptables.rules</p>
+<p></code></pre></p>
 <h2>Outils de diagnostic réseau</h2>
-<pre class="codehilite"><code class="language-bash"># Tester la connectivité
-ping -c 4 8.8.8.8
-
-# Tracer le parcours
-traceroute google.com
-tracepath google.com
-
-# Tester un port spécifique
-nc -zv google.com 80
-telnet google.com 80
-
-# Analyser le trafic
-tcpdump -i eth0
-tcpdump -i eth0 port 80
-
-# Informations détaillée sur une interface
-ethtool eth0
-mii-tool eth0
-</code></pre>
-
+<pre><code><h1>Tester la connectivité</h1>
+<p>ping -c 4 8.8.8.8</p>
+<h1>Tracer le parcours</h1>
+<p>traceroute google.com</p>
+<p>tracepath google.com</p>
+<h1>Tester un port spécifique</h1>
+<p>nc -zv google.com 80</p>
+<p>telnet google.com 80</p>
+<h1>Analyser le trafic</h1>
+<p>tcpdump -i eth0</p>
+<p>tcpdump -i eth0 port 80</p>
+<h1>Informations détaillée sur une interface</h1>
+<p>ethtool eth0</p>
+<p>mii-tool eth0</p>
+<p></code></pre></p>
 <h2>Résumé des commandes</h2>
-<table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Utilité</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>ip addr</code></td>
-<td>Configurer les adresses IP</td>
-</tr>
-<tr>
-<td><code>ip route</code></td>
-<td>Gérer le routage</td>
-</tr>
-<tr>
-<td><code>iptables</code></td>
-<td>Configurer le pare-feu</td>
-</tr>
-<tr>
-<td><code>dnsmasq</code></td>
-<td>Serveur DHCP/DNS léger</td>
-</tr>
-<tr>
-<td><code>bind9</code></td>
-<td>Serveur DNS complet</td>
-</tr>
-<tr>
-<td><code>traceroute</code></td>
-<td>Tracer le parcours réseau</td>
-</tr>
-<tr>
-<td><code>tcpdump</code></td>
-<td>Analyser le trafic réseau</td>
-</tr>
-<tr>
-<td><code>ethtool</code></td>
-<td>Informations sur l'interface</td>
-</tr>
-</tbody>
-</table>
+<p><table></p>
+<p><tr></tr></p>
+<p><tr><td><code>ip addr</code></td><td>Configurer les adresses IP</td></tr></p>
+<p><tr><td><code>ip route</code></td><td>Gérer le routage</td></tr></p>
+<p><tr><td><code>iptables</code></td><td>Configurer le pare-feu</td></tr></p>
+<p><tr><td><code>dnsmasq</code></td><td>Serveur DHCP/DNS léger</td></tr></p>
+<p><tr><td><code>bind9</code></td><td>Serveur DNS complet</td></tr></p>
+<p><tr><td><code>traceroute</code></td><td>Tracer le parcours réseau</td></tr></p>
+<p><tr><td><code>tcpdump</code></td><td>Analyser le trafic réseau</td></tr></p>
+<p><tr><td><code>ethtool</code></td><td>Informations sur l'interface</td></tr></p>
+<p></table></p>
 <h2>Exercice pratique</h2>
-<ol>
-<li>Affichez votre configuration réseau actuelle avec <code>ip addr</code> et <code>ip route</code></li>
-<li>Configurez une adresse IP statique sur une interface secondaire</li>
-<li>Installez et configurez dnsmasq pour un petit réseau local</li>
-<li>Mettez en place des règles iptables basiques</li>
-<li>Testez la connectivité vers plusieurs hôtes avec ping et traceroute</li>
-<li>Expérimentez avec la redirection de port</li>
-</ol>
+<p>1. Affichez votre configuration réseau actuelle avec <code>ip addr</code> et <code>ip route</code></p>
+<p>2. Configurez une adresse IP statique sur une interface secondaire</p>
+<p>3. Installez et configurez dnsmasq pour un petit réseau local</p>
+<p>4. Mettez en place des règles iptables basiques</p>
+<p>5. Testez la connectivité vers plusieurs hôtes avec ping et traceroute</p>
+<p>6. Expérimentez avec la redirection de port</p>
 <h2>Conclusion</h2>
 <p>La maîtrise de la configuration réseau avancée est essentielle pour administrer des serveurs Linux. Ces connaissances vous permettront de mettre en place des infrastructures réseau complètes, depuis le DHCP jusqu'au pare-feu, en passant par le routage et le DNS.</p>
-
-</div>
 <nav>
 <a href="23-outils-diagnostic.html" style="color:#666;text-decoration:none;">&larr; 23 - Outils de diagnostic et dépannage</a>
 <span style="color:#666;">Fin</span>
 </nav>
+
+<div class="footer">
+<p>Par SkyLinux - Cours Linux gratuit</p>
+</div>
+</div>
 </body>
 </html>
