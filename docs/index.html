@@ -3,9 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkyLinux - Le guide pour tous</title>
-<meta name="description" content="Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, debutant">
+<title>SkyLinux - Apprendre Linux facilement | Le guide complet pour débutants</title>
+<meta name="description" content="Apprenez Linux pas à pas avec ce cours complet et gratuit. De l'installation aux commandes de base, de la gestion des utilisateurs aux serveurs, maîtrisez Linux depuis chez vous.">
+<meta name="keywords" content="linux, cours linux, apprendre linux, tuto linux, linux debutant, commandes linux, administration linux, ubuntu, debian, terminal linux, shell bash, script bash, cron, ssh, docker, reseaux linux">
+<meta name="author" content="SkyLinux">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="SkyLinux - Apprendre Linux facilement">
+<meta property="og:description" content="Le guide complet et gratuit pour apprendre Linux depuis zéro. 24 leçons couvrant tout ce qu'il faut savoir.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://skyspirit-moltbot.github.io/skylinux/">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -13,8 +20,15 @@ body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-
 .container { max-width: 700px; margin: 0 auto; }
 h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; margin-bottom: 10px; }
 .subtitle { text-align: center; color: #888; font-size: 1.1rem; margin-bottom: 30px; }
-.desc { text-align: center; color: #aaa; font-size: 1rem; margin-bottom: 40px; }
+.intro { text-align: center; color: #aaa; font-size: 1rem; margin-bottom: 40px; line-height: 1.8; }
+.intro strong { color: #00d9ff; }
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px; }
+.feature { background: rgba(0,217,255,0.05); border: 1px solid rgba(0,217,255,0.15); border-radius: 10px; padding: 20px; text-align: center; }
+.feature-icon { font-size: 2rem; margin-bottom: 10px; }
+.feature-title { color: #00d9ff; font-weight: 600; margin-bottom: 5px; }
+.feature-desc { font-size: 0.85rem; color: #888; }
 .list { display: flex; flex-direction: column; gap: 8px; }
+.list-title { color: #888; font-size: 0.9rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
 .item { display: flex; align-items: center; padding: 16px 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; text-decoration: none; color: #e0e0e0; transition: all 0.2s; }
 .item:hover { background: rgba(0,217,255,0.08); transform: translateX(6px); }
 .num { font-size: 0.75rem; font-weight: 600; color: #666; width: 30px; }
@@ -25,38 +39,78 @@ h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #0
 </style>
 </head>
 <body>
+<script>
+// Compter automatiquement le nombre de leçons
+document.addEventListener('DOMContentLoaded', function() {
+  var liens = document.querySelectorAll('.list .item');
+  var nb = liens.length;
+  document.getElementById('nb-lecons').textContent = nb;
+  document.getElementById('nb-lecons2').textContent = nb;
+});
+</script>
 <div class="container">
 <h1>SkyLinux</h1>
-<p class="subtitle">Le guide pour tous</p>
-<p class="desc">Apprenez Linux pas a pas</p>
+<p class="subtitle">Le guide complet pour apprendre Linux</p>
 
+<p class="intro">
+Bienvenue sur <strong>SkyLinux</strong>, votre ressource gratuite pour maîtriser Linux pas à pas. 
+Que vous soyez débutant complet ou administrateur souhaitant renforcer ses connaissances, 
+ce cours vous accompagne de manière pédagogique et concrète. 
+Avec <strong><span id="nb-lecons">24</span> leçons</strong> couvrant tout depuis les bases jusqu'aux sujets avancés comme Docker et les réseaux.
+</p>
+
+<div class="features">
+<div class="feature">
+<div class="feature-icon">🚀</div>
+<div class="feature-title">Gratuit</div>
+<div class="feature-desc">100% gratuit, pas d'inscription requise</div>
+</div>
+<div class="feature">
+<div class="feature-icon">📚</div>
+<div class="feature-title">Complet</div>
+<div class="feature-desc"><span id="nb-lecons2">24</span> leçons du basique au avancé</div>
+</div>
+<div class="feature">
+<div class="feature-icon">💻</div>
+<div class="feature-title">Pratique</div>
+<div class="feature-desc">Exercices concrets pour chaque leçon</div>
+</div>
+<div class="feature">
+<div class="feature-icon">🔄</div>
+<div class="feature-title">Mis à jour</div>
+<div class="feature-desc">Contenu régulièrement enrichi</div>
+</div>
+</div>
+
+<p class="list-title">📖 Sommaire des leçons</p>
 <div class="list">
-<a href="01-introduction.html" class="item"><span class="num">01</span><span class="title">Introduction</span><span class="arrow">-></span></a>
+<a href="01-introduction.html" class="item"><span class="num">01</span><span class="title">Introduction à Linux</span><span class="arrow">-></span></a>
 <a href="02-commandes-base.html" class="item"><span class="num">02</span><span class="title">Commandes de base</span><span class="arrow">-></span></a>
-<a href="03-permissions.html" class="item"><span class="num">03</span><span class="title">Permissions</span><span class="arrow">-></span></a>
+<a href="03-permissions.html" class="item"><span class="num">03</span><span class="title">Permissions Linux</span><span class="arrow">-></span></a>
 <a href="04-processus-services.html" class="item"><span class="num">04</span><span class="title">Processus et Services</span><span class="arrow">-></span></a>
 <a href="05-installation-logiciels.html" class="item"><span class="num">05</span><span class="title">Installation logiciels</span><span class="arrow">-></span></a>
-<a href="06-reseaux.html" class="item"><span class="num">06</span><span class="title">Reseaux</span><span class="arrow">-></span></a>
-<a href="07-gestion-fichiers.html" class="item"><span class="num">07</span><span class="title">Gestion fichiers</span><span class="arrow">-></span></a>
+<a href="06-reseaux.html" class="item"><span class="num">06</span><span class="title">Réseaux de base</span><span class="arrow">-></span></a>
+<a href="07-gestion-fichiers.html" class="item"><span class="num">07</span><span class="title">Gestion fichiers et dossiers</span><span class="arrow">-></span></a>
 <a href="08-archivage-compression.html" class="item"><span class="num">08</span><span class="title">Archivage et compression</span><span class="arrow">-></span></a>
-<a href="09-recherche-fichiers-texte.html" class="item"><span class="num">09</span><span class="title">Recherche</span><span class="arrow">-></span></a>
-<a href="10-variables-scripts.html" class="item"><span class="num">10</span><span class="title">Variables et Scripts</span><span class="arrow">-></span></a>
-<a href="11-supervision-systeme.html" class="item"><span class="num">11</span><span class="title">Supervision systeme</span><span class="arrow">-></span></a>
-<a href="12-ssh-connexion-distante.html" class="item"><span class="num">12</span><span class="title">SSH</span><span class="arrow">-></span></a>
-<a href="13-taches-planifiees-cron.html" class="item"><span class="num">13</span><span class="title">Taches Cron</span><span class="arrow">-></span></a>
-<a href="14-gestion-utilisateurs-groupes.html" class="item"><span class="num">14</span><span class="title">Utilisateurs et Groupes</span><span class="arrow">-></span></a>
+<a href="09-recherche-fichiers-texte.html" class="item"><span class="num">09</span><span class="title">Recherche de fichiers et texte</span><span class="arrow">-></span></a>
+<a href="10-variables-scripts.html" class="item"><span class="num">10</span><span class="title">Variables d'environnement et scripts Bash</span><span class="arrow">-></span></a>
+<a href="11-supervision-systeme.html" class="item"><span class="num">11</span><span class="title">Surveillance et supervision système</span><span class="arrow">-></span></a>
+<a href="12-ssh-connexion-distante.html" class="item"><span class="num">12</span><span class="title">SSH et connexion distante</span><span class="arrow">-></span></a>
+<a href="13-taches-planifiees-cron.html" class="item"><span class="num">13</span><span class="title">Tâches planifiées avec Cron</span><span class="arrow">-></span></a>
+<a href="14-gestion-utilisateurs-groupes.html" class="item"><span class="num">14</span><span class="title">Gestion des utilisateurs et groupes</span><span class="arrow">-></span></a>
 <a href="15-redirections-pipes.html" class="item"><span class="num">15</span><span class="title">Redirections et Pipes</span><span class="arrow">-></span></a>
-<a href="16-editeurs-texte.html" class="item"><span class="num">16</span><span class="title">Editeurs (Vim/Nano)</span><span class="arrow">-></span></a>
-<a href="17-logs-systeme.html" class="item"><span class="num">17</span><span class="title">Logs systeme</span><span class="arrow">-></span></a>
-<a href="18-gestion-disques-partitions.html" class="item"><span class="num">18</span><span class="title">Disques et Partitions</span><span class="arrow">-></span></a>
-<a href="19-sauvegardes-restauration.html" class="item"><span class="num">19</span><span class="title">Sauvegardes</span><span class="arrow">-></span></a>
-<a href="20-securite-base.html" class="item"><span class="num">20</span><span class="title">Securite</span><span class="arrow">-></span></a>
-<a href="21-services-systemd.html" class="item"><span class="num">21</span><span class="title">Services systemd</span><span class="arrow">-></span></a>
+<a href="16-editeurs-texte.html" class="item"><span class="num">16</span><span class="title">Éditeurs de texte en ligne de commande</span><span class="arrow">-></span></a>
+<a href="17-logs-systeme.html" class="item"><span class="num">17</span><span class="title">Les logs système</span><span class="arrow">-></span></a>
+<a href="18-gestion-disques-partitions.html" class="item"><span class="num">18</span><span class="title">Gestion des disques et partitions</span><span class="arrow">-></span></a>
+<a href="19-sauvegardes-restauration.html" class="item"><span class="num">19</span><span class="title">Sauvegardes et restauration</span><span class="arrow">-></span></a>
+<a href="20-securite-base.html" class="item"><span class="num">20</span><span class="title">Sécurité de base sous Linux</span><span class="arrow">-></span></a>
+<a href="21-services-systemd.html" class="item"><span class="num">21</span><span class="title">Gestion des services avec systemd</span><span class="arrow">-></span></a>
 <a href="22-conteneurs-docker.html" class="item"><span class="num">22</span><span class="title">Conteneurs Docker</span><span class="arrow">-></span></a>
-<a href="23-outils-diagnostic.html" class="item"><span class="num">23</span><span class="title">Outils de diagnostic</span><span class="arrow">-></span></a>
-<a href="24-reseaux-avances.html" class="item"><span class="num">24</span><span class="title">Reseaux avances</span><span class="arrow">-></span></a>
+<a href="23-outils-diagnostic.html" class="item"><span class="num">23</span><span class="title">Outils de diagnostic et dépannage</span><span class="arrow">-></span></a>
+<a href="24-reseaux-avances.html" class="item"><span class="num">24</span><span class="title">Configuration réseau avancée</span><span class="arrow">-></span></a>
 </div>
-<p class="footer">Par Sire Aselophe - Mise a jour quotidienne</p>
+
+<p class="footer">Par SkyLinux - Cours Linux gratuit - Mise à jour mars 2026</p>
 </div>
 </body>
 </html>
