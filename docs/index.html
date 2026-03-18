@@ -39,6 +39,15 @@ h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #0
 </style>
 </head>
 <body>
+<script>
+// Compter automatiquement le nombre de leçons
+document.addEventListener('DOMContentLoaded', function() {
+  var liens = document.querySelectorAll('.list .item');
+  var nb = liens.length;
+  document.getElementById('nb-lecons').textContent = nb;
+  document.getElementById('nb-lecons2').textContent = nb;
+});
+</script>
 <div class="container">
 <h1>SkyLinux</h1>
 <p class="subtitle">Le guide complet pour apprendre Linux</p>
@@ -47,7 +56,7 @@ h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, #0
 Bienvenue sur <strong>SkyLinux</strong>, votre ressource gratuite pour maîtriser Linux pas à pas. 
 Que vous soyez débutant complet ou administrateur souhaitant renforcer ses connaissances, 
 ce cours vous accompagne de manière pédagogique et concrète. 
-Avec <strong>24 leçons</strong> couvrant tout depuis les bases jusqu'aux sujets avancés comme Docker et les réseaux.
+Avec <strong><span id="nb-lecons">24</span> leçons</strong> couvrant tout depuis les bases jusqu'aux sujets avancés comme Docker et les réseaux.
 </p>
 
 <div class="features">
@@ -59,7 +68,7 @@ Avec <strong>24 leçons</strong> couvrant tout depuis les bases jusqu'aux sujets
 <div class="feature">
 <div class="feature-icon">📚</div>
 <div class="feature-title">Complet</div>
-<div class="feature-desc">24 leçons du básico au avancé</div>
+<div class="feature-desc"><span id="nb-lecons2">24</span> leçons du básico au avancé</div>
 </div>
 <div class="feature">
 <div class="feature-icon">💻</div>
