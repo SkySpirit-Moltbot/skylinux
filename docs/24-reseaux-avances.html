@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuration réseau avancée - SkyLinux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/24-reseaux-avances.html">
+<meta property="og:title" content="Configuration reseau avancee - SkyLinux">
+<meta property="og:description" content="Apprenez la configuration reseau avancee sous Linux">
+<meta name="description" content="Configuration reseau avancee - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, reseau, dhcp, dns, routage, iptables, debutant">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #00ff88; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
+a { color: #00d9ff; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 24 : Configuration réseau avancée</h1>
+<h2>Introduction</h2>
+<p>Cette leçon aborde les concepts avancés de configuration réseau sous Linux. Vous apprendrez à configurer des interfaces réseau, mettre en place un serveur DHCP, un serveur DNS, et à comprendre le routage avancé.</p>
+<h2>Configuration des interfaces réseau</h2>
+<h3>IP statique vs DHCP</h3>
+<h4>Configuration avec ip (temporaire)</h4>
+<pre class="codehilite"><code class="language-bash"># Ajouter une adresse IP
+ip addr add 192.168.1.100/24 dev eth0
+
+# Activer l'interface
+ip link set eth0 up
+
+# Désactiver l'interface
+ip link set eth0 down
+
+# Supprimer une adresse IP
+ip addr del 192.168.1.100/24 dev eth0
+</code></pre>
+
+<h4>Configuration persistente (Debian/Ubuntu)</h4>
+<p>Éditez le fichier <code>/etc/network/interfaces</code> :</p>
+<pre class="codehilite"><code class="language-bash">auto eth0
+iface eth0 inet static
+    address 192.168.1.100
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+    dns-nameservers 8.8.8.8 8.8.4.4
+</code></pre>
+
+<h4>Configuration avec systemd-networkd</h4>
+<p>Créez un fichier dans <code>/etc/systemd/network/</code> :</p>
+<pre class="codehilite"><code class="language-bash">[Match]
+Name=eth0
+
+[Network]
+Address=192.168.1.100/24
+Gateway=192.168.1.1
+DNS=8.8.8.8
+</code></pre>
+
+<h2>Serveur DHCP</h2>
+<h3>Installation et configuration de dnsmasq</h3>
+<p>Dnsmasq est un serveur DHCP et DNS léger :</p>
+<pre class="codehilite"><code class="language-bash"># Installation
+sudo apt install dnsmasq
+
+# Configuration (/etc/dnsmasq.conf)
+interface=eth0
+bind-interfaces
+dhcp-range=192.168.1.50,192.168.1.150,12h
+dhcp-option=option:router,192.168.1.1
+dhcp-option=option:dns-server,8.8.8.8
+</code></pre>
+
+<h3>Commandes de gestion DHCP</h3>
+<pre class="codehilite"><code class="language-bash"># Démarrer le service
+sudo systemctl start dnsmasq
+
+# Activer au démarrage
+sudo systemctl enable dnsmasq
+
+# Voir les baux DHCP actifs
+cat /var/lib/misc/dnsmasq.leases
+</code></pre>
+
+<h2>Serveur DNS</h2>
+<h3>Configuration locale (/etc/hosts)</h3>
+<pre class="codehilite"><code class="language-bash"># Fichier hosts local
+sudo nano /etc/hosts
+
+# Ajoutez vos entrées
+192.168.1.10    serveur.local
+192.168.1.20    mondomaine.com
+</code></pre>
+
+<h3>Configuration du resolve.conf</h3>
+<pre class="codehilite"><code class="language-bash">sudo nano /etc/resolv.conf
+
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+search mondomaine.com
+</code></pre>
+
+<h3>Serveur DNS avec bind9</h3>
+<pre class="codehilite"><code class="language-bash"># Installation
+sudo apt install bind9 bind9utils
+
+# Configuration de zone (/etc/bind/named.conf.local)
+zone "mondomaine.local" {
+    type master;
+    file "/etc/bind/db.mondomaine.local";
+};
+
+# Fichier de zone
+$TTL    604800
+@       IN      SOA     ns.mondomaine.local. admin.mondomaine.local. (
+                     2024031801         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      ns.mondomaine.local.
+@       IN      A       192.168.1.10
+ns      IN      A       192.168.1.10
+www     IN      CNAME   @
+</code></pre>
+
+<h2>Routage avancé</h2>
+<h3>Table de routage</h3>
+<pre class="codehilite"><code class="language-bash"># Voir la table de routage
+ip route show
+ip route list
+
+# Ajouter une route statique
+ip route add 10.0.0.0/24 via 192.168.1.1 dev eth0
+
+# Route par défaut
+ip route add default via 192.168.1.1
+
+# Supprimer une route
+ip route del 10.0.0.0/24
+</code></pre>
+
+<h3>IP forwarding (routeur)</h3>
+<pre class="codehilite"><code class="language-bash"># Activer le routage temporairement
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+# Configuration permanente (/etc/sysctl.conf)
+net.ipv4.ip_forward=1
+
+# Appliquer sans redémarrer
+sudo sysctl -p
+</code></pre>
+
+<h3>NAT (Network Address Translation)</h3>
+<pre class="codehilite"><code class="language-bash"># NAT pour le traffic sortant
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+# Redirection de port
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+
+# Sauvegarder les règles
+sudo iptables-save > /etc/iptables/rules.v4
+</code></pre>
+
+<h2>Pare-feu avec iptables</h2>
+<h3>Règles de base</h3>
+<pre class="codehilite"><code class="language-bash"># Politique par défaut : tout rejeter
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+
+# Autoriser localhost
+iptables -A INPUT -i lo -j ACCEPT
+
+# Autoriser les connexions établies
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Autoriser SSH
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# Autoriser HTTP/HTTPS
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+# Voir les règles
+iptables -L -n -v
+</code></pre>
+
+<h3>Gestion du pare-feu</h3>
+<pre class="codehilite"><code class="language-bash"># Effacer toutes les règles
+iptables -F
+
+# Supprimer une règle spécifique
+iptables -D INPUT -p tcp --dport 22 -j ACCEPT
+
+# Sauvegarder les règles
+sudo iptables-save > /etc/iptables.rules
+
+# Restaurer les règles
+sudo iptables-restore < /etc/iptables.rules
+</code></pre>
+
+<h2>Outils de diagnostic réseau</h2>
+<pre class="codehilite"><code class="language-bash"># Tester la connectivité
+ping -c 4 8.8.8.8
+
+# Tracer le parcours
+traceroute google.com
+tracepath google.com
+
+# Tester un port spécifique
+nc -zv google.com 80
+telnet google.com 80
+
+# Analyser le trafic
+tcpdump -i eth0
+tcpdump -i eth0 port 80
+
+# Informations détaillée sur une interface
+ethtool eth0
+mii-tool eth0
+</code></pre>
+
+<h2>Résumé des commandes</h2>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Utilité</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ip addr</code></td>
+<td>Configurer les adresses IP</td>
+</tr>
+<tr>
+<td><code>ip route</code></td>
+<td>Gérer le routage</td>
+</tr>
+<tr>
+<td><code>iptables</code></td>
+<td>Configurer le pare-feu</td>
+</tr>
+<tr>
+<td><code>dnsmasq</code></td>
+<td>Serveur DHCP/DNS léger</td>
+</tr>
+<tr>
+<td><code>bind9</code></td>
+<td>Serveur DNS complet</td>
+</tr>
+<tr>
+<td><code>traceroute</code></td>
+<td>Tracer le parcours réseau</td>
+</tr>
+<tr>
+<td><code>tcpdump</code></td>
+<td>Analyser le trafic réseau</td>
+</tr>
+<tr>
+<td><code>ethtool</code></td>
+<td>Informations sur l'interface</td>
+</tr>
+</tbody>
+</table>
+<h2>Exercice pratique</h2>
+<ol>
+<li>Affichez votre configuration réseau actuelle avec <code>ip addr</code> et <code>ip route</code></li>
+<li>Configurez une adresse IP statique sur une interface secondaire</li>
+<li>Installez et configurez dnsmasq pour un petit réseau local</li>
+<li>Mettez en place des règles iptables basiques</li>
+<li>Testez la connectivité vers plusieurs hôtes avec ping et traceroute</li>
+<li>Expérimentez avec la redirection de port</li>
+</ol>
+<h2>Conclusion</h2>
+<p>La maîtrise de la configuration réseau avancée est essentielle pour administrer des serveurs Linux. Ces connaissances vous permettront de mettre en place des infrastructures réseau complètes, depuis le DHCP jusqu'au pare-feu, en passant par le routage et le DNS.</p>
+<nav>
+<a href="23-outils-diagnostic.html" style="color:#00d9ff;text-decoration:none;">&larr; Leçon 23</a>
+<span style="color:#666;">Fin</span>
+</nav>
+</div>
+</body>
+</html>
