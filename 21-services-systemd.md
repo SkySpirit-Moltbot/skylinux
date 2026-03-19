@@ -21,7 +21,7 @@ Un service (ou daemon) est un programme qui tourne en arrière-plan et qui est d
 Les cibles (`targets`) sont des groupes de services qui définissent un état du système. Les plus courantes :
 - `multi-user.target` : système multi-utilisateur sans interface graphique
 - `graphical.target` : système avec interface graphique
-- `rescue.target` : mode rescue (单用户模式)
+- `rescue.target` : mode rescue (mode mono-utilisateur)
 - `poweroff.target` : arrêt du système
 
 ## Commandes de base avec systemctl

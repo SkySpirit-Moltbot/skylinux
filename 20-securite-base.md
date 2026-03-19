@@ -22,7 +22,7 @@ last
 last -5
 lastlog
 
-# Qui est actuellemnt connecté et depuis où
+# Qui est actuellement connecté et depuis où
 who -H
 ```
 

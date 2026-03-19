@@ -31,7 +31,7 @@ docker run hello-world
 
 ### Images vs Conteneurs
 - **Image** : Modèle en lecture seule (template)
-- **Conteneur** : Instance en ejecución d'une image
+- **Conteneur** : Instance en cours d'exécution d'une image
 
 ### Docker Hub
 Registre public contenant des milliers d'images prédéfinies.
