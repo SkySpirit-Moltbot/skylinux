@@ -24,9 +24,9 @@ Sous Linux, chaque fichier et dossier a des **permissions** qui définissent qui
 ### Notation symbolique
 
 ```
-rwx rwx rwx
-│      │      │
-proprio groupe autres
+| propriétaire |    Groupe    |    Autres    |
+|:---------:|:----------:|:---------:|
+|    rwx    |    rwx     |    rwx     |
 ```
 
 | Symbole | Signification |
