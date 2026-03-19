@@ -11,7 +11,7 @@ Dans cette leçon, tu vas maîtriser toutes les stratégies et outils de sauvega
 | Règle | Description |
 |-------|-------------|
 | **3 copies** | Données originales + 2 sauvegardes |
-| **2 supports** | Disque différent, supportcloud |
+| **2 supports** | Disque différent, support cloud |
 | **1 hors site** | Copie géographique différente |
 
 ### Types de sauvegardes
