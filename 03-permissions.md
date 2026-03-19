@@ -25,7 +25,8 @@ Sous Linux, chaque fichier et dossier a des **permissions** qui définissent qui
 
 ```
 rwx rwx rwx
-└─ owner ─┘└─ group ─┘└─ others ┘
+│      │      │
+proprio groupe autres
 ```
 
 | Symbole | Signification |
