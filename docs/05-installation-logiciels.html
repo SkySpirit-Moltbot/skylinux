@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -72,76 +128,156 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <hr />
 <h2>2. APT - Commandes de base</h2>
 <h3>Mettre à jour les dépôts</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update              # Mettre à jour la liste des paquets
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update              # Mettre à jour la liste des paquets
 sudo apt update &amp;&amp; sudo apt upgrade  # Mise à jour complète
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Installer un logiciel</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt install firefox     # Installer un paquet
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt install firefox     # Installer un paquet
 sudo apt install firefox -y  # Confirmer automatiquement
 sudo apt install -y firefox vlc  # Plusieurs paquets
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Mettre à jour</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt upgrade             # Mettre à jour les paquets existants
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt upgrade             # Mettre à jour les paquets existants
 sudo apt full-upgrade        # Mise à jour complète (peut supprimer)
 sudo apt dist-upgrade        # Mise à jour de version
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Supprimer</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt remove firefox      # Supprimer (garde config)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt remove firefox      # Supprimer (garde config)
 sudo apt purge firefox       # Supprimer + config
 sudo apt autoremove          # Supprimer dépendances inutilisées
 sudo apt autopurge           # Supprimer config + dépendances
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>3. Rechercher et informer</h2>
 <h3>Rechercher un paquet</h3>
-<pre class="codehilite"><code class="language-bash">apt search vlc               # Rechercher dans les dépôts
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>apt search vlc               # Rechercher dans les dépôts
 apt search --names-only vlc  # Chercher seulement dans le nom
 apt-cache policy vlc         # Toutes les versions disponibles
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Informations sur un paquet</h3>
-<pre class="codehilite"><code class="language-bash">apt show firefox             # Détails complets
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>apt show firefox             # Détails complets
 apt list --all-versions vlc  # Toutes les versions
 apt list --installed         # Tous les paquets installés
 apt list --upgradable        # Paquets avec mise à jour
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Lister les fichiers d'un paquet</h3>
-<pre class="codehilite"><code class="language-bash">dpkg -L firefox             # Liste des fichiers installés
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>dpkg -L firefox             # Liste des fichiers installés
 dpkg -s firefox             # Statut du paquet
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>4. DPKG - Gestionnaire de base</h2>
 <p><code>dpkg</code> est le gestionnaire de bas niveau (.deb).</p>
 <h3>Installer un fichier .deb local</h3>
-<pre class="codehilite"><code class="language-bash">sudo dpkg -i paquet.deb          # Installer
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo dpkg -i paquet.deb          # Installer
 sudo dpkg -i -r paquet.deb       # Réparer les dépendances
 sudo dpkg -P paquet              # Purger complètement
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Lister les paquets</h3>
-<pre class="codehilite"><code class="language-bash">dpkg -l                     # Liste de tous les paquets
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>dpkg -l                     # Liste de tous les paquets
 dpkg -l | grep ^ii          # Seulement installés
 dpkg -l firefox             # Statut d'un paquet
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. SNAP - Empaquetage universel</h2>
 <p>Snap fonctionne sur toutes les distributions.</p>
 <h3>Commandes snap</h3>
-<pre class="codehilite"><code class="language-bash">snap find vlc                 # Rechercher
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>snap find vlc                 # Rechercher
 sudo snap install vlc        # Installer
 sudo snap remove vlc         # Supprimer
 snap list                    # Liste installées
 snap refresh                 # Mettre à jour
 snap refresh vlc             # Mettre à jour un seul
 snap revert vlc             # Revenir à la version précédente
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Avantages et inconvénients</h3>
 <table>
@@ -168,7 +304,10 @@ snap revert vlc             # Revenir à la version précédente
 </table>
 <hr />
 <h2>6. FLATPAK - Alternative moderne</h2>
-<pre class="codehilite"><code class="language-bash"># Installer flatpak
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer flatpak
 sudo apt install flatpak
 
 # Ajouter un dépôt
@@ -183,30 +322,54 @@ flatpak update
 
 # Lister
 flatpak list
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>7. PIP - Packages Python</h2>
 <h3>Installer des packages Python</h3>
-<pre class="codehilite"><code class="language-bash">pip install nom_paquet              # Installer
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>pip install nom_paquet              # Installer
 pip install -U nom_paquet          # Mettre à jour
 pip install -r requirements.txt   #Depuis requirements
 pip uninstall nom_paquet            # Désinstaller
 
 # Python 3 spécifique
 pip3 install nom_paquet
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Gérer les versions</h3>
-<pre class="codehilite"><code class="language-bash">pip freeze                         # Liste tous les packages
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>pip freeze                         # Liste tous les packages
 pip freeze &gt; requirements.txt     # Sauvegarder dépendances
 pip list --outdated               # Packages obsolètes
 pip install --upgrade pip          # Mettre à jour pip
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>8. Node.js (NPM)</h2>
-<pre class="codehilite"><code class="language-bash"># Installer un package global
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer un package global
 sudo npm install -g nom_paquet
 
 # Installer local
@@ -220,21 +383,37 @@ npm update
 
 # Lister
 npm list -g --depth=0
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>9. RUBYGEMS</h2>
-<pre class="codehilite"><code class="language-bash">gem install nom_gem           # Installer
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>gem install nom_gem           # Installer
 gem update nom_gem            # Mettre à jour
 gem uninstall nom_gem         # Supprimer
 gem list                      # Lister
 gem list --local
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>10. Installation depuis les sources</h2>
 <p>Parfois, il faut compiler depuis les sources.</p>
-<pre class="codehilite"><code class="language-bash"># Télécharger
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Télécharger
 wget https://exemple.com/paquet.tar.gz
 tar -xzf paquet.tar.gz
 cd paquet/
@@ -249,49 +428,94 @@ mkdir build &amp;&amp; cd build
 cmake ..
 make
 sudo make install
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>11. Nettoyage et maintenance</h2>
 <h3>Nettoyer le système</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt clean                 # Vider le cache apt
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt clean                 # Vider le cache apt
 sudo apt autoclean           # Supprimer anciens .deb
 sudo apt autoremove           # Supprimer dépendances inutilisées
 sudo apt autopurge           # + fichiers config
 
 # Nettoyer les journaux
 sudo journalctl --vacuum-size=100M
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Espace disque</h3>
-<pre class="codehilite"><code class="language-bash"># Voir ce qui prend de la place
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir ce qui prend de la place
 df -h                         # Disque
 du -sh /var/cache/apt/archives  # Cache apt
 du -sh /* 2&gt;/dev/null | sort -h  # Dossiers volumineux
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>12. Exercices pratiques</h2>
 <h3>Exercice 1 : Installer htop</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update
 sudo apt install htop
 htop
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 2 : Installer un logiciel depuis un .deb</h3>
-<pre class="codehilite"><code class="language-bash"># Télécharger un .deb (ex: from https://.deb)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Télécharger un .deb (ex: from https://.deb)
 wget https://exemple.com/paquet.deb
 sudo dpkg -i paquet.deb
 # Si erreur dépendances:
 sudo apt install -f
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 3 : Nettoyer le système</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update
 sudo apt upgrade
 sudo apt autoremove
 sudo apt clean
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>13. Résumé</h2>
@@ -353,5 +577,47 @@ sudo apt clean
 <nav>
 <a href="04-processus-services.html" style="color:#00d9ff;text-decoration:none;">&larr; 04 - Processus et Services</a> | <span style="color:#666;">05</span> | <a href="06-reseaux.html" style="color:#00d9ff;text-decoration:none;">06 - Réseaux de base &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

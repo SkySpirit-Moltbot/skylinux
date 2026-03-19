@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -37,19 +93,35 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <hr />
 <h2>1. Surveillance CPU</h2>
 <h3>Commande top</h3>
-<pre class="codehilite"><code class="language-bash">top                  # Vue en temps réel
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>top                  # Vue en temps réel
 top -u david         # Filtrer par utilisateur
 top -p 1234          # Surveiller un processus spécifique
 top -1               # Rafraîchir chaque seconde
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Comprendre la sortie de top</h3>
-<pre class="codehilite"><code>top - 10:30:15 up  5:42,  1 user,  load average: 0.52, 0.58, 0.59
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>top - 10:30:15 up  5:42,  1 user,  load average: 0.52, 0.58, 0.59
 Tasks: 245 total,   1 running, 244 sleeping,   0 stopped,   0 zombie
 %Cpu(s):  5.3 us,  2.1 sy,  0.0 ni, 92.1 id,  0.0 wa,  0.0 hi,  0.6 si,  0.0 st
 MiB Mem :  7938.5 total,  2345.2 free,  4120.0 used,  1473.3 buff/cache
 MiB Swap:  2048.0 total,  1024.0 free,  1024.0 used.  5800.0 avail Mem
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Commandes interactives de top</h3>
 <table>
@@ -129,18 +201,34 @@ MiB Swap:  2048.0 total,  1024.0 free,  1024.0 used.  5800.0 avail Mem
 <hr />
 <h2>2. Surveillance mémoire</h2>
 <h3>free - Mémoire vive</h3>
-<pre class="codehilite"><code class="language-bash">free                # En octets
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>free                # En octets
 free -h             # Format lisible (Ko, Mo, Go)
 free -m             # En mégaoctets
 free -g             # En gigaoctets
 free -s 1           # Rafraîchir chaque seconde
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Comprendre la sortie</h3>
-<pre class="codehilite"><code>              total        used        free      shared  buff/cache   available
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>              total        used        free      shared  buff/cache   available
 Mem:        8.0Gi       4.1Gi       2.3Gi       150Mi       1.5Gi       3.5Gi
 Swap:       2.0Gi       512Mi       1.5Gi
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <table>
 <thead>
@@ -177,66 +265,125 @@ Swap:       2.0Gi       512Mi       1.5Gi
 </tbody>
 </table>
 <h3>Calcul du pourcentage</h3>
-<pre class="codehilite"><code class="language-bash"># Calculer le pourcentage utilisé
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Calculer le pourcentage utilisé
 free | grep Mem | awk '{printf(&quot;%.1f\n&quot;, $3/$2 * 100)}'
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>3. Surveillance disque</h2>
 <h3>df - Espace disque</h3>
-<pre class="codehilite"><code class="language-bash">df                  # En octets
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>df                  # En octets
 df -h               # Format lisible
 df -H               # FormatIEC (1000 au lieu de 1024)
 df -T               # Avec type de système de fichiers
 df -i               # Inodes au lieu de blocs
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Analyser l'espace</h3>
-<pre class="codehilite"><code class="language-bash"># Partition la plus pleine
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Partition la plus pleine
 df -h | grep -v tmpfs | sort -k5 -h | tail -5
 
 # Espace par type de filesystem
 df -Th | grep -v tmpfs
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>du - Taille des dossiers</h3>
-<pre class="codehilite"><code class="language-bash">du -sh dossier/           # Taille totale
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>du -sh dossier/           # Taille totale
 du -h --max-depth=1       # Sous-dossiers (1 niveau)
 du -h --max-depth=2       # Sous-dossiers (2 niveaux)
 du -ah dossier/           # Avec fichiers cachés
 du -d 1 -h               # Profondeur 1
 du -sh */                 # Tous les sous-dossiers
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>ncdu - Interface interactive</h3>
-<pre class="codehilite"><code class="language-bash"># Installer
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer
 sudo apt install ncdu
 
 # Utiliser
 ncdu                    # Répertoire courant
 ncdu /home             # Dossier spécifique
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>4. Surveillance processus</h2>
 <h3>ps - Liste des processus</h3>
-<pre class="codehilite"><code class="language-bash">ps              # Basique
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ps              # Basique
 ps aux          # Tous les utilisateurs
 ps -ef          # Format étendu
 ps -eo pid,ppid,%mem,%cpu,cmd  # Colonnes personnalisées
 ps --sort=-%cpu | head -10    # Top CPU
 ps --sort=-%mem | head -10    # Top mémoire
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher un processus</h3>
-<pre class="codehilite"><code class="language-bash">ps aux | grep firefox              # Trouver firefox
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ps aux | grep firefox              # Trouver firefox
 pgrep -a firefox                   # Juste les PIDs
 pidof firefox                      # PID principal
 pstree                             # Vue arborescence
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Stat d'un processus</h3>
-<pre class="codehilite"><code class="language-bash"># Ressources utilisées
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ressources utilisées
 pidstat -p 1234 1
 
 # Fichiers ouverts
@@ -244,34 +391,66 @@ lsof -p 1234
 
 # Connexions réseau
 ss -tp | grep 1234
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. Tuer et gérer les processus</h2>
 <h3>kill - Envoyer un signal</h3>
-<pre class="codehilite"><code class="language-bash">kill 1234                    # SIGTERM (propre)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>kill 1234                    # SIGTERM (propre)
 kill -15 1234                # Identique
 kill -9 1234                 # SIGKILL (forcement)
 kill -SIGTERM -1234          # Groupe de processus
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>killall et pkill</h3>
-<pre class="codehilite"><code class="language-bash">killall firefox              # Par nom
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>killall firefox              # Par nom
 pkill firefox                 # Par pattern
 pkill -9 -f &quot;python script&quot; # Forcé avec pattern
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Modifier la priorité</h3>
-<pre class="codehilite"><code class="language-bash">nice -n 10 commande          # Priorité basse
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>nice -n 10 commande          # Priorité basse
 renice 5 -p 1234            # Changer priorité
 renice -5 -p 1234           # Priorité haute (root)
 renice 0 -u david           # Tous les processus d'un user
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>6. Surveillance réseau</h2>
 <h3>Commandes utiles</h3>
-<pre class="codehilite"><code class="language-bash"># Connexions actives
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Connexions actives
 ss -tuln                    # TCP/UDP en écoute
 ss -tnp                     # Connexions établies
 ss -tp | grep ESTAB         # Connections actives
@@ -284,12 +463,20 @@ netstat -i                   # Stats par interface
 nload                       # Bande passante
 iftop                       # Connexions par hôte
 bmon                        # Surveillance graphique
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>7. Surveillance des services (systemd)</h2>
 <h3>systemctl</h3>
-<pre class="codehilite"><code class="language-bash"># État d'un service
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># État d'un service
 systemctl status nginx
 
 # Services actifs
@@ -301,56 +488,104 @@ systemctl --failed
 # Logs d'un service
 journalctl -u nginx -n 50
 journalctl -u nginx -f
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>8. Métriques système avancées</h2>
 <h3>vmstat - Statistiques virtuelles</h3>
-<pre class="codehilite"><code class="language-bash">vmstat 1                    # Rafraîchir chaque seconde
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>vmstat 1                    # Rafraîchir chaque seconde
 vmstat -S M 1               # En Mo
 vmstat 1 5                  # 5 snapshots
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>iostat - Statistiques I/O</h3>
-<pre class="codehilite"><code class="language-bash"># Installer
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer
 sudo apt install sysstat
 
 # Utiliser
 iostat -x 1                 # Stats détaillées
 iostat -dxh 1              # Disques en format lisible
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>sar - System Activity Reporter</h3>
-<pre class="codehilite"><code class="language-bash">sar -u 1 10                 # CPU chaque seconde, 10 fois
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sar -u 1 10                 # CPU chaque seconde, 10 fois
 sar -r 1 10                 # Mémoire
 sar -d 1 10                 # Disque
 sar -n DEV 1 10             # Réseau
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>9. Scripts de surveillance</h2>
 <h3>Script d'alerte disque</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 DISK_USAGE=$(df -h / | tail -1 | awk '{print $5}' | sed 's/%//')
 
 if [ $DISK_USAGE -gt 90 ]; then
     echo &quot;ALERTE: Disque à ${DISK_USAGE}%&quot; | mail -s &quot;Alerte Disque&quot; admin@email.com
 fi
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Script d'alerte mémoire</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 MEM_USAGE=$(free | grep Mem | awk '{printf(&quot;%.0f&quot;, $3/$2 * 100)}')
 
 if [ $MEM_USAGE -gt 85 ]; then
     logger &quot;Alerte: Mémoire à ${MEM_USAGE}%&quot;
 fi
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Surveillance continue</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 while true; do
     clear
@@ -366,7 +601,12 @@ while true; do
     df -h / | tail -1
     sleep 5
 done
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>10. Tableau résumé</h2>
@@ -428,5 +668,47 @@ done
 <nav>
 <a href="10-variables-scripts.html" style="color:#00d9ff;text-decoration:none;">&larr; 10 - Variables et scripts Bash</a> | <span style="color:#666;">11</span> | <a href="12-ssh-connexion-distante.html" style="color:#00d9ff;text-decoration:none;">12 - SSH et connexion distante &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

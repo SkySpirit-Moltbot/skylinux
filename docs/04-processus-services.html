@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -76,17 +132,33 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <hr />
 <h2>2. Voir les processus</h2>
 <h3>Commande PS</h3>
-<pre class="codehilite"><code class="language-bash">ps                    # Vos processus du terminal courant
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ps                    # Vos processus du terminal courant
 ps -e                 # Tous les processus du système
 ps aux                # Format BSD (tous utilisateurs)
 ps -ef                # Format UNIX (plus détaillé)
 ps -eo pid,ppid,user,cmd,%cpu,%mem  # Colonnes personnalisées
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Comprendre la sortie de <code>ps aux</code></h3>
-<pre class="codehilite"><code>USER       PID  %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>USER       PID  %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 david     1234  10.5  5.2  524288 102400 ?       S    10:00   2:30 firefox
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <table>
 <thead>
@@ -178,7 +250,10 @@ david     1234  10.5  5.2  524288 102400 ?       S    10:00   2:30 firefox
 </tbody>
 </table>
 <h3>Commandes TOP et HTOP</h3>
-<pre class="codehilite"><code class="language-bash"># top - surveiller les processus en temps réel
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># top - surveiller les processus en temps réel
 top                  # Vue basique
 top -u david         # Processus d'un utilisateur
 top -p 1234          # Surveiller un processus spécifique
@@ -193,40 +268,77 @@ top -p 1234          # Surveiller un processus spécifique
 htop                  # Plus visuel et ergonomique
 htop -u david         # Filtrer par utilisateur
 htop -p 1234,5678     # Surveiller plusieurs PIDs
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>3. Rechercher des processus</h2>
 <h3>grep et ps</h3>
-<pre class="codehilite"><code class="language-bash">ps aux | grep firefox        # Trouver firefox
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ps aux | grep firefox        # Trouver firefox
 ps aux | grep -v grep       # Exclure grep lui-même
 ps aux | grep -i chrome     # Insensible à la casse
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>pgrep - recherche simplifiée</h3>
-<pre class="codehilite"><code class="language-bash">pgrep firefox               # Retourne juste les PIDs
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>pgrep firefox               # Retourne juste les PIDs
 pgrep -a firefox           # Avec la commande complète
 pgrep -u david chrome      # Processus d'un utilisateur
 pgrep -f &quot;python.*script&quot;  # Recherche dans les arguments
 pgrep -n firefox           # Le plus récent
 pgrep -o firefox           # Le plus ancien
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>pidof - trouver par nom de programme</h3>
-<pre class="codehilite"><code class="language-bash">pidof firefox              # Retourne tous les PIDs
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>pidof firefox              # Retourne tous les PIDs
 pidof -s firefox           # Un seul PID (le plus ancien)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>4. Signaux et gestion des processus</h2>
 <h3>La commande KILL</h3>
-<pre class="codehilite"><code class="language-bash">kill &lt;PID&gt;                 # Envoyer signal TERM (15)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>kill &lt;PID&gt;                 # Envoyer signal TERM (15)
 kill -L                    # Liste des signaux disponibles
 kill -SIGTERM 1234         # Signal terme (propre)
 kill -SIGKILL 1234         # Signal KILL (forcement)
 kill -STOP 1234            # Suspendre le processus
 kill -CONT 1234            # Reprendre le processus
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Les signaux importants</h3>
 <table>
@@ -278,23 +390,42 @@ kill -CONT 1234            # Reprendre le processus
 </tbody>
 </table>
 <h3>killall - tuer par nom</h3>
-<pre class="codehilite"><code class="language-bash">killall firefox            # Tuer tous les firefox
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>killall firefox            # Tuer tous les firefox
 killall -i firefox        # Mode interactif
 killall -9 firefox        # Forcé
 killall -u david chrome   # Tous les进程 d'un utilisateur
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>pkill - tuer avec pattern</h3>
-<pre class="codehilite"><code class="language-bash">pkill firefox              # Tuer par nom
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>pkill firefox              # Tuer par nom
 pkill -f &quot;python&quot;         # Par argument
 pkill -u david            # Tous les进程 d'un utilisateur
 pkill -9 -f &quot;zombie&quot;      # Forcé avec pattern
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. Contrôle des tâches (Job Control)</h2>
 <h3>Commandes de job</h3>
-<pre class="codehilite"><code class="language-bash"># Lancer en arrière-plan
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lancer en arrière-plan
 commande &amp;                 # &amp; à la fin
 
 # Contrôler les jobs
@@ -307,10 +438,18 @@ Ctrl+Z                    # Suspendre le进程 actuel
 
 # Tuer le job actuel
 Ctrl+C                    # Interruption
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exemple pratique</h3>
-<pre class="codehilite"><code class="language-bash"># 1. Lancer une commande longue
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Lancer une commande longue
 sleep 100 &amp;
 
 # 2. Voir les jobs
@@ -327,36 +466,68 @@ bg %1
 kill %1
 # ou
 kill $(jobs -p)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>6. Priorités et Nice</h2>
 <h3>Comprendre les priorités</h3>
 <p>Linux attribue une priorité -20 (plus prioritaire) à +19 (moins prioritaire).</p>
 <h3>nice - lancer avec priorité</h3>
-<pre class="codehilite"><code class="language-bash">nice -n 10 commande        # Priorité basse (10)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>nice -n 10 commande        # Priorité basse (10)
 nice -n -5 commande       # Priorité haute (-5, nécessite root)
 nice --10 commande         # Équivalent à -n -10
 nice commande              # Priorité par défaut (0)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>renice - changer la priorité</h3>
-<pre class="codehilite"><code class="language-bash">renice 10 -p 1234          # Mettre priorité 10
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>renice 10 -p 1234          # Mettre priorité 10
 renice -5 -p 1234          # Mettre priorité -5 (root uniquement)
 renice 5 -u david          # Tous les进程 de david à priorité 5
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>htop pour gérer les priorités</h3>
-<pre class="codehilite"><code class="language-bash">htop
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>htop
 # Appuyer sur 'r' puis sélectionner le processus
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>7. Services et Daemons (systemd)</h2>
 <h3>Introduction à systemd</h3>
 <p>systemd est le système d'initialisation moderne de Linux. Il gère les services (daemons).</p>
 <h3>Commandes systemctl</h3>
-<pre class="codehilite"><code class="language-bash"># Status et informations
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Status et informations
 systemctl status nginx           # Statut du service
 systemctl is-active nginx        # Actif ? (active/inactive)
 systemctl is-enabled nginx       # Au démarrage ? (enabled/disabled)
@@ -378,10 +549,18 @@ systemctl unmask nginx          # Démasquer
 journalctl -u nginx             # Logs du service
 journalctl -u nginx -f          # Logs en temps réel
 journalctl --since &quot;1 hour ago&quot;  # Logs dernière heure
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exemples pratiques</h3>
-<pre class="codehilite"><code class="language-bash"># Voir tous les services actifs
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir tous les services actifs
 systemctl list-units --type=service --state=running
 
 # Voir les services qui ont échoué
@@ -392,12 +571,20 @@ systemctl status nginx -l
 
 # Redémarrer un service qui a échoué
 systemctl restart nginx
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>8. Surveillance avancée</h2>
 <h3>Commandes utiles</h3>
-<pre class="codehilite"><code class="language-bash"># voir les ressources
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># voir les ressources
 free -h                  # Mémoire
 df -h                    # Disque
 uptime                   # Charge système
@@ -410,20 +597,36 @@ ss -tulnp               # Ports en écoute
 # Statistiques temps réel
 vmstat 1                 # Statistiques système
 iostat -x 1              # I/O disque
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Surveillance</h3>
-<pre class="codehilite"><code class="language-bash"># Ouvrir htop et observer les processus
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ouvrir htop et observer les processus
 htop
 
 # Identifier les processus qui utilisent le plus de CPU
 # Taper 'P' pour trier par CPU
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 2 : Gestion de processus</h3>
-<pre class="codehilite"><code class="language-bash"># Créer un processus
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un processus
 sleep 60 &amp;
 
 # Trouver son PID
@@ -434,10 +637,18 @@ kill &lt;PID&gt;
 
 # Vérifier
 pgrep sleep
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 3 : Service nginx</h3>
-<pre class="codehilite"><code class="language-bash"># Installer nginx
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer nginx
 sudo apt install nginx
 
 # Démarrer le service
@@ -448,7 +659,12 @@ sudo systemctl status nginx
 
 # Arrêter
 sudo systemctl stop nginx
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>10. Tableau résumé</h2>
@@ -514,5 +730,47 @@ sudo systemctl stop nginx
 <nav>
 <a href="03-permissions.html" style="color:#00d9ff;text-decoration:none;">&larr; 03 - Permissions Linux</a> | <span style="color:#666;">04</span> | <a href="05-installation-logiciels.html" style="color:#00d9ff;text-decoration:none;">05 - Installation de logiciels &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

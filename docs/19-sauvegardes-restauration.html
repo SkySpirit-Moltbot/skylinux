@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -99,7 +155,10 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <hr />
 <h2>2. TAR - Archivage de base</h2>
 <h3>Créer des sauvegardes</h3>
-<pre class="codehilite"><code class="language-bash"># Archive gzip (rapide)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Archive gzip (rapide)
 tar -czvf backup.tar.gz dossier/
 
 # Archive bzip2 (meilleure compression)
@@ -116,16 +175,32 @@ tar -czvf backup.tar.gz /home/ \
     --exclude='*.log' \
     --exclude='.cache' \
     --exclude='node_modules'
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Lister le contenu</h3>
-<pre class="codehilite"><code class="language-bash">tar -tvf backup.tar.gz           # Détails
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>tar -tvf backup.tar.gz           # Détails
 tar -tf backup.tar.gz            # Simplement noms
 tar -tf backup.tar.gz | wc -l    # Compter fichiers
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Extraire/Restaurer</h3>
-<pre class="codehilite"><code class="language-bash"># Extraire tout
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Extraire tout
 tar -xzvf backup.tar.gz
 tar -xjf backup.tar.bz2
 tar -xJf backup.tar.xz
@@ -138,12 +213,20 @@ tar -xzvf backup.tar.gz -C /tmp chemin/fichier.txt
 
 # Mode interactif
 tar -xzvf backup.tar.gz --checkpoint=1
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>3. RSYNC - Synchronisation</h2>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash"># Sync locale
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sync locale
 rsync -av source/ destination/
 
 # Avec options courantes
@@ -158,10 +241,18 @@ rsync -avn source/ destination/
 # Progress et stats
 rsync -av --progress source/ destination/
 rsync -av --stats source/ destination/
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>RSYNC distant (SSH)</h3>
-<pre class="codehilite"><code class="language-bash"># Vers serveur distant
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Vers serveur distant
 rsync -avz -e ssh dossier/ user@serveur:/backup/
 
 # Depuis serveur distant
@@ -169,10 +260,18 @@ rsync -avz -e ssh user@serveur:/backup/ dossier-local/
 
 # Port SSH personnalisé
 rsync -avz -e 'ssh -p 2222' dossier/ user@serveur:/backup/
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Sauvegarde incrémentale</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 # Script backup incrémental
 
 BACKUP_DIR=&quot;/backup&quot;
@@ -190,21 +289,37 @@ rsync -av --delete --link-dest=$BACKUP_DIR/full $SOURCE/ $BACKUP_DIR/incr-$DATE/
 # Mettre à jour le lien &quot;latest&quot;
 rm -f $BACKUP_DIR/latest
 ln -s $BACKUP_DIR/incr-$DATE $BACKUP_DIR/latest
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>4. Restic - Backup moderne (recommandé)</h2>
 <h3>Installation</h3>
-<pre class="codehilite"><code class="language-bash"># Download depuis GitHub
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Download depuis GitHub
 sudo wget https://github.com/restic/restic/releases/latest/download/restic_linux_amd64 -O /usr/local/bin/restic
 sudo chmod +x /usr/local/bin/restic
 
 #Ou via package manager
 sudo apt install restic
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Configuration initiale</h3>
-<pre class="codehilite"><code class="language-bash"># Initialiser un dépôt
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Initialiser un dépôt
 restic -r /backup/myrepo init
 
 # Avec mot de passe
@@ -212,10 +327,18 @@ restic -r /backup/myrepo init --password-command &quot;echo monmotdepasse&quot;
 
 # Repository cloud (S3)
 restic -r s3:s3.amazonaws.com/bucketname init
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Commandes Restic</h3>
-<pre class="codehilite"><code class="language-bash"># Sauvegarder
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sauvegarder
 restic -r /backup/myrepo backup /home
 restic -r /backup/myrepo backup /home --exclude='*.log'
 
@@ -233,16 +356,32 @@ restic -r /backup/myrepo forget --keep-daily 7 --prune
 
 # Vérifier intégrité
 restic -r /backup/myrepo check
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. Borg Backup</h2>
 <h3>Installation</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt install borgbackup
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt install borgbackup
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Utilisation</h3>
-<pre class="codehilite"><code class="language-bash"># Initialiser
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Initialiser
 borg init --encryption=repokey /backup/borg_repo
 
 # Créer sauvegarde
@@ -256,12 +395,20 @@ borg extract /backup/borg_repo::archive-20240314 /restoration/
 
 # Nettoyage (garde 7 quotidiens, 4 hebdomadaires)
 borg prune /backup/borg_repo --keep-daily=7 --keep-weekly=4
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>6. Scripts de sauvegarde automatisés</h2>
 <h3>Script complet avec rotation</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 # ========== Configuration ==========
 SOURCE=&quot;/home&quot;
@@ -306,10 +453,18 @@ log &quot;Nettoyage des anciennes sauvegardes...&quot;
 find $DESTINATION -maxdepth 1 -type d -name &quot;backup-*&quot; -mtime +$RETENTION_JOURS -exec rm -rf {} \; 2&gt;&amp;1 | tee -a $LOGFILE
 
 log &quot;=== Sauvegarde terminée ===&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Script avec notification Telegram</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 # ... (code de backup) ...
 
@@ -322,12 +477,20 @@ else
         -d &quot;chat_id=$CHAT_ID&quot; \
         -d &quot;text=❌ ERREUR backup&quot;
 fi
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>7. Planification avec Cron</h2>
 <h3>Exemples cron</h3>
-<pre class="codehilite"><code class="language-bash"># Ajouter au crontab
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter au crontab
 crontab -e
 
 # Sauvegarde quotidienne à 3h du matin
@@ -341,12 +504,20 @@ crontab -e
 
 # Tous les jours à midi (incrémentale)
 0 12 * * * /home/user/scripts/backup-incr.sh
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>8. Restauration</h2>
 <h3>Depuis TAR</h3>
-<pre class="codehilite"><code class="language-bash"># Restaurer tout
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Restaurer tout
 tar -xzvf backup.tar.gz -C /
 
 # Fichier spécifique
@@ -354,25 +525,49 @@ tar -xzvf backup.tar.gz -C /tmp home/user/fichier.txt
 
 # Vérifier avant
 tar -tzvf backup.tar.gz | grep fichier
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Depuis RSYNC</h3>
-<pre class="codehilite"><code class="language-bash"># Sens inverse !
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sens inverse !
 rsync -av /backup/ /home/
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Depuis Restic</h3>
-<pre class="codehilite"><code class="language-bash"># Dernier snapshot
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Dernier snapshot
 restic -r /backup/myrepo restore latest --target /restoration/
 
 # Snapshot spécifique
 restic -r /backup/myrepo restore &lt;snapshot-id&gt; --target /restoration/
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>9. Services Cloud</h2>
 <h3>rclone - Cloud sync</h3>
-<pre class="codehilite"><code class="language-bash"># Configurer
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Configurer
 rclone config
 
 # Sync vers cloud
@@ -383,15 +578,28 @@ rclone listremotes
 
 # Vérifier size
 rclone size backup-remote:backup
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Backblaze, Wasabi, etc.</h3>
-<pre class="codehilite"><code class="language-bash"># Avec rclone
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Avec rclone
 rclone sync /home wasabi:mon-backup
 
 # Avec restic + S3
 restic -r s3:s3.eu-central-003.backblazeb2.com/bucket backup /home
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>10. Checklist bonnes pratiques</h2>
@@ -451,5 +659,47 @@ restic -r s3:s3.eu-central-003.backblazeb2.com/bucket backup /home
 <nav>
 <a href="18-gestion-disques-partitions.html" style="color:#00d9ff;text-decoration:none;">&larr; 18 - Gestion des disques et partitions</a> | <span style="color:#666;">19</span> | <a href="20-securite-base.html" style="color:#00d9ff;text-decoration:none;">20 - Sécurité de base sous Linux &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

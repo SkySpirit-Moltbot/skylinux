@@ -25,6 +25,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -39,7 +95,10 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <h2>Configuration des interfaces réseau</h2>
 <h3>IP statique vs DHCP</h3>
 <h4>Configuration avec ip (temporaire)</h4>
-<pre class="codehilite"><code class="language-bash"># Ajouter une adresse IP
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter une adresse IP
 ip addr add 192.168.1.100/24 dev eth0
 
 # Activer l'interface
@@ -50,33 +109,57 @@ ip link set eth0 down
 
 # Supprimer une adresse IP
 ip addr del 192.168.1.100/24 dev eth0
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h4>Configuration persistente (Debian/Ubuntu)</h4>
 <p>Éditez le fichier <code>/etc/network/interfaces</code> :</p>
-<pre class="codehilite"><code class="language-bash">auto eth0
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>auto eth0
 iface eth0 inet static
     address 192.168.1.100
     netmask 255.255.255.0
     gateway 192.168.1.1
     dns-nameservers 8.8.8.8 8.8.4.4
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h4>Configuration avec systemd-networkd</h4>
 <p>Créez un fichier dans <code>/etc/systemd/network/</code> :</p>
-<pre class="codehilite"><code class="language-bash">[Match]
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>[Match]
 Name=eth0
 
 [Network]
 Address=192.168.1.100/24
 Gateway=192.168.1.1
 DNS=8.8.8.8
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h2>Serveur DHCP</h2>
 <h3>Installation et configuration de dnsmasq</h3>
 <p>Dnsmasq est un serveur DHCP et DNS léger :</p>
-<pre class="codehilite"><code class="language-bash"># Installation
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installation
 sudo apt install dnsmasq
 
 # Configuration (/etc/dnsmasq.conf)
@@ -85,10 +168,18 @@ bind-interfaces
 dhcp-range=192.168.1.50,192.168.1.150,12h
 dhcp-option=option:router,192.168.1.1
 dhcp-option=option:dns-server,8.8.8.8
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Commandes de gestion DHCP</h3>
-<pre class="codehilite"><code class="language-bash"># Démarrer le service
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Démarrer le service
 sudo systemctl start dnsmasq
 
 # Activer au démarrage
@@ -96,28 +187,52 @@ sudo systemctl enable dnsmasq
 
 # Voir les baux DHCP actifs
 cat /var/lib/misc/dnsmasq.leases
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h2>Serveur DNS</h2>
 <h3>Configuration locale (/etc/hosts)</h3>
-<pre class="codehilite"><code class="language-bash"># Fichier hosts local
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Fichier hosts local
 sudo nano /etc/hosts
 
 # Ajoutez vos entrées
 192.168.1.10    serveur.local
 192.168.1.20    mondomaine.com
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Configuration du resolve.conf</h3>
-<pre class="codehilite"><code class="language-bash">sudo nano /etc/resolv.conf
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo nano /etc/resolv.conf
 
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 search mondomaine.com
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Serveur DNS avec bind9</h3>
-<pre class="codehilite"><code class="language-bash"># Installation
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installation
 sudo apt install bind9 bind9utils
 
 # Configuration de zone (/etc/bind/named.conf.local)
@@ -139,11 +254,19 @@ $TTL    604800
 @       IN      A       192.168.1.10
 ns      IN      A       192.168.1.10
 www     IN      CNAME   @
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h2>Routage avancé</h2>
 <h3>Table de routage</h3>
-<pre class="codehilite"><code class="language-bash"># Voir la table de routage
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir la table de routage
 ip route show
 ip route list
 
@@ -155,10 +278,18 @@ ip route add default via 192.168.1.1
 
 # Supprimer une route
 ip route del 10.0.0.0/24
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>IP forwarding (routeur)</h3>
-<pre class="codehilite"><code class="language-bash"># Activer le routage temporairement
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Activer le routage temporairement
 echo 1 > /proc/sys/net/ipv4/ip_forward
 
 # Configuration permanente (/etc/sysctl.conf)
@@ -166,10 +297,18 @@ net.ipv4.ip_forward=1
 
 # Appliquer sans redémarrer
 sudo sysctl -p
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>NAT (Network Address Translation)</h3>
-<pre class="codehilite"><code class="language-bash"># NAT pour le traffic sortant
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># NAT pour le traffic sortant
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
 # Redirection de port
@@ -177,11 +316,19 @@ iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 80
 
 # Sauvegarder les règles
 sudo iptables-save > /etc/iptables/rules.v4
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h2>Pare-feu avec iptables</h2>
 <h3>Règles de base</h3>
-<pre class="codehilite"><code class="language-bash"># Politique par défaut : tout rejeter
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Politique par défaut : tout rejeter
 iptables -P INPUT DROP
 iptables -P FORWARD DROP
 iptables -P OUTPUT ACCEPT
@@ -201,10 +348,18 @@ iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
 # Voir les règles
 iptables -L -n -v
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Gestion du pare-feu</h3>
-<pre class="codehilite"><code class="language-bash"># Effacer toutes les règles
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Effacer toutes les règles
 iptables -F
 
 # Supprimer une règle spécifique
@@ -215,10 +370,18 @@ sudo iptables-save > /etc/iptables.rules
 
 # Restaurer les règles
 sudo iptables-restore < /etc/iptables.rules
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h2>Outils de diagnostic réseau</h2>
-<pre class="codehilite"><code class="language-bash"># Tester la connectivité
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Tester la connectivité
 ping -c 4 8.8.8.8
 
 # Tracer le parcours
@@ -236,7 +399,12 @@ tcpdump -i eth0 port 80
 # Informations détaillée sur une interface
 ethtool eth0
 mii-tool eth0
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h2>Résumé des commandes</h2>
 <table>
@@ -297,5 +465,47 @@ mii-tool eth0
 <nav>
 <a href="23-outils-diagnostic.html" style="color:#00d9ff;text-decoration:none;">&larr; 23 - Outils de diagnostic</a> | <span style="color:#666;">24</span> | <a href="25-docker-compose.html" style="color:#00d9ff;text-decoration:none;">Docker Compose &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

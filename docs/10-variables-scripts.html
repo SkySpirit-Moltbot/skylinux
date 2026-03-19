@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -39,7 +95,10 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <h3>Qu'est-ce qu'une variable d'environnement ?</h3>
 <p>Une variable d'environnement est une paire <strong>nom=valeur</strong> que le système et les programmes utilisent pour configurer leur comportement. Elles sont héritées par tous les processus enfants.</p>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash"># Lister toutes les variables
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister toutes les variables
 env
 printenv
 
@@ -56,10 +115,18 @@ echo $MA_VARIABLE
 export MA_VARIABLE
 # ou
 export MA_VARIABLE=&quot;Bonjour&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Portée des variables</h3>
-<pre class="codehilite"><code class="language-bash"># Variable locale (processus courant uniquement)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Variable locale (processus courant uniquement)
 MA_VAR=&quot;valeur&quot;
 
 # Variable exportée (héritée par les enfants)
@@ -68,7 +135,12 @@ export MA_VAR=&quot;valeur&quot;
 # Variable persistante (à ajouter dans ~/.bashrc ou ~/.profile)
 echo 'export MA_VAR=&quot;valeur&quot;' &gt;&gt; ~/.bashrc
 source ~/.bashrc  # Recharger
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>2. Variables système importantes</h2>
@@ -134,7 +206,10 @@ source ~/.bashrc  # Recharger
 </tbody>
 </table>
 <h3>Modifier le PATH</h3>
-<pre class="codehilite"><code class="language-bash"># Ajouter un répertoire au PATH
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter un répertoire au PATH
 export PATH=$PATH:/nouveau/chemin
 
 # PATH temporaire
@@ -142,25 +217,54 @@ export PATH=&quot;/home/david/scripts:$PATH&quot;
 
 # PATH permanent (ajouter à ~/.bashrc)
 echo 'export PATH=&quot;$PATH:/home/david/scripts&quot;' &gt;&gt; ~/.bashrc
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>3. Introduction aux scripts Bash</h2>
 <h3>Créer un script</h3>
-<pre class="codehilite"><code class="language-bash">nano mon_script.sh
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>nano mon_script.sh
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Structure de base</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 # Commentaire : ce script fait quelque chose
 
 echo &quot;Hello World !&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rendre exécutable</h3>
-<pre class="codehilite"><code class="language-bash">chmod +x mon_script.sh
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>chmod +x mon_script.sh
 ./mon_script.sh
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <blockquote>
 <p>⚠️ <strong>Important</strong> : Le shebang <code>#!/bin/bash</code> indique quel interpréteur utiliser.</p>
@@ -168,7 +272,10 @@ echo &quot;Hello World !&quot;
 <hr />
 <h2>4. Variables dans les scripts</h2>
 <h3>Variables utilisateur</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 NOM=&quot;David&quot;
 echo &quot;Bonjour $NOM !&quot;
@@ -181,7 +288,12 @@ echo &quot;Salut $prenom !&quot;
 #read avec prompt
 read -p &quot;Ton âge: &quot; age
 echo &quot;Tu as $age ans&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Variables spéciales</h3>
 <table>
@@ -223,55 +335,98 @@ echo &quot;Tu as $age ans&quot;
 </tbody>
 </table>
 <h3>Exemple avec arguments</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 echo &quot;Script: $0&quot;
 echo &quot;Premier argument: $1&quot;
 echo &quot;Deuxième argument: $2&quot;
 echo &quot;Nombre d'arguments: $#&quot;
 echo &quot;Tous les arguments: $@&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. Conditions (if/else)</h2>
 <h3>Syntaxe</h3>
-<pre class="codehilite"><code class="language-bash">if [ condition ]; then
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>if [ condition ]; then
     # commandes
 elif [ condition ]; then
     # commandes
 else
     # commandes
 fi
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Comparaisons de nombres</h3>
-<pre class="codehilite"><code class="language-bash">if [ $a -eq $b ]; then    # Égal
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>if [ $a -eq $b ]; then    # Égal
 if [ $a -ne $b ]; then    # Différent
 if [ $a -gt $b ]; then    # Plus grand
 if [ $a -ge $b ]; then    # Plus grand ou égal
 if [ $a -lt $b ]; then    # Plus petit
 if [ $a -le $b ]; then    # Plus petit ou égal
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Comparaisons de chaînes</h3>
-<pre class="codehilite"><code class="language-bash">if [ &quot;$a&quot; = &quot;$b&quot; ]; then    # Égal
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>if [ &quot;$a&quot; = &quot;$b&quot; ]; then    # Égal
 if [ &quot;$a&quot; != &quot;$b&quot; ]; then   # Différent
 if [ -z &quot;$a&quot; ]; then       # Vide
 if [ -n &quot;$a&quot; ]; then       # Non vide
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Tests sur fichiers</h3>
-<pre class="codehilite"><code class="language-bash">if [ -f &quot;$fichier&quot; ]; then    # Fichier régulier
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>if [ -f &quot;$fichier&quot; ]; then    # Fichier régulier
 if [ -d &quot;$dossier&quot; ]; then   # Répertoire
 if [ -e &quot;$fichier&quot; ]; then   # Existe
 if [ -r &quot;$fichier&quot; ]; then   # Lisible
 if [ -w &quot;$fichier&quot; ]; then   # Écriture
 if [ -x &quot;$fichier&quot; ]; then   # Exécutable
 if [ -s &quot;$fichier&quot; ]; then   # Non vide
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exemple complet</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 if [ $# -eq 0 ]; then
     echo &quot;Usage: $0 &lt;nom&gt;&quot;
@@ -287,12 +442,20 @@ else
     echo &quot;Je le crée...&quot;
     touch &quot;$NOM.txt&quot;
 fi
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>6. Boucles</h2>
 <h3>Boucle for classique</h3>
-<pre class="codehilite"><code class="language-bash">for i in 1 2 3 4 5; do
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>for i in 1 2 3 4 5; do
     echo &quot;Compteur: $i&quot;
 done
 
@@ -305,33 +468,65 @@ done
 for i in {1..10}; do
     echo $i
 done
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Boucle for C-style</h3>
-<pre class="codehilite"><code class="language-bash">for ((i=0; i&lt;10; i++)); do
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>for ((i=0; i&lt;10; i++)); do
     echo &quot;i = $i&quot;
 done
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Boucle while</h3>
-<pre class="codehilite"><code class="language-bash">compteur=1
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>compteur=1
 while [ $compteur -le 5 ]; do
     echo &quot;Compteur: $compteur&quot;
     compteur=$((compteur + 1))
 done
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Boucle until</h3>
-<pre class="codehilite"><code class="language-bash">compteur=1
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>compteur=1
 until [ $compteur -gt 5 ]; do
     echo &quot;Compteur: $compteur&quot;
     compteur=$((compteur + 1))
 done
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>7. Case (switch)</h2>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 echo &quot;Choisis une option: &quot;
 read option
@@ -350,84 +545,156 @@ case $option in
         echo &quot;Choix invalide&quot;
         ;;
 esac
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>8. Fonctions</h2>
 <h3>Définir une fonction</h3>
-<pre class="codehilite"><code class="language-bash"># Fonction sans paramètre
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Fonction sans paramètre
 dire_bonjour() {
     echo &quot;Bonjour !&quot;
 }
 
 # Appeler
 dire_bonjour
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Fonction avec paramètres</h3>
-<pre class="codehilite"><code class="language-bash">dire_bonjour_a() {
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>dire_bonjour_a() {
     echo &quot;Bonjour $1 !&quot;  # $1 = premier argument
 }
 
 dire_bonjour_a &quot;David&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Fonction avec retour</h3>
-<pre class="codehilite"><code class="language-bash">additionner() {
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>additionner() {
     resultat=$(($1 + $2))
     echo $resultat
 }
 
 somme=$(additionner 5 3)
 echo &quot;5 + 3 = $somme&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>9. Tableaux</h2>
 <h3>Déclaration</h3>
-<pre class="codehilite"><code class="language-bash"># Tableau simple
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Tableau simple
 tableau=(valeur1 valeur2 valeur3)
 
 # Tableau avec indices
 tableau[0]=&quot;premier&quot;
 tableau[1]=&quot;deuxième&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Accéder aux éléments</h3>
-<pre class="codehilite"><code class="language-bash">echo ${tableau[0]}      # Premier élément
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>echo ${tableau[0]}      # Premier élément
 echo ${tableau[@]}      # Tous les éléments
 echo ${#tableau[@]}     # Nombre d'éléments
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Parcourir un tableau</h3>
-<pre class="codehilite"><code class="language-bash">for element in &quot;${tableau[@]}&quot;; do
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>for element in &quot;${tableau[@]}&quot;; do
     echo $element
 done
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>10. Exercices pratiques</h2>
 <h3>Exercice 1 : Script de backup</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 # Backup automatique
 
 DEST=&quot;$HOME/backup_$(date +%Y%m%d)&quot;
 mkdir -p $DEST
 cp -r ~/Documents/* $DEST/
 echo &quot;Backup créé dans $DEST&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 2 : Vérification système</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 echo &quot;=== État du système ===&quot;
 echo &quot;Uptime: $(uptime)&quot;
 echo &quot;Mémoire: $(free -h | grep Mem)&quot;
 echo &quot;Disque: $(df -h / | tail -1)&quot;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 3 : Menu interactif</h3>
-<pre class="codehilite"><code class="language-bash">#!/bin/bash
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
 
 echo &quot;1. Afficher la date&quot;
 echo &quot;2. Afficher qui est connecté&quot;
@@ -441,11 +708,19 @@ case $choix in
     3) df -h ;;
     *) echo &quot;Choix invalide&quot; ;;
 esac
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>11. Trucs et Astuces</h2>
-<pre class="codehilite"><code class="language-bash"># Debug un script
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Debug un script
 bash -x script.sh
 
 # Ignorer les erreurs
@@ -461,7 +736,12 @@ echo ${VAR:=&quot;défaut&quot;}
 result=$((5 + 3))    # Addition
 result=$((10 / 2))  # Division
 result=$((10 % 3))  # Modulo
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>12. Résumé</h2>
@@ -515,5 +795,47 @@ result=$((10 % 3))  # Modulo
 <nav>
 <a href="09-recherche-fichiers-texte.html" style="color:#00d9ff;text-decoration:none;">&larr; 09 - Recherche de fichiers et texte</a> | <span style="color:#666;">10</span> | <a href="11-supervision-systeme.html" style="color:#00d9ff;text-decoration:none;">11 - Surveillance système &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

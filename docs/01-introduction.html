@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -136,7 +192,10 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <hr />
 <h2>3. Architecture Linux</h2>
 <h3>Structure des répertoires</h3>
-<pre class="codehilite"><code>/
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>/
 ├── bin/       # Commandes essentielles
 ├── boot/      # Fichiers de démarrage
 ├── dev/       # Périphériques
@@ -155,7 +214,12 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 ├── tmp/       # Fichiers temporaires
 ├── usr/       # Programmes utilisateur
 └── var/       # Données variables (logs)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Répertoires importants</h3>
 <table>
@@ -199,7 +263,10 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <li><strong>macOS</strong> : Cmd + Espace, taper "Terminal"</li>
 </ul>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash">ls              # Lister les fichiers
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ls              # Lister les fichiers
 cd dossier     # Changer de répertoire
 pwd             # Répertoire courant
 mkdir dossier  # Créer un dossier
@@ -207,12 +274,20 @@ touch fichier  # Créer un fichier
 rm fichier     # Supprimer
 cp source dest # Copier
 mv source dest # Déplacer/renommer
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. Premier pas : Commandes essentielles</h2>
 <h3>Navigation</h3>
-<pre class="codehilite"><code class="language-bash">pwd                 # Où suis-je ?
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>pwd                 # Où suis-je ?
 ls                  # Liste fichiers
 ls -l               # Liste détaillée
 ls -a               # Inclure cachés
@@ -221,38 +296,75 @@ cd /                # Aller à la racine
 cd ~                # Retourner au home
 cd ..               # Répertoire parent
 cd -                # Revenir en arrière
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Manipulation de fichiers</h3>
-<pre class="codehilite"><code class="language-bash">mkdir mon_dossier   # Créer dossier
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>mkdir mon_dossier   # Créer dossier
 rmdir mon_dossier   # Supprimer dossier vide
 touch fichier       # Créer fichier
 cp fichier copie    # Copier
 mv fichier nouveau  # Renommer/déplacer
 rm fichier          # Supprimer
 rm -rf dossier     # Supprimer récursif (DANGER!)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Lire les fichiers</h3>
-<pre class="codehilite"><code class="language-bash">cat fichier         # Afficher contenu
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>cat fichier         # Afficher contenu
 less fichier        # Afficher page par page
 head -n 10 fichier # 10 premières lignes
 tail -n 10 fichier # 10 dernières lignes
 tail -f fichier    # Suivre en temps réel
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Recherche</h3>
-<pre class="codehilite"><code class="language-bash">which commande      # Trouver une commande
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>which commande      # Trouver une commande
 man commande        # Manuel
 --help              # Aide
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>6. Notions de droits et permissions</h2>
 <h3>Les permissions</h3>
 <p>Chaque fichier a des permissions :</p>
-<pre class="codehilite"><code>-rw-r--r-- 1 user group 1234 Mar 10 10:00 fichier
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>-rw-r--r-- 1 user group 1234 Mar 10 10:00 fichier
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <table>
 <thead>
@@ -281,11 +393,19 @@ man commande        # Manuel
 </tbody>
 </table>
 <h3>Modifier les permissions</h3>
-<pre class="codehilite"><code class="language-bash">chmod +x fichier     # Rendre exécutable
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>chmod +x fichier     # Rendre exécutable
 chmod 644 fichier    # rw-r--r--
 chmod 755 dossier/   # rwxr-xr-x
 chmod -R 777 dossier # Plein accès (DANGER!)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>7.root et sudo</h2>
@@ -293,10 +413,18 @@ chmod -R 777 dossier # Plein accès (DANGER!)
 <p>root est le <strong>super-utilisateur</strong> avec tous les droits. Linux demande souvent confirmation.</p>
 <h3>sudo</h3>
 <p><code>sudo</code> (Super User Do) permet d'exécuter une commande avec les droits admin :</p>
-<pre class="codehilite"><code class="language-bash">sudo apt update      # Mettre à jour les paquets
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update      # Mettre à jour les paquets
 sudo mkdir /test     # Créer dans /
 sudo rm -rf /        # DANGER!
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <blockquote>
 <p>⚠️ <strong>Attention</strong> : root peut tout faire, y compris détruire le système !</p>
@@ -304,19 +432,35 @@ sudo rm -rf /        # DANGER!
 <hr />
 <h2>8. Installation de logiciels</h2>
 <h3>Avec APT (Debian/Ubuntu)</h3>
-<pre class="codehilite"><code class="language-bash">sudo apt update          # Mettre à jour
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update          # Mettre à jour
 sudo apt install NomPaquet    # Installer
 sudo apt upgrade         # Mettre à jour
 sudo apt remove NomPaquet    # Supprimer
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>9. Aide et documentation</h2>
 <h3>Obtenir de l'aide</h3>
-<pre class="codehilite"><code class="language-bash">commande --help         # Aide rapide
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>commande --help         # Aide rapide
 man commande            # Manuel complet
 info commande           # Documentation info
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Ressources en ligne</h3>
 <ul>
@@ -371,5 +515,47 @@ info commande           # Documentation info
 <nav>
 <a href="index.html" style="color:#666;text-decoration:none;"><span style="color:#666;">Début</span></a> | <span style="color:#666;">01</span> | <a href="02-commandes-base.html" style="color:#00d9ff;text-decoration:none;">02 - Commandes de base &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

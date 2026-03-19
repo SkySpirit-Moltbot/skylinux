@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -38,59 +94,126 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <h2>1. FIND - Recherche de fichiers</h2>
 <p><code>find</code> est l'outil de recherche le plus puissant sous Linux. Il recherche récursivement selon de nombreux critères.</p>
 <h3>Syntaxe de base</h3>
-<pre class="codehilite"><code class="language-bash">find [chemin] [expression]
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find [chemin] [expression]
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher par nom</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;fichier.txt&quot;              # Nom exact
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -name &quot;fichier.txt&quot;              # Nom exact
 find . -name &quot;*.txt&quot;                    # Par extension
 find . -name &quot;fichier*&quot;                 # Par début de nom
 find . -iname &quot;Fichier.txt&quot;             # Insensible à la casse
 find . -name &quot;*.log&quot; -o -name &quot;*.txt&quot;   # OU (plusieurs extensions)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher par type</h3>
-<pre class="codehilite"><code class="language-bash">find . -type f          # Fichiers seulement
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -type f          # Fichiers seulement
 find . -type d          # Répertoires seulement
 find . -type l          # Liens symboliques
 find . -type s          # Sockets
 find . -type p          # Pipes nommés
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher par taille</h3>
-<pre class="codehilite"><code class="language-bash">find . -size +100M              # Plus de 100 Mo
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -size +100M              # Plus de 100 Mo
 find . -size -1G                # Moins de 1 Go
 find . -size +100k -size -1M    # Entre 100 Ko et 1 Mo
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher par date</h3>
-<pre class="codehilite"><code class="language-bash">find . -mtime -7           # Modifiés dans les 7 derniers jours
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -mtime -7           # Modifiés dans les 7 derniers jours
 find . -mtime +30          # Modifiés il y a plus de 30 jours
 find . -atime -1           # Accédés dans les 24h
 find . -ctime -1           # Changés dans les 24h (permissions, contenu)
 find . -newer fichier.txt  # Plus récents que fichier.txt
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher par permissions</h3>
-<pre class="codehilite"><code class="language-bash">find . -perm 644           # Permissions exactement 644
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -perm 644           # Permissions exactement 644
 find . -perm -u+x          # Avec bit exécutable pour owner
 find . -perm -g=w          # Avec bit écriture pour groupe
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher par propriétaire</h3>
-<pre class="codehilite"><code class="language-bash">find . -user david         # Propriétaire david
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -user david         # Propriétaire david
 find . -group admin        # Groupe admin
 find . -uid 1000           # UID 1000
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Rechercher par profondeur</h3>
-<pre class="codehilite"><code class="language-bash">find . -maxdepth 2         # Maximum 2 niveaux
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -maxdepth 2         # Maximum 2 niveaux
 find . -mindepth 2        # Au moins 2 niveaux
 find . -depth 2           # Exactement 2 niveaux
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Actions avec find</h3>
-<pre class="codehilite"><code class="language-bash"># Lister (par défaut -print)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister (par défaut -print)
 find . -name &quot;*.txt&quot; -print
 
 # Supprimer
@@ -106,14 +229,27 @@ find . -name &quot;*.bak&quot; -ok rm {} \;            # Demande confirmation
 
 # Plusieurs fichiers
 find . -name &quot;*.txt&quot; -exec cp {} {}.bak \;
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>2. GREP - Recherche de texte</h2>
 <p><code>grep</code> recherche des motifs (patterns) dans des fichiers.</p>
 <h3>Syntaxe de base</h3>
-<pre class="codehilite"><code class="language-bash">grep [options] &quot;motif&quot; [fichiers]
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>grep [options] &quot;motif&quot; [fichiers]
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Options essentielles</h3>
 <table>
@@ -171,7 +307,10 @@ find . -name &quot;*.txt&quot; -exec cp {} {}.bak \;
 </tbody>
 </table>
 <h3>Exemples pratiques</h3>
-<pre class="codehilite"><code class="language-bash"># Recherche basique
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Recherche basique
 grep &quot;erreur&quot; log.txt
 
 # Avec contexte
@@ -196,31 +335,68 @@ grep &quot;fin$&quot; fichier.txt               # Ligne finissant par &quot;fin&
 grep &quot;colou?r&quot; fichier.txt            # color ou colour
 grep &quot;[0-9]&quot; fichier.txt             # Contient un chiffre
 grep -E &quot;[a-z]+@[a-z.]+&quot; fichier.txt # Email simple
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>EGREP et FGREP</h3>
-<pre class="codehilite"><code class="language-bash">egrep &quot;mot1|mot2|mot3&quot; fichier.txt   # Étendu (équivalent grep -E)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>egrep &quot;mot1|mot2|mot3&quot; fichier.txt   # Étendu (équivalent grep -E)
 fgrep &quot;texte.literal&quot; fichier.txt    # Littéral (équivalent grep -F)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>3. LOCATE - Recherche rapide</h2>
 <p><code>locate</code> utilise une base de données pré-construite (updatedb), ce qui le rend très rapide.</p>
 <h3>Commandes de base</h3>
-<pre class="codehilite"><code class="language-bash">locate fichier.txt           # Rechercher par nom
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>locate fichier.txt           # Rechercher par nom
 locate -i fichier.txt        # Insensible à la casse
 locate &quot;*.txt&quot;              # Avec wildcard
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Options utiles</h3>
-<pre class="codehilite"><code class="language-bash">locate -c                    # Compter les résultats
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>locate -c                    # Compter les résultats
 locate -l 10                 # Limiter à 10 résultats
 locate -i -l 5 &quot;document&quot;   # Limiter et insensible
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Mettre à jour la base</h3>
-<pre class="codehilite"><code class="language-bash">sudo updatedb               # Mettre à jour la base (nécessite root)
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo updatedb               # Mettre à jour la base (nécessite root)
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <blockquote>
 <p>⚠️ <strong>Note</strong> : locate ne trouve pas les fichiers créés depuis la dernière mise à jour de la base.</p>
@@ -228,53 +404,104 @@ locate -i -l 5 &quot;document&quot;   # Limiter et insensible
 <hr />
 <h2>4. WHICH, WHEREIS, TYPE - Recherche de commandes</h2>
 <h3>which - Trouver une commande</h3>
-<pre class="codehilite"><code class="language-bash">which python                 # Chemin de python
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>which python                 # Chemin de python
 which -a python              # Toutes les occurrences
 which -s python             # Silence (0 si trouvé)
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>whereis - Localiser binary, source, man</h3>
-<pre class="codehilite"><code class="language-bash">whereis python              # Binary, source et man
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>whereis python              # Binary, source et man
 whereis -m python           # Seulement les pages man
 whereis -s python           # Seulement les sources
 whereis -b python           # Seulement les binaires
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>type - Type de commande</h3>
-<pre class="codehilite"><code class="language-bash">type ls                     # alias, function, ou builtin
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>type ls                     # alias, function, ou builtin
 type -t ls                  # Alias, builtin, file, function
 type -a ls                  # Toutes les définitions
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. Statistiques et comptage</h2>
 <h3>wc - Compter lignes, mots, caractères</h3>
-<pre class="codehilite"><code class="language-bash">wc fichier.txt              # Lignes mots octets
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>wc fichier.txt              # Lignes mots octets
 wc -l fichier.txt           # Nombre de lignes
 wc -w fichier.txt           # Nombre de mots
 wc -c fichier.txt           # Nombre d'octets
 wc -m fichier.txt           # Nombre de caractères
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>sort - Trier</h3>
-<pre class="codehilite"><code class="language-bash">sort fichier.txt            # Trier alphabétiquement
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sort fichier.txt            # Trier alphabétiquement
 sort -n fichier.txt         # Trier numériquement
 sort -r fichier.txt         # Inverser l'ordre
 sort -u fichier.txt         # Trier et supprimer doublons
 sort -k2 fichier.txt        # Trier par colonne 2
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>uniq - Lignes uniques</h3>
-<pre class="codehilite"><code class="language-bash">uniq fichier.txt            # Supprimer doublons adjacents
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>uniq fichier.txt            # Supprimer doublons adjacents
 uniq -c fichier.txt         # Avec compteur
 uniq -d fichier.txt        # Afficher seulement doublons
 uniq -u fichier.txt        # Afficher lignes uniques
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>6. Recherche avancée combinée</h2>
 <h3>Rechercher et traiter</h3>
-<pre class="codehilite"><code class="language-bash"># Trouver puis exécuter
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Trouver puis exécuter
 find . -name &quot;*.log&quot; -exec wc -l {} \; | sort -n
 
 # Rechercher du texte dans les résultats
@@ -288,29 +515,74 @@ grep -r &quot;error&quot; . --include=&quot;*.log&quot; | wc -l
 
 # Lister fichiers modifiés récemment
 find . -mtime -1 -type f
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>7. Exercices pratiques</h2>
 <h3>Exercice 1 : Trouver tous les fichiers PHP modifiés récemment</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;*.php&quot; -mtime -7
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -name &quot;*.php&quot; -mtime -7
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 2 : Rechercher une fonction dans le code</h3>
-<pre class="codehilite"><code class="language-bash">grep -rn &quot;function maFonction&quot; --include=&quot;*.js&quot; .
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>grep -rn &quot;function maFonction&quot; --include=&quot;*.js&quot; .
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 3 : Compter les lignes de code</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;*.py&quot; -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -name &quot;*.py&quot; -exec wc -l {} \; | awk '{sum+=$1} END {print sum}'
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 4 : Supprimer tous les fichiers temporaires</h3>
-<pre class="codehilite"><code class="language-bash">find . -name &quot;*.tmp&quot; -type f -delete
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>find . -name &quot;*.tmp&quot; -type f -delete
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 5 : Rechercher dans les logs d'erreurs</h3>
-<pre class="codehilite"><code class="language-bash">grep -i &quot;error\|fail\|critical&quot; /var/log/syslog | tail -20
-</code></pre>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>grep -i &quot;error\|fail\|critical&quot; /var/log/syslog | tail -20
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>8. Tableau résumé</h2>
@@ -368,5 +640,47 @@ find . -mtime -1 -type f
 <nav>
 <a href="08-archivage-compression.html" style="color:#00d9ff;text-decoration:none;">&larr; 08 - Archivage et compression</a> | <span style="color:#666;">09</span> | <a href="10-variables-scripts.html" style="color:#00d9ff;text-decoration:none;">10 - Variables et scripts Bash &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>

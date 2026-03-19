@@ -24,6 +24,62 @@ table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
@@ -89,7 +145,10 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <hr />
 <h2>2. Commandes de surveillance</h2>
 <h3>df - Espace disque</h3>
-<pre class="codehilite"><code class="language-bash">df -h                    # Format lisible (Ko, Mo, Go)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>df -h                    # Format lisible (Ko, Mo, Go)
 df -H                    # Format IEC (1000 au lieu de 1024)
 df -T                    # Avec type de filesystem
 df -i                    # Inodes au lieu de blocs
@@ -102,10 +161,18 @@ Filesystem      Size  Used Avail Use% Mounted on
 /dev/sda1       100G   45G   55G  45% /
 /dev/sdb1       500G  200G  300G  40% /data
 tmpfs           2.0G     0  2.0G   0% /dev/shm
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>du - Espace utilisé</h3>
-<pre class="codehilite"><code class="language-bash">du -sh dossier/                  # Taille totale
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>du -sh dossier/                  # Taille totale
 du -h --max-depth=1             # Sous-dossiers 1 niveau
 du -h --max-depth=2             # Sous-dossiers 2 niveaux
 du -ah dossier/                  # Tous fichiers + cachés
@@ -114,26 +181,47 @@ du -h | sort -rh | head -10     # Top 10
 
 # Exclure un pattern
 du -h --exclude='*.log' dossier/
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>lsblk - Blocs appareils</h3>
-<pre class="codehilite"><code class="language-bash">lsblk                    # Liste simple
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>lsblk                    # Liste simple
 lsblk -f                 # Avec filesystem
 lsblk -m                 # Permissions et owner
 lsblk -t                 # Format tableau
 lsblk -o NAME,SIZE,TYPE,MOUNTPOINT  # Colonnes personnalisées
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>3. Partitionner un disque</h2>
 <h3>fdisk - Outil classique</h3>
-<pre class="codehilite"><code class="language-bash"># Lister toutes les partitions
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister toutes les partitions
 sudo fdisk -l
 sudo fdisk -l /dev/sda
 
 # Entrer dans le mode interactif
 sudo fdisk /dev/sdb
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <p><strong>Commandes interactives fdisk :</strong></p>
 <table>
@@ -179,7 +267,10 @@ sudo fdisk /dev/sdb
 </tbody>
 </table>
 <h3>parted - Alternative moderne</h3>
-<pre class="codehilite"><code class="language-bash"># Mode interactif
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Mode interactif
 sudo parted /dev/sdb
 
 # Commandes non-interactives
@@ -188,17 +279,33 @@ sudo parted /dev/sdb mkpart primary ext4 0% 100%
 sudo parted /dev/sdb mkpart primary linux-swap 80% 100%
 sudo parted /dev/sdb rm 1
 sudo parted /dev/sdb print
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>gdisk - Pour GPT</h3>
-<pre class="codehilite"><code class="language-bash">sudo gdisk /dev/sdb
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo gdisk /dev/sdb
 # Similaire à fdisk mais pour tables GPT
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>4. Systèmes de fichiers</h2>
 <h3>Créer un filesystem</h3>
-<pre class="codehilite"><code class="language-bash"># ext4 (le plus courant)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># ext4 (le plus courant)
 sudo mkfs.ext4 /dev/sdb1
 sudo mkfs.ext4 -L &quot;MonDisque&quot; /dev/sdb1  # Avec label
 
@@ -220,21 +327,37 @@ sudo mkfs.ntfs /dev/sdb1
 # Swap
 sudo mkswap /dev/sda2
 sudo swapon /dev/sda2
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Options de mkfs.ext4</h3>
-<pre class="codehilite"><code class="language-bash"># Paramètres avancés
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Paramètres avancés
 sudo mkfs.ext4 -m 0 -b 4096 -E stride=32,stripe-width=64 /dev/sdb1
 
 # -m 0 : Réserver 0% pour root (au lieu de 5%)
 # -b 4096 : Taille de bloc
 # -E : Paramètres RAID pour SSD
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>5. Monter et démonter</h2>
 <h3>Montage manuel</h3>
-<pre class="codehilite"><code class="language-bash"># Monter une partition
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Monter une partition
 sudo mount /dev/sdb1 /mnt/data
 
 # Monter en lecture seule
@@ -248,7 +371,12 @@ sudo mount UUID=&quot;123-456&quot; /mnt/data
 
 # Monter par label
 sudo mount LABEL=&quot;MonDisque&quot; /mnt/data
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Options de montage courantes</h3>
 <table>
@@ -302,7 +430,10 @@ sudo mount LABEL=&quot;MonDisque&quot; /mnt/data
 </tbody>
 </table>
 <h3>Démonter</h3>
-<pre class="codehilite"><code class="language-bash"># Démonter proprement
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Démonter proprement
 sudo umount /mnt/data
 
 # Forcer (peut causer des erreurs)
@@ -313,19 +444,35 @@ sudo umount -l /mnt/data
 
 # Démonter tous les points de montage d'un périphérique
 sudo umount -l /dev/sdb1
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>6. Configuration automatique (/etc/fstab)</h2>
 <h3>Format du fichier</h3>
-<pre class="codehilite"><code># &lt;périphérique&gt;  &lt;point de montage&gt;  &lt;type&gt;  &lt;options&gt;         &lt;dump&gt;  &lt;pass&gt;
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># &lt;périphérique&gt;  &lt;point de montage&gt;  &lt;type&gt;  &lt;options&gt;         &lt;dump&gt;  &lt;pass&gt;
 UUID=xxx          /data                ext4    defaults         0       2
 /dev/sdb1         /backup              ext4    nofail,noatime   0       2
 tmpfs             /tmp                 tmpfs   defaults         0       0
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Trouver UUID et type</h3>
-<pre class="codehilite"><code class="language-bash"># Lister tous les UUID
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister tous les UUID
 sudo blkid
 
 # UUID d'un spécifique
@@ -333,7 +480,12 @@ sudo blkid /dev/sda1
 
 # Vérifier le filesystem
 sudo file -s /dev/sda1
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Options fstab courantes</h3>
 <table>
@@ -365,7 +517,10 @@ sudo file -s /dev/sda1
 <hr />
 <h2>7. Swap</h2>
 <h3>Créer du swap</h3>
-<pre class="codehilite"><code class="language-bash"># Créer un fichier swap
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un fichier swap
 sudo fallocate -l 2G /swapfile
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
@@ -373,18 +528,34 @@ sudo swapon /swapfile
 
 # Ajouter au fstab
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Commandes swap</h3>
-<pre class="codehilite"><code class="language-bash">swapon -s                  # Voir le swap actif
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>swapon -s                  # Voir le swap actif
 sudo swapon /swapfile     # Activer
 sudo swapoff /swapfile   # Désactiver
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>8. Vérification et réparation</h2>
 <h3>fsck - Vérifier le filesystem</h3>
-<pre class="codehilite"><code class="language-bash"># Vérifier (NE JAMAIS sur mounted !)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Vérifier (NE JAMAIS sur mounted !)
 sudo fsck /dev/sdb1
 
 # Avec réparation automatique
@@ -395,13 +566,21 @@ sudo fsck -t ext4 /dev/sdb1
 
 # Forcer même si propre
 sudo fsck -f /dev/sdb1
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <blockquote>
 <p>⚠️ <strong>IMPORTANT</strong> : Ne jamais exécuter fsck sur un filesystem monté !</p>
 </blockquote>
 <h3>tune2fs - Paramètres ext</h3>
-<pre class="codehilite"><code class="language-bash"># Voir les paramètres
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir les paramètres
 sudo tune2fs -l /dev/sda1
 
 # Changer le label
@@ -414,7 +593,12 @@ sudo tune2fs -O has_journal /dev/sda1    # Ajouter
 # Fréquence de vérification
 sudo tune2fs -c 30 /dev/sda1  # Tous les 30 mounts
 sudo tune2fs -i 30d /dev/sda1 # Tous les 30 jours
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>9. Gestion LVM (Logical Volume Manager)</h2>
@@ -425,7 +609,10 @@ sudo tune2fs -i 30d /dev/sda1 # Tous les 30 jours
 <li><strong>LV</strong> : Logical Volume (partition logique)</li>
 </ul>
 <h3>Commandes LVM</h3>
-<pre class="codehilite"><code class="language-bash"># Créer un PV
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un PV
 sudo pvcreate /dev/sdb1
 
 # Créer un VG
@@ -449,12 +636,20 @@ sudo lvreduce -L 5G /dev/mon_vg/mon_lv
 sudo pvs    # Physical volumes
 sudo vgs    # Volume groups
 sudo lvs    # Logical volumes
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>10. SSD et TRIM</h2>
 <h3>Activer TRIM</h3>
-<pre class="codehilite"><code class="language-bash"># Vérifier si actif
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Vérifier si actif
 sudo hdparm -I /dev/sda | grep TRIM
 
 # TRIM manuel
@@ -462,12 +657,20 @@ sudo fstrim /
 
 # Activer discard dans fstab
 /dev/sda1 / ext4 defaults,discard 0 1
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>11. Exercices pratiques</h2>
 <h3>Exercice 1 : Surveillance</h3>
-<pre class="codehilite"><code class="language-bash"># Voir l'utilisation
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir l'utilisation
 df -h
 
 # Les plus gros dossiers
@@ -475,10 +678,18 @@ du -sh /* 2&gt;/dev/null | sort -rh | head -10
 
 # Espace inode
 df -i
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 2 : Créer une partition</h3>
-<pre class="codehilite"><code class="language-bash"># Voir les disques
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir les disques
 lsblk
 
 # Partitionner (ATTENTION au bon disque !)
@@ -491,10 +702,18 @@ sudo mkfs.ext4 /dev/sdb1
 # Monter
 sudo mkdir /mnt/backup
 sudo mount /dev/sdb1 /mnt/backup
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <h3>Exercice 3 : Configuration fstab</h3>
-<pre class="codehilite"><code class="language-bash"># Trouver UUID
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Trouver UUID
 sudo blkid
 
 # Éditer fstab
@@ -502,7 +721,12 @@ sudo nano /etc/fstab
 
 # Ajouter ligne:
 # UUID=xxx /mnt/data ext4 defaults,nofail 0 2
-</code></pre>
+</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 
 <hr />
 <h2>12. Tableau résumé</h2>
@@ -572,5 +796,47 @@ sudo nano /etc/fstab
 <nav>
 <a href="17-logs-systeme.html" style="color:#00d9ff;text-decoration:none;">&larr; 17 - Les logs système</a> | <span style="color:#666;">18</span> | <a href="19-sauvegardes-restauration.html" style="color:#00d9ff;text-decoration:none;">19 - Sauvegardes et restauration &rarr;</a>
 </nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
 </body>
 </html>
