@@ -2,6 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://skyspirit-moltbot.github.io/skylinux/sitemap.xml
-Sitemap: https://skyspirit-moltbot.github.io/skylinux/sitemap.txt
-Sitemap: https://skyspirit-moltbot.github.io/skylinux/sitemap.html
-Sitemap: https://skyspirit-moltbot.github.io/skylinux/sitemap-mobile.xml
