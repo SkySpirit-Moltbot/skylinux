@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 26 : Liens symboliques et liens durs - SkyLinux</title>
+<title>Leçon 26 - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/26-liens-symboliques-et-liens-durs.html">
-<meta property="og:title" content="Leçon 26 : Liens symboliques et liens durs - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/26-liens-symboliques-durs.html">
+<meta property="og:title" content="Leçon 26 - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 26 : Liens symboliques et liens durs - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 26  liens symboliques et liens durs, debutant, ubuntu">
+<meta name="description" content="Leçon 26 - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, liens symboliques, symlink, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -28,84 +28,15 @@ li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; bor
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
 a { color: #00d9ff; text-decoration: none; }
 a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+.nav-disabled { color: #666; }
+pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #30363d; }
+pre code { background: none; color: #e0e0e0; padding: 0; }
 </style>
 </head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
 <div class="container">
-<h1>Leçon 26 : Liens symboliques et liens durs</h1>
-<p>Dans cette leçon, tu vas découvrir comment créer des liens symboliques et des liens durs sous Linux. Ces mécanismes permettent d'accéder à un même fichier depuis plusieurs endroits sans le dupliquer.</p>
-<hr />
-<h2>1. Qu'est-ce qu'un lien ?</h2>
+<h1 id="lecon-26-liens-symboliques-et-liens-durs">Leçon 26 : Liens symboliques et liens durs</h1>
+<h2 id="quest-ce-quun-lien">Qu'est-ce qu'un lien ?</h2>
 <p>Sous Linux, tout est fichier. Chaque fichier stocké sur le disque a :
 - Un <strong>inode</strong> : un numéro unique qui identifie le fichier sur le disque
 - Un <strong>nom de fichier</strong> : le point d'accès dans un répertoire</p>
@@ -123,7 +54,7 @@ p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 
 <tr>
 <td><strong>Concept</strong></td>
 <td>Un autre nom pour le même fichier</td>
-<td>Un raccourci ou pointeur vers un autre fichier</td>
+<td>Un raccourci / pointeur vers un autre fichier</td>
 </tr>
 <tr>
 <td><strong>Inode</strong></td>
@@ -147,264 +78,143 @@ p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 
 </tr>
 </tbody>
 </table>
-<hr />
-<h2>2. Liens durs (hard links)</h2>
-<h3>ln - Créer un lien dur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ln fichier_original lien_nouveau</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Exemple :</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un lien dur vers rapport.txt dans ~/Documents/
-ln /home/david/rapport.txt /home/david/Documents/rapport_lien.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<h2 id="liens-durs-hard-links">Liens durs (hard links)</h2>
+<h3 id="creer-un-lien-dur">Créer un lien dur</h3>
+<p><code>bash
+ln fichier_original lien_nouveau</code></p>
+<p>Exemple :</p>
+<p>```bash</p>
+<h1 id="creer-un-lien-dur-vers-rapporttxt-dans-documents">Créer un lien dur vers rapport.txt dans ~/Documents/</h1>
+<p>ln /home/david/rapport.txt /home/david/Documents/rapport_lien.txt
+```</p>
 <blockquote>
 <p>⚠️ Les deux noms pointent vers le <strong>même contenu</strong>. Modifier l'un modifie l'autre.</p>
 </blockquote>
-<h3>ls - Vérifier l'inode commun</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ls -li fichier_original lien_nouveau</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<h3 id="verifier-avec-ls">Vérifier avec <code>ls</code></h3>
+<p><code>bash
+ls -li fichier_original lien_nouveau</code></p>
 <p>Le <code>-i</code> affiche le numéro d'inode. Tu verras que les deux fichiers ont le <strong>même inode</strong>.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>$ ls -li rapport.txt Documents/rapport_lien.txt
+<p><code>bash
+$ ls -li rapport.txt Documents/rapport_lien.txt
 1234567 -rw-r--r-- 2 david david 4096 jan 15 10:00 rapport.txt
-1234567 -rw-r--r-- 2 david david 4096 jan 15 10:00 Documents/rapport_lien.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+1234567 -rw-r--r-- 2 david david 4096 jan 15 10:00 Documents/rapport_lien.txt</code></p>
 <p>Le chiffre <code>2</code> (deuxième colonne) est le <strong>nombre de liens durs</strong> vers cet inode. Tant qu'au moins un lien existe, le fichier n'est pas supprimé physiquement.</p>
-<h3>rm - Supprimer un lien dur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>rm lien_nouveau</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<h3 id="supprimer-un-lien-dur">Supprimer un lien dur</h3>
+<p><code>bash
+rm lien_nouveau</code></p>
 <p>Le fichier original reste intact. Les données ne sont vraiment effacées du disque que quand le <strong>dernier lien dur</strong> est supprimé.</p>
-<hr />
-<h2>3. Liens symboliques (symlinks)</h2>
-<h3>ln -s - Créer un lien symbolique</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ln -s fichier_cible lien_symbolique</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Exemple :</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un raccourci vers mes-documents dans le bureau
-ln -s /home/david/mes-documents /home/david/Bureau/mes-documents
-
-# Créer un lien symbolique vers un script dans /usr/local/bin/
-sudo ln -s /opt/mon-script.sh /usr/local/bin/mon-script</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>ls - À quoi ça ressemble ?</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>$ ls -la Bureau/
-lrwxrwxrwx 1 david david   20 jan 15 10:00 mes-documents -&gt; /home/david/mes-documents</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<h2 id="liens-symboliques-symlinks">Liens symboliques (symlinks)</h2>
+<h3 id="creer-un-lien-symbolique">Créer un lien symbolique</h3>
+<p><code>bash
+ln -s fichier_cible lien_symbolique</code></p>
+<p>Exemple :</p>
+<p>```bash</p>
+<h1 id="creer-un-raccourci-vers-mes-documents-dans-le-bureau">Créer un raccourci vers mes-documents dans le bureau</h1>
+<p>ln -s /home/david/mes-documents /home/david/Bureau/mes-documents
+```</p>
+<p>```bash</p>
+<h1 id="creer-un-lien-symbolique-vers-un-script-dans-usrlocalbin">Créer un lien symbolique vers un script dans /usr/local/bin/</h1>
+<p>sudo ln -s /opt/mon-script.sh /usr/local/bin/mon-script
+```</p>
+<h3 id="a-quoi-ca-ressemble">À quoi ça ressemble ?</h3>
+<p><code>bash
+$ ls -la Bureau/
+lrwxrwxrwx 1 david david   20 jan 15 10:00 mes-documents -&gt; /home/david/mes-documents</code></p>
 <ul>
 <li><code>l</code> au début = c'est un lien symbolique</li>
 <li>La flèche <code>-&gt;</code> montre vers quoi le lien pointe</li>
 </ul>
-<h3>test - Vérifier si un lien symbolique est cassé</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Tester le lien
-test -e lien_symbolique &amp;&amp; echo &quot;OK&quot; || echo &quot;CASSÉ&quot;
-
-# Lister les liens cassés
-find . -type l -xtype l</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>rm - Supprimer un lien symbolique</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>rm lien_symbolique</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<h3 id="verifier-si-un-lien-symbolique-est-casse">Vérifier si un lien symbolique est cassé</h3>
+<p>```bash</p>
+<h1 id="tester-le-lien">Tester le lien</h1>
+<p>test -e lien_symbolique &amp;&amp; echo "OK" || echo "CASSÉ"
+```</p>
+<p>```bash</p>
+<h1 id="lister-les-liens-casses">Lister les liens cassés</h1>
+<p>find . -type l -xtype l
+```</p>
+<h3 id="supprimer-un-lien-symbolique">Supprimer un lien symbolique</h3>
+<p><code>bash
+rm lien_symbolique</code></p>
 <blockquote>
 <p>⚠️ Pas de <code>/</code> à la fin du nom ! Sinon tu pourrais supprimer la <strong>cible</strong> par erreur.</p>
 </blockquote>
-<hr />
-<h2>4. Quand utiliser quoi ?</h2>
-<h3>Utilise le lien symbolique quand :</h3>
+<h2 id="quand-utiliser-quoi">Quand utiliser quoi ?</h2>
+<h3 id="utilisez-le-lien-symbolique-quand">Utilisez le lien symbolique quand :</h3>
 <ul>
 <li>Tu veux créer un <strong>raccourci</strong> vers un fichier ou répertoire</li>
 <li>La cible peut se trouver sur un <strong>autre système de fichiers</strong></li>
 <li>Tu veux créer une liaison vers un <strong>répertoire</strong></li>
 <li>La cible peut être modifiée ou supprimée (un lien mort est visible)</li>
 </ul>
-<h3>Utilise le lien dur quand :</h3>
+<h3 id="utilisez-le-lien-dur-quand">Utilisez le lien dur quand :</h3>
 <ul>
 <li>Tu veux une <strong>copie de sécurité intégrée</strong> d'un fichier</li>
 <li>Les deux fichiers doivent <strong>toujours</strong> pointer vers le même contenu</li>
 <li>Tu travailles sur un <strong>même système de fichiers</strong></li>
-<li>Tu veux que le fichier persiste même si l'original est renommé ou supprimé (tant qu'un lien reste)</li>
+<li>Tu veux que le fichier persiste même si l'original est renommé/supprimé (tant qu'un lien reste)</li>
 </ul>
-<h3>Exemple concret : la configuration système</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ubuntu lie python3 vers python pour la compatibilité
-$ ls -la /usr/bin/python
-lrwxrwxrwx 1 root root   7 jan 15 10:00 python -&gt; python3
-
-# Python3 est le vrai exécutable
-$ ls -la /usr/bin/python3
--rwxr-xr-x 1 root root 10480 jan 15 10:00 python3</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>5. Exercices pratiques</h2>
-<h3>Exercice 1 : Créer un lien symbolique vers un script</h3>
+<h3 id="exemple-concret-la-configuration-systeme">Exemple concret : la configuration système</h3>
+<p>```bash</p>
+<h1 id="ubuntu-lie-python3-vers-python-pour-la-compatibilite">Ubuntu lie python3 vers python pour la compatibilité</h1>
+<p>$ ls -la /usr/bin/python
+lrwxrwxrwx 1 root root   7 jan 15 10:00 python -&gt; python3</p>
+<h1 id="python3-est-le-vrai-executable">Python3 est le vrai exécutable</h1>
+<p>$ ls -la /usr/bin/python3
+-rwxr-xr-x 1 root root 10480 jan 15 10:00 python3
+```</p>
+<h2 id="exercices-pratiques">Exercices pratiques</h2>
+<h3 id="exercice-1-creer-un-lien-symbolique-vers-un-script">Exercice 1 : Créer un lien symbolique vers un script</h3>
 <ol>
-<li>Crée un fichier <code>test.sh</code> dans ton dossier personnel :</li>
+<li>
+<p>Créez un fichier <code>test.sh</code> dans votre dossier personnel :
+<code>bash
+echo 'echo "Bonjour depuis le script"' &gt; ~/test.sh
+chmod +x ~/test.sh</code></p>
+</li>
+<li>
+<p>Créez un lien symbolique sur votre bureau :
+<code>bash
+ln -s ~/test.sh ~/Bureau/test_rapide.sh</code></p>
+</li>
+<li>
+<p>Exécutez le lien :
+<code>bash
+~/Bureau/test_rapide.sh</code></p>
+</li>
 </ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo 'echo &quot;Bonjour depuis le script&quot;' &gt; ~/test.sh
-chmod +x ~/test.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Crée un lien symbolique sur ton bureau :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ln -s ~/test.sh ~/Bureau/test_rapide.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Exécute le lien :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>~/Bureau/test_rapide.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>✅ Tu devrais voir "Bonjour depuis le script"</p>
-<h3>Exercice 2 : Découvrir les liens dans /etc/</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Les paramètres régionaux sont souvent des liens symboliques
-ls -la /etc/localtime
-
-# Trouver tous les symlinks dans /etc
-find /etc -type l -maxdepth 1 -ls</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Exercice 3 : Comprendre les liens durs</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un fichier
-echo &quot;Contenu important&quot; &gt; ~/important.txt
-
-# Créer un lien dur
-ln ~/important.txt ~/backup_important.txt
-
-# Vérifier l'inode commun
-ls -li ~/important.txt ~/backup_important.txt
-
-# Supprimer l'original
-rm ~/important.txt
-
-# Vérifier que la copie fonctionne encore
-cat ~/backup_important.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Exercice 4 : Identifier les liens cassés</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un lien symbolique vers un fichier
-echo &quot;test&quot; &gt; ~/fichier_test.txt
-ln -s ~/fichier_test.txt ~/lien_test
-
-# Supprimer le fichier original
-rm ~/fichier_test.txt
-
-# Vérifier que le lien est maintenant cassé
-test -e ~/lien_test &amp;&amp; echo &quot;OK&quot; || echo &quot;LIEN CASSÉ&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>6. Résumé</h2>
+<p>✅ Vous devriez voir "Bonjour depuis le script"</p>
+<h3 id="exercice-2-decouvrir-les-liens-dans-etc">Exercice 2 : Découvrir les liens dans <code>/etc/</code></h3>
+<p>```bash</p>
+<h1 id="les-parametres-regionaux-sont-souvent-des-liens-symboliques">Les paramètres régionaux sont souvent des liens symboliques</h1>
+<p>ls -la /etc/localtime</p>
+<h1 id="trouver-tous-les-symlinks-dans-etc">Trouver tous les symlinks dans /etc</h1>
+<p>find /etc -type l -maxdepth 1 -ls
+```</p>
+<h3 id="exercice-3-comprendre-les-liens-durs">Exercice 3 : Comprendre les liens durs</h3>
+<p>```bash</p>
+<h1 id="creer-un-fichier">Créer un fichier</h1>
+<p>echo "Contenu important" &gt; ~/important.txt</p>
+<h1 id="creer-un-lien-dur_1">Créer un lien dur</h1>
+<p>ln ~/important.txt ~/backup_important.txt</p>
+<h1 id="verifier-linode-commun">Vérifier l'inode commun</h1>
+<p>ls -li ~/important.txt ~/backup_important.txt</p>
+<h1 id="supprimer-loriginal">Supprimer l'original</h1>
+<p>rm ~/important.txt</p>
+<h1 id="verifier-que-la-copie-fonctionne-encore">Vérifier que la copie fonctionne encore</h1>
+<p>cat ~/backup_important.txt
+```</p>
+<h3 id="exercice-4-identifier-les-liens-casses">Exercice 4 : Identifier les liens cassés</h3>
+<p>```bash</p>
+<h1 id="creer-un-lien-symbolique-vers-un-fichier">Créer un lien symbolique vers un fichier</h1>
+<p>echo "test" &gt; ~/fichier_test.txt
+ln -s ~/fichier_test.txt ~/lien_test</p>
+<h1 id="supprimer-le-fichier-original">Supprimer le fichier original</h1>
+<p>rm ~/fichier_test.txt</p>
+<h1 id="verifier-que-le-lien-est-maintenant-casse">Vérifier que le lien est maintenant cassé</h1>
+<p>test -e ~/lien_test &amp;&amp; echo "OK" || echo "LIEN CASSÉ"
+```</p>
+<h2 id="resume">Résumé</h2>
 <table>
 <thead>
 <tr>
@@ -442,49 +252,8 @@ test -e ~/lien_test &amp;&amp; echo &quot;OK&quot; || echo &quot;LIEN CASSÉ&quo
 <li>Un lien symbolique cassé apparaît clairement ; un lien dur reste valide tant qu'un nom existe encore</li>
 </ul>
 <hr />
-<p>&larr; <a href="25-docker-compose.html">25 Docker Compose</a> &nbsp;|&nbsp; <a href="../README.md">README.md</a> &nbsp;|&nbsp; <a href="27-tmux-multiplexeur-terminal.html">27 tmux</a> &rarr;</p>
+<p><em>Retour au menu : <a href="../README.md">README.md</a></em></p>
+<nav><a href="25-docker-compose.html" class="nav-prev">← 25 Docker Compose</a><span class="nav-disabled">Fin</span></nav>
 </div>
-<nav>
-<a href="25-docker-compose.html" style="color:#00d9ff;text-decoration:none;">&larr; Docker Compose</a> | <a href="27-tmux-multiplexeur-de-terminal.html" style="color:#00d9ff;text-decoration:none;">tmux - Multiplexeur de Terminal &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
 </body>
 </html>
