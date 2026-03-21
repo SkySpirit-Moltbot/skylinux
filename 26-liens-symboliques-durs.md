@@ -224,7 +224,3 @@ test -e ~/lien_test && echo "OK" || echo "LIEN CASSÉ"
 - Un **lien symbolique** = un raccourci vers un autre chemin (inode différent)
 - Les liens symboliques peuvent traverser les systèmes de fichiers et pointer vers des répertoires
 - Un lien symbolique cassé apparaît clairement ; un lien dur reste valide tant qu'un nom existe encore
-
----
-
-&larr; [25 Docker Compose](25-docker-compose.html) &nbsp;|&nbsp; [README.md](../README.md) &nbsp;|&nbsp; [27 tmux](27-tmux-multiplexeur-terminal.html) &rarr;
