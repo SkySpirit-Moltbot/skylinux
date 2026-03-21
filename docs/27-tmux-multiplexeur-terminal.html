@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leçon 27 : tmux - Multiplexeur de Terminal - SkyLinux</title>
-        <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-        h2 { color: #00d9ff; margin: 20px 0 10px; }
-        p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-        code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-        th, td { border: 1px solid #333; padding: 8px; }
-        th { background: rgba(0,217,255,0.1); }
-        blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-        blockquote p { color: #ddd; margin: 5px 0; }
-        li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-        li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-        nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-        a { color: #00d9ff; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .nav-disabled { color: #666; }
-        pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #30363d; }
-        pre code { background: none; color: #e0e0e0; padding: 0; }
-        .exercice { background: rgba(0,217,255,0.05); border: 1px solid rgba(0,217,255,0.2); border-radius: 8px; padding: 15px; margin: 20px 0; }
-        .exercice h3 { color: #00d9ff; margin-top: 0; }
-        .exercice ol { margin: 10px 0; padding-left: 25px; }
-        .exercice code { background: rgba(0,217,255,0.1); color: #00d9ff; }
-        .back-link { display: inline-block; margin-bottom: 20px; color: #00d9ff; text-decoration: none; }
-        .back-link:hover { text-decoration: underline; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 27 : tmux - Multiplexeur de Terminal - SkyLinux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/27-tmux-multiplexeur-terminal.html">
+<meta property="og:title" content="Leçon 27 - SkyLinux">
+<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<meta name="description" content="Leçon 27 - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, tmux, terminal, multiplexer, debutant, ubuntu">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.nav-disabled { color: #666; }
+pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; border: 1px solid #30363d; }
+pre code { background: none; color: #e0e0e0; padding: 0; }
+</style>
 </head>
 <body>
-    <h1>Leçon 27 : tmux - Multiplexeur de Terminal</h1>
+<div class="container">
+<h1>Leçon 27 : tmux - Multiplexeur de Terminal</h1>
 
     <h2 id="quest-ce-quun-multiplexeur-de-terminal">Qu'est-ce qu'un multiplexeur de terminal ?</h2>
     <p>Un <strong>multiplexeur de terminal</strong> comme <strong>tmux</strong> te permet de :</p>
@@ -261,9 +262,7 @@ tmux send-keys -t $session:logs 'tail -f ~/projets/logs/app.log' Enter
 tmux attach -t $session</code></pre>
 
     <h2 id="exercices-pratiques">Exercices pratiques</h2>
-
-    <div class="exercice">
-        <h3>Exercice 1 : Premier usage de tmux</h3>
+<h3 id="Exercice 1 : Premier usage de tmux">Exercice 1 : Premier usage de tmux</h3>
         <ol>
             <li>Ouvre un terminal et lance tmux :
                 <pre><code>tmux new -s demo</code></pre>
@@ -278,10 +277,7 @@ tmux attach -t $session</code></pre>
             </li>
         </ol>
         <p>✅ Tu devrais voir le résultat de <code>ls</code> - la session a survécu !</p>
-    </div>
-
-    <div class="exercice">
-        <h3>Exercice 2 : Panneaux et fenêtres</h3>
+<h3 id="Exercice 2 : Panneaux et fenêtres">Exercice 2 : Panneaux et fenêtres</h3>
         <ol>
             <li>Crée une nouvelle session :
                 <pre><code>tmux new -s exo2</code></pre>
@@ -294,10 +290,7 @@ tmux attach -t $session</code></pre>
             <li>Bascule entre fenêtres : <code>Ctrl+b n</code> puis <code>Ctrl+b p</code></li>
             <li>Détache : <code>Ctrl+b d</code></li>
         </ol>
-    </div>
-
-    <div class="exercice">
-        <h3>Exercice 3 : Configuration tmux</h3>
+<h3 id="Exercice 3 : Configuration tmux">Exercice 3 : Configuration tmux</h3>
         <ol>
             <li>Vérifie si le fichier existe :
                 <pre><code>ls ~/.tmux.conf</code></pre>
@@ -321,10 +314,7 @@ EOF</code></pre>
             </li>
             <li>Teste : <code>Ctrl+a d</code> pour détacher</li>
         </ol>
-    </div>
-
-    <div class="exercice">
-        <h3>Exercice 4 : Script de session de travail</h3>
+<h3 id="Exercice 4 : Script de session de travail">Exercice 4 : Script de session de travail</h3>
         <p>Crée un script <code>start-work.sh</code> :</p>
         <pre><code>#!/bin/bash
 tmux new-session -d -s travail
@@ -334,9 +324,7 @@ tmux attach -t travail</code></pre>
         <p>Teste-le :</p>
         <pre><code>chmod +x start-work.sh
 ./start-work.sh</code></pre>
-    </div>
-
-    <h2 id="resume">Résumé</h2>
+<h2 id="resume">Résumé</h2>
     <table>
         <thead>
             <tr>
@@ -398,8 +386,7 @@ tmux attach -t travail</code></pre>
         <li>Personnalise avec <code>~/.tmux.conf</code></li>
     </ul>
 
-    <nav>
-<a href="26-liens-symboliques-durs.html" style="color:#00d9ff;text-decoration:none;">← 26 - Liens symboliques et durs</a> | <span style="color:#666;">Fin</span>
-</nav>
+    <nav><a href="26-liens-symboliques-durs.html" class="nav-prev">← 26 - Liens symboliques et durs</a><a href="index.html" class="nav-next">Fin</a></nav>
+</div>
 </body>
 </html>
