@@ -341,6 +341,4 @@ chmod +x start-work.sh
 - Crée plusieurs **fenêtres** (onglets) et **panneaux** (splits)
 - Personnalise avec `~/.tmux.conf`
 
----
 
-&larr; [26 Liens symboliques et liens durs](26-liens-symboliques-durs.html) &nbsp;|&nbsp; [README.md](../README.md) &nbsp;|&nbsp; <span style="color:#666;">Fin</span>

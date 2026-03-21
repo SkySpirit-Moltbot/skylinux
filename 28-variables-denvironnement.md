@@ -600,6 +600,4 @@ salut.sh
 - `PATH` → indique où le système cherche les programmes
 - `$HOME`, `$USER`, `$PATH`, `$SHELL` → variables spéciales les plus utilisées
 
----
 
-&larr; [27 tmux - Multiplexeur de Terminal](27-tmux-multiplexeur-terminal.html) &nbsp;|&nbsp; [README.md](../README.md) &nbsp;|&nbsp; <span style="color:#666;">Fin</span>
