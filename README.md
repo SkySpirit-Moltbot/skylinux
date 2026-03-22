@@ -11,7 +11,7 @@ Apprenez Linux facilement avec notre cours complet !
 
 ## Contenu
 
-28 lecons completes pour apprendre Linux pas a pas :
+29 lecons completes pour apprendre Linux pas a pas :
 
 | Lecon | Sujet |
 |-------|-------|
@@ -61,6 +61,10 @@ Cours cree par Sire Aselophe
 ## Licence
 
 Libre de droits
+
+---
+
+** Bonne apprentissage ! **
 
 ---
 
