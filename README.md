@@ -11,7 +11,7 @@ Apprenez Linux facilement avec notre cours complet !
 
 ## Contenu
 
-30 lecons completes pour apprendre Linux pas a pas :
+31 lecons completes pour apprendre Linux pas a pas :
 
 | Lecon | Sujet |
 |-------|-------|
@@ -43,6 +43,9 @@ Apprenez Linux facilement avec notre cours complet !
 | 26 | Liens symboliques et liens durs |
 | 27 | tmux - Multiplexeur de Terminal |
 | 28 | Variables d'environnement |
+| 29 | Git - Gestion de version |
+| 30 | Alias et raccourcis |
+| 31 | Gestion des paquets |
 
 ## Commencer
 

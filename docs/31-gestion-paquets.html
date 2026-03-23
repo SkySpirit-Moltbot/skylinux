@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 30 : Alias et raccourcis personnalisés - SkyLinux</title>
+<title>Leçon 31 : Gestion des paquets - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/30-alias-raccourcis.html">
-<meta property="og:title" content="Leçon 30 : Alias et raccourcis personnalisés - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/31-gestion-paquets.html">
+<meta property="og:title" content="Leçon 31 : Gestion des paquets - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 30 : Alias et raccourcis personnalisés - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Leçon 30 : Alias et raccourcis personnalisés, debutant, ubuntu">
+<meta name="description" content="Leçon 31 : Gestion des paquets - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, Leçon 31 : Gestion des paquets, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -101,405 +101,419 @@ li { line-height: 1.7; color: #bbb; margin: 5px 0; }
 </div>
 <div class="container">
 
-<h1>Leçon 30 : Alias et raccourcis personnalisés</h1>
-<p>Dans cette leçon, tu vas découvrir comment créer tes propres raccourcis de commandes grâce aux alias. Tu verras comment gagner du temps au quotidien en créant des commandes personnalisées pour tes tâches fréquentes.</p>
+<h1>Leçon 31 : Gestion des paquets</h1>
+<p>Dans cette leçon, tu vas découvrir comment installer, mettre à jour et supprimer des logiciels sur Linux. Chaque distribution a son propre système de paquets, et tu apprendras à utiliser apt (Debian/Ubuntu), dnf/yum (Fedora/RHEL), et snap/flatpak.</p>
 <hr />
-<h2>1. Qu'est-ce qu'un alias ?</h2>
-<p>Un <strong>alias</strong> est un raccourci qui remplace une commande longue ou complexe par un mot simple. C'est comme créer ta propre commande.</p>
-<p><strong>Exemples concrets :</strong></p>
+<h2>1. Qu'est-ce qu'un paquet ?</h2>
+<p>Un <strong>paquet</strong> est un fichier compressé qui contient un logiciel prêt à être installé. Il inclut :</p>
 <ul>
-<li><code>ll</code> au lieu de <code>ls -la</code> (lister avec détails)</li>
-<li><code>gs</code> au lieu de <code>git status</code></li>
-<li><code>update</code> au lieu de <code>sudo apt update && sudo apt upgrade -y</code></li>
+<li>Les fichiers du programme</li>
+<li>Des métadonnées (nom, version, dépendances)</li>
+<li>Des scripts d'installation et de désinstallation</li>
 </ul>
-<p>Les alias rendent ton terminal plus rapide et plus agréable à utiliser.</p>
+<p><strong>Types de paquets :</strong></p>
+<ul>
+<li><code>.deb</code> → Debian, Ubuntu, Linux Mint (système <strong>apt</strong>)</li>
+<li><code>.rpm</code> → Fedora, RHEL, CentOS (système <strong>dnf/yum</strong>)</li>
+</ul>
+<p><strong>Formats modernes :</strong></p>
+<ul>
+<li><strong>Snap</strong> → Ubuntu,通用的 sandbox</li>
+<li><strong>Flatpak</strong> → Linux通用的, sandbox</li>
+</ul>
 <hr />
-<h2>2. Créer un alias temporaire</h2>
-<h3>Syntaxe de base</h3>
+<h2>2. APT (Debian/Ubuntu)</h2>
+<p>APT (<em>Advanced Package Tool</em>) est le système de paquets le plus utilisé sur Linux.</p>
+<h3>Mettre à jour la liste des paquets</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>alias nom='commande'</code>
+    <code>sudo apt update</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<p>Le <code>=</code> est sans espaces, et la commande est entre guillemets simples ou doubles.</p>
-<h3>Exemples</h3>
+<p>Cette commande ne installe rien, elle met à jour la liste des paquets disponibles depuis les dépôts.</p>
+<h3>Mettre à jour le système</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code># Raccourci pour lister les fichiers
-alias ll='ls -la'
+    <code># Mettre à jour tous les paquets
+sudo apt upgrade
 
-# Raccourci pour mettre à jour le système
-alias update='sudo apt update && sudo apt upgrade -y'
+# Mettre à jour en installant aussi de nouveaux paquets si nécessaire
+sudo apt full-upgrade</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h3>Installer un paquet</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer un paquet
+sudo apt install nom_du_paquet
 
-# Raccourci pour Git status
-alias gs='git status'
+# Installer plusieurs paquets
+sudo apt install paquet1 paquet2 paquet3
 
-# Raccourci avec options
-alias grep='grep --color=auto'</code>
+# Installer sans demander confirmation
+sudo apt install -y nom_du_paquet</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<h3>Utiliser un alias</h3>
-<p>Après l'avoir créé, utilise-le comme une commande normale :</p>
+<h3>Exemple concret</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>ll
-# Équivalent à : ls -la</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Vérifier les alias actifs</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir un alias précis
-type ll
+    <code># Installer le serveur web Nginx
+sudo apt install nginx
 
-# Lister tous les alias actifs
-alias</code>
+# Installer des outils de développement
+sudo apt install build-essential git curl wget</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<hr />
-<h2>3. Alias temporaires vs permanents</h2>
-<h3>Session actuelle seulement</h3>
-<p>Les alias créés avec la commande <code>alias</code> sont <strong>temporaires</strong> : ils disparaissent quand tu fermes le terminal.</p>
+<h3>Supprimer un paquet</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code># Créé maintenant, fonctionne dans cette session
-alias ll='ls -la'
+    <code># Supprimer le paquet mais garder les fichiers de configuration
+sudo apt remove nom_du_paquet
 
-# Après fermeture du terminal → disparu</code>
+# Supprimer le paquet ET ses fichiers de configuration
+sudo apt purge nom_du_paquet
+
+# Supprimer les paquets devenus inutiles
+sudo apt autoremove</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<h3>Rendre un alias permanent</h3>
-<p>Pour qu'un alias survive à la fermeture du terminal, ajoute-le dans un fichier de configuration :</p>
-<p><strong>Pour Bash (le plus courant) :</strong></p>
+<h3>Chercher un paquet</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.bashrc</code>
+    <code># Rechercher dans les noms de paquets
+apt search nom_du_paquet
+
+# Afficher les informations d'un paquet
+apt show nom_du_paquet</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<p><strong>Pour Zsh :</strong></p>
+<h3>Lister les paquets installés</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.zshrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Ajoute tes alias à la fin du fichier :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Mes alias personnalisés
-alias ll='ls -la'
-alias gs='git status'
-alias update='sudo apt update && sudo apt upgrade -y'
-alias c='clear'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Sauvegarde puis recharge :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Recharger sans redémarrer
-source ~/.bashrc</code>
+    <code># Lister tous les paquets installés
+apt list --installed
+
+# Vérifier si un paquet est installé
+dpkg -l | grep nom_du_paquet</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
 <hr />
-<h2>4. Alias avec paramètres (fonctions)</h2>
-<p>Les alias simples ne permettent pas de paramètres. Pour ça, utilise les <strong>fonctions</strong> :</p>
-<h3>Fonction simple</h3>
+<h2>3. DNF et YUM (Fedora/RHEL)</h2>
+<h3>DNF (Dandified YUM) - Fedora, RHEL 8+</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une fonction pour chercher un fichier
-rechercher() {
-    find . -name "$1" 2>/dev/null
-}
+    <code># Mettre à jour tous les paquets
+sudo dnf update
 
-# Utilisation
-rechercher "*.txt"</code>
+# Installer un paquet
+sudo dnf install nom_du_paquet
+
+# Supprimer un paquet
+sudo dnf remove nom_du_paquet
+
+# Rechercher un paquet
+dnf search nom_du_paquet
+
+# Lister les mises à jour disponibles
+dnf check-update
+
+# Nettoyer le cache
+dnf clean all</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<h3>Fonction avec plusieurs paramètres</h3>
+<h3>YUM - Ancien (RHEL 7, CentOS 7)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une fonction pour se connecter en SSH
-connect() {
-    ssh "$1@$2"
-}
-
-# Utilisation
-connect user 192.168.1.10</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Fonction pour archivage rapide</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une archive .tar.gz
-archiver() {
-    tar -czvf "$1.tar.gz" "$1"
-}
-
-# Utilisation
-archiver mon-dossier</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Fonction pour extraire une archive</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>extraire() {
-    if [ -f "$1" ]; then
-        tar -xzvf "$1"
-    else
-        echo "Fichier non trouvé : $1"
-    fi
-}
-
-# Utilisation
-extraire archive.tar.gz</code>
+    <code>sudo yum update
+sudo yum install nom_du_paquet
+sudo yum remove nom_du_paquet</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
 <hr />
-<h2>5. Surcharger une commande existante</h2>
-<p>Tu peux créer un alias qui remplace une commande système :</p>
+<h2>4. Snap</h2>
+<p><strong>Snap</strong> est un système de paquets universel créé par Canonical. Les applications snp sont isoléées dans des sandbox.</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code># Remplacer rm par rm -i (confirmation avant suppression)
-alias rm='rm -i'
+    <code># Installer snapd (si pas déjà installé)
+sudo apt install snapd
 
-# Remplacer mv par mv -i (confirmation avant écrasement)
-alias mv='mv -i'
+# Installer une application snap
+sudo snap install nom_du_paquet
 
-# Remplacer cp par cp -i (confirmation avant écrasement)
-alias cp='cp -i'</code>
+# Lister les snaps installés
+snap list
+
+# Mettre à jour un snap
+sudo snap refresh nom_du_paquet
+
+# Mettre à jour tous les snaps
+sudo snap refresh
+
+# Supprimer un snap
+sudo snap remove nom_du_paquet</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h3>Exemples concrets</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer VS Code
+sudo snap install code --classic
+
+# Installer Spotify
+sudo snap install spotify
+
+# Installer Firefox
+sudo snap install firefox</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<hr />
+<h2>5. Flatpak</h2>
+<p><strong>Flatpak</strong> est un autre système de paquets universel, très utilisé sur Linux.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer flatpak (si pas déjà installé)
+sudo apt install flatpak
+
+# Ajouter le dépôt Flathub
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# Installer une application
+flatpak install flathub nom.de.lapplication
+
+# Lister les applications installées
+flatpak list
+
+# Mettre à jour
+flatpak update
+
+# Supprimer
+flatpak uninstall nom.de.lapplication</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h3>Exemples concrets</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer GIMP (traitement d'image)
+flatpak install flathub org.gimp.GIMP
+
+# Installer VLC
+flatpak install flathub org.videolan.VLC
+
+# Installer LibreOffice
+flatpak install flathub org.libreoffice.LibreOffice</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<hr />
+<h2>6. Comparatif des systèmes</h2>
+<table>
+<thead>
+<tr>
+<th>Opération</th>
+<th>APT (Debian/Ubuntu)</th>
+<th>DNF (Fedora)</th>
+<th>Snap</th>
+<th>Flatpak</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mise à jour liste</td>
+<td><code>apt update</code></td>
+<td><code>dnf check-update</code></td>
+<td><code>snap refresh</code></td>
+<td><code>flatpak update</code></td>
+</tr>
+<tr>
+<td>Installer</td>
+<td><code>apt install pkg</code></td>
+<td><code>dnf install pkg</code></td>
+<td><code>snap install pkg</code></td>
+<td><code>flatpak install flathub pkg</code></td>
+</tr>
+<tr>
+<td>Supprimer</td>
+<td><code>apt remove pkg</code></td>
+<td><code>dnf remove pkg</code></td>
+<td><code>snap remove pkg</code></td>
+<td><code>flatpak uninstall pkg</code></td>
+</tr>
+<tr>
+<td>Rechercher</td>
+<td><code>apt search pkg</code></td>
+<td><code>dnf search pkg</code></td>
+<td><code>snap find pkg</code></td>
+<td><code>flatpak search pkg</code></td>
+</tr>
+<tr>
+<td>Lister installés</td>
+<td><code>apt list --installed</code></td>
+<td><code>dnf list installed</code></td>
+<td><code>snap list</code></td>
+<td><code>flatpak list</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>7. Dépôts de paquets</h2>
+<p>Un <strong>dépôt</strong> (repository) est un serveur qui contient des paquets. Tu peux en ajouter pour avoir plus de logiciels.</p>
+<h3>APT : Ajouter un dépôt</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Exemple : ajouter le dépôt VS Code sur Ubuntu
+sudo apt install software-properties-common apt-transport-https wget
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+sudo apt update
+sudo apt install code</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h3>Gérer les dépôts via interface</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ubuntu/Debian : interface graphique
+sudo software-properties-gtk
+
+# Fedora : interface graphique
+sudo dnf dragora</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<hr />
+<h2>8. Paquets .deb et .rpm manuels</h2>
+<p>Parfois, tu download un fichier <code>.deb</code> ou <code>.rpm</code> directement.</p>
+<h3>Installer un .deb (Debian/Ubuntu)</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Avec dpkg (gestionnaire de base)
+sudo dpkg -i fichier.deb
+
+# Si des dépendances manquent, les installer
+sudo apt install -f
+
+# Ou avec gdebi (résout les dépendances automatiquement)
+sudo apt install gdebi
+sudo gdebi fichier.deb</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h3>Installer un .rpm (Fedora/RHEL)</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Avec rpm (gestionnaire de base)
+sudo rpm -i fichier.rpm
+
+# Ou avec dnf (meilleur, résout les dépendances)
+sudo dnf install fichier.rpm</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
 <blockquote>
-<p>⚠️ Utilise ces alias de sécurité avec précaution. Sur un serveur où tu n'as pas l'habitude, <code>rm</code> pourrait ne pas avoir <code>-i</code> et une suppression serait définitive.</p>
+<p>⚠️ Installer des paquets manuellement (hors dépôts) présente des risques : pas de mises à jour automatiques, possibles conflits de dépendances.</p>
 </blockquote>
 <hr />
-<h2>6. Alias pour l'historique</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Relancer la dernière commande
-alias r='!!'
-
-# Relancer la dernière commande sudo
-alias s='sudo !!'
-
-# Afficher l'historique
-alias h='history'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>7. Supprimer un alias</h2>
-<h3>Supprimer temporairement</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Supprimer un alias dans la session actuelle
-unalias ll
-
-# Supprimer tous les alias
-unalias -a</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Cacher une commande (forcer l'original)</h3>
-<p>Si tu as un alias qui masque une commande, utilise <code>\</code> :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Exécute la commande originale, pas l'alias
-\rm fichier.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Le backslash <code>\</code> devant ignore les alias.</p>
-<hr />
-<h2>8. Exemples pratiques complets</h2>
-<h3>Configuration ~/.bashrc</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Ajoute cette section à la fin :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># ========================
-# Mes alias personnalisés
-# ========================
-
-# Raccourcis système
-alias c='clear'
-alias h='history'
-alias ll='ls -la'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Sécurité - confirmation avant actions irréversibles
-alias rm='rm -i'
-alias mv='mv -i'
-alias cp='cp -i'
-
-# Git
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gl='git log --oneline'
-
-# Système
-alias update='sudo apt update && sudo apt upgrade -y'
-alias restart='sudo systemctl restart'
-alias status='sudo systemctl status'
-
-# Réseau
-alias ip='ip -c'
-alias ports='sudo netstat -tulpn'
-alias ping='ping -c 5'
-
-# ========================
-# Mes fonctions personnalisées
-# ========================
-
-# Créer un dossier et y entrer
-cdl() {
-    mkdir -p "$1" && cd "$1"
-}
-
-# Extraire une archive
-extraire() {
-    tar -xzvf "$1"
-}
-
-# Archivage rapide
-archiver() {
-    tar -czvf "$1.tar.gz" "$1"
-}
-
-# Afficher la taille d'un dossier
-taille() {
-    du -sh "$1" 2>/dev/null || du -sh ./*
-}</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Recharge ta configuration :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>source ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>9. Hiérarchie des fichiers de configuration Bash</h2>
+<h2>9. Hiérarchie des dossiers importants</h2>
 <table>
 <thead>
 <tr>
-<th>Fichier</th>
+<th>Dossier</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>/etc/profile</code></td>
-<td>Config globale pour tous les utilisateurs (lecture seule)</td>
+<td><code>/etc/apt/sources.list.d/</code></td>
+<td>Dépôts APT supplémentaires</td>
 </tr>
 <tr>
-<td><code>~/.bash_profile</code></td>
-<td>Config personnelle (exécuté à la connexion)</td>
+<td><code>/var/cache/apt/archives/</code></td>
+<td>Paquets .deb téléchargés</td>
 </tr>
 <tr>
-<td><code>~/.bashrc</code></td>
-<td>Config personnelle (exécuté à chaque ouverture de terminal)</td>
+<td><code>/var/lib/dpkg/</code></td>
+<td>Base de données des paquets installés</td>
 </tr>
 <tr>
-<td><code>~/.bash_logout</code></td>
-<td>Commandes exécutées à la déconnexion</td>
+<td><code>/var/cache/dnf/</code></td>
+<td>Cache DNF</td>
+</tr>
+<tr>
+<td><code>/snap/</code></td>
+<td>Applications Snap</td>
+</tr>
+<tr>
+<td><code>~/.local/share/flatpak/</code></td>
+<td>Applications Flatpak</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2>10. Bonnes pratiques</h2>
-<ul>
-<li><strong>Débute par une lettre ou un chiffre</strong>, évite les noms de commandes existantes (<code>ls</code>, <code>cd</code>, etc.)</li>
-<li><strong>Utilise des noms mnémotechniques</strong> : <code>gs</code> pour git status, <code>ll</code> pour ls -la</li>
-<li><strong>Groupe tes alias</strong> dans <code>~/.bashrc</code> avec des commentaires</li>
-<li><strong>Teste avant de rendre permanent</strong> : crée d'abord un alias temporaire</li>
-<li><strong>Sauvegarde ta config</strong> : copie ton <code>~/.bashrc</code> régulièrement</li>
-</ul>
-<hr />
-<h2>11. Résumé des commandes</h2>
+<h2>10. Résumé des commandes</h2>
 <table>
 <thead>
 <tr>
@@ -509,140 +523,162 @@ taille() {
 </thead>
 <tbody>
 <tr>
-<td><code>alias nom='cmd'</code></td>
-<td>Créer un alias temporaire</td>
+<td><code>apt update</code></td>
+<td>Mettre à jour la liste des paquets</td>
 </tr>
 <tr>
-<td><code>alias</code></td>
-<td>Lister tous les alias</td>
+<td><code>apt upgrade</code></td>
+<td>Mettre à jour tous les paquets</td>
 </tr>
 <tr>
-<td><code>unalias nom</code></td>
-<td>Supprimer un alias</td>
+<td><code>apt install pkg</code></td>
+<td>Installer un paquet</td>
 </tr>
 <tr>
-<td><code>unalias -a</code></td>
-<td>Supprimer tous les alias</td>
+<td><code>apt remove pkg</code></td>
+<td>Supprimer un paquet</td>
 </tr>
 <tr>
-<td><code>type alias_name</code></td>
-<td>Voir si c'est un alias et sa définition</td>
+<td><code>apt search pkg</code></td>
+<td>Rechercher un paquet</td>
 </tr>
 <tr>
-<td><code>\cmd</code></td>
-<td>Exécuter la commande originale (sans alias)</td>
+<td><code>apt list --installed</code></td>
+<td>Lister les paquets installés</td>
 </tr>
 <tr>
-<td><code>source ~/.bashrc</code></td>
-<td>Recharger la configuration</td>
+<td><code>dpkg -l</code></td>
+<td>Lister tous les paquets installés (détails)</td>
+</tr>
+<tr>
+<td><code>dnf install pkg</code></td>
+<td>Installer (Fedora/RHEL)</td>
+</tr>
+<tr>
+<td><code>snap install pkg</code></td>
+<td>Installer via Snap</td>
+</tr>
+<tr>
+<td><code>flatpak install flathub pkg</code></td>
+<td>Installer via Flatpak</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2>12. Exercice pratique</h2>
-<h3>Exercice : Crée ta boîte à outils</h3>
-<p><strong>Objectif</strong> : Configure ton terminal avec tes premiers alias personnalisés.</p>
-<p><strong>Étape 1 : Vérifie les alias existants</strong></p>
+<h2>11. Exercice pratique</h2>
+<h3>Exercice : Gère les paquets sur ton système</h3>
+<p><strong>Objectif</strong> : Apprendre à utiliser le système de paquets de ta distribution.</p>
+<p><strong>Étape 1 : Connais ta distribution</strong></p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>alias</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Note les alias par défaut de ton système.</p>
-<p><strong>Étape 2 : Crée un alias simple</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>alias ll='ls -la'
-ll</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 3 : Crée un alias avec couleur</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>alias ls='ls --color=auto'
-ls</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 4 : Crée une fonction personnalisée</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>maj() {
-    echo "Mise à jour du système..."
-    sudo apt update
-    sudo apt upgrade -y
-    echo "Terminé !"
-}
+    <code># Voir ta distribution
+lsb_release -a
 
-# Teste
-maj</code>
+# Ou
+cat /etc/os-release</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<p><strong>Étape 5 : Rends un alias permanent</strong></p>
+<p><strong>Étape 2 : Mets à jour ton système</strong></p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>echo "alias c='clear'" >> ~/.bashrc
-echo "alias ll='ls -la'" >> ~/.bashrc
-source ~/.bashrc</code>
+    <code># Sur Ubuntu/Debian
+sudo apt update
+sudo apt upgrade -y
+
+# Sur Fedora
+sudo dnf update -y</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<p><strong>Étape 6 : Vérifie</strong></p>
+<p><strong>Étape 3 : Recherche un paquet</strong></p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code># Ferme et rouvre le terminal, puis teste
-c
-ll</code>
+    <code># Recherche un outil (exemple : htop)
+apt search htop
+# ou
+dnf search htop</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<p><strong>Étape 7 : Supprime un alias (test)</strong></p>
+<p><strong>Étape 4 : Installe un paquet</strong></p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>unalias ll
-type ll
-# Devrait afficher "not found"</code>
+    <code># Installe htop (gestionnaire de processus en ligne de commande)
+sudo apt install htop
+# ou
+sudo dnf install htop</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<p>✅ Tu sais maintenant personnaliser ton terminal !</p>
+<p><strong>Étape 5 : Vérifie l'installation</strong></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>htop
+# (appuie sur q pour quitter)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p><strong>Étape 6 : Lis les informations du paquet</strong></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>apt show htop
+# ou
+dnf info htop</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p><strong>Étape 7 : Désinstalle et nettoie</strong></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Désinstalle htop
+sudo apt remove htop
+sudo apt autoremove
+
+# Nettoie le cache des paquets
+sudo apt clean
+
+# Sur Fedora
+sudo dnf clean all</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>✅ Tu sais maintenant gérer les logiciels sur Linux !</p>
 <hr />
-<h2>13. Aller plus loin</h2>
+<h2>12. Aller plus loin</h2>
 <ul>
-<li><strong>Alias entre machines</strong> : copie ton <code>~/.bashrc</code> sur chaque machine via Git</li>
-<li><strong>Scripts de configuration</strong> : crée un script qui installe ta config sur une nouvelle machine</li>
-<li><strong>Oh My Zsh</strong> : framework pour Zsh avec des centaines d'alias prêts à l'emploi</li>
-<li><strong>Autocomplétion</strong> : configure l'autocomplétion pour tes fonctions personnalisées</li>
+<li><strong>PPA (Personal Package Archive)</strong> : Dépôts créés par des utilisateurs sur Ubuntu</li>
+<li><strong>RPM Fusion</strong> : Dépôt additionnel pour Fedora avec des logiciels non inclus par défaut</li>
+<li><strong>AppImage</strong> : Format de paquets portables qui fonctionnent sans installation</li>
+<li><strong>Gestionnaire de paquets graphiques</strong> : Software Center (Ubuntu), GNOME Software, Discover (KDE)</li>
 </ul>
 
 </div>
 <nav>
 
-<a href="29-git-gestion-version.html" style="color:#00d9ff;text-decoration:none;">&larr; 29 - Git - Gestion de version</a> | <a href="31-gestion-paquets.html" style="color:#00d9ff;text-decoration:none;">31 - Gestion des paquets &rarr;</a>
+<a href="30-alias-raccourcis.html" style="color:#00d9ff;text-decoration:none;">&larr; 30 - Alias et raccourcis personnalises</a> | <span style="color:#666;">31</span>
+
 </nav>
 
 <script>
