@@ -170,7 +170,7 @@ echo "utilisateur@exemple.com" | sed -E 's/.*@([^.]+)\..*/\1/'
 
 ## 6. awk — Manipulation de texte avancée
 
-`awk` est extremely puissant pour traiter du texte structuré (comme des tableaux ou des logs).
+`awk` est extrêmement puissant pour traiter du texte structuré (comme des tableaux ou des logs).
 
 ### Syntaxe de base
 
@@ -317,11 +317,11 @@ fi
 
 | Besoin | Pattern | Exemple |
 |---|---|---|
-| Email simple | `[a-z]+@[a-z]+\.[a-z]{2,}` | test@exemple.com |
-| Numéro suisse | `[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}` | 079 456 96 45 |
-| Adresse IP v4 | `[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}` | 192.168.1.1 |
-| Date JJ/MM/AAAA | `[0-9]{2}/[0-9]{2}/[0-9]{4}` | 24/03/2026 |
-| URL | `https?://[a-z.]+\.[a-z]{2,}` | https://exemple.com |
+| Email simple | `[a-z]+@[a-z]+\.[a-z]{2,}` | `test@exemple.com` |
+| Numéro suisse | `[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}` | `079 456 96 45` |
+| Adresse IP v4 | `[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}` | `192.168.1.1` |
+| Date JJ/MM/AAAA | `[0-9]{2}/[0-9]{2}/[0-9]{4}` | `24/03/2026` |
+| URL | `https?://[a-z.]+\.[a-z]{2,}` | `https://exemple.com` |
 | Mot de 3 à 10 lettres | `\b[a-zA-Z]{3,10}\b` | bonjour |
 | Ligne commençant par # | `^#` | commentaires |
 | Ligne vide | `^$` | ligne vide |
@@ -352,4 +352,4 @@ fi
 - **Perl/PCRE** : Les Regex de Perl sont encore plus puissantes (supportées par `grep -P`)
 - **Langages de programmation** : Python, JavaScript, PHP supportent tous les Regex
 - **Outils en ligne** : regex101.com pour tester tes Regex visuellement
-- **sed et awk avancés** :筒 ward `sed -i` pour modification in-place, `awk` pour du parsing CSV/JSON léger
+- **sed et awk avancés** : utiliser `sed -i` pour modification in-place, `awk` pour du parsing CSV/JSON léger
