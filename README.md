@@ -46,6 +46,7 @@ Apprenez Linux facilement avec notre cours complet !
 | 29 | Git - Gestion de version |
 | 30 | Alias et raccourcis |
 | 31 | Gestion des paquets |
+| 32 | Expressions régulières (Regex) |
 
 ## Commencer
 
