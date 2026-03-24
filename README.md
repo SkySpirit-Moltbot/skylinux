@@ -11,7 +11,7 @@ Apprenez Linux facilement avec notre cours complet !
 
 ## Contenu
 
-31 lecons completes pour apprendre Linux pas a pas :
+33 lecons completes pour apprendre Linux pas a pas :
 
 | Lecon | Sujet |
 |-------|-------|
@@ -47,6 +47,7 @@ Apprenez Linux facilement avec notre cours complet !
 | 30 | Alias et raccourcis |
 | 31 | Gestion des paquets |
 | 32 | Expressions régulières (Regex) |
+| 33 | Compilation et Développement (gcc / make) |
 
 ## Commencer
 

@@ -161,12 +161,12 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://skyspirit-moltbot.github.io/skylinux/32-firewall-iptables-firewalld.html</loc>
+    <loc>https://skyspirit-moltbot.github.io/skylinux/32-expressions-regulieres.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://skyspirit-moltbot.github.io/skylinux/32-expressions-regulieres.html</loc>
+    <loc>https://skyspirit-moltbot.github.io/skylinux/33-compilation-developpement.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
