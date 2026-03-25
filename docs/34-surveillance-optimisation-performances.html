@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 34 : Surveillance et optimisation des performances - SkyLinux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/34-surveillance-optimisation-performances.html">
+<meta property="og:title" content="Leçon 34 : Surveillance et optimisation des performances - SkyLinux">
+<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<meta name="description" content="Leçon 34 : Surveillance et optimisation des performances - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, Leçon 34, surveillance, optimisation, performances, sysctl, ionice, nice, tuned, sysbench, iostat, debutant, ubuntu">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; font-size: 1.1rem; }
+h4 { color: #e0e0e0; margin: 10px 0 8px; font-size: 1rem; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+td code { background: none; padding: 0; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
+.copy-btn.copied svg { fill: #238636; }
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+blockquote { background: rgba(255,204,0,0.1); border-left: 4px solid #ffcc00; padding: 12px 16px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+blockquote p { margin: 0; color: #e0e0e0; }
+hr { border: none; border-top: 1px solid #333; margin: 25px 0; }
+ul, ol { padding-left: 25px; margin: 10px 0; }
+li { line-height: 1.7; color: #bbb; margin: 5px 0; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+
+<h1>Leçon 34 : Surveillance et optimisation des performances système</h1>
+
+<p>Dans cette leçon, tu vas apprendre à diagnostiquer les goulots d'étranglement et à optimiser les performances de ton système Linux. Nous verrons les outils de benchmark, les techniques de tuning système, et les bonnes pratiques pour garder ta machine réactive.</p>
+
+<hr />
+
+<h2>1. Installer les outils de benchmark</h2>
+
+<p>Avant de commencer, installe les paquets nécessaires :</p>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code>sudo apt update</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo apt install sysstat stress sysbench tuned -y</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<ul>
+<li><code>sysstat</code> — outils iostat, mpstat, pidstat</li>
+<li><code>stress</code> — pour simuler de la charge</li>
+<li><code>sysbench</code> — benchmark CPU, mémoire, fichiers</li>
+<li><code>tuned</code> — daemon d'optimisation automatique</li>
+</ul>
+
+<hr />
+
+<h2>2. Identifier les goulots d'étranglement</h2>
+
+<h3>Top — triage par ressource</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Afficher par utilisation mémoire (tapez M)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>top -o %MEM</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Afficher par temps CPU (tapez P)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>top -o %CPU</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Iostat — statistiques disque</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Statistiques d'utilisation disque (2 secondes, 3 fois)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>iostat -x 2 3</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Uniquement le périphérique sda, rapports étendus</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>iostat -x sda 1 5</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Mpstat — statistiques CPU</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Stats CPU par cœur, intervalle de 1 seconde</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>mpstat -P ALL 1 3</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Affichage en temps réel toutes les secondes</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>mpstat 1</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Pidstat — stats par processus</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Surveiller les 5 premiers processus par utilisation CPU</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>pidstat -p $(pgrep -d',' | tr ',' ' ') -u 1 1 | head -20</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Surveiller les E/S disque d'un processus (remplace 1234 par le PID)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>pidstat -d 1 1 -p 1234</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<hr />
+
+<h2>3. Benchmarks avec sysbench</h2>
+
+<h3>Test CPU</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Test CPU : calculer les nombres premiers pendant 10 secondes</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sysbench cpu --cpu-max-prime=20000 --time=10 run</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Test mémoire</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Test mémoire : opérations de lecture pendant 10 secondes</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sysbench memory --time=10 --memory-block-size=1M --memory-total-size=10G run</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Test fichiers (disque)</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Préparer le fichier de test (2 Go)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sysbench fileio --file-total-size=2G --file-test-mode=rndrw prepare</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Lancer le benchmark lecture/écriture aléatoire</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sysbench fileio --file-total-size=2G --file-test-mode=rndrw --time=30 run</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Nettoyer les fichiers de test</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sysbench fileio cleanup</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<hr />
+
+<h2>4. Tuning système avec sysctl</h2>
+
+<p><code>sysctl</code> permet de modifier les paramètres du noyau Linux à chaud. Ces paramètres contrôlent la mémoire, le réseau, les fichiersystems et bien plus encore.</p>
+
+<h3>Paramètres réseau</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Voir la valeur actuelle d'un paramètre</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sysctl net.ipv4.tcp_fin_timeout</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Modifier un paramètre temporairement (jusqu'au prochain reboot)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo sysctl -w net.ipv4.tcp_fin_timeout=15</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Rendre les changements permanents</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Créer un fichier de configuration personnalisé</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo nano /etc/sysctl.d/99-custom.conf</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Contenu du fichier :</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Optimisation réseau</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>net.ipv4.tcp_fin_timeout = 15</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>net.core.somaxconn = 1024</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>net.ipv4.tcp_max_syn_backlog = 2048</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Optimisation mémoire (réduire la swapiness si assez de RAM)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>vm.swappiness = 10</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>vm.dirty_ratio = 15</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Appliquer sans redémarrer</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo sysctl -p /etc/sysctl.d/99-custom.conf</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Paramètres clés à connaître</h3>
+
+<table>
+<tr><th>Paramètre</th><th>Description</th><th>Valeur typique</th></tr>
+<tr><td><code>vm.swappiness</code></td><td>Propension à utiliser la swap (0-100)</td><td>10-60</td></tr>
+<tr><td><code>vm.dirty_ratio</code></td><td>% RAM avant écriture forcée sur disque</td><td>15-40</td></tr>
+<tr><td><code>net.core.somaxconn</code></td><td>Connexions simultanées en attente</td><td>1024</td></tr>
+<tr><td><code>net.ipv4.tcp_fin_timeout</code></td><td>Durée attente fermeture connexion TCP</td><td>15-60</td></tr>
+<tr><td><code>fs.file-max</code></td><td>Nombre max de fichiers ouverts système</td><td>2097152</td></tr>
+</table>
+
+<hr />
+
+<h2>5. Ordonnanceur I/O et priorité des processus</h2>
+
+<h3>Choisir l'ordonnanceur disque</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Voir l'ordonnanceur actuel d'un disque</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>cat /sys/block/sda/queue/scheduler</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># SSD : utiliser mq-deadline ou none</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>echo mq-deadline | sudo tee /sys/block/sda/queue/scheduler</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Disque dur mécanique (HDD) : bfq pour priorité interactive</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>echo bfq | sudo tee /sys/block/sda/queue/scheduler</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Ionice — priorité d'accès disque</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Voir la classe et priorité I/O d'un processus</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>ionice -p 1234</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Lancer une commande en classe idle (plus basse priorité)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>ionice -c 3 tar -czf backup.tar.gz /home</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Lancer en classe best-effort, priorité 7 (la plus basse)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>ionice -c 2 -n 7 rsync -a /home/ /backup/</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<h3>Nice et renice — priorité CPU</h3>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Lancer une commande avec priorité réduite (19 = plus basse)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>nice -n 19 tar -czf backup.tar.gz /home</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Changer la priorité d'un processus déjà lancé (PID 1234)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo renice +10 -p 1234</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Lancer htop pour voir la nice value de chaque processus</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>htop</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<hr />
+
+<h2>6. tuned — optimisation automatique</h2>
+
+<p><code>tuned</code> est un daemon qui applique automatiquement des profils d'optimisation selon le cas d'usage de ta machine.</p>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Vérifier le statut de tuned</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo systemctl status tuned</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Lister les profils disponibles</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>tuned-adm list</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Activer le profil desktop (équilibre performances/énergie)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo tuned-adm profile desktop</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Serveur : profil throughput-performance</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo tuned-adm profile throughput-performance</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Laptop sur batterie : profil powersave</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo tuned-adm profile powersave</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Activer au démarrage</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo systemctl enable tuned</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<hr />
+
+<h2>7. Gérer la swap et la mémoire</h2>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Voir l'utilisation de la swap</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>free -h</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Voir le swappiness actuel</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>cat /proc/sys/vm/swappiness</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Réduire le swappiness (machines avec beaucoup de RAM)</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo sysctl vm.swappiness=10</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Vider le cache (drop caches) — nécessite sudo</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo sync && echo 3 | sudo tee /proc/sys/vm/drop_caches</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<hr />
+
+<h2>8. Optimisation des fichiersystems</h2>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code># Voir les options de montage d'une partition</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>mount | grep ' / '</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Ajouter noatime dans /etc/fstab pour réduire les écritures disque</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Modifier /etc/fstab — exemple pour la partition racine :</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Remplacer :</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># UUID=xxxx  /  ext4  defaults  0  1</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Par :</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># UUID=xxxx  /  ext4  defaults,noatime  0  1</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Vérifier la fragmentation d'un filesystem ext4</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>sudo e4defrag /dev/sda1</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<hr />
+
+<h2>9. Script de diagnostic rapide</h2>
+
+<div class="code-block">
+<progress></progress>
+<div class="code-line" onclick="copyCode(this)"><code>#!/bin/bash</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code># Script de diagnostic performances</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>echo "=== TOP 10 processus par CPU ==="</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>ps aux --sort=-%cpu | head -11</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>echo "=== TOP 10 processus par mémoire ==="</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>ps aux --sort=-%mem | head -11</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>echo "=== Utilisation mémoire et swap ==="</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>free -h</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>echo "=== Espace disque ==="</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>df -h</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code></code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>echo "=== Load average ==="</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+<div class="code-line" onclick="copyCode(this)"><code>uptime</code><span class="copy-btn"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></span></div>
+</div>
+
+<hr />
+
+<h2>10. Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>iostat -x 1 3</code></td><td>Statistiques disque (goulot d'étranglement I/O)</td></tr>
+<tr><td><code>mpstat -P ALL 1</code></td><td>Utilisation CPU par cœur</td></tr>
+<tr><td><code>pidstat -d 1</code></td><td>E/S disque par processus</td></tr>
+<tr><td><code>sysbench cpu run</code></td><td>Benchmark CPU</td></tr>
+<tr><td><code>sysctl -w param=valeur</code></td><td>Modifier un paramètre noyau à chaud</td></tr>
+<tr><td><code>/etc/sysctl.d/*.conf</code></td><td>Paramètres permanents du noyau</td></tr>
+<tr><td><code>ionice -c 3 cmd</code></td><td>Lancer une commande en basse priorité I/O</td></tr>
+<tr><td><code>nice -n 19 cmd</code></td><td>Lancer en basse priorité CPU</td></tr>
+<tr><td><code>tuned-adm profile</code></td><td>Optimisation automatique par profil</td></tr>
+<tr><td><code>sysctl vm.swappiness</code></td><td>Vérifier/régler l'utilisation de la swap</td></tr>
+</table>
+
+<hr />
+
+<nav>
+<a href="33-compilation-developpement.html">← Leçon 33 : Compilation et Développement</a>
+<a href="index.html">← Sommaire</a>
+</nav>
+
+</div>
+<script>
+function copyCode(el) {
+  const code = el.querySelector('code');
+  if (!code) return;
+  const text = code.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.querySelector('.copy-btn');
+    if (btn) {
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 1500);
+    }
+  });
+}
+document.querySelectorAll('.code-block').forEach(block => {
+  const progress = block.querySelector('progress');
+  if (progress) {
+    setTimeout(() => progress.classList.add('loaded'), 100);
+  }
+});
+</script>
+</body>
+</html>
