@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leçon 38 : Débogage avec Strace et Ltrace - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/38-debogage-strace-ltrace.html">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/38-d-bogage-avec-strace-et-ltrace.html">
 <meta property="og:title" content="Leçon 38 : Débogage avec Strace et Ltrace - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
 <meta name="description" content="Leçon 38 : Débogage avec Strace et Ltrace - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Leçon 38, strace, ltrace, debogage, debutant, ubuntu">
+<meta name="keywords" content="linux, cours, leon 38  dbogage avec strace et ltrace, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,306 +18,413 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: rgba(0,217,255,0.05); border: 1px solid rgba(0,217,255,0.2); border-radius: 8px; padding: 15px; overflow-x: auto; margin: 15px 0; position: relative; }
-pre code { background: none; padding: 0; font-size: 0.9rem; color: #e0e0e0; }
-.copy-btn { position: absolute; top: 8px; right: 8px; background: rgba(0,217,255,0.2); border: none; color: #00d9ff; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
-.copy-btn:hover { background: rgba(0,217,255,0.4); }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(0,217,255,0.2); }
-th { color: #a855f7; font-weight: 600; }
-tr:hover { background: rgba(0,217,255,0.05); }
-.nav { display: flex; justify-content: space-between; margin: 40px 0; padding-top: 20px; border-top: 1px solid rgba(0,217,255,0.2); }
-.nav a { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: background 0.2s; }
-.nav a:hover { background: rgba(0,217,255,0.3); }
-.nav a.disabled { opacity: 0.3; pointer-events: none; }
-.warning { background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); border-radius: 8px; padding: 12px 15px; margin: 15px 0; color: #ffa500; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
+.copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
 <div class="container">
 <h1>Leçon 38 : Débogage avec Strace et Ltrace</h1>
-
 <p>Un programme ne fonctionne pas ? Il plante sans raison apparente ? <strong>strace</strong> et <strong>ltrace</strong> sont tes meilleurs alliés pour comprendre ce qu'un programme fait vraiment — en regardant les appels système et les appels aux bibliothèques partagées.</p>
-
 <h2>1. Qu'est-ce que strace ?</h2>
-
-<p><strong>strace</strong> intercepte et enregistre les <strong>appels système</strong> (syscalls) qu'un programme effectue vers le noyau Linux. Chaque fois qu'un programme ouvre un fichier, lit du réseau, alloue de la mémoire ou crée un processus, c'est un appel système.</p>
-
-<p>En gros : strace te montre la conversation entre le programme et le noyau.</p>
-
-<pre><code># Installer strace
-sudo apt install strace
-
-# Vérifier qu'il fonctionne
-strace -V
-</code></pre>
-
+<p><strong>strace</strong> intercepte et enregistre les <strong>appels système</strong> (syscalls) qu'un programme effectue vers le noyau Linux. Chaque fois qu'un programme ouvre un fichier, lit du réseau, alloue de la mémoire ou crée un processus, c'est un appel système.
+En gros : strace te montre la conversation entre le programme et le noyau.
+sudo apt install strace</p>
+<h1>Vérifier qu'il fonctionne</h1>
+<p>strace -V</p>
 <h2>2. Utiliser strace sur un programme</h2>
-
 <h3>Tracer un programme existant</h3>
-
-<pre><code># Lancer et tracer ls -l
-strace ls -l /tmp
-
-# Lancer et tracer un script
-strace ./mon_script.sh
-</code></pre>
-
-<p>Tu verras une longue liste d'appels comme :</p>
-
-<pre><code>execve("/bin/ls", ["ls", "-l", "/tmp"], 0x7ffd...) = 0
+<p>strace ls -l /tmp</p>
+<h1>Lancer et tracer un script</h1>
+<p>strace ./mon_script.sh
+Tu verras une longue liste d'appels comme :
 brk(NULL)                               = 0x55a3c000
 access("/etc/ld.so.preload", R_OK)      = -1 ENOENT
 open("/etc/ld.so.cache", O_RDONLY)      = 3
 fstat(3, {st_mode=S_IFREG|0644, st_size=...) = 0
 mmap(NULL, ..., PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f...
-open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY) = 3
-</code></pre>
-
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY) = 3</p>
 <h3>Lire les colonnes d'un appel système</h3>
-
-<p>Chaque ligne strace suit ce format :</p>
-
-<pre><code>openat(AT_FDCWD, "/etc/passwd", O_RDONLY) = 3
- ^nom de l'appel  ^ses arguments           ^valeur de retour (fd=3)
-</code></pre>
-
-<ul>
-<li><strong>Valeur de retour positive</strong> : l'appel a réussi (ex : descripteur de fichier 3)</li>
-<li><strong>Valeur = -1</strong> : l'appel a échoué, suivi du code d'erreur (ex : <code>ENOENT</code> = fichier non trouvé, <code>EACCES</code> = permission refusée)</li>
-</ul>
-
+<p>Chaque ligne strace suit ce format :
+^nom de l'appel  ^ses arguments           ^valeur de retour (fd=3)
+- <strong>Valeur de retour positive</strong> : l'appel a réussi (ex : descripteur de fichier 3)
+- <strong>Valeur = -1</strong> : l'appel a échoué, suivi du code d'erreur (ex : <code>ENOENT</code> = fichier non trouvé, <code>EACCES</code> = permission refusée)</p>
 <h2>3. Options utiles de strace</h2>
-
 <h3>Suivre les appels à un nom précis</h3>
-
-<pre><code># Ne montrer que les appels open/openat
-strace -e openat ls /tmp
-
-# Plusieurs appels système à surveiller
-strace -e trace=open,read,write cat /etc/hostname
-</code></pre>
-
+<p>strace -e openat ls /tmp</p>
+<h1>Plusieurs appels système à surveiller</h1>
+<p>strace -e trace=open,read,write cat /etc/hostname</p>
 <h3>Comptage des appels (sans détail)</h3>
-
-<pre><code># Résumé : combien de fois chaque syscall a été appelé
-strace -c ls /tmp
-
-# Résultat :
-# % time     seconds  usecs/call     calls    errors syscall
-# ------ ----------- ----------- --------- --------- -------
-#  35.00    0.000210          12        17           mmap
-#  20.00    0.000120           8        15           openat
-#  15.00    0.000090           6        15           fstat
-#   ...
-# 100.00    0.000600          11        52           total
-</code></pre>
-
+<p>strace -c ls /tmp</p>
+<h1>Résultat :</h1>
+<h1>% time     seconds  usecs/call     calls    errors syscall</h1>
+<h1>------ ----------- ----------- --------- --------- -------</h1>
+<h1>35.00    0.000210          12        17           mmap</h1>
+<h1>20.00    0.000120           8        15           openat</h1>
+<h1>15.00    0.000090           6        15           fstat</h1>
+<h1>...</h1>
+<h1>100.00    0.000600          11        52           total</h1>
 <h3>Filtrer par résultat (erreurs)</h3>
-
-<pre><code># Ne montrer que les appels qui échouent
-strace -e trace=open -P /root ls /tmp
-
-# Ou capturer dans un fichier (sans polluer le terminal)
-strace -o /tmp/trace.txt ls /tmp
-
-# Lire le fichier de trace
-less /tmp/trace.txt
-</code></pre>
-
+<p>strace -e trace=open -P /root ls /tmp</p>
+<h1>Ou capturer dans un fichier (sans polluer le terminal)</h1>
+<p>strace -o /tmp/trace.txt ls /tmp</p>
+<h1>Lire le fichier de trace</h1>
+<p>less /tmp/trace.txt</p>
 <h3>Attacher strace à un processus existant (PID)</h3>
-
-<pre><code># Trouver le PID du programme
-ps aux | grep firefox
-
-# Attacher strace à un processus en cours
-sudo strace -p 1234
-
-# Suivre aussi les processus enfants (fork)
-sudo strace -fp 1234
-</code></pre>
-
+<p>ps aux | grep firefox</p>
+<h1>Attacher strace à un processus en cours</h1>
+<p>sudo strace -p 1234</p>
+<h1>Suivre aussi les processus enfants (fork)</h1>
+<p>sudo strace -fp 1234</p>
 <h3>Timestamps pour voir la chronologie</h3>
-
-<pre><code># Temps relatif depuis le début
-strace -t ls /tmp
-
-# Temps absolu
-strace -tt ls /tmp
-
-# Durée de chaque appel
-strace -r ls /tmp
-</code></pre>
-
+<p>strace -t ls /tmp</p>
+<h1>Temps absolu</h1>
+<p>strace -tt ls /tmp</p>
+<h1>Durée de chaque appel</h1>
+<p>strace -r ls /tmp</p>
 <h2>4. Qu'est-ce que ltrace ?</h2>
-
-<p><strong>ltrace</strong> intercepte les <strong>appels aux bibliothèques partagées</strong> (librairies .so). Là où strace montre les appels au noyau, ltrace montre les appels aux fonctions des bibliothèques (libc, pthread, etc.).</p>
-
-<pre><code># Installer ltrace
-sudo apt install ltrace
-
-# Lancer et tracer les appels bibliothèques
-ltrace ls /tmp
-</code></pre>
-
-<p>Exemple de sortie :</p>
-
-<pre><code>__libc_start_main(main=0x55..., 1, 0x7...) = 0x55...
+<p><strong>ltrace</strong> intercepte les <strong>appels aux bibliothèques partagées</strong> (librairies .so). Là où strace montre les appels au noyau, ltrace montre les appels aux fonctions des bibliothèques (libc, pthread, etc.).
+sudo apt install ltrace</p>
+<h1>Lancer et tracer les appels bibliothèques</h1>
+<p>ltrace ls /tmp
+Exemple de sortie :
 malloc(32)                                                    = 0x55a...
 strcmp("HOME", "HOME")                                        = 0
 getenv("HOME")                                                = "/home/david"
 strlen("/home/david")                                         = 10
-strcpy(0x55..., "/home/david")                                = 0x55...
-</code></pre>
-
+strcpy(0x55..., "/home/david")                                = 0x55...</p>
 <h3>Options utiles de ltrace</h3>
-
-<pre><code># Compter les appels (résumé)
-ltrace -c ls /tmp
-
-# Suivre un nom de fonction précis
-ltrace -e malloc,free ls /tmp
-
-# Attacher à un processus existant
-sudo ltrace -p 1234
-
-# Afficher les paramètres des fonctions
-ltrace -i ls /tmp
-</code></pre>
-
+<p>ltrace -c ls /tmp</p>
+<h1>Suivre un nom de fonction précis</h1>
+<p>ltrace -e malloc,free ls /tmp</p>
+<h1>Attacher à un processus existant</h1>
+<p>sudo ltrace -p 1234</p>
+<h1>Afficher les paramètres des fonctions</h1>
+<p>ltrace -i ls /tmp</p>
 <h2>5. Cas pratiques de débogage</h2>
-
 <h3>Cas 1 : Un programme dit "Fichier non trouvé"</h3>
-
-<pre><code># Lancer le programme avec strace et chercher ENOENT
-strace -e openat ./mon_programme 2>&1 | grep ENOENT
-
-# Ou chercher "No such file"
-strace -e openat ./mon_programme 2>&1 | grep -i "no such"
-</code></pre>
-
-<p>Tu verras exactement quel fichier le programme essaie d'ouvrir.</p>
-
+<p>strace -e openat ./mon_programme 2&gt;&amp;1 | grep ENOENT</p>
+<h1>Ou chercher "No such file"</h1>
+<p>strace -e openat ./mon_programme 2&gt;&amp;1 | grep -i "no such"
+Tu verras exactement quel fichier le programme essaie d'ouvrir.</p>
 <h3>Cas 2 : Un programme plante au démarrage</h3>
-
-<pre><code># Tracer les erreurs
-strace -e trace=open,execve ./programme_fantome 2>&1 | grep -E "ENOENT|EACCES|ERR"
-
-# Déboguer avec les signaux ( voir comment le programme se termine)
-strace -e signal=none -e trace=none -f ./programme_fantome
-</code></pre>
-
+<p>strace -e trace=open,execve ./programme_fantome 2&gt;&amp;1 | grep -E "ENOENT|EACCES|ERR"</p>
+<h1>Déboguer avec les signaux ( voir comment le programme se termine)</h1>
+<p>strace -e signal=none -e trace=none -f ./programme_fantome</p>
 <h3>Cas 3 : Un programme est lent au démarrage</h3>
-
-<pre><code># Utiliser le résumé pour voir quels appels prennent du temps
-strace -c -e trace=open,read,write,execve ./programme_lent
-
-# Vérifier si des fichiers sont ouverts inutilement
-strace -e openat ./programme_lent 2>&1 | head -30
-</code></pre>
-
+<p>strace -c -e trace=open,read,write,execve ./programme_lent</p>
+<h1>Vérifier si des fichiers sont ouverts inutilement</h1>
+<p>strace -e openat ./programme_lent 2&gt;&amp;1 | head -30</p>
 <h3>Cas 4 : Comprendre ce qu'un programme réseau fait</h3>
-
-<pre><code># Surveiller les appels réseau
-strace -e trace=connect,socket,bind ./mon_service
-
-# Tracer aussi send/recv
-strace -e trace=network ./script_reseau
-</code></pre>
-
+<p>strace -e trace=connect,socket,bind ./mon_service</p>
+<h1>Tracer aussi send/recv</h1>
+<p>strace -e trace=network ./script_reseau</p>
 <h3>Cas 5 : Déboguer un script shell qui échoue</h3>
-
-<pre><code># Tracer le script avec -f (suivre les forks)
-strace -f -o /tmp/script_trace.log ./script.sh
-
-# Lire le fichier de trace
-grep -E "ENOENT|EACCES" /tmp/script_trace.log
-</code></pre>
-
+<p>strace -f -o /tmp/script_trace.log ./script.sh</p>
+<h1>Lire le fichier de trace</h1>
+<p>grep -E "ENOENT|EACCES" /tmp/script_trace.log</p>
 <h2>6. strace vs ltrace — Quand utiliser quoi ?</h2>
-
 <table>
-<tr><th>Outil</th><th>Ce qu'il trace</th><th>Cas d'usage</th></tr>
-<tr><td><code>strace</code></td><td>Appels système (noyau)</td><td>Fichiers, réseau, processus, mémoire</td></tr>
-<tr><td><code>ltrace</code></td><td>Appels aux bibliothèques partagées</td><td>Fonctions malloc/free, printf, libc</td></tr>
-<tr><td><code>strace -c</code></td><td>Résumé statistique</td><td>Trouver les goulots d'étranglement</td></tr>
-<tr><td><code>strace -p</code></td><td>Processus existant (PID)</td><td>Déboguer un programme déjà lancé</td></tr>
+<thead>
+<tr>
+<th>Outil</th>
+<th>Ce qu'il trace</th>
+<th>Cas d'usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ltrace</code></td>
+<td>Appels aux bibliothèques partagées</td>
+<td>Fonctions malloc/free, printf, libc</td>
+</tr>
+<tr>
+<td><code>strace -c</code></td>
+<td>Résumé statistique</td>
+<td>Trouver les goulots d'étranglement</td>
+</tr>
+<tr>
+<td><code>strace -p</code></td>
+<td>Processus existant (PID)</td>
+<td>Déboguer un programme déjà lancé</td>
+</tr>
+<tr>
+<td>## 7. Combiner strace et ltrace</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>(strace -f -e trace=execve ./programme 2&gt;&amp;1)</td>
+<td>grep ENOENT</td>
+<td></td>
+</tr>
+<tr>
+<td>(ltrace -f ./programme 2&gt;&amp;1)</td>
+<td>grep NULL</td>
+<td></td>
+</tr>
+<tr>
+<td># Enregistrer les deux dans des fichiers séparés</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>strace -o /tmp/strace.log ./programme &amp;</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ltrace -o /tmp/ltrace.log ./programme</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>&gt; <strong>Warning</strong> : ⚠️ <strong>Performance</strong> : strace ralentit considérablement le programme tracé (surtout avec <code>-f</code>). Utilise-le sur des programmes qui ne sont pas en production critique, ou en lecture seule.</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>## Exercice pratique</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Objectif :</strong> Utilise strace et ltrace pour comprendre le comportement d'un programme simple.</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- Installe les outils : <code>sudo apt install strace ltrace</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- <code>strace -e openat ls /var/log 2&gt;&amp;1 | head -20</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- Observe les fichiers ouverts par <code>ls</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- Utilise le mode résumé : <code>strace -c ls /tmp</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- Trace avec ltrace : <code>ltrace -c ls /tmp 2&gt;&amp;amp;1 | head -20</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>cat /etc/hostname</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>mkdir /tmp/test_debug</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>echo "OK" &gt; /tmp/test_debug/fichier.txt</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- Trace-le avec strace : <code>strace -f -o /tmp/script_trace.log ./test.sh</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- Cherche les erreurs : <code>grep -E "ENOENT|EACCES" /tmp/script_trace.log</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>- Utilise <code>ltrace</code> sur le script : <code>ltrace -f ./test.sh 2&gt;&amp;amp;1 | grep getenv</code></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>## Résumé</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Commande</td>
+<td>Rôle</td>
+<td></td>
+</tr>
+<tr>
+<td>---</td>
+<td>---</td>
+<td></td>
+</tr>
+<tr>
+<td><code>strace -e openat &amp;lt;commande&amp;gt;</code></td>
+<td>Ne tracer qu'un appel précis</td>
+<td></td>
+</tr>
+<tr>
+<td><code>strace -c &amp;lt;commande&amp;gt;</code></td>
+<td>Résumé statistique des appels</td>
+<td></td>
+</tr>
+<tr>
+<td><code>strace -p &amp;lt;PID&amp;gt;</code></td>
+<td>Attacher à un processus existant</td>
+<td></td>
+</tr>
+<tr>
+<td><code>strace -o fichier.log &amp;lt;commande&amp;gt;</code></td>
+<td>Sauvegarder la trace dans un fichier</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ltrace &amp;lt;commande&amp;gt;</code></td>
+<td>Tracer les appels aux bibliothèques</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ltrace -c &amp;lt;commande&amp;gt;</code></td>
+<td>Résumé statistique des appels bibliothèques</td>
+<td></td>
+</tr>
+<tr>
+<td><code>strace -f &amp;lt;commande&amp;gt;</code></td>
+<td>Suivre aussi les processus enfants (fork)</td>
+<td></td>
+</tr>
+<tr>
+<td>strace et ltrace sont des outils puissants pour comprendre ce qui se passe vraiment dans un programme. En cas de doute, trace tout et cherche les erreurs — elles ne mentent jamais.</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
 </table>
-
-<h2>7. Combiner strace et ltrace</h2>
-
-<pre><code># Utiliser les deux à la fois
-(strace -f -e trace=execve ./programme 2>&1) | grep ENOENT
-(ltrace -f ./programme 2>&1) | grep NULL
-
-# Enregistrer les deux dans des fichiers séparés
-strace -o /tmp/strace.log ./programme &
-ltrace -o /tmp/ltrace.log ./programme
-</code></pre>
-
-<div class="warning">⚠️ <strong>Performance</strong> : strace ralentit considérablement le programme tracé (surtout avec <code>-f</code>). Utilise-le sur des programmes qui ne sont pas en production critique, ou en lecture seule.</div>
-
-<h2>Exercice pratique</h2>
-
-<p><strong>Objectif :</strong> Utilise strace et ltrace pour comprendre le comportement d'un programme simple.</p>
-
-<ol>
-<li>Installe les outils : <code>sudo apt install strace ltrace</code></li>
-<li>Trace la commande <code>ls /var/log</code> avec strace :
-<ul>
-<li><code>strace -e openat ls /var/log 2>&1 | head -20</code></li>
-<li>Observe les fichiers ouverts par <code>ls</code></li>
-</ul>
-</li>
-<li>Utilise le mode résumé : <code>strace -c ls /tmp</code></li>
-<li>Trace avec ltrace : <code>ltrace -c ls /tmp 2>&amp;1 | head -20</code></li>
-<li>Écris un petit script <code>test.sh</code> :
-<pre><code>#!/bin/bash
-cat /etc/hostname
-mkdir /tmp/test_debug
-echo "OK" &gt; /tmp/test_debug/fichier.txt
-</code></pre>
-</li>
-<li>Trace-le avec strace : <code>strace -f -o /tmp/script_trace.log ./test.sh</code></li>
-<li>Cherche les erreurs : <code>grep -E "ENOENT|EACCES" /tmp/script_trace.log</code></li>
-<li>Utilise <code>ltrace</code> sur le script : <code>ltrace -f ./test.sh 2>&amp;1 | grep getenv</code></li>
-</ol>
-
-<h2>Résumé</h2>
-
-<table>
-<tr><th>Commande</th><th>Rôle</th></tr>
-<tr><td><code>strace &lt;commande&gt;</code></td><td>Tracer les appels système d'un programme</td></tr>
-<tr><td><code>strace -e openat &lt;commande&gt;</code></td><td>Ne tracer qu'un appel précis</td></tr>
-<tr><td><code>strace -c &lt;commande&gt;</code></td><td>Résumé statistique des appels</td></tr>
-<tr><td><code>strace -p &lt;PID&gt;</code></td><td>Attacher à un processus existant</td></tr>
-<tr><td><code>strace -o fichier.log &lt;commande&gt;</code></td><td>Sauvegarder la trace dans un fichier</td></tr>
-<tr><td><code>ltrace &lt;commande&gt;</code></td><td>Tracer les appels aux bibliothèques</td></tr>
-<tr><td><code>ltrace -c &lt;commande&gt;</code></td><td>Résumé statistique des appels bibliothèques</td></tr>
-<tr><td><code>strace -f &lt;commande&gt;</code></td><td>Suivre aussi les processus enfants (fork)</td></tr>
-</table>
-
-<p>strace et ltrace sont des outils puissants pour comprendre ce qui se passe vraiment dans un programme. En cas de doute, trace tout et cherche les erreurs — elles ne mentent jamais.</p>
-
-<div class="nav">
-<a href="37-ufw-pare-feu.html">← Leçon 37</a>
-<a href="#" class="disabled">Leçon 39 (à venir)</a>
 </div>
+<nav>
+<a href="37-ufw-pare-feu.html" style="color:#00d9ff;text-decoration:none;">&larr; UFW (Pare-feu)</a> | <span style="color:#666;">Fin</span>
+</nav>
+
 <script>
-document.querySelectorAll('pre').forEach(pre => {
-  const btn = document.createElement('button');
-  btn.className = 'copy-btn';
-  btn.textContent = 'Copier';
-  btn.onclick = () => {
-    const code = pre.querySelector('code');
-    const text = code ? code.innerText : pre.innerText;
-    navigator.clipboard.writeText(text);
-    btn.textContent = 'Copié !';
-    setTimeout(() => btn.textContent = 'Copier', 2000);
-  };
-  pre.style.position = 'relative';
-  pre.appendChild(btn);
-});
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+  if (!code || !btn) return;
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
 </script>
 </body>
 </html>
