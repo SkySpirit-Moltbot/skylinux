@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestion Fichiers - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 7 : Gestion des fichiers et dossiers - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/07-gestion-fichiers.html">
-<meta property="og:title" content="Gestion Fichiers - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/07-gestion-des-fichiers-et-dossiers.html">
+<meta property="og:title" content="Leçon 7 : Gestion des fichiers et dossiers - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Gestion Fichiers - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Gestion Fichiers, debutant, ubuntu">
+<meta name="description" content="Leçon 7 : Gestion des fichiers et dossiers - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 7  gestion des fichiers et dossiers, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,14 +84,22 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
 <h1>Leçon 7 : Gestion des fichiers et dossiers</h1>
@@ -143,14 +156,12 @@ ls -l             # Liste détaillée
 ls -a             # Inclure fichiers cachés
 ls -la            # Tout lister
 ls -lh            # Tailles lisibles (Ko, Mo)
-ls -R             # Récursif (sous-dossiers)
-</code>
+ls -R             # Récursif (sous-dossiers)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>2. Créer des fichiers et dossiers</h2>
 <h3>Créer un dossier</h3>
@@ -159,28 +170,24 @@ ls -R             # Récursif (sous-dossiers)
   <div class="code-line" onclick="copyCode(this)">
     <code>mkdir mondossier                    # Un dossier
 mkdir -p dossier1/dossier2/dossier3  # Création récursive (avec parents)
-mkdir -p ~/backup/{documents,images,config}  # Plusieurs dossiers
-</code>
+mkdir -p ~/backup/{documents,images,config}  # Plusieurs dossiers</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Créer un fichier vide</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>touch fichier.txt        # Créer un fichier vide
 touch file1.txt file2.txt  # Plusieurs fichiers
-touch -d &quot;2024-01-01&quot; fichier.txt  # Avec date spécifique
-</code>
+touch -d &quot;2024-01-01&quot; fichier.txt  # Avec date spécifique</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Créer un fichier avec contenu</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -188,41 +195,36 @@ touch -d &quot;2024-01-01&quot; fichier.txt  # Avec date spécifique
     <code>echo &quot;Bonjour&quot; &gt; bonjour.txt       # Écrase le fichier
 echo &quot;Ligne 1&quot; &gt;&gt; bonjour.txt       # Ajoute à la fin
 cat &gt; fichier.txt                    # Saisie multiligne (Ctrl+D pour quitter)
-printf &quot;Texte %s\n&quot; &quot;test&quot;          # Formaté
-</code>
+printf &quot;Texte %s
+&quot; &quot;test&quot;          # Formaté</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Créer depuis un autre fichier</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>cp source.txt destination.txt       # Copier
-mv ancien.txt nouveau.txt            # Déplacer (crée si n'existe pas)
-</code>
+mv ancien.txt nouveau.txt            # Déplacer (crée si n'existe pas)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>3. Copier des fichiers et dossiers</h2>
 <h3>Syntaxe de base</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>cp [options] source destination
-</code>
+    <code>cp [options] source destination</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Options essentielles</h3>
 <table>
 <thead>
@@ -272,28 +274,24 @@ cp -r mondossier copie_mondossier   # Copier dossier récursif
 cp -p fichier.txt backup/            # Préserver attributs
 cp -i *.txt dossier/                # Confirmation pour chaque fichier
 cp ../dossier/* .                   # Copier tous les fichiers du parent
-cp fichier{,.bak}                   # Raccourci: fichier et fichier.bak
-</code>
+cp fichier{,.bak}                   # Raccourci: fichier et fichier.bak</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>4. Déplacer et renommer</h2>
 <h3>La commande <code>mv</code></h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>mv [options] source destination
-</code>
+    <code>mv [options] source destination</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Options</h3>
 <table>
 <thead>
@@ -333,14 +331,12 @@ cp fichier{,.bak}                   # Raccourci: fichier et fichier.bak
 mv ancien_nom.txt nouveau_nom.txt    # Renommer
 mv fichier1 fichier2 dossier/       # Plusieurs fichiers
 mv *.txt ~/Documents/                # Tous les .txt vers Documents
-mv dossier/ ..                       # Monter d'un niveau
-</code>
+mv dossier/ ..                       # Monter d'un niveau</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. Supprimer</h2>
 <h3>Commandes de suppression</h3>
@@ -349,14 +345,12 @@ mv dossier/ ..                       # Monter d'un niveau
   <div class="code-line" onclick="copyCode(this)">
     <code>rm [options] fichier          # Supprimer fichier
 rm -r dossier/               # Supprimer récursif (dossier + contenu)
-rmdir dossier               # Supprimer dossier vide uniquement
-</code>
+rmdir dossier               # Supprimer dossier vide uniquement</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Options dangereuses à connaître</h3>
 <table>
 <thead>
@@ -391,14 +385,12 @@ rmdir dossier               # Supprimer dossier vide uniquement
     <code>rm -rf /          # SUPPRIMER TOUT LE DISQUE - DANGER!
 rm -rf *          # Supprimer TOUT dans le dossier courant
 rm -rf .*         # Supprimer fichiers cachés aussi
-rm -rf ~/         # Supprimer son propre home - DANGER!
-</code>
+rm -rf ~/         # Supprimer son propre home - DANGER!</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exemples sûrs</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -407,14 +399,12 @@ rm -rf ~/         # Supprimer son propre home - DANGER!
 rm -r mondossier           # Supprimer dossier + contenu
 rm -ri *.txt               # Confirmer pour chaque .txt
 rm -v fichier.txt          # Afficher ce qui est supprimé
-rmdir dossier_vide         # Supprime seulement si vide
-</code>
+rmdir dossier_vide         # Supprime seulement si vide</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. Commandes avancées</h2>
 <h3>Lister avec détails</h3>
@@ -427,14 +417,12 @@ ls -lh    # Tailles humaines (1K, 1M)
 ls -lt    # Tri par date modification
 ls -lS    # Tri par taille
 ls -1     # Un fichier par ligne
-ls -d */  # Lister seulement les répertoires
-</code>
+ls -d */  # Lister seulement les répertoires</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Permissions détaillées (ls -l)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -447,14 +435,12 @@ ls -d */  # Lister seulement les répertoires
 | |  |   |  |   +-- Propriétaire
 | |  |   |  +-- Date de modification
 | |  +----+-- Permissions (rwx pour owner, group, others)
-+-- Type de fichier (- = fichier, d = dossier, l = lien)
-</code>
++-- Type de fichier (- = fichier, d = dossier, l = lien)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Commandes utiles supplémentaires</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -463,14 +449,12 @@ ls -d */  # Lister seulement les répertoires
 stat fichier            # Informations détaillées (dates, permissions)
 rename 's/old/new/' *   # Renommer en masse (regex)
 ln -s target lien       # Créer un lien symbolique
-ls -li                  # Afficher numéro inode
-</code>
+ls -li                  # Afficher numéro inode</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>7. Caractères spéciaux (Wildcards)</h2>
 <table>
@@ -518,14 +502,12 @@ ls rapport-202*.pdf       # rapport-2020.pdf, rapport-2021.pdf
 ls fichier?.txt          # fichier1.txt, fichier2.txt
 ls [*]                   # Commençant par [
 rm *~                    # Supprimer tous les fichiers de sauvegarde (~)
-cp {file1,file2,file3}.txt dossier/  # Copier 3 fichiers
-</code>
+cp {file1,file2,file3}.txt dossier/  # Copier 3 fichiers</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. Exercices pratiques</h2>
 <h3>Exercice 1 : Créer une structure de projet</h3>
@@ -536,14 +518,12 @@ cp {file1,file2,file3}.txt dossier/  # Copier 3 fichiers
 mkdir -p projet/{css,js,images,html}
 touch projet/css/style.css
 touch projet/js/main.js
-ls -R projet
-</code>
+ls -R projet</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Sauvegarde sécurisée</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -551,14 +531,12 @@ ls -R projet
     <code># Créer une backup avec date
 mkdir -p ~/backups
 cp -a ~/Documents ~/backups/documents_$(date +%Y%m%d)
-ls -lh ~/backups/
-</code>
+ls -lh ~/backups/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 3 : Nettoyer un dossier</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -567,14 +545,12 @@ ls -lh ~/backups/
 mkdir -p PDF
 mv *.pdf PDF/
 # Supprimer toutes les sauvegardes (~)
-rm *~
-</code>
+rm *~</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 4 : Renommer en masse</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -583,14 +559,12 @@ rm *~
 for f in *.txt; do mv &quot;$f&quot; &quot;backup_$f&quot;; done
 
 # Ou avec rename
-rename 's/^/backup_/' *.txt
-</code>
+rename 's/^/backup_/' *.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Résumé</h2>
 <table>
@@ -651,21 +625,17 @@ mv *.txt ../                 # Tout mover vers parent
 rm -rf *                     # Vider un dossier (attention!)
 
 # Historique des suppressions (si activé)
-# Sous Zsh avec rm -v, les fichiers vont dans ~/.local/share/Trash/
-</code>
+# Sous Zsh avec rm -v, les fichiers vont dans ~/.local/share/Trash/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <p>Maîtrise ces commandes — elles sont le quotidien de tout administrateur Linux ! 💪</p>
-
-
 </div>
 <nav>
-<a href="06-reseaux.html" style="color:#00d9ff;text-decoration:none;">&larr; 06 - Réseaux de base</a> | <span style="color:#666;">07</span> | <a href="08-archivage-compression.html" style="color:#00d9ff;text-decoration:none;">08 - Archivage et compression &rarr;</a>
+<a href="06-reseaux.html" style="color:#00d9ff;text-decoration:none;">&larr; 6 - Réseaux de base</a> | <span style="color:#666;">07</span> | <a href="08-archivage-compression.html" style="color:#00d9ff;text-decoration:none;">08 - Archivage et compression &rarr;</a>
 </nav>
 
 <script>
@@ -674,9 +644,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -685,7 +653,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

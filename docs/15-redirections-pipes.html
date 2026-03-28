@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redirections Pipes - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 15 : Redirections et Pipes - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/15-redirections-pipes.html">
-<meta property="og:title" content="Redirections Pipes - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/15-redirections-et-pipes.html">
+<meta property="og:title" content="Leçon 15 : Redirections et Pipes - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Redirections Pipes - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Redirections Pipes, debutant, ubuntu">
+<meta name="description" content="Leçon 15 : Redirections et Pipes - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 15  redirections et pipes, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,17 +84,25 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-<h1>15 - redirections pipes : Redirections et Pipes</h1>
+<h1>Leçon 15 : Redirections et Pipes</h1>
 <p>Dans cette leçon, tu vas maîtriser le flux de données sous Linux : redirections et pipes. Ces outils sont fondamentaux pour traiter des données et créer des scripts puissants.</p>
 <hr />
 <h2>1. Entrée et sortie standard</h2>
@@ -130,14 +143,12 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
   <div class="code-line" onclick="copyCode(this)">
     <code>cat              # Lit depuis stdin, écrit vers stdout
 ls &gt; fichier     # Redirige stdout vers fichier
-ls 2&gt; erreur    # Redirige stderr vers erreur
-</code>
+ls 2&gt; erreur    # Redirige stderr vers erreur</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>2. Redirections de sortie</h2>
 <h3>&gt; - Rediriger (écraser)</h3>
@@ -149,14 +160,12 @@ echo &quot;Bonjour&quot; &gt; fichier.txt
 ls -l &gt; liste.txt
 
 # Rediriger stderr (2&gt;)
-ls /inexistant 2&gt; erreurs.txt
-</code>
+ls /inexistant 2&gt; erreurs.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>&gt;&gt; - Rediriger (ajouter)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -166,14 +175,12 @@ echo &quot;Ligne 1&quot; &gt; log.txt
 echo &quot;Ligne 2&quot; &gt;&gt; log.txt
 
 # Logger avec horodatage
-echo &quot;$(date): Démarrage&quot; &gt;&gt; /var/log/mon_script.log
-</code>
+echo &quot;$(date): Démarrage&quot; &gt;&gt; /var/log/mon_script.log</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>2&gt;&amp;1 - Combiner stdout et stderr</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -183,14 +190,12 @@ commande &gt; tout.log 2&gt;&amp;1
 commande &amp;&gt; tout.log              # Syntaxe courte
 
 # Vers /dev/null (jeter)
-commande &gt; /dev/null 2&gt;&amp;1
-</code>
+commande &gt; /dev/null 2&gt;&amp;1</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>3. Redirections d'entrée</h2>
 <h3>&lt; - Entrée depuis fichier</h3>
@@ -204,14 +209,12 @@ cat &lt; fichier.txt
 sort &lt; fichier.txt
 
 # Utiliser un fichier comme entrée
-commande &lt; input.txt
-</code>
+commande &lt; input.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>&lt;&lt; - Here Document</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -233,14 +236,12 @@ EOF
 # Sans expansion (ici-document)
 cat &lt;&lt; 'EOF'
 $LITERAL ne sera pas expansé
-EOF
-</code>
+EOF</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>&lt;&lt;&lt; - Here String</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -250,14 +251,12 @@ wc -w &lt;&lt;&lt; &quot;Bonjour le monde&quot;
 # Résultat: 3
 
 read -r nom &lt;&lt;&lt; &quot;Alice&quot;
-echo &quot;Salut $nom&quot;
-</code>
+echo &quot;Salut $nom&quot;</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>4. Pipes (tubes)</h2>
 <h3>| - Chaîner les commandes</h3>
@@ -275,14 +274,12 @@ ls | wc -l
 ls | grep &quot;.txt&quot;
 
 # Afficher les 10 premières lignes
-ls -l | head -10
-</code>
+ls -l | head -10</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exemples pratiques</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -300,14 +297,12 @@ last | head -1
 dmesg | grep -i error | tail -5
 
 # Pipeline complexe
-cat /var/log/syslog | grep -i error | sort | uniq -c | sort -rn | head -10
-</code>
+cat /var/log/syslog | grep -i error | sort | uniq -c | sort -rn | head -10</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. Commandes de traitement de texte</h2>
 <h3>head - Début du fichier</h3>
@@ -316,14 +311,12 @@ cat /var/log/syslog | grep -i error | sort | uniq -c | sort -rn | head -10
   <div class="code-line" onclick="copyCode(this)">
     <code>head fichier.txt              # 10 premières lignes
 head -n 20 fichier.txt        # 20 premières lignes
-head -c 100 fichier.txt       # 100 premiers octets
-</code>
+head -c 100 fichier.txt       # 100 premiers octets</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>tail - Fin du fichier</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -331,14 +324,12 @@ head -c 100 fichier.txt       # 100 premiers octets
     <code>tail fichier.txt              # 10 dernières lignes
 tail -n 20 fichier.txt        # 20 dernières lignes
 tail -f fichier.log           # Suivre en temps réel
-tail -f /var/log/syslog       # Logger en direct
-</code>
+tail -f /var/log/syslog       # Logger en direct</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>wc - Compter</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -346,14 +337,12 @@ tail -f /var/log/syslog       # Logger en direct
     <code>wc -l fichier                # Nombre de lignes
 wc -w fichier                # Nombre de mots
 wc -c fichier                # Nombre d'octets
-wc fichier                   # Les trois
-</code>
+wc fichier                   # Les trois</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>sort - Trier</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -362,14 +351,12 @@ wc fichier                   # Les trois
 sort -n fichier.txt          # Trier numériquement
 sort -r fichier.txt          # Inverser l'ordre
 sort -u fichier.txt          # Trier et supprimer doublons
-sort -k2 fichier.txt         # Trier par colonne 2
-</code>
+sort -k2 fichier.txt         # Trier par colonne 2</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>uniq - Lignes uniques</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -377,28 +364,24 @@ sort -k2 fichier.txt         # Trier par colonne 2
     <code>uniq fichier.txt              # Supprimer doublons adjacents
 uniq -c fichier.txt           # Avec compteur
 uniq -d fichier.txt          # Afficher seulement doublons
-sort fichier | uniq          # Tous les uniques (triés)
-</code>
+sort fichier | uniq          # Tous les uniques (triés)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>cut - Extraire des colonnes</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>cut -d: -f1 /etc/passwd      # Première colonne (séparateur :)
 cut -c1-10 fichier.txt        # Caractères 1 à 10
-cut -f1,3 fichier.tsv        # Colonnes 1 et 3
-</code>
+cut -f1,3 fichier.tsv        # Colonnes 1 et 3</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>awk - Traitement puissant</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -413,14 +396,12 @@ awk -F: '{print $1, $5}' /etc/passwd
 awk '$3 &gt; 1000' /etc/passwd
 
 # Somme
-awk '{sum+=$1} END {print sum}' fichier.txt
-</code>
+awk '{sum+=$1} END {print sum}' fichier.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>sed - Éditeur de flux</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -435,14 +416,13 @@ sed 's/ancien/nouveau/g' fichier.txt
 sed '/motif/d' fichier.txt
 
 # Numérotation
-sed = fichier.txt | sed 'N;s/\n/\t/'
-</code>
+sed = fichier.txt | sed 'N;s/
+/\t/'</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. tee - Dupliquer le flux</h2>
 <h3>Afficher ET sauvegarder</h3>
@@ -456,14 +436,12 @@ commande | tee fichier.txt
 commande | tee -a fichier.txt
 
 # Pipeline avec log
-make | tee build.log
-</code>
+make | tee build.log</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>7. xargs - Construire des commandes</h2>
 <h3>Construire des arguments</h3>
@@ -480,14 +458,12 @@ find . -name &quot;*.tmp&quot; | xargs -p rm
 cat fichiers.txt | xargs -n 10 commande
 
 # Avec placeholder
-find . -name &quot;*.txt&quot; | xargs -I {} cp {} /backup/
-</code>
+find . -name &quot;*.txt&quot; | xargs -I {} cp {} /backup/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. Exercices pratiques</h2>
 <h3>Exercice 1 : Pipeline de logs</h3>
@@ -495,53 +471,45 @@ find . -name &quot;*.txt&quot; | xargs -I {} cp {} /backup/
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code># Rechercher les erreurs dans les logs
-tail -f /var/log/syslog | grep -i error
-</code>
+tail -f /var/log/syslog | grep -i error</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Statistiques</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code># Compter les fichiers par extension
-find . -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn
-</code>
+find . -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 3 : Nettoyage</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code># Supprimer les fichiers de plus de 30 jours
-find /tmp -mtime +30 | xargs rm -rf
-</code>
+find /tmp -mtime +30 | xargs rm -rf</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 4 : Surveillance</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code># Voir les plus gros fichiers
-du -sh * | sort -rh | head -10
-</code>
+du -sh * | sort -rh | head -10</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Tableaux résumés</h2>
 <h3>Symboles de redirection</h3>
@@ -651,14 +619,12 @@ cat /etc/passwd | awk -F: '{print $1 &quot;:&quot; $5}' | sort
 groups * 2&gt;/dev/null | cut -d: -f2 | sort | uniq -c
 
 # Nettoyer et dédoublonner
-cat data.txt | sed '/^$/d' | sort | uniq &gt; clean.txt
-</code>
+cat data.txt | sed '/^$/d' | sort | uniq &gt; clean.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Surveillance système</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -670,21 +636,17 @@ ps aux --sort=-%mem | head -11
 netstat -tn | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn
 
 # Fichiers les plus modifiés récemment
-find . -type f -mmin -60 | sort -k -M
-</code>
+find . -type f -mmin -60 | sort -k -M</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <p>Maîtrise les redirections et pipes pour devenir un ninja du terminal ! 🔥</p>
-
-
 </div>
 <nav>
-<a href="14-gestion-utilisateurs-groupes.html" style="color:#00d9ff;text-decoration:none;">&larr; 14 - Gestion utilisateurs et groupes</a> | <span style="color:#666;">15</span> | <a href="16-editeurs-texte.html" style="color:#00d9ff;text-decoration:none;">16 - Éditeurs de texte en ligne de commande &rarr;</a>
+<a href="14-gestion-utilisateurs-groupes.html" style="color:#00d9ff;text-decoration:none;">&larr; 14 - Gestion des utilisateurs et groupes</a> | <span style="color:#666;">15</span> | <a href="16-editeurs-texte.html" style="color:#00d9ff;text-decoration:none;">16 - Éditeurs de texte en ligne de commande &rarr;</a>
 </nav>
 
 <script>
@@ -693,9 +655,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -704,7 +664,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

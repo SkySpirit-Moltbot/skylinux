@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Services Systemd - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 21 : Gestion des services avec systemd - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/21-services-systemd.html">
-<meta property="og:title" content="Services Systemd - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/21-gestion-des-services-avec-systemd.html">
+<meta property="og:title" content="Leçon 21 : Gestion des services avec systemd - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Services Systemd - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Services Systemd, debutant, ubuntu">
+<meta name="description" content="Leçon 21 : Gestion des services avec systemd - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 21  gestion des services avec systemd, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,17 +84,25 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-<h1>21 - services systemd : Gestion des services avec systemd</h1>
+<h1>Leçon 21 : Gestion des services avec systemd</h1>
 <h2>Introduction</h2>
 <p><strong>systemd</strong> est le système d'initialisation et le gestionnaire de services le plus utilisé dans les distributions Linux modernes (Ubuntu, Debian, Fedora, CentOS, etc.). Il permet de démarrer, arrêter, redémarrer et gérer les services (daemons) du système.</p>
 <p>Dans cette leçon, nous allons apprendre à utiliser la commande <code>systemctl</code> pour gérer les services.</p>
@@ -118,14 +131,12 @@ sudo systemctl status nginx
 sudo systemctl is-active nginx
 
 # Vérifier si un service est activé au démarrage
-sudo systemctl is-enabled nginx
-</code>
+sudo systemctl is-enabled nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Démarrer et arrêter un service</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -140,14 +151,12 @@ sudo systemctl stop nginx
 sudo systemctl restart nginx
 
 # Recharger la configuration sans arrêter le service
-sudo systemctl reload nginx
-</code>
+sudo systemctl reload nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Activer ou désactiver un service</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -159,14 +168,12 @@ sudo systemctl enable nginx
 sudo systemctl disable nginx
 
 # Activer et démarrer immédiatement
-sudo systemctl enable --now nginx
-</code>
+sudo systemctl enable --now nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Lister les services</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -178,14 +185,12 @@ systemctl list-units --type=service
 systemctl list-units --type=service --all
 
 # Lister les services qui ont échoué
-systemctl --failed --type=service
-</code>
+systemctl --failed --type=service</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Voir les journaux d'un service</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -197,14 +202,12 @@ sudo journalctl -u nginx
 sudo journalctl -u nginx -f
 
 # Voir les journaux depuis le dernier démarrage
-sudo journalctl -u nginx --since today
-</code>
+sudo journalctl -u nginx --since today</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Exemples pratiques</h2>
 <h3>Exemple 1 : Gestion du service SSH</h3>
 <div class="code-block">
@@ -220,14 +223,12 @@ sudo systemctl start ssh
 sudo systemctl enable ssh
 
 # Voir les journaux SSH
-sudo journalctl -u ssh
-</code>
+sudo journalctl -u ssh</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exemple 2 : Gestion du service Cron</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -239,14 +240,12 @@ sudo systemctl status cron
 sudo systemctl restart cron
 
 # Vérifier si cron est actif
-systemctl is-active cron
-</code>
+systemctl is-active cron</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exemple 3 : Analyser pourquoi un service ne démarre pas</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -258,14 +257,12 @@ sudo systemctl status nginx
 sudo journalctl -xe -u nginx
 
 # Voir la configuration du service
-sudo systemctl cat nginx
-</code>
+sudo systemctl cat nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Exercice pratique</h2>
 <ol>
 <li>
@@ -318,8 +315,6 @@ sudo systemctl cat nginx
 <li><strong>Lister les services</strong> : <code>systemctl list-units --type=service</code></li>
 </ul>
 <p>La maîtrise de systemd est essentielle pour administrer un système Linux moderne. Les commandes vues dans cette leçon vous permettront de gérer efficacement les services de votre système.</p>
-
-
 </div>
 <nav>
 <a href="20-securite-base.html" style="color:#00d9ff;text-decoration:none;">&larr; 20 - Sécurité de base sous Linux</a> | <span style="color:#666;">21</span> | <a href="22-conteneurs-docker.html" style="color:#00d9ff;text-decoration:none;">22 - Conteneurs Docker &rarr;</a>
@@ -331,9 +326,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -342,7 +335,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

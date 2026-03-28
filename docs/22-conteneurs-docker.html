@@ -3,29 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conteneurs Docker - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 22 : Conteneurs Docker - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/22-conteneurs-docker.html">
-<meta property="og:title" content="Conteneurs Docker - SkyLinux">
-<meta property="og:description" content="Apprenez Docker facilement avec SkyLinux">
-<meta name="description" content="Conteneurs Docker - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Docker, conteneurs, debutant">
+<meta property="og:title" content="Leçon 22 : Conteneurs Docker - SkyLinux">
+<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<meta name="description" content="Leçon 22 : Conteneurs Docker - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 22  conteneurs docker, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
 .container { max-width: 800px; margin: 0 auto; }
 h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
 h2 { color: #00d9ff; margin: 20px 0 10px; }
-h3 { color: #00ff88; margin: 15px 0 8px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -45,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -80,17 +84,25 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-<h1>22 - conteneurs docker : Conteneurs Docker</h1>
+<h1>Leçon 22 : Conteneurs Docker</h1>
 <h2>Introduction</h2>
 <p>Docker est une plateforme de conteneurisation qui permet d'empaqueter une application avec toutes ses dépendances. Les conteneurs sont légers, rapides et portables.</p>
 <p><strong>Pourquoi utiliser Docker ?</strong>
@@ -106,28 +118,24 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
     <code>sudo apt update
 sudo apt install -y docker.io docker-compose
 sudo systemctl start docker
-sudo systemctl enable docker
-</code>
+sudo systemctl enable docker</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Vérifier l'installation</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>docker --version
 docker-compose --version
-docker run hello-world
-</code>
+docker run hello-world</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Concepts fondamentaux</h2>
 <h3>Images vs Conteneurs</h3>
 <ul>
@@ -152,14 +160,12 @@ docker images -a
 
 # Supprimer une image
 docker rmi nginx
-docker rmi -f nginx
-</code>
+docker rmi -f nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Lancer des conteneurs</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -177,14 +183,12 @@ docker run -d --name ma_db -e MYSQL_ROOT_PASSWORD=mdp123 mysql
 docker run -d -v /data:/app --name mon_app ubuntu
 
 # Avec restart automatique
-docker run -d --restart=always --name nginx nginx
-</code>
+docker run -d --restart=always --name nginx nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Options courantes</h3>
 <table>
 <thead>
@@ -253,14 +257,12 @@ docker exec mon_nginx cat /etc/hostname
 
 # Inspecter un conteneur
 docker inspect mon_nginx
-docker stats mon_nginx   # ressources en temps réel
-</code>
+docker stats mon_nginx   # ressources en temps réel</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Créer une image personnalisée</h2>
 <h3>Le Dockerfile</h3>
 <div class="code-block">
@@ -286,14 +288,12 @@ COPY . .
 EXPOSE 5000
 
 # Commande par défaut
-CMD [&quot;python3&quot;, &quot;app.py&quot;]
-</code>
+CMD [&quot;python3&quot;, &quot;app.py&quot;]</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Instructions courantes du Dockerfile</h3>
 <table>
 <thead>
@@ -348,14 +348,12 @@ docker build -t mon_app:latest .
 docker images | grep mon_app
 
 # Lancer
-docker run -d -p 5000:5000 --name mon_app mon_app:latest
-</code>
+docker run -d -p 5000:5000 --name mon_app mon_app:latest</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Les volumes</h2>
 <h3>Types de volumes</h3>
 <ol>
@@ -365,42 +363,36 @@ docker run -d -p 5000:5000 --name mon_app mon_app:latest
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>docker volume create mes_donnees
-docker run -d -v mes_donnees:/data --name app ubuntu
-</code>
+docker run -d -v mes_donnees:/data --name app ubuntu</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <ol>
 <li><strong>Bind mounts (répertoire hôte)</strong></li>
 </ol>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>docker run -d -v ~/mon_repertoire:/app --name app ubuntu
-</code>
+    <code>docker run -d -v ~/mon_repertoire:/app --name app ubuntu</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <ol>
 <li><strong>tmpfs (en mémoire)</strong></li>
 </ol>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>docker run -d --tmpfs /tmp --name app ubuntu
-</code>
+    <code>docker run -d --tmpfs /tmp --name app ubuntu</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Gestion des volumes</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -413,14 +405,12 @@ docker volume inspect mon_volume
 
 # Supprimer
 docker volume rm mon_volume
-docker volume prune  # nettoyer les volumes inutilisés
-</code>
+docker volume prune  # nettoyer les volumes inutilisés</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Réseau Docker</h2>
 <h3>Créer un réseau</h3>
 <div class="code-block">
@@ -433,14 +423,12 @@ docker network ls
 docker network create mon_reseau
 
 # Créer avec driver spécifique
-docker network create --driver bridge mon_reseau
-</code>
+docker network create --driver bridge mon_reseau</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Connecter des conteneurs</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -449,14 +437,12 @@ docker network create --driver bridge mon_reseau
 docker run -d --network mon_reseau --name web nginx
 docker run -d --network mon_reseau --name db mysql
 
-# Les conteneurs peuvent maintenant se contacter par nom
-</code>
+# Les conteneurs peuvent maintenant se contacter par nom</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>DNS automatique</h3>
 <p>Les conteneurs sur le même réseau peuvent se trouver par leur nom.</p>
 <h2>Docker Compose</h2>
@@ -504,14 +490,12 @@ networks:
   backend:
 
 volumes:
-  db_data:
-</code>
+  db_data:</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Commandes Docker Compose</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -534,27 +518,23 @@ docker-compose top
 
 # Reconstruire
 docker-compose build
-docker-compose up --build
-</code>
+docker-compose up --build</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Cas d'usage pratiques</h2>
 <h3>1. Serveur web Nginx</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>docker run -d -p 80:80 --name nginx nginx:alpine
-</code>
+    <code>docker run -d -p 80:80 --name nginx nginx:alpine</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>2. Base de données PostgreSQL</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -564,38 +544,32 @@ docker-compose up --build
   -e POSTGRES_PASSWORD=mdp123 \
   -e POSTGRES_DB=mondb \
   -v pgdata:/var/lib/postgresql/data \
-  postgres:15
-</code>
+  postgres:15</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>3. Serveur de développement Python</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>docker run -it -p 5000:5000 -v $(pwd):/app python:3.11 sh -c &quot;pip install flask &amp;&amp; cd /app &amp;&amp; flask run --host=0.0.0.0&quot;
-</code>
+    <code>docker run -it -p 5000:5000 -v $(pwd):/app python:3.11 sh -c &quot;pip install flask &amp;&amp; cd /app &amp;&amp; flask run --host=0.0.0.0&quot;</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>4. Monitoring avec Prometheus</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>docker run -d -p 9090:9090 --name prometheus prom/prometheus
-</code>
+    <code>docker run -d -p 9090:9090 --name prometheus prom/prometheus</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Bonnes pratiques</h2>
 <h3>Sécurité</h3>
 <div class="code-block">
@@ -608,14 +582,12 @@ USER nobody
 docker scan mon_image
 
 # Utiliser des images officielles
-docker pull nginx:latest
-</code>
+docker pull nginx:latest</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Optimisation</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -628,14 +600,12 @@ docker pull alpine
 docker pull nginx:alpine
 
 # Nettoyer les caches
-docker builder prune
-</code>
+docker builder prune</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Utiliser .dockerignore</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -644,14 +614,12 @@ docker builder prune
 node_modules
 __pycache__
 *.log
-.env
-</code>
+.env</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Dépannage</h2>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -678,14 +646,12 @@ docker top conteneur
 docker restart conteneur
 
 # Nettoyer tout
-docker system prune -a
-</code>
+docker system prune -a</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h2>Résumé des commandes</h2>
 <table>
 <thead>
@@ -748,7 +714,6 @@ docker system prune -a
 <li>Portainer pour une interface graphique</li>
 <li>GitLab CI/CD pour l'intégration continue</li>
 </ul>
-
 </div>
 <nav>
 <a href="21-services-systemd.html" style="color:#00d9ff;text-decoration:none;">&larr; 21 - Gestion des services avec systemd</a> | <span style="color:#666;">22</span> | <a href="23-outils-diagnostic.html" style="color:#00d9ff;text-decoration:none;">23 - Outils de diagnostic et dépannage &rarr;</a>
@@ -760,9 +725,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -771,7 +734,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

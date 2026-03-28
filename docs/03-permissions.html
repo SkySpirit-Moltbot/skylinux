@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Permissions - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 3 : Permissions Linux - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/03-permissions.html">
-<meta property="og:title" content="Permissions - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/03-permissions-linux.html">
+<meta property="og:title" content="Leçon 3 : Permissions Linux - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Permissions - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Permissions, debutant, ubuntu">
+<meta name="description" content="Leçon 3 : Permissions Linux - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 3  permissions linux, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,14 +84,22 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
 <h1>Leçon 3 : Permissions Linux</h1>
@@ -125,24 +138,14 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <table style="border-collapse:collapse; margin: 10px 0; font-family: monospace;">
-<tr style="border: 1px solid #444;">
-<th style="border:1px solid #444; padding:8px; background:rgba(0,217,255,0.1); text-align:center;">propriétaire</th>
-<th style="border:1px solid #444; padding:8px; background:rgba(0,217,255,0.1); text-align:center;">Groupe</th>
-<th style="border:1px solid #444; padding:8px; background:rgba(0,217,255,0.1); text-align:center;">Autres</th>
-</tr>
-<tr style="border:1px solid #444;">
-<td style="border:1px solid #444; padding:8px; text-align:center; color:#00d9ff;">rwx</td>
-<td style="border:1px solid #444; padding:8px; text-align:center; color:#00d9ff;">rwx</td>
-<td style="border:1px solid #444; padding:8px; text-align:center; color:#00d9ff;">rwx</td>
-</tr>
-</table>
+    <code>| propriétaire |    Groupe    |    Autres    |
+|:---------:|:----------:|:---------:|
+|    rwx    |    rwx     |    rwx     |</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <table>
 <thead>
 <tr>
@@ -175,40 +178,34 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>ls -l /home/david/fichier.txt
-</code>
+    <code>ls -l /home/david/fichier.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <p>Résultat :</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>-rw-r--r-- 1 david david 1234 Mar 10 10:00 fichier.txt
-</code>
+    <code>-rw-r--r-- 1 david david 1234 Mar 10 10:00 fichier.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <p>Décryptage :</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>-    rw-    r--    r--  1  david  david  1234  Mar 10 10:00 fichier.txt
 │    │      │      │    │     │      │      │       │         │
-Type│Owner │Group │Other│Link │Owner │Group │Size   │Date      │Name
-</code>
+Type│Owner │Group │Other│Link │Owner │Group │Size   │Date      │Name</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <table>
 <thead>
 <tr>
@@ -256,14 +253,12 @@ chmod o-r fichier.txt     # Autres ne peuvent plus lire
 chmod -w fichier.txt      # Retirer écriture pour tous
 
 # Définir exactement
-chmod u=rwx,g=rx,o=r fichier
-</code>
+chmod u=rwx,g=rx,o=r fichier</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h4>Notation octale</h4>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -275,18 +270,16 @@ x = 1
 - = 0
 
 # Exemples
-chmod 777 fichier     # rwx rwx rwx (tout permis)
+chmod 777 fichier     # rwxrwxrwx (tout permis)
 chmod 755 fichier    # rwxr-xr-x (standard)
 chmod 644 fichier    # rw-r--r-- (lecture pour tous)
 chmod 700 fichier    # rwx------ (propriétaire seul)
-chmod 600 fichier    # rw------- (propriétaire seul)
-</code>
+chmod 600 fichier    # rw------- (propriétaire seul)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Tableau des permissions Octales</h3>
 <table>
 <thead>
@@ -352,26 +345,22 @@ sudo chown utilisateur fichier
 sudo chown utilisateur:groupe fichier
 
 # Changer le groupe seulement
-sudo chown :groupe fichier
-</code>
+sudo chown :groupe fichier</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Chgrp - Changer le groupe</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>sudo chgrp groupe fichier
-</code>
+    <code>sudo chgrp groupe fichier</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Options utiles</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -380,14 +369,12 @@ sudo chown :groupe fichier
 sudo chown -R utilisateur dossier/
 
 # Préserver les liens symbolique
-sudo chown -h lien_symbolique
-</code>
+sudo chown -h lien_symbolique</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exemples pratiques</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -403,14 +390,12 @@ sudo chown -R www-data:www-data /var/www/html/
 
 # Dossier partagé
 sudo chown -R root:shared /partage/
-sudo chmod -R 2775 /partage/  # SGID pour hériter
-</code>
+sudo chmod -R 2775 /partage/  # SGID pour hériter</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. Permissions spéciales</h2>
 <h3>SetUID (4000)</h3>
@@ -422,42 +407,36 @@ sudo chmod -R 2775 /partage/  # SGID pour hériter
 chmod 4755 executable
 
 # Notation symbolique
-chmod u+s executable
-</code>
+chmod u+s executable</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>SetGID (2000)</h3>
 <p>Les fichiers héritent du groupe du répertoire.</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>chmod 2755 dossier/
-chmod g+s dossier/
-</code>
+chmod g+s dossier/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Sticky Bit (1000)</h3>
 <p>Sur un répertoire, seuls les propriétaires peuvent supprimer leurs fichiers.</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>chmod 1777 /tmp
-chmod +t /tmp
-</code>
+chmod +t /tmp</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. Umask</h2>
 <h3>Qu'est-ce que umask ?</h3>
@@ -472,14 +451,12 @@ umask
 umask 022
 
 # Rendre permanent (ajouter dans ~/.bashrc)
-echo &quot;umask 022&quot; &gt;&gt; ~/.bashrc
-</code>
+echo &quot;umask 022&quot; &gt;&gt; ~/.bashrc</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Calculer umask</h3>
 <p>Pour un fichier (par défaut 666) :
 - umask 022 → 666 - 022 = 644</p>
@@ -505,14 +482,12 @@ setfacl -m u:utilisateur:rwx fichier
 setfacl -x u:utilisateur fichier
 
 # Par défaut (pour nouveaux fichiers)
-setfacl -m d:u:utilisateur:rx dossier/
-</code>
+setfacl -m d:u:utilisateur:rx dossier/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. Bonnes pratiques de sécurité</h2>
 <h3>Permissions recommandées</h3>
@@ -564,14 +539,12 @@ setfacl -m d:u:utilisateur:rx dossier/
     <code>chmod -R 777 /          # DANGER!
 chmod -R 777 /home      # DANGER!
 chmod -R 777 /etc       # TRES DANGER!
-chmod 777 /etc/passwd   # DANGER!
-</code>
+chmod 777 /etc/passwd   # DANGER!</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Script exécutable</h3>
@@ -586,14 +559,12 @@ echo 'echo &quot;Hello&quot;' &gt;&gt; test.sh
 chmod +x test.sh
 
 # Exécuter
-./test.sh
-</code>
+./test.sh</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Partage de dossier</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -607,14 +578,12 @@ sudo usermod -aG partage utilisateur2
 
 # Configurer le dossier
 sudo chown :partage /partage
-sudo chmod 2775 /partage
-</code>
+sudo chmod 2775 /partage</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>10. Résumé</h2>
 <table>
@@ -657,11 +626,9 @@ sudo chmod 2775 /partage
 </table>
 <hr />
 <p>Maîtrise les permissions pour sécuriser ton système Linux ! 🔐</p>
-
-
 </div>
 <nav>
-<a href="02-commandes-base.html" style="color:#00d9ff;text-decoration:none;">&larr; 02 - Commandes de base</a> | <span style="color:#666;">03</span> | <a href="04-processus-services.html" style="color:#00d9ff;text-decoration:none;">04 - Processus et Services &rarr;</a>
+<a href="02-commandes-base.html" style="color:#00d9ff;text-decoration:none;">&larr; 2 - Commandes de base</a> | <span style="color:#666;">03</span> | <a href="04-processus-services.html" style="color:#00d9ff;text-decoration:none;">04 - Processus et Services &rarr;</a>
 </nav>
 
 <script>
@@ -670,9 +637,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -681,7 +646,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

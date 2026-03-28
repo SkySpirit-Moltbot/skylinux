@@ -3,29 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Docker Compose et orchestration - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 25 : Docker Compose et orchestration de containers - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/25-docker-compose.html">
-<meta property="og:title" content="Docker Compose et orchestration - SkyLinux">
-<meta property="og:description" content="Apprenez Docker Compose pour orchestrer vos containers">
-<meta name="description" content="Docker Compose - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, docker, compose, orchestration, containers, debutant">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/25-docker-compose-et-orchestration-de-containers.html">
+<meta property="og:title" content="Leçon 25 : Docker Compose et orchestration de containers - SkyLinux">
+<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<meta name="description" content="Leçon 25 : Docker Compose et orchestration de containers - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 25  docker compose et orchestration de containers, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
 .container { max-width: 800px; margin: 0 auto; }
 h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
 h2 { color: #00d9ff; margin: 20px 0 10px; }
-h3 { color: #00ff88; margin: 15px 0 8px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -45,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -80,19 +84,27 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-<h1>25 - docker compose : Docker Compose et orchestration de containers</h1>
+<h1>Leçon 25 : Docker Compose et orchestration de containers</h1>
 <h2>Introduction</h2>
-<p>Docker Compose est un outil qui permet de définir et gérer des applications multi-containers. Au lieu de lancer chaque container séparément avec des commandes longues, vous décrivez toute votre stack dans un fichier YAML et vous lancez tout avec une seule commande.</p>
+<p>Docker Compose est un outil qui permet de définir et gérer des applications multi-containers. Au lieu de lancer chaque container séparément avec des commandes longues, vous描述ez toute votre stack dans un fichier YAML et vous lancez tout avec une seule commande.</p>
 <h2>Installation de Docker Compose</h2>
 <h3>Via apt (Debian/Ubuntu)</h3>
 <div class="code-block">
@@ -119,7 +131,7 @@ docker-compose --version</code>
     </button>
   </div>
 </div>
-<h3>Utiliser Docker Compose v2 (recommande)</h3>
+<h3>Utiliser Docker Compose v2 (recommandé)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -142,7 +154,7 @@ services:
     image: nom_image
     container_name: mon_conteneur
     ports:
-      - "8080:80"
+      - &quot;8080:80&quot;
     volumes:
       - ./data:/app/data
     environment:
@@ -174,7 +186,7 @@ services:
   web:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - &quot;80:80&quot;
     volumes:
       - ./html:/usr/share/nginx/html:ro
     restart: always
@@ -214,13 +226,13 @@ docker-compose up -d
 # Lancer avec reconstruction
 docker-compose up -d --build
 
-# Arreter tous les services
+# Arrêter tous les services
 docker-compose down
 
-# Arreter et supprimer les volumes
+# Arrêter et supprimer les volumes
 docker-compose down -v
 
-# Arreter et supprimer les images
+# Arrêter et supprimer les images
 docker-compose down --rmi local</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
@@ -257,10 +269,10 @@ docker-compose top</code>
     <code># Redémarrer un service
 docker-compose restart app
 
-# Recrer un service
+# Recréer un service
 docker-compose recreate app
 
-# Mettre a l'échelle un service (swarm mode requis)
+# Mettre à l'échelle un service (swarm mode requis pour plusieurs instances)
 docker-compose up -d --scale app=3
 
 # Pause / Unpause
@@ -273,7 +285,7 @@ docker-compose unpause</code>
 </div>
 <h2>Variables d'environnement</h2>
 <h3>Fichier .env</h3>
-<p>Créez un fichier .env à la racine du projet :</p>
+<p>Créez un fichier <code>.env</code> à la racine du projet :</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -301,13 +313,13 @@ NGINX_PORT=8080</code>
   web:
     image: nginx:alpine
     ports:
-      - "${NGINX_PORT}:80"</code>
+      - &quot;${NGINX_PORT}:80&quot;</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<h3>Variables supplementaires</h3>
+<h3>Variables d'environnement supplémentaires</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -323,8 +335,8 @@ NGINX_PORT=8080</code>
     </button>
   </div>
 </div>
-<h2>Networks et Volumes nommes</h2>
-<h3>Networks personnalises</h3>
+<h2>Networks et Volumes nommés</h2>
+<h3>Networks personnalisés</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -352,13 +364,13 @@ networks:
     driver: bridge
   backend_network:
     driver: bridge
-    internal: true  # Pas d'acces internet</code>
+    internal: true  # Pas d'accès internet</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<h3>Volumes nommes</h3>
+<h3>Volumes nommés</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -398,7 +410,7 @@ volumes:
     </button>
   </div>
 </div>
-<h2>Healthchecks et dependances</h2>
+<h2>Healthchecks et dépendances</h2>
 <h3>Healthcheck</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -407,7 +419,7 @@ volumes:
   db:
     image: postgres:15-alpine
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d madb"]
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U user -d madb&quot;]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -422,7 +434,7 @@ volumes:
     </button>
   </div>
 </div>
-<h3>Dependances simples</h3>
+<h3>Dépendances simples</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -431,14 +443,14 @@ volumes:
     depends_on:
       - db
       - redis
-    # db et redis demarreront avant app</code>
+    # db et redis démarreront avant app</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<h2>Commandes avancees</h3>
-<h3>Build personnalise</h3>
+<h2>Commandes avancées</h2>
+<h3>Build personnalisé</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -468,7 +480,7 @@ docker-compose build --no-cache</code>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code># Utiliser un fichier specifique
+    <code># Utiliser un fichier spécifique
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 # Fichier de développement
@@ -485,14 +497,14 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d</code>
     <code># Lancer sans detached mode
 docker-compose up
 
-# Avec logs en temps reel
+# Avec logs en temps réel
 docker-compose up --remove-orphans</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<h2>Exemple : Stack complete</h2>
+<h2>Exemple : Stack complète</h2>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -502,8 +514,8 @@ services:
   reverse_proxy:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - &quot;80:80&quot;
+      - &quot;443:443&quot;
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
@@ -536,7 +548,7 @@ services:
       - POSTGRES_PASSWORD=pass
       - POSTGRES_DB=madb
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d madb"]
+      test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U user -d madb&quot;]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -563,33 +575,64 @@ volumes:
     </button>
   </div>
 </div>
-<h2>Resume des commandes</h2>
+<h2>Résumé des commandes</h2>
 <table>
-<tr><th>Commande</th><th>Utilite</th></tr>
-<tr><td><code>docker-compose up -d</code></td><td>Lancer les services en arriere-plan</td></tr>
-<tr><td><code>docker-compose down</code></td><td>Arrêter les services</td></tr>
-<tr><td><code>docker-compose ps</code></td><td>Voir le statut des services</td></tr>
-<tr><td><code>docker-compose logs -f</code></td><td>Voir les logs en temps reel</td></tr>
-<tr><td><code>docker-compose exec service cmd</code></td><td>Exécuter une commande</td></tr>
-<tr><td><code>docker-compose build</code></td><td>Construire les images</td></tr>
-<tr><td><code>docker-compose restart service</code></td><td>Redémarrer un service</td></tr>
-<tr><td><code>docker-compose -f file.yml up</code></td><td>Utiliser un fichier specifique</td></tr>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Utilité</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker-compose up -d</code></td>
+<td>Lancer les services en arrière-plan</td>
+</tr>
+<tr>
+<td><code>docker-compose down</code></td>
+<td>Arrêter les services</td>
+</tr>
+<tr>
+<td><code>docker-compose ps</code></td>
+<td>Voir le statut des services</td>
+</tr>
+<tr>
+<td><code>docker-compose logs -f</code></td>
+<td>Voir les logs en temps réel</td>
+</tr>
+<tr>
+<td><code>docker-compose exec service cmd</code></td>
+<td>Exécuter une commande</td>
+</tr>
+<tr>
+<td><code>docker-compose build</code></td>
+<td>Construire les images</td>
+</tr>
+<tr>
+<td><code>docker-compose restart service</code></td>
+<td>Redémarrer un service</td>
+</tr>
+<tr>
+<td><code>docker-compose -f file.yml up</code></td>
+<td>Utiliser un fichier spécifique</td>
+</tr>
+</tbody>
 </table>
 <h2>Exercice pratique</h2>
 <ol>
-<li>Créez un fichier docker-compose.yml avec un serveur web Nginx et une application Node.js</li>
-<li>Configurez un volume partage entre les deux services</li>
+<li>Créez un fichier <code>docker-compose.yml</code> avec un serveur web Nginx et une application Node.js</li>
+<li>Configurez un volume partagé entre les deux services</li>
 <li>Ajoutez un healthcheck sur l'application</li>
-<li>Testez les commandes up, down, logs et exec</li>
-<li>Créez un fichier .env et utilisez des variables d'environnement</li>
-<li>Experimentez avec plusieurs fichiers compose et l'option -f</li>
+<li>Testez les commandes <code>up</code>, <code>down</code>, <code>logs</code> et <code>exec</code></li>
+<li>Créez un fichier <code>.env</code> et utilisez des variables d'environnement</li>
+<li>Expérimentez avec plusieurs fichiers compose et l'option <code>-f</code></li>
 </ol>
 <h2>Conclusion</h2>
 <p>Docker Compose simplifie considérablement la gestion des applications multi-containers. Au lieu de lancer des commandes complexes, vous décrivez votre infrastructure dans un fichier YAML versionnable. C'est indispensable pour le développement local et très utile pour les déploiements de petite ou moyenne échelle.</p>
-<nav>
-<a href="24-reseaux-avances.html" style="color:#00d9ff;text-decoration:none;">&larr; 24 - Reseaux avances</a> | <span style="color:#666;">25</span> | <a href="26-liens-symboliques-durs.html" style="color:#00d9ff;text-decoration:none;">26 - Liens symboliques et durs &rarr;</a>
-</nav>
 </div>
+<nav>
+<a href="24-reseaux-avances.html" style="color:#00d9ff;text-decoration:none;">&larr; 24 - Configuration réseau avancée</a> | <span style="color:#666;">25</span> | <a href="26-liens-symboliques-durs.html" style="color:#00d9ff;text-decoration:none;">26 - Liens symboliques et liens durs &rarr;</a>
+</nav>
 
 <script>
 function copyCode(el) {
@@ -597,9 +640,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -608,7 +649,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

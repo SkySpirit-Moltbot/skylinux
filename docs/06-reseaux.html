@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reseaux - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 6 : Réseaux de base - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/06-reseaux.html">
-<meta property="og:title" content="Reseaux - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/06-reseaux-de-base.html">
+<meta property="og:title" content="Leçon 6 : Réseaux de base - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Reseaux - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Reseaux, debutant, ubuntu">
+<meta name="description" content="Leçon 6 : Réseaux de base - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 6  rseaux de base, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,14 +84,22 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
 <h1>Leçon 6 : Réseaux de base</h1>
@@ -133,14 +146,12 @@ ip -6 addr             # IPv6 seulement
 
 # Méthode classique (deprecated mais encore là)
 ifconfig
-ifconfig -a
-</code>
+ifconfig -a</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Paramètres d'une interface</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -153,28 +164,24 @@ ip link set eth0 down # Désactiver
 ip addr add 192.168.1.100/24 dev eth0
 
 # Supprimer une IP
-ip addr del 192.168.1.100/24 dev eth0
-</code>
+ip addr del 192.168.1.100/24 dev eth0</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Table de routage</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>ip route               # Routes actuelles
 ip route show
-ip route add default via 192.168.1.1  # Passerelle par défaut
-</code>
+ip route add default via 192.168.1.1  # Passerelle par défaut</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>3. Diagnostic réseau</h2>
 <h3>Ping - Tester la connectivité</h3>
@@ -188,14 +195,12 @@ ping -w 5 google.com         # Timeout 5 secondes
 
 # Types de ping
 ping -4 google.com           # IPv4 seulement
-ping -6 google.com           # IPv6 seulement
-</code>
+ping -6 google.com           # IPv6 seulement</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Traceroute - Chemin jusqu'à la destination</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -203,14 +208,12 @@ ping -6 google.com           # IPv6 seulement
     <code>traceroute google.com        # Linux (utilise UDP)
 traceroute -I google.com    # ICMP
 traceroute -n google.com    # Sans résolution DNS
-mtr google.com               # Ping + traceroute en temps réel
-</code>
+mtr google.com               # Ping + traceroute en temps réel</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Connexions réseau</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -224,14 +227,12 @@ ss -tnp | grep ESTAB       # Connexions établies
 # Commandes classiques (net-tools)
 netstat -tuln              # Ports en écoute
 netstat -rn                # Table de routage
-netstat -i                 # Stats interfaces
-</code>
+netstat -i                 # Stats interfaces</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>DNS</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -243,28 +244,24 @@ resolvectl status
 # Tester DNS
 nslookup google.com
 dig google.com
-host google.com
-</code>
+host google.com</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>IP publique</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>curl ifconfig.me
 curl icanhazip.com
-wget -qO- ifconfig.me
-</code>
+wget -qO- ifconfig.me</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>4. Configuration réseau</h2>
 <h3>Fichiers de configuration (Debian/Ubuntu)</h3>
@@ -275,14 +272,12 @@ wget -qO- ifconfig.me
 sudo nano /etc/network/interfaces
 
 # Configuration DNS
-sudo nano /etc/resolv.conf
-</code>
+sudo nano /etc/resolv.conf</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exemple /etc/network/interfaces</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -292,42 +287,36 @@ iface eth0 inet static
     address 192.168.1.100
     netmask 255.255.255.0
     gateway 192.168.1.1
-    dns-nameservers 8.8.8.8 8.8.4.4
-</code>
+    dns-nameservers 8.8.8.8 8.8.4.4</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Redémarrer le réseau</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>sudo systemctl restart networking
 # ou
-sudo /etc/init.d/networking restart
-</code>
+sudo /etc/init.d/networking restart</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. Le fichier /etc/hosts</h2>
 <p>Le fichier hosts permet de résoudre les noms localement.</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>sudo nano /etc/hosts
-</code>
+    <code>sudo nano /etc/hosts</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <p>Contenu :</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -342,14 +331,12 @@ sudo /etc/init.d/networking restart
 
 # Bloquer un site
 127.0.0.1       facebook.com
-127.0.0.1       www.facebook.com
-</code>
+127.0.0.1       www.facebook.com</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. SSH - Connexion à distance</h2>
 <h3>Installer le serveur</h3>
@@ -358,28 +345,24 @@ sudo /etc/init.d/networking restart
   <div class="code-line" onclick="copyCode(this)">
     <code>sudo apt install openssh-server
 sudo systemctl enable ssh
-sudo systemctl start ssh
-</code>
+sudo systemctl start ssh</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Se connecter</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>ssh utilisateur@adresse_ip
 ssh -p 2222 utilisateur@ip    # Port personnalisé
-ssh -i ~/.ssh/cle_privee user@ip  # Avec clé SSH
-</code>
+ssh -i ~/.ssh/cle_privee user@ip  # Avec clé SSH</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Sécurisation SSH</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -389,14 +372,12 @@ sudo nano /etc/ssh/sshd_config
 # Changer &quot;Port 22&quot; en &quot;Port 2222&quot;
 
 # Redémarrer SSH
-sudo systemctl restart ssh
-</code>
+sudo systemctl restart ssh</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Clés SSH</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -408,14 +389,12 @@ ssh-keygen -t ed25519 -C &quot;mon@email.com&quot;
 ssh-copy-id utilisateur@serveur
 
 # Ou manuellement
-cat ~/.ssh/id_ed25519.pub | ssh user@serveur &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys&quot;
-</code>
+cat ~/.ssh/id_ed25519.pub | ssh user@serveur &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys&quot;</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>7. Transfert de fichiers</h2>
 <h3>SCP - Copie sécurisée</h3>
@@ -432,27 +411,23 @@ scp user@serveur:/home/user/fichier.txt ./
 # Options utiles
 scp -P 2222 fichier.txt user@serveur:/dossier/  # Port
 scp -v fichier.txt user@serveur:/dossier/       # Verbeux
-scp -C fichier.txt user@serveur:/dossier/       # Compression
-</code>
+scp -C fichier.txt user@serveur:/dossier/       # Compression</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>SFTP - Transfert interactif</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>sftp user@serveur
-# Commandes: ls, cd, put, get, rm, mkdir, etc.
-</code>
+# Commandes: ls, cd, put, get, rm, mkdir, etc.</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>RSYNC - Synchronisation</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -464,14 +439,12 @@ rsync -av dossier/ user@serveur:/home/user/backup/
 rsync -avz --delete dossier/ user@serveur:/home/user/backup/
 
 # Exclure des fichiers
-rsync -av --exclude='*.log' dossier/ user@serveur:/backup/
-</code>
+rsync -av --exclude='*.log' dossier/ user@serveur:/backup/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. Commandes firewall (UFW)</h2>
 <h3>UFW (Uncomplicated Firewall)</h3>
@@ -500,14 +473,12 @@ sudo ufw allow 8080/tcp
 sudo ufw deny 80/tcp
 
 # Supprimer une règle
-sudo ufw delete allow 80/tcp
-</code>
+sudo ufw delete allow 80/tcp</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Vérifier la connectivité</h3>
@@ -516,28 +487,24 @@ sudo ufw delete allow 80/tcp
   <div class="code-line" onclick="copyCode(this)">
     <code>ip addr
 ping -c 3 8.8.8.8
-traceroute google.com
-</code>
+traceroute google.com</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Configurer une IP statique</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>sudo nano /etc/network/interfaces
 # Ajouter la configuration statique
-sudo systemctl restart networking
-</code>
+sudo systemctl restart networking</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 3 : Transférer un fichier</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -545,14 +512,12 @@ sudo systemctl restart networking
     <code># Créer un fichier test
 echo &quot;Test&quot; &gt; test.txt
 # Le copier sur le serveur
-scp test.txt user@serveur:/tmp/
-</code>
+scp test.txt user@serveur:/tmp/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>10. Tableau résumé</h2>
 <table>
@@ -607,11 +572,9 @@ scp test.txt user@serveur:/tmp/
 </table>
 <hr />
 <p>Maîtrise ces commandes pour administrer le réseau sous Linux ! 🌐</p>
-
-
 </div>
 <nav>
-<a href="05-installation-logiciels.html" style="color:#00d9ff;text-decoration:none;">&larr; 05 - Installation de logiciels</a> | <span style="color:#666;">06</span> | <a href="07-gestion-fichiers.html" style="color:#00d9ff;text-decoration:none;">07 - Gestion des fichiers et dossiers &rarr;</a>
+<a href="05-installation-logiciels.html" style="color:#00d9ff;text-decoration:none;">&larr; 5 - Installation de logiciels</a> | <span style="color:#666;">06</span> | <a href="07-gestion-fichiers.html" style="color:#00d9ff;text-decoration:none;">07 - Gestion des fichiers et dossiers &rarr;</a>
 </nav>
 
 <script>
@@ -620,9 +583,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -631,7 +592,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

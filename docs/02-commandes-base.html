@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Commandes Base - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 2 : Commandes de base - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/02-commandes-base.html">
-<meta property="og:title" content="Commandes Base - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/02-commandes-de-base.html">
+<meta property="og:title" content="Leçon 2 : Commandes de base - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Commandes Base - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Commandes Base, debutant, ubuntu">
+<meta name="description" content="Leçon 2 : Commandes de base - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 2  commandes de base, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -22,7 +21,14 @@ code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -86,14 +92,14 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn.copied svg { fill: #238636; }
 
-/* Inline code (dans le texte) */
+/* Inline code */
 p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
 <h1>Leçon 2 : Commandes de base</h1>
@@ -102,7 +108,6 @@ p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 
 <h2>1. Navigation dans le système de fichiers</h2>
 <h3>pwd - print working directory</h3>
 <p>Affiche le répertoire courant (où tu es).</p>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -114,10 +119,8 @@ pwd -L                  # Chemin logique (tel que tapé)</code>
     </button>
   </div>
 </div>
-
 <h3>cd - change directory</h3>
 <p>Se déplacer dans l'arborescence.</p>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -134,7 +137,6 @@ cd /                       # Racine du système</code>
     </button>
   </div>
 </div>
-
 <p><strong>Raccourcis utiles :</strong>
 - <code>~</code> ou <code>$HOME</code> : Répertoire personnel
 - <code>..</code> : Répertoire parent
@@ -143,7 +145,6 @@ cd /                       # Racine du système</code>
 <hr />
 <h2>2. Lister les fichiers</h2>
 <h3>ls - list</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -165,9 +166,7 @@ ls -R                   # Récursif (sous-dossiers)</code>
     </button>
   </div>
 </div>
-
 <h3>Comprendre ls -l</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -185,9 +184,7 @@ ls -R                   # Récursif (sous-dossiers)</code>
     </button>
   </div>
 </div>
-
 <h3>Commandes complémentaires</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -207,11 +204,9 @@ ls -li</code>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>3. Créer des fichiers et dossiers</h2>
 <h3>mkdir - make directory</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -224,15 +219,13 @@ mkdir -m 755 dossier          # Avec permissions</code>
     </button>
   </div>
 </div>
-
 <h3>touch - créer un fichier vide</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>touch fichier.txt             # Créer fichier vide
 touch file1.txt file2.txt     # Plusieurs fichiers
-touch -d "2024-01-01" file    # Avec date
+touch -d &quot;2024-01-01&quot; file    # Avec date
 touch -a file                # Modifier date accès
 touch -m file                # Modifier date modification</code>
     <button class="copy-btn" aria-label="Copier">
@@ -240,25 +233,22 @@ touch -m file                # Modifier date modification</code>
     </button>
   </div>
 </div>
-
 <h3>echo et printf - créer avec contenu</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>echo "Bonjour" > fichier.txt         # Créer et écrire
-echo "Ligne 1" >> fichier.txt         # Ajouter
-printf "Bonjour %s\n" "Monde"        # Formaté</code>
+    <code>echo &quot;Bonjour&quot; &gt; fichier.txt         # Créer et écrire
+echo &quot;Ligne 1&quot; &gt;&gt; fichier.txt         # Ajouter
+printf &quot;Bonjour %s
+&quot; &quot;Monde&quot;        # Formaté</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>4. Copier des fichiers</h2>
 <h3>cp - copy</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -277,7 +267,6 @@ cp fichier{,.bak}                       # Raccourci: + .bak</code>
     </button>
   </div>
 </div>
-
 <h3>Options détaillées</h3>
 <table>
 <thead>
@@ -320,7 +309,6 @@ cp fichier{,.bak}                       # Raccourci: + .bak</code>
 <hr />
 <h2>5. Déplacer et renommer</h2>
 <h3>mv - move</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -328,20 +316,18 @@ cp fichier{,.bak}                       # Raccourci: + .bak</code>
 mv fichier.txt dossier/              # Déplacer vers dossier
 mv fichier1.txt fichier2.txt dossier/  # Plusieurs fichiers
 mv -i fichier.txt dest.txt          # Confirmation
-mv -n fichier.txt dest.txt           # Pas écraser
-mv -v fichier.txt dest.txt           # Verbeux
-mv -f fichier.txt dest.txt           # Forcer
-mv *.txt dossier/                    #Tous les .txt</code>
+mv -n fichier.txt dest.txt         # Pas écraser
+mv -v fichier.txt dest.txt         # Verbeux
+mv -f fichier.txt dest.txt         # Forcer
+mv *.txt dossier/                   #Tous les .txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. Supprimer des fichiers</h2>
 <h3>rm - remove</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -360,9 +346,7 @@ rm -rf *             # Supprimer TOUT le contenu</code>
     </button>
   </div>
 </div>
-
 <h3>rmdir - remove directory</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -373,11 +357,9 @@ rmdir -p a/b/c/d           # Supprimer chemin vide</code>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>7. Lire le contenu des fichiers</h2>
 <h3>cat - concatenate</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -392,9 +374,7 @@ cat -A fichier.txt                 # Afficher caractères spéciaux</code>
     </button>
   </div>
 </div>
-
 <h3>less - afficher page par page</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -406,7 +386,6 @@ less -S gros_fichier              # Sans retour à la ligne</code>
     </button>
   </div>
 </div>
-
 <p><strong>Commandes dans less :</strong></p>
 <table>
 <thead>
@@ -459,27 +438,24 @@ less -S gros_fichier              # Sans retour à la ligne</code>
 </tbody>
 </table>
 <h3>head - début du fichier</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>head fichier.txt                   # 10 premières lignes
 head -n 20 fichier.txt            # 20 premières lignes
-head -c 100 fichier.txt           # 100 premiers octets
+head -c 100 fichier.txt            # 100 premiers octets
 head -q fichier1.txt fichier2.txt # Plusieurs fichiers</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>tail - fin du fichier</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>tail fichier.txt                   # 10 dernières lignes
-tail -n 20 fichier.txt            # 20 dernières lignes
+tail -n 20 fichier.txt             # 20 dernières lignes
 tail -f fichier.log                # Suivre en temps réel
 tail -f -n 100 fichier.log         # 100 dernières lignes en direct
 tail -c 100 fichier.txt            # 100 derniers octets</code>
@@ -488,9 +464,7 @@ tail -c 100 fichier.txt            # 100 derniers octets</code>
     </button>
   </div>
 </div>
-
 <h3>nl - numbered lines</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -501,11 +475,9 @@ nl -ba fichier.txt                 # Numéros même lignes vides</code>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. Compter et analyser</h2>
 <h3>wc - word count</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -519,9 +491,7 @@ wc -m fichier.txt                  # Nombre de caractères</code>
     </button>
   </div>
 </div>
-
 <h3>file - type de fichier</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -533,27 +503,23 @@ file -z archive.tar.gz             # Contenu sans décompresser</code>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Commandes d'information</h2>
 <h3>date - afficher la date</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>date                   # Date et heure
 date +%H:%M            # Juste l'heure
 date +%d/%m/%Y         # Format personnalisé
-date -d "tomorrow"     # Date future
-date -d "2 days ago"  # Date passée</code>
+date -d &quot;tomorrow&quot;     # Date future
+date -d &quot;2 days ago&quot;  # Date passée</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>whoami - utilisateur courant</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -564,9 +530,7 @@ whoami -r             # ID du groupe</code>
     </button>
   </div>
 </div>
-
 <h3>uptime - temps de fonctionnement</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -577,9 +541,7 @@ uptime -s              # Depuis quand allumé</code>
     </button>
   </div>
 </div>
-
 <h3>cal - calendrier</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -592,11 +554,9 @@ cal -m 1               # Janvier avec Lundi</code>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>10. Alias et raccourcis</h2>
 <h3>Créer des alias</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -606,14 +566,13 @@ alias la='ls -A'
 alias l='ls -CF'
 
 # Permanent (ajouter à ~/.bashrc)
-echo "alias ll='ls -la'" >> ~/.bashrc
+echo &quot;alias ll='ls -la'&quot; &gt;&gt; ~/.bashrc
 source ~/.bashrc</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Raccourcis clavier</h3>
 <table>
 <thead>
@@ -676,7 +635,6 @@ source ~/.bashrc</code>
 <hr />
 <h2>11. Exercices pratiques</h2>
 <h3>Exercice 1 : Navigation</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -689,9 +647,7 @@ cd -                             # Revenir au précédent</code>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Créer une structure</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -704,13 +660,11 @@ ls -R projet/</code>
     </button>
   </div>
 </div>
-
 <h3>Exercice 3 : Manipulation de fichiers</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>echo "#!/bin/bash" > script.sh
+    <code>echo &quot;#!/bin/bash&quot; &gt; script.sh
 chmod +x script.sh
 cp script.sh script_backup.sh
 ls -l *.sh</code>
@@ -719,9 +673,7 @@ ls -l *.sh</code>
     </button>
   </div>
 </div>
-
 <h3>Exercice 4 : Lire des logs</h3>
-
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -733,7 +685,6 @@ grep -i error /var/log/syslog | head -10</code>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>12. Tableau résumé</h2>
 <table>
@@ -802,7 +753,7 @@ grep -i error /var/log/syslog | head -10</code>
 <p>Ces commandes sont ton quotidien sous Linux. Maîtrise-les ! 💪</p>
 </div>
 <nav>
-<a href="01-introduction.html" style="color:#00d9ff;text-decoration:none;">&larr; 01 - Introduction à Linux</a> | <span style="color:#666;">02</span> | <a href="03-permissions.html" style="color:#00d9ff;text-decoration:none;">03 - Permissions Linux &rarr;</a>
+<a href="01-introduction.html" style="color:#00d9ff;text-decoration:none;">&larr; 1 - Introduction à Linux</a> | <span style="color:#666;">02</span> | <a href="03-permissions.html" style="color:#00d9ff;text-decoration:none;">03 - Permissions Linux &rarr;</a>
 </nav>
 
 <script>
@@ -811,20 +762,15 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
-    // Bouton "copié"
     btn.classList.add('copied');
     btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
     setTimeout(function() {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
-    // Barre de progression
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');
@@ -837,7 +783,6 @@ function copyCode(el) {
       }
     }, 20);
   }).catch(function() {
-    // Fallback pour navigateurs anciens
     var ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
@@ -849,6 +794,5 @@ function copyCode(el) {
   });
 }
 </script>
-
 </body>
 </html>

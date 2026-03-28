@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Introduction - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 1 : Introduction à Linux - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/01-introduction.html">
-<meta property="og:title" content="Introduction - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/01-introduction-a-linux.html">
+<meta property="og:title" content="Leçon 1 : Introduction à Linux - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Introduction - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Introduction, debutant, ubuntu">
+<meta name="description" content="Leçon 1 : Introduction à Linux - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 1  introduction  linux, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,14 +84,22 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
 <h1>Leçon 1 : Introduction à Linux</h1>
@@ -214,14 +227,12 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 ├── sys/       # Infos système (virtuel)
 ├── tmp/       # Fichiers temporaires
 ├── usr/       # Programmes utilisateur
-└── var/       # Données variables (logs)
-</code>
+└── var/       # Données variables (logs)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Répertoires importants</h3>
 <table>
 <thead>
@@ -274,14 +285,12 @@ mkdir dossier  # Créer un dossier
 touch fichier  # Créer un fichier
 rm fichier     # Supprimer
 cp source dest # Copier
-mv source dest # Déplacer/renommer
-</code>
+mv source dest # Déplacer/renommer</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. Premier pas : Commandes essentielles</h2>
 <h3>Navigation</h3>
@@ -296,14 +305,12 @@ ls -la              # Tout
 cd /                # Aller à la racine
 cd ~                # Retourner au home
 cd ..               # Répertoire parent
-cd -                # Revenir en arrière
-</code>
+cd -                # Revenir en arrière</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Manipulation de fichiers</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -314,14 +321,12 @@ touch fichier       # Créer fichier
 cp fichier copie    # Copier
 mv fichier nouveau  # Renommer/déplacer
 rm fichier          # Supprimer
-rm -rf dossier     # Supprimer récursif (DANGER!)
-</code>
+rm -rf dossier     # Supprimer récursif (DANGER!)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Lire les fichiers</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -330,28 +335,24 @@ rm -rf dossier     # Supprimer récursif (DANGER!)
 less fichier        # Afficher page par page
 head -n 10 fichier # 10 premières lignes
 tail -n 10 fichier # 10 dernières lignes
-tail -f fichier    # Suivre en temps réel
-</code>
+tail -f fichier    # Suivre en temps réel</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Recherche</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>which commande      # Trouver une commande
 man commande        # Manuel
---help              # Aide
-</code>
+--help              # Aide</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. Notions de droits et permissions</h2>
 <h3>Les permissions</h3>
@@ -359,14 +360,12 @@ man commande        # Manuel
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>-rw-r--r-- 1 user group 1234 Mar 10 10:00 fichier
-</code>
+    <code>-rw-r--r-- 1 user group 1234 Mar 10 10:00 fichier</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <table>
 <thead>
 <tr>
@@ -400,14 +399,12 @@ man commande        # Manuel
     <code>chmod +x fichier     # Rendre exécutable
 chmod 644 fichier    # rw-r--r--
 chmod 755 dossier/   # rwxr-xr-x
-chmod -R 777 dossier # Plein accès (DANGER!)
-</code>
+chmod -R 777 dossier # Plein accès (DANGER!)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>7.root et sudo</h2>
 <h3>Utilisateur root</h3>
@@ -419,14 +416,12 @@ chmod -R 777 dossier # Plein accès (DANGER!)
   <div class="code-line" onclick="copyCode(this)">
     <code>sudo apt update      # Mettre à jour les paquets
 sudo mkdir /test     # Créer dans /
-sudo rm -rf /        # DANGER!
-</code>
+sudo rm -rf /        # DANGER!</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <blockquote>
 <p>⚠️ <strong>Attention</strong> : root peut tout faire, y compris détruire le système !</p>
 </blockquote>
@@ -439,14 +434,12 @@ sudo rm -rf /        # DANGER!
     <code>sudo apt update          # Mettre à jour
 sudo apt install NomPaquet    # Installer
 sudo apt upgrade         # Mettre à jour
-sudo apt remove NomPaquet    # Supprimer
-</code>
+sudo apt remove NomPaquet    # Supprimer</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Aide et documentation</h2>
 <h3>Obtenir de l'aide</h3>
@@ -455,14 +448,12 @@ sudo apt remove NomPaquet    # Supprimer
   <div class="code-line" onclick="copyCode(this)">
     <code>commande --help         # Aide rapide
 man commande            # Manuel complet
-info commande           # Documentation info
-</code>
+info commande           # Documentation info</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Ressources en ligne</h3>
 <ul>
 <li><strong>askubuntu.com</strong> : Questions/réponses</li>
@@ -470,7 +461,7 @@ info commande           # Documentation info
 <li><strong>github.com</strong> : Code source</li>
 </ul>
 <hr />
-<h2>10. Résumé et prochaines étapes</h2>
+<h2>10. Résumé et prochaines lépések</h2>
 <h3>Points clés</h3>
 <table>
 <thead>
@@ -510,11 +501,9 @@ info commande           # Documentation info
 <p>Dans la prochaine leçon, nous aborderons les <strong>commandes de base</strong> en détail.</p>
 <hr />
 <p><strong>Bienvenue dans le monde de Linux !</strong> 🐧</p>
-
-
 </div>
 <nav>
-<a href="index.html" style="color:#666;text-decoration:none;"><span style="color:#666;">Début</span></a> | <span style="color:#666;">01</span> | <a href="02-commandes-base.html" style="color:#00d9ff;text-decoration:none;">02 - Commandes de base &rarr;</a>
+<span style="color:#666;">&larr; Introduction</span> | <span style="color:#666;">01</span> | <a href="02-commandes-base.html" style="color:#00d9ff;text-decoration:none;">02 - Commandes de base &rarr;</a>
 </nav>
 
 <script>
@@ -523,9 +512,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -534,7 +521,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

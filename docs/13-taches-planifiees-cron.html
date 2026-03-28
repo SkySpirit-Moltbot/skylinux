@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taches Planifiees Cron - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 13 : Tâches planifiées avec Cron - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/13-taches-planifiees-cron.html">
-<meta property="og:title" content="Taches Planifiees Cron - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/13-taches-planifiees-avec-cron.html">
+<meta property="og:title" content="Leçon 13 : Tâches planifiées avec Cron - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Taches Planifiees Cron - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Taches Planifiees Cron, debutant, ubuntu">
+<meta name="description" content="Leçon 13 : Tâches planifiées avec Cron - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 13  tches planifies avec cron, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,17 +84,25 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-<h1>13 - taches planifiees cron : Tâches planifiées avec Cron</h1>
+<h1>Leçon 13 : Tâches planifiées avec Cron</h1>
 <p>Cron est le planificateur de tâches de Linux. Dans cette leçon, tu vas maîtriser cron pour automatiser tes tâches.</p>
 <hr />
 <h2>1. Comprendre Cron</h2>
@@ -110,14 +123,12 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 crontab -e                # Éditer les tâches
 crontab -r                # Supprimer toutes les tâches
 crontab -i                # Confirmation avant suppression
-crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)
-</code>
+crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>3. Format d'une tâche Cron</h2>
 <div class="code-block">
@@ -130,14 +141,12 @@ crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)
 │ │ │ │ ┌───────────── Jour de la semaine (0 - 7)
 │ │ │ │ │             (0 et 7 = dimanche)
 │ │ │ │ │
-* * * * * commande à exécuter
-</code>
+* * * * * commande à exécuter</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Symboles spéciaux</h3>
 <table>
 <thead>
@@ -234,14 +243,12 @@ crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)
 0 * * * * /usr/bin/python3 /home/user/script.py
 
 # Vérification DNS chaque jour à 8h
-0 8 * * * ping -c 1 google.com || echo &quot;Pas de réseau&quot; | mail -s &quot;Alerte&quot; user@email.com
-</code>
+0 8 * * * ping -c 1 google.com || echo &quot;Pas de réseau&quot; | mail -s &quot;Alerte&quot; user@email.com</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. Variables d'environnement dans Cron</h2>
 <h3>Problème courant</h3>
@@ -256,14 +263,12 @@ PATH=/usr/local/bin:/usr/bin:/bin
 HOME=/home/utilisateur
 
 # Ensuite les tâches...
-0 9 * * * /home/utilisateur/scripts/backup.sh
-</code>
+0 9 * * * /home/utilisateur/scripts/backup.sh</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Rediriger la sortie</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -276,52 +281,44 @@ HOME=/home/utilisateur
 
 # Envoyer par email (si configuré)
 MAILTO=&quot;user@example.com&quot;
-0 9 * * * /script.sh
-</code>
+0 9 * * * /script.sh</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. Système Cron</h2>
 <h3>Cron système (/etc/crontab)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>sudo nano /etc/crontab
-</code>
+    <code>sudo nano /etc/crontab</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <p>Format légèrement différent :</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>minute hour day month weekday user command
-</code>
+    <code>minute hour day month weekday user command</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <p>Exemple :</p>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>0 3 * * * root /usr/bin/backup.sh
-</code>
+    <code>0 3 * * * root /usr/bin/backup.sh</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Répertoires spéciaux</h3>
 <table>
 <thead>
@@ -369,14 +366,12 @@ echo &quot;/script.sh&quot; | at now +2 hours
 atq
 
 # Supprimer une tâche
-atrm 1
-</code>
+atrm 1</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. anacron - pour ordinateurs non allumés</h2>
 <p><code>anacron</code> exécute les tâches qui ont raté car l'ordinateur était éteint.</p>
@@ -387,14 +382,12 @@ atrm 1
 sudo apt install anacron
 
 # Fichier de config
-sudo nano /etc/anacrontab
-</code>
+sudo nano /etc/anacrontab</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Test basique</h3>
@@ -405,42 +398,36 @@ sudo nano /etc/anacrontab
 # Ajouter:
 * * * * * echo &quot;$(date)&quot; &gt;&gt; ~/cron_test.txt
 # Attendre 1 minute, vérifier:
-cat ~/cron_test.txt
-</code>
+cat ~/cron_test.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Backup automatique</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>crontab -e
 # Ajouter (chaque jour à 20h):
-0 20 * * * rsync -avz ~/Documents/ /media/backup/ &gt;&gt; ~/backup.log 2&gt;&amp;1
-</code>
+0 20 * * * rsync -avz ~/Documents/ /media/backup/ &gt;&gt; ~/backup.log 2&gt;&amp;1</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 3 : Nettoyage automatique</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>crontab -e
 # Chaque dimanche à 3h:
-0 3 * * 0 find ~/.cache -type f -mtime +30 -delete
-</code>
+0 3 * * 0 find ~/.cache -type f -mtime +30 -delete</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>10. Tableau résumé</h2>
 <table>
@@ -506,11 +493,9 @@ cat ~/cron_test.txt
 </table>
 <hr />
 <p>Cron est ton meilleur ami pour l'automatisation ! Utilise-le sagesse. ⏰</p>
-
-
 </div>
 <nav>
-<a href="12-ssh-connexion-distante.html" style="color:#00d9ff;text-decoration:none;">&larr; 12 - SSH et connexion distante</a> | <span style="color:#666;">13</span> | <a href="14-gestion-utilisateurs-groupes.html" style="color:#00d9ff;text-decoration:none;">14 - Gestion utilisateurs et groupes &rarr;</a>
+<a href="12-ssh-connexion-distante.html" style="color:#00d9ff;text-decoration:none;">&larr; 12 - SSH et connexion distante</a> | <span style="color:#666;">13</span> | <a href="14-gestion-utilisateurs-groupes.html" style="color:#00d9ff;text-decoration:none;">14 - Gestion des utilisateurs et groupes &rarr;</a>
 </nav>
 
 <script>
@@ -519,9 +504,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -530,7 +513,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

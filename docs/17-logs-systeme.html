@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Logs Systeme - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 17 : Les logs système - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/17-logs-systeme.html">
-<meta property="og:title" content="Logs Systeme - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/17-les-logs-systeme.html">
+<meta property="og:title" content="Leçon 17 : Les logs système - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Logs Systeme - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Logs Systeme, debutant, ubuntu">
+<meta name="description" content="Leçon 17 : Les logs système - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 17  les logs systme, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,17 +84,25 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-<h1>17 - logs systeme : Les logs système</h1>
+<h1>Leçon 17 : Les logs système</h1>
 <p>Dans cette leçon, tu vas maîtriser les logs sous Linux. Les logs sont essentiels pour le dépannage, la sécurité et la surveillance système.</p>
 <hr />
 <h2>1. Introduction aux logs</h2>
@@ -152,52 +165,44 @@ tail -f /var/log/syslog
 
 # Avec nombre de lignes
 tail -n 50 /var/log/syslog
-tail -f -n 50 /var/log/syslog
-</code>
+tail -f -n 50 /var/log/syslog</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>head - Début des logs</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>head /var/log/syslog
-head -n 20 /var/log/syslog
-</code>
+head -n 20 /var/log/syslog</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>cat - Tout afficher</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>cat /var/log/syslog
-</code>
+    <code>cat /var/log/syslog</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>less - Naviguer</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>less /var/log/syslog
-# Touches: /rechercher, n=suivant, p=précédent, q=quitter
-</code>
+# Touches: /rechercher, n=suivant, p=précédent, q=quitter</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>3. grep et logs</h2>
 <h3>Rechercher dans les logs</h3>
@@ -214,14 +219,12 @@ grep -i &quot;error&quot; /var/log/syslog
 grep -C 3 &quot;erreur&quot; /var/log/syslog
 
 # Compter les occurrences
-grep -c &quot;failed&quot; /var/log/auth.log
-</code>
+grep -c &quot;failed&quot; /var/log/auth.log</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Recherches avancées</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -233,14 +236,12 @@ grep -E &quot;error|warning|critical&quot; /var/log/syslog
 grep -r &quot;motif&quot; /var/log/
 
 # Inverser (lignes sans)
-grep -v &quot;debug&quot; /var/log/syslog
-</code>
+grep -v &quot;debug&quot; /var/log/syslog</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>4. Journalctl - Le système de logs moderne</h2>
 <p>systemd utilise <strong>journald</strong> comme système de logs centralisé.</p>
@@ -262,14 +263,12 @@ journalctl -n 50
 journalctl -n 100 --no-pager
 
 # Suivre en temps réel
-journalctl -f
-</code>
+journalctl -f</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Filtrer par service</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -286,14 +285,12 @@ journalctl -b -1
 
 # Priorité (0=emergency à 7=debug)
 journalctl -p err
-journalctl -p warning
-</code>
+journalctl -p warning</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Options avancées</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -309,14 +306,12 @@ journalctl --disk-usage
 
 # Nettoyer
 journalctl --vacuum-size=100M
-journalctl --vacuum-time=2weeks
-</code>
+journalctl --vacuum-time=2weeks</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. dmesg - Logs du noyau</h2>
 <h3>Commandes de base</h3>
@@ -335,14 +330,12 @@ dmesg -T
 # Filtrer par niveau
 dmesg -l err
 dmesg -l warn
-dmesg -l info
-</code>
+dmesg -l info</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Rechercher</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -350,14 +343,12 @@ dmesg -l info
     <code># Rechercher un terme
 dmesg | grep -i error
 dmesg | grep -i usb
-dmesg | grep -i network
-</code>
+dmesg | grep -i network</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. Logs d'authentification</h2>
 <h3>Fichiers clés</h3>
@@ -368,14 +359,12 @@ dmesg | grep -i network
 /var/log/auth.log
 
 # RHEL/CentOS
-/var/log/secure
-</code>
+/var/log/secure</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Recherches utiles</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -394,14 +383,12 @@ grep &quot;sudo&quot; /var/log/auth.log
 
 # Dernier utilisateur
 last
-lastlog
-</code>
+lastlog</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>7. Logs applicatifs</h2>
 <h3>Apache/Nginx</h3>
@@ -414,28 +401,24 @@ lastlog
 
 # Nginx
 /var/log/nginx/access.log
-/var/log/nginx/error.log
-</code>
+/var/log/nginx/error.log</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>MySQL/MariaDB</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>/var/log/mysql/error.log
 /var/log/mysql/slow-queries.log
-/var/log/mysql/general.log
-</code>
+/var/log/mysql/general.log</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Autres services</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -448,14 +431,12 @@ journalctl -u docker
 /var/log/fail2ban.log
 
 # Cron
-/var/log/cron.log
-</code>
+/var/log/cron.log</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. Analyser les logs</h2>
 <h3>Compter et trier</h3>
@@ -469,14 +450,12 @@ grep -c &quot;error&quot; /var/log/syslog
 grep -oE &quot;error|warning|notice&quot; /var/log/syslog | sort | uniq -c | sort -rn
 
 # Top 10 IPs qui accèdent au serveur
-awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head -10
-</code>
+awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -rn | head -10</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Créer un script de surveillance</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -492,14 +471,12 @@ ERRORS=$(tail -n 100 $LOG | grep -c -i &quot;error&quot;)
 if [ $ERRORS -gt 10 ]; then
     echo &quot;ALERTE: $ERRORS erreurs dans les dernières 100 lignes&quot;
     #Notifier (email, Slack, etc.)
-fi
-</code>
+fi</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Logrotate - Gestion des logs</h2>
 <h3>Configuration</h3>
@@ -510,14 +487,12 @@ fi
 /etc/logrotate.conf
 
 # Configuration par service
-/etc/logrotate.d/nginx
-</code>
+/etc/logrotate.d/nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exemple de configuration</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -534,14 +509,12 @@ fi
     postrotate
         systemctl reload nginx &gt; /dev/null
     endscript
-}
-</code>
+}</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Commandes logrotate</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -550,14 +523,12 @@ fi
 logrotate -d /etc/logrotate.conf
 
 # Forcer la rotation
-sudo logrotate -f /etc/logrotate.conf
-</code>
+sudo logrotate -f /etc/logrotate.conf</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>10. Créer son propre système de log</h2>
 <h3>Script simple</h3>
@@ -571,14 +542,12 @@ LOGFILE=&quot;/var/log/mon_script.log&quot;
 echo &quot;$(date '+%Y-%m-%d %H:%M:%S') - Démarrage du script&quot; &gt;&gt; $LOGFILE
 
 # Votre logique ici
-echo &quot;$(date '+%Y-%m-%d %H:%M:%S') - Opération terminée&quot; &gt;&gt; $LOGFILE
-</code>
+echo &quot;$(date '+%Y-%m-%d %H:%M:%S') - Opération terminée&quot; &gt;&gt; $LOGFILE</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Logger avec syslog</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -589,14 +558,12 @@ logger -p user.warn &quot;Attention&quot;
 logger -p user.err &quot;Erreur&quot;
 
 # Avec tag personnalisé
-logger -t &quot;MONAPP&quot; -p user.info &quot;Message&quot;
-</code>
+logger -t &quot;MONAPP&quot; -p user.info &quot;Message&quot;</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>11. Exercices pratiques</h2>
 <h3>Exercice 1 : Surveiller les erreurs</h3>
@@ -607,14 +574,12 @@ logger -t &quot;MONAPP&quot; -p user.info &quot;Message&quot;
 grep -i error /var/log/syslog | tail -20
 
 # Errors avec contexte
-grep -B2 -A2 &quot;error&quot; /var/log/syslog | head -30
-</code>
+grep -B2 -A2 &quot;error&quot; /var/log/syslog | head -30</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Connexions SSH</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -623,14 +588,12 @@ grep -B2 -A2 &quot;error&quot; /var/log/syslog | head -30
 grep &quot;sshd&quot; /var/log/auth.log | tail -20
 
 # Compter les échecs
-grep &quot;Failed password&quot; /var/log/auth.log | wc -l
-</code>
+grep &quot;Failed password&quot; /var/log/auth.log | wc -l</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 3 : Surveillance temps réel</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -639,14 +602,12 @@ grep &quot;Failed password&quot; /var/log/auth.log | wc -l
 tail -f /var/log/syslog | grep -i error
 
 # Avec journalctl
-journalctl -f -u nginx
-</code>
+journalctl -f -u nginx</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>12. Résumé</h2>
 <table>
@@ -685,8 +646,6 @@ journalctl -f -u nginx
 </table>
 <hr />
 <p>Maîtrise les logs pour diagnose et sécuriser ton système ! 📋</p>
-
-
 </div>
 <nav>
 <a href="16-editeurs-texte.html" style="color:#00d9ff;text-decoration:none;">&larr; 16 - Éditeurs de texte en ligne de commande</a> | <span style="color:#666;">17</span> | <a href="18-gestion-disques-partitions.html" style="color:#00d9ff;text-decoration:none;">18 - Gestion des disques et partitions &rarr;</a>
@@ -698,9 +657,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -709,7 +666,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Archivage Compression - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
+<title>Leçon 8 : Archivage et compression - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/08-archivage-compression.html">
-<meta property="og:title" content="Archivage Compression - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/08-archivage-et-compression.html">
+<meta property="og:title" content="Leçon 8 : Archivage et compression - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Archivage Compression - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Archivage Compression, debutant, ubuntu">
+<meta name="description" content="Leçon 8 : Archivage et compression - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, leon 8  archivage et compression, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -19,12 +18,17 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #111118; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
-a { color: #00d9ff; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -44,6 +48,7 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 .code-block progress::-webkit-progress-bar { background: #238636; }
 .code-block progress::-moz-progress-bar { background: #238636; }
 .code-block progress.loaded { background: #30363d; }
+
 .code-line {
   display: flex;
   align-items: center;
@@ -79,14 +84,22 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn:hover { opacity: 1; border-color: #58a6ff; }
 .copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
 .copy-btn.copied svg { fill: #238636; }
+
+/* Inline code */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
 <h1>Leçon 8 : Archivage et compression</h1>
@@ -124,14 +137,12 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>tar [OPTIONS] [ARCHIVE] [FICHIERS]
-</code>
+    <code>tar [OPTIONS] [ARCHIVE] [FICHIERS]</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Options principales</h3>
 <table>
 <thead>
@@ -183,28 +194,24 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 # -c = créer, -v = verbeux, -f = nom du fichier
 
 tar -cvf backup.tar ~/Documents ~/Images
-# Archiver plusieurs dossiers
-</code>
+# Archiver plusieurs dossiers</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Lister le contenu d'une archive</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>tar -tvf archive.tar          # Liste détaillée
 tar -tvf archive.tar | less   # Paginer
-tar -tf archive.tar           # Liste simple
-</code>
+tar -tf archive.tar           # Liste simple</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Extraire une archive</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -212,14 +219,12 @@ tar -tf archive.tar           # Liste simple
     <code>tar -xvf archive.tar                  # Extraire tout
 tar -xvf archive.tar -C /autre/dossier/  # Extraire ailleurs
 tar -xvf archive.tar fichier.txt      # Extraire un seul fichier
-tar -xvf archive.tar --wildcards '*.txt'  # Extraire par pattern
-</code>
+tar -xvf archive.tar --wildcards '*.txt'  # Extraire par pattern</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>3. Compression avec TAR</h2>
 <h3>GZIP (.tar.gz ou .tgz)</h3>
@@ -236,14 +241,12 @@ tar -tvzf archive.tar.gz
 
 # Extraire
 tar -xvzf archive.tar.gz
-tar -xvzf archive.tar.gz -C /tmp/
-</code>
+tar -xvzf archive.tar.gz -C /tmp/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>BZIP2 (.tar.bz2 ou .tbz2)</h3>
 <p><strong>Compression meilleure, plus lent</strong></p>
 <div class="code-block">
@@ -257,14 +260,12 @@ tar -cvjf backup.tbz2 dossier/
 tar -tvjf archive.tar.bz2
 
 # Extraire
-tar -xvjf archive.tar.bz2
-</code>
+tar -xvjf archive.tar.bz2</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>XZ (.tar.xz) - Recommandé</h3>
 <p><strong>Meilleure compression, plus lent</strong></p>
 <div class="code-block">
@@ -277,14 +278,12 @@ tar -cvJf archive.tar.xz dossier/
 tar -tvJf archive.tar.xz
 
 # Extraire
-tar -xvJf archive.tar.xz
-</code>
+tar -xvJf archive.tar.xz</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Tableau comparatif</h3>
 <table>
 <thead>
@@ -346,28 +345,24 @@ tar -cvzf backup.tar.gz dossier/ \
 tar -cvzf &quot;backup_$(date +%Y%m%d_%H%M).tar.gz&quot; \
     ~/Documents \
     ~/Images \
-    ~/Vidéos
-</code>
+    ~/Vidéos</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Commandes modernes avec pigz/pbzip2 (parallèle)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code># Si installé: compression parallèle (plus rapide sur multi-core)
 tar -cvf archive.tar dossier/ --use-compress-program=pigz
-tar -cvf archive.tar dossier/ --use-compress-program=pbzip2
-</code>
+tar -cvf archive.tar dossier/ --use-compress-program=pbzip2</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>5. ZIP et UNZIP</h2>
 <h3>Présentation</h3>
@@ -396,14 +391,12 @@ unzip archive.zip fichier.txt      # Un seul fichier
 unzip -p archive.zip fichier.txt   # Vers stdout
 
 # Extraire avec mot de passe
-unzip -P motdepasse archive.zip
-</code>
+unzip -P motdepasse archive.zip</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>6. Formats avancés</h2>
 <h3>7Z (7-Zip)</h3>
@@ -424,14 +417,12 @@ sudo apt install p7zip-full
 7z x archive.7z
 
 # Avec mot de passe
-7z a -p archive.7z dossier/
-</code>
+7z a -p archive.7z dossier/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>ZSTD (recommandé - rapide et bon)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -445,14 +436,12 @@ tar -cvzf - dossier/ | zstd &gt; archive.tar.zst
 tar -I zstd -cvf archive.tar.zst dossier/
 
 # Extraire
-tar -I zstd -xvf archive.tar.zst
-</code>
+tar -I zstd -xvf archive.tar.zst</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>7. Manipulations avancées</h2>
 <h3>Ajouter des fichiers à une archive existante</h3>
@@ -465,14 +454,12 @@ tar -rvf archive.tar nouveau_fichier.txt
 gzip archive.tar
 
 # Avec zip
-zip -r archive.zip nouveau_fichier.txt
-</code>
+zip -r archive.zip nouveau_fichier.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Mise à jour incrémentale</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -482,14 +469,12 @@ tar -cvzf backup-full.tar.gz dossier/
 
 # Sauvegarde incrémentale (uniquement fichiers modifiés)
 tar -cvzf backup-$(date +%Y%m%d).tar.gz \
-    -N &quot;2024-01-01&quot; dossier/
-</code>
+    -N &quot;2024-01-01&quot; dossier/</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Vérifier l'intégrité</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -502,14 +487,12 @@ tar -tzf archive.tar.gz
 zip -T archive.zip
 
 # Vérifier 7z
-7z t archive.7z
-</code>
+7z t archive.7z</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>8. Exercices pratiques</h2>
 <h3>Exercice 1 : Créer une backup complète</h3>
@@ -524,14 +507,12 @@ tar -cvzf ~/backup_documents_$(date +%Y%m%d).tar.gz \
     --exclude='*.tmp'
 
 # Vérifier
-tar -tvzf ~/backup_documents_*.tar.gz | head -20
-</code>
+tar -tvzf ~/backup_documents_*.tar.gz | head -20</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 2 : Restaurer sélectivement</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -540,14 +521,12 @@ tar -tvzf ~/backup_documents_*.tar.gz | head -20
 tar -tvzf backup.tar.gz | grep important
 
 # Extraire juste ce fichier
-tar -xvzf backup.tar.gz chemin/vers/important.txt
-</code>
+tar -xvzf backup.tar.gz chemin/vers/important.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 3 : Archiver et déplacer sur un autre serveur</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -556,14 +535,12 @@ tar -xvzf backup.tar.gz chemin/vers/important.txt
 tar -cvzf - dossier/ | ssh user@serveur &quot;cat &gt; backup.tar.gz&quot;
 
 # Sur le serveur distant
-ssh user@serveur &quot;tar -cvzf - dossier/&quot; &gt; local-backup.tar.gz
-</code>
+ssh user@serveur &quot;tar -cvzf - dossier/&quot; &gt; local-backup.tar.gz</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <h3>Exercice 4 : Créer une archive horodatée</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
@@ -571,14 +548,12 @@ ssh user@serveur &quot;tar -cvzf - dossier/&quot; &gt; local-backup.tar.gz
     <code>#!/bin/bash
 DATE=$(date +%Y%m%d_%H%M)
 tar -cvzf &quot;/backup/backup_$DATE.tar.gz&quot; ~/Documents
-echo &quot;Backup créé: backup_$DATE.tar.gz&quot;
-</code>
+echo &quot;Backup créé: backup_$DATE.tar.gz&quot;</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-
 <hr />
 <h2>9. Tableau résumé</h2>
 <table>
@@ -628,11 +603,9 @@ echo &quot;Backup créé: backup_$DATE.tar.gz&quot;
 </ol>
 <hr />
 <p>Ces commandes sont essentielles pour tout administrateur Linux ! 💪</p>
-
-
 </div>
 <nav>
-<a href="07-gestion-fichiers.html" style="color:#00d9ff;text-decoration:none;">&larr; 07 - Gestion des fichiers et dossiers</a> | <span style="color:#666;">08</span> | <a href="09-recherche-fichiers-texte.html" style="color:#00d9ff;text-decoration:none;">09 - Recherche de fichiers et texte &rarr;</a>
+<a href="07-gestion-fichiers.html" style="color:#00d9ff;text-decoration:none;">&larr; 7 - Gestion des fichiers et dossiers</a> | <span style="color:#666;">08</span> | <a href="09-recherche-fichiers-texte.html" style="color:#00d9ff;text-decoration:none;">09 - Recherche de fichiers et texte &rarr;</a>
 </nav>
 
 <script>
@@ -641,9 +614,7 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
     btn.classList.add('copied');
@@ -652,7 +623,6 @@ function copyCode(el) {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');

@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leçon 35 : Optimisation du démarrage avec systemd-analyze - SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/35-demarrage-systemd.html">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/35-optimisation-du-demarrage-avec-systemd-analyze.html">
 <meta property="og:title" content="Leçon 35 : Optimisation du démarrage avec systemd-analyze - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
 <meta name="description" content="Leçon 35 : Optimisation du démarrage avec systemd-analyze - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, Leçon 35 : Optimisation du démarrage avec systemd-analyze, debutant, ubuntu">
+<meta name="keywords" content="linux, cours, leon 35  optimisation du dmarrage avec systemdanalyze, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -22,7 +21,14 @@ code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -86,18 +92,16 @@ nav { display: flex; justify-content: space-between; margin-top: 30px; padding-t
 }
 .copy-btn.copied svg { fill: #238636; }
 
-/* Inline code (dans le texte) */
+/* Inline code */
 p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
-</head>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
 <a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="display:flex;align-items:center;gap:6px;font-size:1.2rem;font-weight:700;"><a href="index.html"><img src="images/skylinux-logo-icon.png" alt="SkyLinux" style="height:28px;vertical-align:middle;border-radius:4px;"></a><span style="background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span></span>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
-
 <h1>Leçon 35 : Optimisation du démarrage avec systemd-analyze</h1>
 <p>Dans cette leçon, tu vas découvrir comment analyser et optimiser le temps de démarrage de ton système Linux grâce à systemd-analyze. Un démarrage lent peut cacher des services inutiles ou des configurations problématiques.</p>
 <hr />
@@ -303,12 +307,9 @@ systemctl show nginx.service | grep After</code>
 <li>Réduire le timeout GRUB élimine un délai fixe au démarrage</li>
 <li>Toujours vérifier la description d'un service avant de le désactiver</li>
 </ul>
-
 </div>
 <nav>
-
-<a href="34-surveillance-et-optimisation.html" style="color:#00d9ff;text-decoration:none;">&larr; 34 - Surveillance et Optimisation</a> | <span style="color:#666;">35</span> | <a href="36-conky-surveillance-systeme.html" style="color:#00d9ff;text-decoration:none;">36 - Conky — Surveillance Système &rarr;</a>
-
+<a href="34-surveillance-optimisation-performances.html" style="color:#00d9ff;text-decoration:none;">&larr; 34 - Surveillance et optimisation des performances système</a> | <span style="color:#666;">35</span> | <a href="36-conky-surveillance-systeme.html" style="color:#00d9ff;text-decoration:none;">36 - Conky — Surveillance Système sur le Bureau &rarr;</a>
 </nav>
 
 <script>
@@ -317,20 +318,15 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
-
   if (!code || !btn) return;
-
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
-    // Bouton "copié"
     btn.classList.add('copied');
     btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
     setTimeout(function() {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
-
-    // Barre de progression
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');
@@ -343,7 +339,6 @@ function copyCode(el) {
       }
     }, 20);
   }).catch(function() {
-    // Fallback pour navigateurs anciens
     var ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
@@ -355,6 +350,5 @@ function copyCode(el) {
   });
 }
 </script>
-
 </body>
 </html>
