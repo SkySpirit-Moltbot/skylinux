@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 39 : Gestion des Volumes avec LVM - SkyLinux</title>
+<title>Leçon 39 : LVM - Gestion des Volumes Logiques - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/39-gestion-des-volumes-avec-lvm.html">
-<meta property="og:title" content="Leçon 39 : Gestion des Volumes avec LVM - SkyLinux">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/39-gestion-volumes-lvm.html">
+<meta property="og:title" content="Leçon 39 : LVM - Gestion des Volumes Logiques - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 39 : Gestion des Volumes avec LVM - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leçon 39, lvm, volumes logiques, debutant, ubuntu">
+<meta name="description" content="Leçon 39 : LVM - Gestion des Volumes Logiques - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, Leçon 39 : LVM - Gestion des Volumes Logiques, debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -18,25 +18,85 @@ h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -
 h2 { color: #00d9ff; margin: 20px 0 10px; }
 p { line-height: 1.7; margin: 10px 0; color: #bbb; }
 code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-pre { background: #1a1a25; border: 1px solid #2a2a3a; border-radius: 8px; padding: 15px; overflow-x: auto; margin: 15px 0; }
-pre code { background: none; color: #e0e0e0; padding: 0; font-size: 0.85rem; }
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-.warning { background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); border-radius: 8px; padding: 12px 15px; margin: 15px 0; }
-.warning p { color: #ffa500; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+
+/* === Code Block avec copie + progression === */
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block progress {
+  width: 100%;
+  height: 3px;
+  appearance: none;
+  border: none;
+  display: block;
+}
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-block progress::-moz-progress-bar { background: #238636; }
+.code-block progress.loaded { background: #30363d; }
+
+.code-line {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s;
+}
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code {
+  background: none;
+  color: #e6edf3;
+  padding: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 13.5px;
+  line-height: 1.5;
+  white-space: pre;
+  flex: 1;
+  overflow-x: auto;
+}
+.copy-btn {
+  margin-left: 12px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0.5;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: #8b949e;
+  display: block;
+}
+.copy-btn.copied svg { fill: #238636; }
+
+/* Inline code (dans le texte) */
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
 </head>
+</head>
 <body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
 <div class="container">
+
 <h1>Leçon 39 : LVM - Gestion des Volumes Logiques</h1>
 <p>Dans cette leçon, tu vas découvrir <strong>LVM</strong> (Logical Volume Manager), un système puissant de gestion des disques sous Linux. LVM te permet de créer, redimensionner et gérer des volumes logiques de manière flexible — sans avoir à repartitionner ton disque. C'est indispensable pour tout administrateur qui gère des serveurs ou des espaces de stockage évolutifs.</p>
 <hr />
@@ -49,7 +109,10 @@ hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 </ul>
 <p><strong>LVM résout tout ça</strong> en introduisant une couche d'abstraction entre les disques physiques et les systèmes de fichiers.</p>
 <h3>Les concepts clés de LVM</h3>
-<pre><code>┌─────────────────────────────────────────┐
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>┌─────────────────────────────────────────┐
 │           Volume Logique (LV)           │
 │         /home, /var, /data, etc.        │
 ├─────────────────────────────────────────┤
@@ -59,8 +122,12 @@ hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 │  Disque Physique │  Disque Physique     │
 │      (PV)        │       (PV)           │
 │   /dev/sdb1      │    /dev/sdc1         │
-└──────────────────┴──────────────────────┘
-</code></pre>
+└──────────────────┴──────────────────────┘</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <ul>
 <li><strong>Physical Volume (PV)</strong> : partition ou disque physique préparé pour LVM</li>
 <li><strong>Volume Group (VG)</strong> : pool de stockage formé par un ou plusieurs PV</li>
@@ -69,7 +136,10 @@ hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 <hr />
 <h2>2. Créer et organiser avec LVM</h2>
 <h3>Préparer un disque physique (PV)</h3>
-<pre><code class="language-bash"># Voir les disques disponibles
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir les disques disponibles
 lsblk
 
 # Créer une partition Linux (type 8e pour LVM)
@@ -81,10 +151,17 @@ sudo pvcreate /dev/sdb1
 
 # Vérifier
 sudo pvs
-sudo pvdisplay
-</code></pre>
+sudo pvdisplay</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Créer un Volume Group (VG)</h3>
-<pre><code class="language-bash"># Créer un VG avec un ou plusieurs PV
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un VG avec un ou plusieurs PV
 sudo vgcreate mon_vg /dev/sdb1
 
 # Ajouter un autre disque au VG
@@ -92,10 +169,17 @@ sudo vgextend mon_vg /dev/sdc1
 
 # Voir les VG
 sudo vgs
-sudo vgdisplay mon_vg
-</code></pre>
+sudo vgdisplay mon_vg</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Créer un Volume Logique (LV)</h3>
-<pre><code class="language-bash"># Créer un LV de 10 Go dans le VG
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un LV de 10 Go dans le VG
 sudo lvcreate -L 10G -n donnees mon_vg
 
 # Ou créer un LV qui utilise tout l'espace disponible
@@ -103,10 +187,17 @@ sudo lvcreate -l 100%FREE -n donnees mon_vg
 
 # Voir les LV
 sudo lvs
-sudo lvdisplay
-</code></pre>
+sudo lvdisplay</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Formater et monter</h3>
-<pre><code class="language-bash"># Formater en ext4
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Formater en ext4
 sudo mkfs.ext4 /dev/mon_vg/donnees
 
 # Monter temporairement
@@ -114,21 +205,35 @@ sudo mkdir /mnt/donnees
 sudo mount /dev/mon_vg/donnees /mnt/donnees
 
 # Vérifier
-df -h /mnt/donnees
-</code></pre>
+df -h /mnt/donnees</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Montage automatique (fstab)</h3>
-<pre><code class="language-bash"># Ajouter au fichier /etc/fstab
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter au fichier /etc/fstab
 echo '/dev/mon_vg/donnees /mnt/donnees ext4 defaults 0 2' | sudo tee -a /etc/fstab
 
 # OU utiliser l'UUID (plus fiable)
 sudo blkid /dev/mon_vg/donnees
-# Ajouter : UUID=&lt;uuid&gt; /mnt/donnees ext4 defaults 0 2
-</code></pre>
+# Ajouter : UUID=&lt;uuid&gt; /mnt/donnees ext4 defaults 0 2</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr />
 <h2>3. Redimensionner un volume logique</h2>
 <p>C'est <strong>la force de LVM</strong> : agrandir ou réduire un volume à chaud !</p>
 <h3>Agrandir un LV (à chaud, sans démonter)</h3>
-<pre><code class="language-bash"># 1. Vérifier l'espace disponible dans le VG
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Vérifier l'espace disponible dans le VG
 sudo vgs
 
 # 2. Agrandir le LV de 5 Go supplémentaires
@@ -142,10 +247,17 @@ sudo resize2fs /dev/mon_vg/donnees
 sudo xfs_growfs /mnt/donnees
 
 # 4. Vérifier
-df -h /mnt/donnees
-</code></pre>
+df -h /mnt/donnees</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Réduire un LV (nécessite de démonter)</h3>
-<pre><code class="language-bash"># 1. Démonter
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Démonter
 sudo umount /mnt/donnees
 
 # 2. Vérifier le système de fichiers (important !)
@@ -158,14 +270,21 @@ sudo resize2fs /dev/mon_vg/donnees 8G
 sudo lvreduce -L 8G /dev/mon_vg/donnees
 
 # 5. Remonter
-sudo mount /dev/mon_vg/donnees /mnt/donnees
-</code></pre>
+sudo mount /dev/mon_vg/donnees /mnt/donnees</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <blockquote>
 <p>⚠️ <strong>Attention</strong> : Réduire un volume peut causer une perte de données. Sauvegarde toujours avant !</p>
 </blockquote>
 <hr />
 <h2>4. Ajouter un nouveau disque à LVM</h2>
-<pre><code class="language-bash"># 1. Préparer le nouveau disque
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Préparer le nouveau disque
 sudo pvcreate /dev/sdd1
 
 # 2. L'ajouter au VG existant
@@ -177,11 +296,18 @@ sudo resize2fs /dev/mon_vg/donnees
 
 # Vérifier
 sudo pvs
-sudo vgs
-</code></pre>
+sudo vgs</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr />
 <h2>5. Supprimer un volume logique</h2>
-<pre><code class="language-bash"># 1. Démonter
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Démonter
 sudo umount /mnt/donnees
 
 # 2. Supprimer le LV
@@ -192,12 +318,19 @@ sudo lvremove /dev/mon_vg/donnees
 sudo vgremove mon_vg
 
 # Supprimer le PV
-sudo pvremove /dev/sdb1
-</code></pre>
+sudo pvremove /dev/sdb1</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr />
 <h2>6. Snapshots LVM</h2>
 <p>LVM permet de créer des <strong>snapshots</strong> — des copies instantanées d'un volume à un instant T. Très utile pour les sauvegardes ou les tests.</p>
-<pre><code class="language-bash"># Créer un snapshot de 5 Go (doit être assez grand pour les modifications)
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un snapshot de 5 Go (doit être assez grand pour les modifications)
 sudo lvcreate -L 5G -s -n snapshot_donnees /dev/mon_vg/donnees
 
 # Monter le snapshot pour y accéder
@@ -206,11 +339,18 @@ sudo mount /dev/mon_vg/snapshot_donnees /mnt/snapshot
 
 # Une fois terminé, supprimer le snapshot
 sudo umount /mnt/snapshot
-sudo lvremove /dev/mon_vg/snapshot_donnees
-</code></pre>
+sudo lvremove /dev/mon_vg/snapshot_donnees</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr />
 <h2>7. Exemple concret : Migrer /home vers LVM</h2>
-<pre><code class="language-bash"># 1. Créer un nouveau LV pour /home
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Créer un nouveau LV pour /home
 sudo lvcreate -L 50G -n home mon_vg
 
 # 2. Formater
@@ -230,8 +370,12 @@ sudo umount /home
 sudo mount /home
 
 # 6. Vérifier
-df -h /home
-</code></pre>
+df -h /home</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr />
 <h2>8. Commandes essentielles à retenir</h2>
 <table>
@@ -295,7 +439,10 @@ df -h /home
 <hr />
 <h2>9. Exercice pratique</h2>
 <p><strong>But</strong> : Créer un environnement LVM complet et manipuler les volumes.</p>
-<pre><code class="language-bash"># 1. Crée deux fichiers de 500 Mo pour simuler des disques
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Crée deux fichiers de 500 Mo pour simuler des disques
 dd if=/dev/zero of=/tmp/disque1 bs=1M count=500 oflag=direct
 dd if=/dev/zero of=/tmp/disque2 bs=1M count=500 oflag=direct
 
@@ -336,8 +483,12 @@ sudo lvremove /dev/mon_test_vg/test_lv
 sudo vgremove mon_test_vg
 sudo pvremove /dev/loop0 /dev/loop1
 sudo losetup -D
-rm /tmp/disque1 /tmp/disque2
-</code></pre>
+rm /tmp/disque1 /tmp/disque2</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr />
 <h2>Résumé</h2>
 <ul>
@@ -350,10 +501,58 @@ rm /tmp/disque1 /tmp/disque2
 <li>LVM est standard sur la plupart des distributions Linux serveur.</li>
 </ul>
 <p>LVM te donne une flexibilité incomparable pour gérer ton stockage. Une fois habitué, tu ne reviendras plus aux partitions fixes !</p>
-<nav>
-<a href="38-debogage-strace-ltrace.html">← Leçon 38 : Débogage avec Strace et Ltrace</a>
-<a href="index.html">Accueil</a>
-</nav>
+
 </div>
+<nav>
+
+<a href="38-dbogage-avec-strace-et-ltrace.html" style="color:#00d9ff;text-decoration:none;">&larr; 38 - Débogage avec Strace et Ltrace</a> | <span style="color:#666;">39</span> | <a href="40-git-gestion-de-versions.html" style="color:#00d9ff;text-decoration:none;">40 - Git - Gestion de Versions &rarr;</a>
+
+</nav>
+
+<script>
+function copyCode(el) {
+  var container = el.closest('.code-block');
+  var code = el.querySelector('code');
+  var btn = el.querySelector('.copy-btn');
+  var progress = container.querySelector('progress');
+
+  if (!code || !btn) return;
+
+  var text = code.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    // Bouton "copié"
+    btn.classList.add('copied');
+    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
+    setTimeout(function() {
+      btn.classList.remove('copied');
+      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
+    }, 2000);
+
+    // Barre de progression
+    var val = 0;
+    progress.value = 0;
+    progress.classList.remove('loaded');
+    var interval = setInterval(function() {
+      val += 5;
+      progress.value = val;
+      if (val >= 100) {
+        clearInterval(interval);
+        setTimeout(function() { progress.classList.add('loaded'); }, 300);
+      }
+    }, 20);
+  }).catch(function() {
+    // Fallback pour navigateurs anciens
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+}
+</script>
+
 </body>
 </html>

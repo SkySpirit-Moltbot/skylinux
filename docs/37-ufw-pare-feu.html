@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leçon 37 : Sécuriser Linux avec UFW (Pare-feu) - SkyLinux</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/37-securiser-linux-avec-ufw-pare-feu.html">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/37-ufw-pare-feu.html">
 <meta property="og:title" content="Leçon 37 : Sécuriser Linux avec UFW (Pare-feu) - SkyLinux">
 <meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
 <meta name="description" content="Leçon 37 : Sécuriser Linux avec UFW (Pare-feu) - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 37  scuriser linux avec ufw parefeu, debutant, ubuntu">
+<meta name="keywords" content="linux, cours, Leçon 37 : Sécuriser Linux avec UFW (Pare-feu), debutant, ubuntu">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
@@ -21,14 +21,7 @@ code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border
 table { width: 100%; border-collapse: collapse; margin: 15px 0; }
 th, td { border: 1px solid #333; padding: 8px; }
 th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 
 /* === Code Block avec copie + progression === */
 .code-block {
@@ -92,9 +85,10 @@ hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
 }
 .copy-btn.copied svg { fill: #238636; }
 
-/* Inline code */
+/* Inline code (dans le texte) */
 p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 </style>
+</head>
 </head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
@@ -102,6 +96,7 @@ p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
 </div>
 <div class="container">
+
 <h1>Leçon 37 : Sécuriser Linux avec UFW (Pare-feu)</h1>
 <p>Dans cette leçon, tu vas découvrir comment protéger ton système Linux avec <strong>UFW</strong> (<em>Uncomplicated Firewall</em>), un outil simple et efficace pour gérer le pare-feu intégré au noyau Linux (iptables/nftables).</p>
 <hr />
@@ -355,9 +350,12 @@ sudo ufw reset</code>
 </tbody>
 </table>
 <p>UFW permet de sécuriser ta machine en quelques commandes. Pour un serveur, pense toujours à autoriser <strong>SSH en premier</strong> avant d'activer le pare-feu.</p>
+
 </div>
 <nav>
-<a href="36-conky-surveillance-systeme.html" style="color:#00d9ff;text-decoration:none;">&larr; 36 - Conky — Surveillance Système sur le Bureau</a> | <span style="color:#666;">37</span> | <a href="38-debogage-strace-ltrace.html" style="color:#00d9ff;text-decoration:none;">38 - Débogage avec Strace et Ltrace &rarr;</a>
+
+<a href="36-conky-surveillance-systme.html" style="color:#00d9ff;text-decoration:none;">&larr; 36 - Conky — Surveillance Système</a> | <span style="color:#666;">37</span> | <a href="38-dbogage-avec-strace-et-ltrace.html" style="color:#00d9ff;text-decoration:none;">38 - Débogage avec Strace et Ltrace &rarr;</a>
+
 </nav>
 
 <script>
@@ -366,15 +364,20 @@ function copyCode(el) {
   var code = el.querySelector('code');
   var btn = el.querySelector('.copy-btn');
   var progress = container.querySelector('progress');
+
   if (!code || !btn) return;
+
   var text = code.textContent;
   navigator.clipboard.writeText(text).then(function() {
+    // Bouton "copié"
     btn.classList.add('copied');
     btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
     setTimeout(function() {
       btn.classList.remove('copied');
       btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
     }, 2000);
+
+    // Barre de progression
     var val = 0;
     progress.value = 0;
     progress.classList.remove('loaded');
@@ -387,6 +390,7 @@ function copyCode(el) {
       }
     }, 20);
   }).catch(function() {
+    // Fallback pour navigateurs anciens
     var ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
@@ -398,5 +402,6 @@ function copyCode(el) {
   });
 }
 </script>
+
 </body>
 </html>
