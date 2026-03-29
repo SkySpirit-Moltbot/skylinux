@@ -106,7 +106,7 @@ p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>Tu modifies script.sh
-  → Tu ajoutes une功能
+  → Tu ajoutes une fonctionnalité
   → Ça casse tout
   → Tu n'as plus la version qui marchait
   → Panique</code>
@@ -140,12 +140,12 @@ Mon projet/          ← dépôt Git (contient .git/)
   <div class="code-line" onclick="copyCode(this)">
     <code>┌──────────────┐   git add    ┌──────────────┐  git commit   ┌──────────────┐
 │   Modifié    │ ──────────→  │  Indexé      │ ───────────→  │  Validé      │
-│ (modified)   │              │ (staged)     │              │ (committed)  │
+│              │              │              │              │              │
 └──────────────┘              └──────────────┘              └──────────────┘
      Ton fichier              Ce qui sera              Ce qui est
-     tel qu'il est           validé dans              enregistré dans
-     maintenant               le prochain              l'historique
-                               commit</code>
+     maintenant                validé dans              enregistré dans
+                               le prochain              l'historique
+                                commit</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
@@ -189,11 +189,11 @@ git init</code>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>On branch master
+    <code>Sur branche master
 
-No commits yet
+Aucun commit pour l'instant
 
-nothing to commit (create/copy files and use &quot;git add&quot; to track)</code>
+ rien à valider (crée ou copie des fichiers puis utilise &quot;git add&quot; pour suivre)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
@@ -213,15 +213,15 @@ git status</code>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>Untracked files:
+    <code>Fichiers non suivis :
   README.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
   </div>
 </div>
-<p><strong>"Untracked"</strong> = Git voit le fichier, mais ne le surveille pas encore.</p>
-<h3>Ajouter au suivi (stage)</h3>
+<p><strong>"Non suivis"</strong> = Git voit le fichier, mais ne le surveille pas encore.</p>
+<h3>Ajouter au suivi (staging)</h3>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
@@ -235,9 +235,8 @@ git status</code>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>Changes to be committed:
-  (use &quot;git rm --cached &lt;file&gt;...&quot; to unstage)
-        new file:   README.txt</code>
+    <code>Modifications à valider :
+        nouveau fichier :  README.txt</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
@@ -257,9 +256,8 @@ git status</code>
 <div class="code-block">
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
-    <code>[master (root-commit) a1b2c3d] Ajout du fichier README
- 1 file changed, 1 insertion(+)
- create mode 100644 README.txt</code>
+    <code>[master (premier commit) a1b2c3d] Ajout du fichier README
+ 1 fichier modifié, 1 insertion(+)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
@@ -295,7 +293,7 @@ git commit -m &quot;Mise à jour de la configuration serveur&quot;</code>
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>git diff              # montre les modifications NON indexées
-git diff --staged     # montre les modifications indexées (prêtes à commit)</code>
+git diff --cached     # montre les modifications indexées (prêtes à valider)</code>
     <button class="copy-btn" aria-label="Copier">
       <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
     </button>
@@ -329,14 +327,14 @@ git diff --staged     # montre les modifications indexées (prêtes à commit)</
   <progress value="0" max="100"></progress>
   <div class="code-line" onclick="copyCode(this)">
     <code>commit a1b2c3d4e5f6 (HEAD -&gt; master)
-Author: Ton Nom &lt;ton@email.com&gt;
-Date:   Sun Mar 29 12:00:00 2026
+Auteur : Ton Nom &lt;ton@email.com&gt;
+Date   : Dim 29 Mar 12:00:00 2026
 
     Mise à jour de la configuration serveur
 
 commit 9f8e7d6c5b4a
-Author: Ton Nom &lt;ton@email.com&gt;
-Date:   Sat Mar 28 10:30:00 2026
+Auteur : Ton Nom &lt;ton@email.com&gt;
+Date   : Sam 28 Mar 10:30:00 2026
 
     Ajout du fichier README</code>
     <button class="copy-btn" aria-label="Copier">
@@ -375,7 +373,7 @@ Date:   Sat Mar 28 10:30:00 2026
             │
             ▼
     ┌───────────────┐
-    │ Commit A      │ ← HEAD (position actuelle)
+    │ Commit A      │ ← position actuelle (HEAD)
     │ Commit B      │
     │ Commit C      │
     └───────────────┘
@@ -447,7 +445,7 @@ git merge experimental</code>
     </button>
   </div>
 </div>
-<p>Git combine les deux branches. Si tout va bien, c'est un <strong>fast-forward</strong> (avance rapide). Si des fichiers sont en conflit, Git te demande de choisir.</p>
+<p>Git combine les deux branches. Si tout va bien, c'est une <strong>avance rapide</strong> (les commits sont simplement avancés). Si des fichiers sont en conflit, Git te demande de choisir.</p>
 <hr />
 <h2>7. Git avec un serveur distant (GitHub)</h2>
 <p>Quand ton projet est sur GitHub, tu peux le synchroniser.</p>
@@ -623,7 +621,7 @@ git commit -m &quot;Ajout d'une description dans README&quot;</code>
 </div>
 <nav>
 
-<a href="39-gestion-volumes-lvm.html" style="color:#00d9ff;text-decoration:none;">&larr; 39 - LVM - Gestion des Volumes Logiques</a> | <span style="color:#666;">40</span> | <span style="color:#666;">Fin</span>
+<a href="39-lvm-gestion-des-volumes-logiques.html" style="color:#00d9ff;text-decoration:none;">&larr; 39 - LVM - Gestion des Volumes Logiques</a> | <span style="color:#666;">40</span> | <span style="color:#666;">Fin</span>
 
 </nav>
 

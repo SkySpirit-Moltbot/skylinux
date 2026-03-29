@@ -10,7 +10,7 @@ Voici ce qui se passe sans Git :
 
 ```
 Tu modifies script.sh
-  → Tu ajoutes une功能
+  → Tu ajoutes une fonctionnalité
   → Ça casse tout
   → Tu n'as plus la version qui marchait
   → Panique
@@ -41,12 +41,12 @@ Chaque fichier dans un dépôt Git peut être dans l'un de ces états :
 ```
 ┌──────────────┐   git add    ┌──────────────┐  git commit   ┌──────────────┐
 │   Modifié    │ ──────────→  │  Indexé      │ ───────────→  │  Validé      │
-│ (modified)   │              │ (staged)     │              │ (committed)  │
+│              │              │              │              │              │
 └──────────────┘              └──────────────┘              └──────────────┘
      Ton fichier              Ce qui sera              Ce qui est
-     tel qu'il est           validé dans              enregistré dans
-     maintenant               le prochain              l'historique
-                               commit
+     maintenant                validé dans              enregistré dans
+                               le prochain              l'historique
+                                commit
 ```
 
 ---
@@ -75,11 +75,11 @@ git status
 
 Quand tu commences, tout est vide :
 ```
-On branch master
+Sur branche master
 
-No commits yet
+Aucun commit pour l'instant
 
-nothing to commit (create/copy files and use "git add" to track)
+ rien à valider (crée ou copie des fichiers puis utilise "git add" pour suivre)
 ```
 
 ### Créer un premier fichier
@@ -90,13 +90,13 @@ git status
 ```
 
 ```
-Untracked files:
+Fichiers non suivis :
   README.txt
 ```
 
-**"Untracked"** = Git voit le fichier, mais ne le surveille pas encore.
+**"Non suivis"** = Git voit le fichier, mais ne le surveille pas encore.
 
-### Ajouter au suivi (stage)
+### Ajouter au suivi (staging)
 
 ```bash
 git add README.txt
@@ -104,9 +104,8 @@ git status
 ```
 
 ```
-Changes to be committed:
-  (use "git rm --cached <file>..." to unstage)
-        new file:   README.txt
+Modifications à valider :
+        nouveau fichier :  README.txt
 ```
 
 Le fichier est maintenant **indexé** — prêt à être validé.
@@ -118,9 +117,8 @@ git commit -m "Ajout du fichier README"
 ```
 
 ```
-[master (root-commit) a1b2c3d] Ajout du fichier README
- 1 file changed, 1 insertion(+)
- create mode 100644 README.txt
+[master (premier commit) a1b2c3d] Ajout du fichier README
+ 1 fichier modifié, 1 insertion(+)
 ```
 
 `-m "message"` = une description courte de ce que tu as fait. C'est obligatoire.
@@ -152,7 +150,7 @@ Voir exactement ce qui a changé :
 
 ```bash
 git diff              # montre les modifications NON indexées
-git diff --staged     # montre les modifications indexées (prêtes à commit)
+git diff --cached     # montre les modifications indexées (prêtes à valider)
 ```
 
 Exemple de sortie :
@@ -175,14 +173,14 @@ git log
 
 ```
 commit a1b2c3d4e5f6 (HEAD -> master)
-Author: Ton Nom <ton@email.com>
-Date:   Sun Mar 29 12:00:00 2026
+Auteur : Ton Nom <ton@email.com>
+Date   : Dim 29 Mar 12:00:00 2026
 
     Mise à jour de la configuration serveur
 
 commit 9f8e7d6c5b4a
-Author: Ton Nom <ton@email.com>
-Date:   Sat Mar 28 10:30:00 2026
+Auteur : Ton Nom <ton@email.com>
+Date   : Sam 28 Mar 10:30:00 2026
 
     Ajout du fichier README
 ```
@@ -211,7 +209,7 @@ Une **branche**, c'est une copie parallèle du projet. Tu peux expérimenter san
             │
             ▼
     ┌───────────────┐
-    │ Commit A      │ ← HEAD (position actuelle)
+    │ Commit A      │ ← position actuelle (HEAD)
     │ Commit B      │
     │ Commit C      │
     └───────────────┘
@@ -260,7 +258,7 @@ git checkout master
 git merge experimental
 ```
 
-Git combine les deux branches. Si tout va bien, c'est un **fast-forward** (avance rapide). Si des fichiers sont en conflit, Git te demande de choisir.
+Git combine les deux branches. Si tout va bien, c'est une **avance rapide** (les commits sont simplement avancés). Si des fichiers sont en conflit, Git te demande de choisir.
 
 ---
 

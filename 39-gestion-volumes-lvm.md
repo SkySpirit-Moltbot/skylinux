@@ -9,7 +9,7 @@ Dans cette leçon, tu vas découvrir **LVM** (Logical Volume Manager), un systè
 Avec les partitions classiques, tu rencontres vite des limitations :
 
 - **Une partition pleine ?** Il faut repartitionner, formater, restaurer.
-- **Besoin de plus d'espace sur /home ?** Tu dois modifiers la structure du disque.
+- **Besoin de plus d'espace sur /home ?** Tu dois modifier la structure du disque.
 - **Plusieurs disques ?** Gérer chaque disque séparément devient complexe.
 
 **LVM résout tout ça** en introduisant une couche d'abstraction entre les disques physiques et les systèmes de fichiers.
