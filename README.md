@@ -11,7 +11,7 @@ Apprenez Linux facilement avec notre cours complet !
 
 ## Contenu
 
-45 lecons completes pour apprendre Linux pas a pas :
+46 lecons completes pour apprendre Linux pas a pas :
 
 | Lecon | Sujet |
 |-------|-------|
@@ -60,6 +60,7 @@ Apprenez Linux facilement avec notre cours complet !
 | 43 | Configuration DNS et /etc/hosts |
 | 44 | SSH - Tunnels et Port Forwarding |
 | 45 | Planification de tâches avec at et batch |
+| 46 | Priorité des processus avec nice et renice |
 
 ## Commencer
 

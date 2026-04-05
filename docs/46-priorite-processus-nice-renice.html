@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leçon 46 : Priorité des processus avec nice et renice - SkyLinux</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/46-priorite-processus-nice-renice.html">
+<meta property="og:title" content="Leçon 46 : Priorité des processus avec nice et renice - SkyLinux">
+<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
+<meta name="description" content="Leçon 46 : Priorité des processus avec nice et renice - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
+<meta name="keywords" content="linux, cours, Leçon 46 nice renice priorité processus, debutant, ubuntu, nice, renice, priorité, processus linux">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+ul, ol { padding-left: 25px; margin: 10px 0; }
+strong { color: #e0e0e0; }
+.code-block {
+  background: #111118;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 15px 0;
+  border: 1px solid #30363d;
+}
+.code-block .code-header {
+  background: #1c1c24;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: #888;
+  border-bottom: 1px solid #30363d;
+}
+.code-block pre { padding: 15px; overflow-x: auto; font-size: 0.9rem; }
+.code-block pre code { background: none; padding: 0; color: #e0e0e0; }
+.exercise {
+  background: rgba(0,217,255,0.05);
+  border: 1px solid rgba(0,217,255,0.2);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+}
+.exercise h3 { color: #00d9ff; margin-top: 0; }
+.tip {
+  background: rgba(168,85,247,0.08);
+  border: 1px solid rgba(168,85,247,0.25);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 15px 0;
+}
+.tip strong { color: #a855f7; }
+.warning {
+  background: rgba(255,200,0,0.05);
+  border: 1px solid rgba(255,200,0,0.25);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 15px 0;
+}
+.warning strong { color: #ffc800; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>⚙️ Leçon 46 : Priorité des processus avec nice et renice</h1>
+
+<p>Dans cette leçon, tu vas apprendre à contrôler la priorité d'exécution des processus sous Linux. Quand ton système est sollicité par plusieurs tâches, savoir ajuster leur priorité te permet de garantir que les processus critiques obtiennent les ressources nécessaires.</p>
+
+<h2>1. Pourquoi ajuster la priorité ?</h2>
+
+<p>Linux attribue une <strong>priorité</strong> (nice value) à chaque processus. Plus la valeur est basse, plus le processus est "gentil" — il cède du temps CPU aux autres. Plus elle est haute, plus il est prioritaire.</p>
+
+<p>Par défaut, la plupart des processus ont une nice value de <strong>0</strong>. Tu peux la faire varier de <strong>-20</strong> (très prioritaire) à <strong>+19</strong> (très conciliant).</p>
+
+<p><strong>Cas d'usage courants :</strong></p>
+<ul>
+<li>Lancer une sauvegarde intensive en arrière-plan sans ralentir ton travail</li>
+<li>Donner plus de priorité à un serveur web qu'à une tâche de logs</li>
+<li>Empêcher un script lourd de monopoliser le CPU sur un serveur de production</li>
+</ul>
+
+<h2>2. La commande `nice`</h2>
+
+<p><code>nice</code> permet de lancer un programme avec une priorité modifiée dès le départ.</p>
+
+<h3>Syntaxe de base</h3>
+
+<div class="code-block">
+<div class="code-header"># Syntaxe de nice</div>
+<pre><code>nice -n &lt;valeur&gt; &lt;commande&gt;</code></pre>
+</div>
+
+<table>
+<tr><th>Nice value</th><th>Comportement</th></tr>
+<tr><td><code>-20</code></td><td>Processus très prioritaire (nécessite root)</td></tr>
+<tr><td><code>0</code></td><td>Priorité par défaut</td></tr>
+<tr><td><code>+19</code></td><td>Processus très "gentil", obtient le CPU en dernier</td></tr>
+</table>
+
+<h3>Exemples concrets</h3>
+
+<div class="code-block">
+<div class="code-header"># Lancer une commande avec nice +10 (peu prioritaire)</div>
+<pre><code>nice -n 10 ./mon-script-lourd.sh</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Lancer une sauvegarde avec nice +15</div>
+<pre><code>nice -n 15 tar -czf /backup/home.tar.gz /home/</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Lancer un encodeur vidéo en arrière-plan, peu prioritaire</div>
+<pre><code>nice -n 19 ffmpeg -i video.mp4 sortie.mkv &amp;</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Lancer un serveur avec haute priorité (root requis)</div>
+<pre><code>sudo nice -n -10 systemctl start mon-service</code></pre>
+</div>
+
+<div class="warning">
+<strong>⚠️ Important :</strong> Seules les valeurs positives (0 à +19) sont accessibles aux utilisateurs normaux. Les valeurs négatives (-1 à -20) nécessitent les droits root.
+</div>
+
+<h2>3. Modifier la priorité d'un processus en cours : `renice`</h2>
+
+<p>Parfois, tu veux changer la priorité d'un processus qui tourne déjà — sans l'arrêter. C'est là qu'intervient <code>renice</code>.</p>
+
+<h3>Syntaxe</h3>
+
+<div class="code-block">
+<div class="code-header"># Syntaxe de renice</div>
+<pre><code>renice &lt;niveau&gt; -p &lt;PID&gt;
+renice &lt;niveau&gt; -u &lt;utilisateur&gt;
+renice &lt;niveau&gt; -g &lt;groupe&gt;</code></pre>
+</div>
+
+<h3>Exemples concrets</h3>
+
+<div class="code-block">
+<div class="code-header"># Voir la priorité actuelle d'un processus</div>
+<pre><code>ps -o pid,ni,comm | grep nom_du_processus</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Augmenter la nice value (moins prioritaire) d'un processus</div>
+<pre><code>renice +15 -p 1234</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Baisser la nice value (plus prioritaire) — root requis</div>
+<pre><code>sudo renice -10 -p 1234</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Modifier la priorité de TOUS les processus d'un utilisateur</div>
+<pre><code>renice +10 -u david</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Trouver le PID d'un processus, puis modifier sa priorité</div>
+<pre><code>ps aux | grep compression
+renice +5 -p &lt;PID&gt;</code></pre>
+</div>
+
+<h3>Tableau récapitulatif des options</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>-p &lt;PID&gt;</code></td><td>Cible un processus par son PID</td><td><code>renice +10 -p 5678</code></td></tr>
+<tr><td><code>-u &lt;utilisateur&gt;</code></td><td>Cible tous les processus d'un utilisateur</td><td><code>renice +5 -u www-data</code></td></tr>
+<tr><td><code>-g &lt;groupe&gt;</code></td><td>Cible tous les processus d'un groupe</td><td><code>renice +5 -g developers</code></td></tr>
+</table>
+
+<h2>4. Visualiser les priorités en temps réel</h2>
+
+<h3>Avec `top`</h3>
+
+<div class="code-block">
+<div class="code-header"># Lancer top</div>
+<pre><code>top</code></pre>
+</div>
+
+<p>Dans la sortie de <code>top</code>, la colonne <strong>NI</strong> affiche la nice value de chaque processus. Tu peux aussi changer la priorité directement dans <code>top</code> :</p>
+
+<ol>
+<li>Lance <code>top</code></li>
+<li>Tape <code>r</code></li>
+<li>Entre le PID du processus</li>
+<li>Entre la nouvelle nice value</li>
+<li>Tape Entrée</li>
+</ol>
+
+<h3>Avec `htop`</h3>
+
+<div class="code-block">
+<div class="code-header"># Lancer htop</div>
+<pre><code>htop</code></pre>
+</div>
+
+<p><code>htop</code> est plus visuel. La nice value est affichée et tu peux la modifier avec la touche <strong>r</strong> (renice).</p>
+
+<h3>Avec `ps`</h3>
+
+<div class="code-block">
+<div class="code-header"># Lister processus avec nice value</div>
+<pre><code>ps -eo pid,ni,ppid,cmd --sort=ni</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Processus les plus "gentils" (+19)</div>
+<pre><code>ps -eo pid,ni,cmd --sort=-ni | head -10</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Processus les plus prioritaires (-20 à 0)</div>
+<pre><code>ps -eo pid,ni,cmd --sort=ni | head -10</code></pre>
+</div>
+
+<h2>5. Utilisation avancée</h2>
+
+<h3>Lancer un service systemd avec une nice value spécifique</h3>
+
+<div class="code-block">
+<div class="code-header"># Créer un override pour un service systemd</div>
+<pre><code>sudo systemctl edit mon-service</code></pre>
+</div>
+
+<p>Puis ajoute :</p>
+
+<div class="code-block">
+<div class="code-header"># Contenu du override</div>
+<pre><code>[Service]
+Nice=10</code></pre>
+</div>
+
+<h3>Combiner nice avec nohup (processus robuste)</h3>
+
+<div class="code-block">
+<div class="code-header"># Lancer un script lourd, même si on se déconnecte</div>
+<pre><code>nohup nice -n 15 ./backup-quotidien.sh &gt; /var/log/backup.log 2&gt;&amp;1 &amp;</code></pre>
+</div>
+
+<h3>Vérifier l'impact avec `time`</h3>
+
+<div class="code-block">
+<div class="code-header"># Mesurer le temps d'exécution avec une priorité modifiée</div>
+<pre><code>time nice -n 10 ./mon-script.sh</code></pre>
+</div>
+
+<h2>6. Exercices pratiques</h2>
+
+<div class="exercise">
+<h3>Exercice 1 : Lancer un processus peu prioritaire</h3>
+<ol>
+<li>Ouvre deux terminaux</li>
+<li>Dans le premier, lance une boucle infinie qui utilise le CPU :<br>
+<code>yes > /dev/null &amp;</code></li>
+<li>Observe l'utilisation CPU avec <code>top</code></li>
+<li>Dans le second terminal, lance la même commande avec <code>nice -n 19</code> :<br>
+<code>nice -n 19 yes > /dev/null &amp;</code></li>
+<li>Observe la différence de priorité dans <code>top</code> (colonne NI)</li>
+</ol>
+</div>
+
+<div class="exercise">
+<h3>Exercice 2 : Modifier la priorité d'un processus en cours</h3>
+<ol>
+<li>Lance un processus consommateur :<br>
+<code>python3 -c "while True: pass" &amp;</code></li>
+<li>Note son PID</li>
+<li>Modifie sa nice value :<br>
+<code>renice +15 -p &lt;PID&gt;</code></li>
+<li>Vérifie le changement avec <code>ps -o pid,ni,cmd | grep python3</code></li>
+</ol>
+</div>
+
+<div class="exercise">
+<h3>Exercice 3 : Protéger un processus critique</h3>
+<ol>
+<li>Lance un "serveur simulé" avec une priorité élevée :<br>
+<code>sudo nice -n -5 ./script-critique.sh</code></li>
+<li>Lance simultanément un script lourd avec une priorité basse</li>
+<li>Observe comment le script critique garde le contrôle du CPU</li>
+</ol>
+</div>
+
+<h2>7. Récapitulatif</h2>
+
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>nice -n &lt;val&gt; &lt;cmd&gt;</code></td><td>Lancer une commande avec une priorité donnée</td></tr>
+<tr><td><code>renice &lt;val&gt; -p &lt;PID&gt;</code></td><td>Modifier la priorité d'un processus en cours</td></tr>
+<tr><td><code>renice &lt;val&gt; -u &lt;user&gt;</code></td><td>Modifier la priorité de tous les processus d'un utilisateur</td></tr>
+<tr><td><code>ps -o pid,ni,cmd</code></td><td>Afficher les processus avec leur nice value</td></tr>
+<tr><td><code>top</code> / <code>htop</code></td><td>Visualiser et modifier les priorités en interactif</td></tr>
+</table>
+
+<div class="tip">
+<strong>💡 Astuce finale :</strong> En règle générale, utilise des nice values positives pour les tâches de fond non critiques. Garde les valeurs négatives pour les processus système essentiels ou les services qui ne doivent jamais être ralentis.
+</div>
+
+<hr>
+
+<nav>
+<a href="45-planification-taches-at-batch.html">← Leçon 45 : Planification de tâches avec at et batch</a>
+</nav>
+
+</div>
+</body>
+</html>
