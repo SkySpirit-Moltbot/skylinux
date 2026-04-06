@@ -77,241 +77,255 @@ strong { color: #e0e0e0; }
 <body>
 <div class="container">
 
-<h1>📋 Leçon 45 : Planification de tâches avec at et batch</h1>
+<h1>⏰ Leçon 45 : Planification de tâches avec at et batch</h1>
 
-<p>Dans la <a href="13-taches-planifiees-cron.html">leçon sur Cron</a>, tu as appris à planifier des tâches répétitives. Mais parfois, tu veux exécuter une commande <strong>une seule fois</strong>, à un moment précis — sans t'embêter à configurer une tâche Cron. C'est exactement ce que <code>at</code> fait.</p>
+<p>Dans cette leçon, tu vas apprendre à planifier des <strong>tâches ponctuelles</strong> avec <code>at</code> et <code>batch</code>. Contrairement à cron qui répète des tâches, <code>at</code> exécute une commande <strong>une seule fois</strong> à un moment précis. <code>batch</code> attend que la charge du système soit assez basse pour lancer ta tâche.</p>
 
-<p>Cette leçon te montre aussi <code>batch</code>, qui permet de lancer des commandes quand la charge du système est faible.</p>
+<h2>1. Préparer le terrain</h2>
 
-<h2>1. Qu'est-ce que `at` ?</h2>
+<h3>Installer at</h3>
 
-<p><code>at</code> planifie l'exécution d'une commande à un moment donné. Une fois exécutée, c'est fini — pas de répétition. C'est l'équivalent d'un "rendez-vous unique" pour ton terminal.</p>
+<pre><code>sudo apt update
+sudo apt install at -y</code></pre>
 
-<h2>2. Installer et activer le service</h2>
+<h3>Démarrer le service</h3>
 
-<p>Sur la plupart des systèmes, <code>at</code> n'est pas installé par défaut. Vérifie d'abord :</p>
+<pre><code>sudo systemctl enable atd
+sudo systemctl start atd</code></pre>
 
-<div class="code-block">
-<div class="code-header"># Vérifier si at est installé</div>
-<pre><code>which at
-at --version</code></pre>
-</div>
+<h3>Vérifier que ça fonctionne</h3>
 
-<p>Si la commande n'existe pas, installe-la :</p>
+<pre><code>at -V
+# at version 3.2.4</code></pre>
 
-<div class="code-block">
-<div class="code-header"># Installer at (Debian/Ubuntu)</div>
-<pre><code>sudo apt update && sudo apt install at</code></pre>
-</div>
+<h2>2. La commande <code>at</code></h2>
 
-<div class="code-block">
-<div class="code-header"># Installer at (Fedora/RHEL)</div>
-<pre><code>sudo dnf install at</code></pre>
-</div>
+<p><code>at</code> planifie une commande pour qu'elle s'exécute <strong>une seule fois</strong>, à l'heure que tu indiques.</p>
 
-<p>Ensuite, démarre et active le service :</p>
+<h3>Syntaxe de base</h3>
 
-<div class="code-block">
-<div class="code-header"># Démarrer et activer le service at</div>
-<pre><code>sudo systemctl start atd
-sudo systemctl enable atd</code></pre>
-</div>
+<pre><code>at &lt;heure&gt; [jour mois [année]]</code></pre>
 
-<h2>3. Utiliser `at` — Les bases</h2>
-
-<h3>3.1 Spécifier l'heure</h3>
-
-<p><code>at</code> comprend le langage naturel. Voici des exemples :</p>
-
-<div class="code-block">
-<div class="code-header"># Exécuter à 14h30 aujourd'hui</div>
-<pre><code>echo "echo 'Coucou depuis at!' >> ~/test-at.txt" | at 14:30</code></pre>
-</div>
-
-<div class="code-block">
-<div class="code-header"># Exécuter à 16h00 demain</div>
-<pre><code>echo "df -h > ~/disks.txt" | at 16:00 tomorrow</code></pre>
-</div>
-
-<div class="code-block">
-<div class="code-header"># Exécuter dans 2 heures</div>
-<pre><code>echo "systemctl status nginx" | at now + 2 hours</code></pre>
-</div>
-
-<div class="code-block">
-<div class="code-header"># Exécuter à une date précise</div>
-<pre><code>echo "backup.sh" | at 09:00 15.04.2026</code></pre>
-</div>
-
-<div class="code-block">
-<div class="code-header"># midnight (minuit), noon (midi), teatime (16h)</div>
-<pre><code>echo "cleanup.sh" | at midnight
-echo "rapport.sh" | at teatime</code></pre>
-</div>
-
-<h3>3.2 Mode interactif</h3>
-
-<p>Tu peux aussi entrer dans un shell interactif avec <code>at</code> :</p>
-
-<div class="code-block">
-<div class="code-header"># Ouvrir un shell at pour saisir plusieurs commandes</div>
-<pre><code>at 17:00
-# Tu vois l'invite "at>", tape tes commandes :
-echo "=== Rapport du jour ===" > ~/rapport.txt
-uptime >> ~/rapport.txt
-free -h >> ~/rapport.txt
-# Tape Ctrl+D pour valider</code></pre>
-</div>
-
-<blockquote>
-<p><strong>💡 Bonne habitude :</strong> Utilise toujours le chemin absolu des fichiers dans tes commandes <code>at</code>. Le job s'exécute dans un environnement minimal, sans les variables d'environnement de ta session.</p>
-</blockquote>
-
-<h2>4. Lister et gérer ses jobs</h2>
-
-<h3>4.1 Voir les jobs en attente</h3>
-
-<div class="code-block">
-<div class="code-header"># Lister les jobs at en attente</div>
-<pre><code>atq</code></pre>
-</div>
-
-<p>La sortie affiche le numéro du job, la date, l'heure et la file d'attente.</p>
-
-<h3>4.2 Détails d'un job</h3>
-
-<div class="code-block">
-<div class="code-header"># Voir le contenu d'un job spécifique</div>
-<pre><code>at -c 5</code></pre>
-</div>
-
-<h3>4.3 Supprimer un job</h3>
-
-<div class="code-block">
-<div class="code-header"># Supprimer un job avant son exécution</div>
-<pre><code>atrm 5</code></pre>
-</div>
-
-<h2>5. Les files d'attente (queues)</h2>
-
-<p><code>at</code> utilise des files d'attente nommées avec des lettres :</p>
+<h3>Formats d'heure courants</h3>
 
 <table>
-<tr><th>File</th><th>Description</th></tr>
-<tr><td><code>a</code> (défaut)</td><td>Jobs submités avec <code>at</code></td></tr>
-<tr><td><code>b</code></td><td>Jobs submités avec <code>batch</code></td></tr>
-<tr><td><code>c</code> à <code}z</code></td><td>Files supplémentaires</td></tr>
+<thead>
+<tr><th>Format</th><th>Exemple</th><th>Signification</th></tr>
+</thead>
+<tbody>
+<tr><td><code>HH:MM</code></td><td><code>14:30</code></td><td>Aujourd'hui à 14h30 (ou demain si passé)</td></tr>
+<tr><td><code>now + N minutes</code></td><td><code>now + 5 minutes</code></td><td>Dans 5 minutes</td></tr>
+<tr><td><code>now + N hours</code></td><td><code>now + 2 hours</code></td><td>Dans 2 heures</td></tr>
+<tr><td><code>now + N days</code></td><td><code>now + 3 days</code></td><td>Dans 3 jours</td></tr>
+<tr><td><code>tomorrow</code></td><td><code>tomorrow 10am</code></td><td>Demain à 10h</td></tr>
+<tr><td><code>noon</code></td><td><code>noon</code></td><td>Aujourd'hui à midi</td></tr>
+<tr><td><code>midnight</code></td><td><code>midnight</code></td><td>Aujourd'hui à minuit</td></tr>
+<tr><td><code>teatime</code></td><td><code>teatime 4pm</code></td><td>Aujourd'hui à 16h (heure du thé)</td></tr>
+<tr><td><code>JJ.MM.AAAA</code></td><td><code>25.12.2026 09:00</code></td><td>25 décembre 2026 à 9h</td></tr>
+<tr><td><code>Mois JJ année</code></td><td><code>jan 15 2027 14:00</code></td><td>15 janvier 2027 à 14h</td></tr>
+</tbody>
 </table>
 
-<div class="code-block">
-<div class="code-header"># Soumettre un job dans la queue b</div>
-<pre><code>at -q b 10:00 tomorrow</code></pre>
-</div>
+<h2>3. Utiliser <code>at</code> pas à pas</h2>
 
-<div class="code-block">
-<div class="code-header"># Limiter les ressources d'une queue (exemple)</div>
-<pre><code>at -q b -m 10:00 tomorrow</code></pre>
-</div>
+<h3>Exemple 1 : Exécution dans 2 minutes</h3>
 
-<h2>6. `batch` — Exécuter quand le système est calme</h2>
+<pre><code>at now + 2 minutes</code></pre>
 
-<p><code>batch</code> est similaire à <code>at</code>, sauf que les commandes ne s'exécutent que lorsque la charge système descend sous un seuil (par défaut : 1.5, ou le nombre de cœurs). C'est parfait pour des tâches lourdes mais pas urgentes.</p>
-
-<div class="code-block">
-<div class="code-header"># Exécuter la commande quand la charge < 1.5</div>
-<pre><code>echo "/opt/rapport-quotidien.sh" | batch</code></pre>
-</div>
-
-<div class="code-block">
-<div class="code-header"># Mode interactif avec batch</div>
-<pre><code>batch
-# Tape tes commandes, puis Ctrl+D
-find /home -name "*.tmp" -delete
-tar czf /backup/home.tar.gz /home
-# Ctrl+D</code></pre>
-</div>
+<p>Tu verras un prompt <code>at&gt;</code> — tape ta commande puis <code>Ctrl+D</code> :</p>
 
 <blockquote>
-<p><strong>⏱️ Patience :</strong> Avec <code>batch</code>, ton job attend en queue. Dès que le système est suffisamment calme, il s'exécute automatiquement.</p>
+<p><code>at&gt; echo "La tâche a exécuté $(date)" >> ~/test_at.log</code></p>
+<p><code>at&gt; &lt;EOT&gt;</code></p>
+<p><code>job 1 at Mon Apr  6 08:15:00 2026</code></p>
 </blockquote>
 
-<h2>7. Exemple concret : Planifier un redémarrage différé</h2>
+<h3>Exemple 2 : À une heure précise</h3>
 
-<div class="code-block">
-<div class="code-header"># Planifier un redémarrage dans 30 minutes (avec confirmation)</div>
-<pre><code>echo "sudo shutdown -r +30" | at now + 30 minutes</code></pre>
-</div>
+<pre><code>at 17:30</code></pre>
 
-<div class="code-block">
-<div class="code-header"># Annuler le redémarrage planifié</div>
-<pre><code>sudo shutdown -c</code></pre>
-</div>
+<blockquote>
+<p><code>at&gt; echo "C'est l'heure !" | tee ~/alerte_17h30.txt</code></p>
+<p><code>at&gt; &lt;EOT&gt;</code></p>
+<p><code>job 2 at Mon Apr  6 17:30:00 2026</code></p>
+</blockquote>
 
-<h2>8. Comparaison : `at` vs `cron` vs `batch`</h2>
+<h3>Exemple 3 : Demain à 9h</h3>
+
+<pre><code>at 9am tomorrow</code></pre>
+
+<blockquote>
+<p><code>at&gt; /home/utilisateur/scripts/backup_rapide.sh</code></p>
+<p><code>at&gt; &lt;EOT&gt;</code></p>
+<p><code>job 3 at Tue Apr  7 09:00:00 2026</code></p>
+</blockquote>
+
+<h3>Exemple 4 : Avec un script complet</h3>
+
+<pre><code>at 20:00 &lt;&lt;EOF
+tar -czf /backup/home_$(date +%Y%m%d).tar.gz /home/utilisateur/
+echo "Sauvegarde terminée" | mail -s "Backup" utilisateur@email.com
+EOF</code></pre>
+
+<h2>4. Syntaxe alternative par tube</h2>
+
+<p>Planifier sans entrer dans le mode interactif :</p>
+
+<pre><code># Avec un tube (pipe)
+echo "/home/utilisateur/scripts/rapport.sh" | at 10am tomorrow
+
+# Avec un here-doc via fichier
+cat &lt;&lt; 'CMDS' | at now + 1 hour
+mkdir -p ~/archives/$(date +%Y%m%d)
+cp ~/Documents/*.pdf ~/archives/$(date +%Y%m%d)/
+CMDS</code></pre>
+
+<h2>5. <code>batch</code> — exécution quand le système est calme</h2>
+
+<p><code>batch</code> lance ta commande quand la <strong>charge moyenne</strong> du système descend sous 1.5 (par défaut). C'est idéal pour les tâches lourdes qu'on veut faire tourner aux heures creuses.</p>
+
+<pre><code>batch</code></pre>
+
+<blockquote>
+<p><code>at&gt; tar -czf /backup/plein_backup.tar.gz /home/</code></p>
+<p><code>at&gt; &lt;EOT&gt;</code></p>
+<p><code>job 5 at Mon Apr  6 08:20:00 2026</code></p>
+</blockquote>
+
+<p>La tâche s'exécutera dès que la charge le permet.</p>
+
+<h3>Changer le seuil de charge</h3>
+
+<pre><code># Lancer quand la charge est sous 0.8
+echo "script_lourd.sh" | at -q b -b 0.8</code></pre>
+
+<h3>Files de priorité (queues)</h3>
+
+<p><code>at</code> utilise des files (queues) обозначенные par une lettre :</p>
 
 <table>
-<tr><th>Caractéristique</th><th><code>at</code></th><th><code>cron</code></th><th><code>batch</code></th></tr>
-<tr><td>Usage principal</td><td>Exécution unique</td><td>Exécution répétitive</td><td>Tâche si système calme</td></tr>
-<tr><td>Répétition</td><td>Non</td><td>Oui (via crontab)</td><td>Non</td></tr>
-<tr><td>Condition de charge</td><td>Non</td><td>Non</td><td>Oui</td></tr>
-<tr><td>Persistance après reboot</td><td>Non</td><td>Oui</td><td>Non</td></tr>
-<tr><td>Difficulté</td><td>Facile</td><td>Moyenne</td><td>Facile</td></tr>
+<thead>
+<tr><th>Queue</th><th>Nice value</th><th>Usage</th></tr>
+</thead>
+<tbody>
+<tr><td><code>a</code> à <code>z</code></td><td>-20 à +19</td><td>File <code>a</code> = très prioritaire, <code>z</code> = très patient</td></tr>
+</tbody>
 </table>
 
-<h2>9. Exercices pratiques</h2>
+<pre><code># Queue b (normal)
+at -q b 10pm tomorrow
+
+# Queue c (patient)
+at -q c 2am</code></pre>
+
+<h2>6. Gérer les tâches planifiées</h2>
+
+<h3>Lister les tâches en attente</h3>
+
+<pre><code>atq
+# 3   Mon Apr  7 09:00:00 2026 a utilisateur
+# 5   Mon Apr  6 08:20:00 2026 a root</code></pre>
+
+<p>La première colonne est le <strong>numéro de job</strong>.</p>
+
+<h3>Supprimer une tâche</h3>
+
+<pre><code># Par numéro de job
+atrm 3
+
+# Supprimer plusieurs
+atrm 2 5</code></pre>
+
+<h3>Alternative avec <code>atq</code> + <code>atrm</code></h3>
+
+<pre><code># Supprimer le job 7
+atrm 7</code></pre>
+
+<h2>7. La commande <code>at</code> avec les permissions</h2>
+
+<h3>Qui peut utiliser <code>at</code> ?</h3>
+
+<p>Par défaut, tout le monde. Pour limiter :</p>
+
+<pre><code># Lister les fichiers de contrôle
+ls /etc/at*
+
+# Autoriser un utilisateur
+sudo echo "utilisateur" > /etc/at.allow
+
+# Interdire un utilisateur
+sudo echo "utilisateur" >> /etc/at.deny</code></pre>
+
+<h2>8. Différences entre <code>at</code> et <code>cron</code></h2>
+
+<table>
+<thead>
+<tr><th>Critère</th><th><code>at</code></th><th><code>cron</code></th></tr>
+</thead>
+<tbody>
+<tr><td>Fréquence</td><td>Une seule fois</td><td>Récurrente</td></tr>
+<tr><td>Persistance</td><td>Job supprimé après exécution</td><td>Reste configuré</td></tr>
+<tr><td>Charge système</td><td><code>batch</code> peut en tenir compte</td><td>Non</td></tr>
+<tr><td>Cas d'usage</td><td>Tâche unique programmée</td><td>Automatisation récurrente</td></tr>
+<tr><td>Dépendances</td><td>Non (utilise <code>at</code> + <code>sleep</code> pour temporiser)</td><td>Oui avec <code>anacron</code> ou scripts</td></tr>
+</tbody>
+</table>
+
+<h2>9. Exercice pratique</h2>
 
 <div class="exercise">
-<h3>🎯 Exercice 1 : Premier job `at`</h3>
-<p>1. Vérifie que le service <code>atd</code> est actif : <code>systemctl status atd</code></p>
-<p>2. Planifie un job qui écrit la date dans un fichier :</p>
-<pre><code>echo "date >> ~/mon-at.txt" | at now + 1 minute</code></pre>
-<p>3. Attends une minute, puis vérifie : <code>cat ~/mon-at.txt</code></p>
-<p>4. Liste tes jobs en attente : <code>atq</code></p>
+<h3>Exercice : Planifier une sauvegarde unique</h3>
+
+<p><strong>Objectif :</strong> Créer une sauvegarde de ton répertoire <code>~/Documents</code> à exécuter dans 5 minutes.</p>
+
+<pre><code># 1. Vérifie que at est installé et le service actif
+sudo systemctl status atd
+
+# 2. Planifie la tâche
+at now + 5 minutes</code></pre>
+
+<p>Dans le prompt <code>at&gt;</code>, tape :</p>
+
+<pre><code>mkdir -p ~/backup_unique
+tar -czf ~/backup_unique/docs_backup_$(date +%H%M).tar.gz ~/Documents/
+echo "Sauvegarde terminée le $(date)" > ~/backup_unique/rapport.txt</code></pre>
+
+<p>Puis <code>Ctrl+D</code> pour valider.</p>
+
+<pre><code># 3. Vérifie que le job est dans la queue
+atq
+
+# 4. Après quelques minutes, vérifie que ça a fonctionné
+ls ~/backup_unique/
+cat ~/backup_unique/rapport.txt</code></pre>
+
+<p><strong>Bonus :</strong> Supprime le job avec <code>atrm &lt;numéro&gt;</code> AVANT qu'il ne s'exécute, puis reprogramme-le pour demain à 8h avec <code>at 8am tomorrow</code>.</p>
 </div>
 
-<div class="exercise">
-<h3>🎯 Exercice 2 : Comparer `at` et `batch`</h3>
-<p>1. Lance <code>atq</code> pour voir les jobs en attente.</p>
-<p>2. Soumets une commande avec <code>batch</code> : <code>echo "uptime > ~/batch-test.txt" | batch</code></p>
-<p>3. Observe la différence dans <code>atq</code> (les jobs batch apparaissent dans la queue <code>b</code>).</p>
+<h2>10. Récapitulatif</h2>
+
+<table>
+<thead>
+<tr><th>Commande</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>at &lt;heure&gt;</code></td><td>Planifier une tâche pour un moment précis</td></tr>
+<tr><td><code>at now + N minutes</code></td><td>Exécuter dans N minutes</td></tr>
+<tr><td><code>at tomorrow HH:MM</code></td><td>Exécuter demain à l'heure indiquée</td></tr>
+<tr><td><code>batch</code></td><td>Exécuter quand la charge système est basse</td></tr>
+<tr><td><code>atq</code></td><td>Lister les jobs en attente</td></tr>
+<tr><td><code>atrm &lt;job&gt;</code></td><td>Supprimer un job</td></tr>
+<tr><td><code>Ctrl+D</code></td><td>Valider et quitter le mode interactif</td></tr>
+</tbody>
+</table>
+
+<p><code>at</code> est parfait pour les tâches uniques : un redémarrage différé, un script qui ne doit tourner qu'une fois, ou une action à faire hors des heures de bureau. <code>batch</code> complète le tableau en s'adaptant à la charge réelle de ta machine. ⏰</p>
+
 </div>
-
-<div class="exercise">
-<h3>🎯 Exercice 3 : Automation utile</h3>
-<p>1. Crée un petit script <code>~/rapport.sh</code> :</p>
-<pre><code>#!/bin/bash
-echo "=== Rapport du $(date) ===" > ~/rapport.txt
-echo "Uptime :" >> ~/rapport.txt
-uptime >> ~/rapport.txt
-echo "Disque :" >> ~/rapport.txt
-df -h >> ~/rapport.txt
-</code></pre>
-<p>2. Rend-le exécutable : <code>chmod +x ~/rapport.sh</code></p>
-<p>3. Planifie-le pour demain à 8h : <code>echo "~/rapport.sh" | at 08:00 tomorrow</code></p>
-<p>4. Vérifie avec <code>atq</code> qu'il est bien dans la liste.</p>
-</div>
-
-<h2>10. Résumé</h2>
-
-<ul>
-<li><strong><code>at</code></strong> : planifie l'exécution d'une commande <strong>une seule fois</strong> à un moment précis.</li>
-<li><strong><code>batch</code></strong> : exécute les commandes quand la <strong>charge système</strong> est faible.</li>
-<li><strong><code>atq</code></strong> : liste les jobs en attente.</li>
-<li><strong><code>atrm</code></strong> : supprime un job avant son exécution.</li>
-<li>Le service <code>atd</code> doit être actif pour que <code>at</code> et <code>batch</code> fonctionnent.</li>
-<li>Utilise des <strong>chemins absolus</strong> dans les jobs pour éviter les surprises.</li>
-</ul>
-
-<blockquote>
-<p><strong>🔗 Pour aller plus loin :</strong> La leçon sur <a href="13-taches-planifiees-cron.html">Cron et les tâches planifiées</a> te montre comment répéter des tâches automatiquement.</p>
-</blockquote>
-
 <nav>
-<a href="44-ssh-tunnels-port-forwarding.html">← Leçon 44 : SSH Tunnels</a>
-<a href="index.html">↑ Accueil</a>
-<a href="46-priorite-processus-nice-renice.html">Leçon 46 : nice et renice →</a>
+<a href="44-ssh-tunnels-port-forwarding.html" style="color:#00d9ff;text-decoration:none;">&larr; Leçon 44 : SSH - Tunnels et Port Forwarding</a>
+<a href="46-priorite-processus-nice-renice.html" style="color:#00d9ff;text-decoration:none;">Leçon 46 : nice et renice &rarr;</a>
 </nav>
 
-</div>
 </body>
 </html>
