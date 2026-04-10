@@ -1,0 +1,340 @@
+# Leçon 49 : journalctl — Explorer et filtrer les logs systemd
+
+## Objectif
+
+Découvrir `journalctl`, l'outil principal pour consulter les logs gérés par **systemd-journald**. Vous apprendrez à filtrer, chercher et analyser les événements de votre système.
+
+## Prérequis
+
+- Connaissance de base du terminal (leçon 2)
+- Notion de ce qu'est un service systemd (leçon 21)
+
+## 1. Qu'est-ce que journalctl ?
+
+Depuis systemd, les logs ne sont plus écrits uniquement dans des fichiers texte classiques (comme `/var/log/syslog`). Ils sont collectés par **journald** dans un format binaire structuré. `journalctl` est l'outil pour les interroger.
+
+**Avantages :**
+- Logs centralisés et indexés
+- Recherche rapide par date, service, gravité
+- Rotation automatique
+- Persistant ou en mémoire (selon configuration)
+
+## 2. Commandes de base
+
+### Lire les logs (les plus récents en bas)
+
+```bash
+journalctl
+```
+
+### Les 50 dernières lignes (style `tail -f`)
+
+```bash
+journalctl -n 50
+```
+
+### Suivre les nouveaux logs en temps réel
+
+```bash
+journalctl -f
+```
+
+### Logs du boot actuel uniquement
+
+```bash
+journalctl -b
+```
+
+## 3. Filtrer par service
+
+### Logs d'un service spécifique
+
+```bash
+journalctl -u nginx.service
+journalctl -u sshd.service
+journalctl -u NetworkManager.service
+```
+
+### Combiner : service + lignes récentes
+
+```bash
+journalctl -u nginx.service -n 20
+```
+
+### Logs depuis le dernier démarrage d'un service
+
+```bash
+journalctl -u nginx.service --since "1 hour ago"
+```
+
+## 4. Filtrer par date et heure
+
+### Depuis une date précise
+
+```bash
+journalctl --since "2026-04-10 09:00:00"
+```
+
+### Aujourd'hui
+
+```bash
+journalctl --since today
+```
+
+### Hier
+
+```bash
+journalctl --since yesterday --until "00:00:00"
+```
+
+### Dernières 2 heures
+
+```bash
+journalctl --since "2 hours ago"
+```
+
+### Intervalle de dates
+
+```bash
+journalctl --since "2026-04-09" --until "2026-04-10 10:00:00"
+```
+
+## 5. Filtrer par priorité (gravité)
+
+Les niveaux de priorité (du + grave au + détail) :
+
+| Niveau | Nom    | Signification           |
+|--------|--------|--------------------------|
+| 0      | emerg  | Système inutilisable     |
+| 1      | alert  | Action immédiate requise |
+| 2      | crit   | Condition critique       |
+| 3      | err    | Erreur                   |
+| 4      | warning| Avertissement            |
+| 5      | notice | Événement normal notable |
+| 6      | info   | Information              |
+| 7      | debug  | Messages de débogage     |
+
+### Voir uniquement les erreurs et pires
+
+```bash
+journalctl -p err
+```
+
+### Erreurs et avertissements
+
+```bash
+journalctl -p warning..err
+```
+
+## 6. Filtrer par processus ou utilisateur
+
+### Tous les logs d'un PID
+
+```bash
+journalctl _PID=1234
+```
+
+### Tous les logs d'un utilisateur (UID)
+
+```bash
+journalctl _UID=1000
+```
+
+### Logs du noyau (kernel)
+
+```bash
+journalctl -k
+```
+
+### Logs d'un exécutable spécifique
+
+```bash
+journalctl /usr/sbin/nginx
+```
+
+## 7. Options utiles
+
+### Afficher les timestamps en heure locale
+
+```bash
+journalctl --local
+# Ou configurer dans /etc/systemd/journald.conf :
+# Localize=yes
+```
+
+### Taille des logs affichée
+
+```bash
+journalctl --disk-usage
+```
+
+### Purger les anciens logs
+
+```bash
+# Supprimer les logs de plus de 7 jours
+journalctl --vacuum-time=7d
+
+# Garder seulement les 500 Mo de logs
+journalctl --vacuum-size=500M
+```
+
+### Voir le début des logs (logs antiques)
+
+```bash
+journalctl --list-boots   # Lister les boots disponibles
+journalctl -b -1           # Boot précédent
+```
+
+## 8. Exemples pratiques
+
+### Trouver pourquoi un service a échoué
+
+```bash
+# Voir le statut du service
+systemctl status nginx
+
+# Logs du service nginx
+journalctl -u nginx.service -n 100 --no-pager
+
+# Erreurs récentes
+journalctl -u nginx.service -p err --since "1 hour ago"
+```
+
+### Analyser les tentatives de connexion SSH
+
+```bash
+# Connexions SSH récentes
+journalctl -u sshd.service --since "24 hours ago"
+
+# Connexions échouées
+journalctl -u sshd.service | grep "Failed"
+```
+
+### Surveiller les erreurs disque
+
+```bash
+# Logs du noyau liés aux disques
+journalctl -k | grep -i "error\|disque\|sda"
+
+# Erreurs SCSI/SATA
+journalctl -k | grep -i "sd\|ata"
+```
+
+### Trouver qui a redémarré le système
+
+```bash
+journalctl -k | grep -i "reboot\|shutdown\|power"
+```
+
+## 9. Configuration de journald
+
+Le fichier de configuration principal :
+
+```bash
+sudo nano /etc/systemd/journald.conf
+```
+
+Options courantes :
+
+```ini
+[Journal]
+# Taille max des fichiers de logs
+SystemMaxUse=500M
+
+# Durée de conservation
+MaxRetentionSec=30day
+
+# Compression des logs
+Compress=yes
+
+# Synchronisation
+SyncIntervalSec=5m
+```
+
+Après modification :
+
+```bash
+sudo systemctl restart systemd-journald
+```
+
+## 10. Créer un alias pratique
+
+Ajoutez à votre `~/.bashrc` :
+
+```bash
+# Alias pour journalctl
+alias jctl='journalctl -n 50 --no-pager'
+alias jerr='journalctl -p err -n 50 --no-pager'
+alias jfollow='journalctl -f --no-pager'
+```
+
+Appliquez :
+
+```bash
+source ~/.bashrc
+```
+
+## Résumé des commandes principales
+
+| Commande                        | Description                        |
+|---------------------------------|-------------------------------------|
+| `journalctl`                    | Tous les logs                       |
+| `journalctl -u service`         | Logs d'un service                   |
+| `journalctl -b`                 | Logs du boot actuel                 |
+| `journalctl -f`                 | Suivre en temps réel                |
+| `journalctl -n 50`              | 50 dernières lignes                  |
+| `journalctl --since today`      | Logs d'aujourd'hui                  |
+| `journalctl -p err`             | Erreurs uniquement                   |
+| `journalctl -k`                 | Logs du noyau                        |
+| `journalctl --disk-usage`       | Espace utilisé par les logs         |
+| `journalctl --vacuum-time=7d`  | Supprimer logs de plus de 7 jours   |
+
+---
+
+## Exercices pratiques
+
+1. Affichez les 30 dernières lignes de logs de votre système :
+   ```bash
+   journalctl -n 30
+   ```
+
+2. Trouvez les erreurs des 24 dernières heures :
+   ```bash
+   journalctl -p err --since "24 hours ago"
+   ```
+
+3. Consultez les logs de votre interface réseau :
+   ```bash
+   journalctl -u NetworkManager.service -n 20
+   ```
+
+4. Créez un alias `jerr` dans votre `.bashrc` pour voir rapidement les erreurs, puis testez-le.
+
+5. Vérifiez l'espace disque utilisé par les logs et supprimez les logs de plus de 3 jours :
+   ```bash
+   journalctl --disk-usage
+   journalctl --vacuum-time=3d
+   ```
+
+---
+
+## Pour aller plus loin
+
+- `man journalctl` — documentation complète
+- `man journald.conf` — configuration du démon
+- `logger` — écrire dans les logs depuis un script :
+  ```bash
+  logger -p local0.info "Mon message personnalisé"
+  ```
+
+---
+
+**Navigation**
+
+[← Leçon précédente : AWK — Manipuler et transformer du texte](48-awk-manipuler-texte.html)
+
+[Sommaire](index.html)
+
+---
+
+* Cours SkyLinux - Leçon 49 par Sire Aselophe
