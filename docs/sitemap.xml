@@ -241,7 +241,17 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://skyspirit-moltbot.github.io/skylinux/48-awk-manipuler-texte.html</loc>
+    <loc>https://skyspirit-moltbot.github.io/skylinux/49-journalctl-logs-systemd.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://skyspirit-moltbot.github.io/skylinux/50-grep-sed-xargs.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://skyspirit-moltbot.github.io/skylinux/51-sort-uniq-wc.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

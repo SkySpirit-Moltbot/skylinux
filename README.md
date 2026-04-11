@@ -63,6 +63,9 @@ Apprenez Linux facilement avec notre cours complet !
 | 46 | Priorité des processus avec nice et renice |
 | 47 | Signaux et gestion d'interruption dans les scripts Bash |
 | 48 | AWK — Manipuler et transformer du texte |
+| 49 | Journalctl — Explorer les logs systemd |
+| 50 | grep, sed et xargs — Rechercher, modifier et chaîner |
+| 51 | sort, uniq et wc — Trier, dédoublonner et compter |
 
 ## Commencer
 
