@@ -3,208 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 51 : sort, uniq et wc — Trier, dédoublonner et compter | SkyLinux</title>
-<link rel="icon" type="image/png" href="images/skylinux-favicon.png">
-<meta name="description" content="Apprenez à trier, dédoublonner et compter avec sort, uniq et wc. Guide pratique pour manipuler du texte sous Linux.">
-<meta name="keywords" content="linux, sort, uniq, wc, trier, dédoublonner, compter, ligne de commande, terminal">
-<meta name="author" content="SkyLinux">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/51-sort-uniq-wc.html">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; line-height: 1.7; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
 .container { max-width: 800px; margin: 0 auto; }
-.nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-.nav-link { color: #00d9ff; text-decoration: none; font-size: 0.9rem; transition: opacity 0.2s; }
-.nav-link:hover { opacity: 0.7; }
-.nav-link.disabled { color: #555; pointer-events: none; }
-.header { margin-bottom: 40px; text-align: center; }
-h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
-.subtitle { color: #888; font-size: 1rem; }
-h2 { font-size: 1.5rem; color: #00d9ff; margin: 40px 0 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
-h3 { font-size: 1.15rem; color: #a855f7; margin: 25px 0 15px; }
-p { margin-bottom: 15px; color: #ccc; }
-strong { color: #fff; }
-code { background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.2); border-radius: 4px; padding: 2px 6px; font-family: 'Courier New', monospace; font-size: 0.9em; color: #00d9ff; }
-pre { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto; }
-pre code { background: none; border: none; padding: 0; display: block; line-height: 1.6; }
-.table-wrapper { overflow-x: auto; margin: 20px 0; }
-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.02); border-radius: 8px; overflow: hidden; }
-th { background: rgba(0,217,255,0.15); color: #00d9ff; font-weight: 600; text-align: left; padding: 12px 15px; }
-td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-tr:last-child td { border-bottom: none; }
-tr:hover { background: rgba(0,217,255,0.05); }
-.exercise { background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 8px; padding: 20px; margin: 25px 0; }
-.exercise h3 { color: #a855f7; margin-top: 0; }
-.exercise ol { margin-left: 20px; color: #ccc; }
-.exercise li { margin-bottom: 10px; }
-.nav-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; position: relative; transition: background 0.15s; }
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.copy-btn { margin-left: 12px; background: none; border: 1px solid #30363d; border-radius: 6px; cursor: pointer; padding: 4px 8px; opacity: 0.5; transition: opacity 0.2s, border-color 0.2s; flex-shrink: 0; display: flex; align-items: center; }
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
 </style>
 </head>
 <body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
 <div class="container">
-<nav class="nav-top">
-<a href="50-grep-sed-xargs.html" class="nav-link">← Leçon 50 : grep, sed et xargs</a>
-<a href="index.html" class="nav-link">Sommaire</a>
+<h1>Trier numériquement</h1>
+<p><!DOCTYPE html></p>
+<p><html lang="fr"></p>
+<p><head></p>
+<p><meta charset="UTF-8"></p>
+<p><meta name="viewport" content="width=device-width, initial-scale=1.0"></p>
+<p><title>Leçon 51 : sort, uniq et wc — Trier, dédoublonner et compter | SkyLinux</title></p>
+<p><link rel="icon" type="image/png" href="images/skylinux-favicon.png"></p>
+<p><meta name="description" content="Apprenez à trier, dédoublonner et compter avec sort, uniq et wc. Guide pratique pour manipuler du texte sous Linux."></p>
+<p><meta name="keywords" content="linux, sort, uniq, wc, trier, dédoublonner, compter, ligne de commande, terminal"></p>
+<p><meta name="author" content="SkyLinux"></p>
+<p><meta name="robots" content="index, follow"></p>
+<p><link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/51-sort-uniq-wc.html"></p>
+<p><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"></p>
+<p><style></p>
+<p>* { margin: 0; padding: 0; box-sizing: border-box; }</p>
+<p>body { font-family: Inter, sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; line-height: 1.7; }</p>
+<p>.container { max-width: 800px; margin: 0 auto; }</p>
+<p>.nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }</p>
+<p>.nav-link { color: #00d9ff; text-decoration: none; font-size: 0.9rem; transition: opacity 0.2s; }</p>
+<p>.nav-link:hover { opacity: 0.7; }</p>
+<p>.nav-link.disabled { color: #555; pointer-events: none; }</p>
+<p>.header { margin-bottom: 40px; text-align: center; }</p>
+<p>h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }</p>
+<p>.subtitle { color: #888; font-size: 1rem; }</p>
+<p>h2 { font-size: 1.5rem; color: #00d9ff; margin: 40px 0 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); }</p>
+<p>h3 { font-size: 1.15rem; color: #a855f7; margin: 25px 0 15px; }</p>
+<p>p { margin-bottom: 15px; color: #ccc; }</p>
+<p>strong { color: #fff; }</p>
+<p>code { background: rgba(0,217,255,0.1); border: 1px solid rgba(0,217,255,0.2); border-radius: 4px; padding: 2px 6px; font-family: 'Courier New', monospace; font-size: 0.9em; color: #00d9ff; }</p>
+<p>pre { background: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 20px; margin: 20px 0; overflow-x: auto; }</p>
+<p>pre code { background: none; border: none; padding: 0; display: block; line-height: 1.6; }</p>
+<p>.table-wrapper { overflow-x: auto; margin: 20px 0; }</p>
+<p>table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.02); border-radius: 8px; overflow: hidden; }</p>
+<p>th { background: rgba(0,217,255,0.15); color: #00d9ff; font-weight: 600; text-align: left; padding: 12px 15px; }</p>
+<p>td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }</p>
+<p>tr:last-child td { border-bottom: none; }</p>
+<p>tr:hover { background: rgba(0,217,255,0.05); }</p>
+<p>.exercise { background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3); border-radius: 8px; padding: 20px; margin: 25px 0; }</p>
+<p>.exercise h3 { color: #a855f7; margin-top: 0; }</p>
+<p>.exercise ol { margin-left: 20px; color: #ccc; }</p>
+<p>.exercise li { margin-bottom: 10px; }</p>
+<p>.nav-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }</p>
+<p>.footer { text-align: center; margin-top: 40px; color: #555; font-size: 0.85rem; }</p>
+<p></style></p>
+<p></head></p>
+<p><body></p>
+<p><div class="container"></p>
+<p><nav class="nav-top"></p>
+<p><a href="50-grep-sed-xargs.html" class="nav-link">← Leçon 50 : grep, sed et xargs</a></p>
+<p><a href="index.html" class="nav-link">Sommaire</a></p>
+<p></nav></p>
+<p><header class="header"></p>
+<p><h1>Leçon 51 : sort, uniq et wc</h1></p>
+<p><p class="subtitle">Trier, dédoublonner et compter</p></p>
+<p></header></p>
+<p><h2>Objectif</h2></p>
+<p><p>Maîtriser trois commandes essentielles pour traiter des données textuelles : <strong>sort</strong> (trier), <strong>uniq</strong> (dédoublonner) et <strong>wc</strong> (compter).</p></p>
+<p><h2>Prérequis</h2></p>
+<p><ul style="margin-left:20px;color:#ccc;"></p>
+<p><li>Savoir utiliser les tubes (pipes) (leçon 15)</li></p>
+<p><li>Connaître les bases du terminal (leçon 2)</li></p>
+<p></ul></p>
+<p><h2>1. sort — Trier des lignes</h2></p>
+<p><h3>Tri basique</h3></p>
+<p><pre><code># Trier un fichier alphabétiquement</p>
+<p>sort fichier.txt</p>
+<p># Trier numériquement</p>
+<p>sort -n nombres.txt</p>
+<p># Trier en ordre inverse</p>
+<p>sort -r fichier.txt</p>
+<p># Trier par colonne (ex: colonne 3)</p>
+<p>sort -k3 fichier.txt</code></pre></p>
+<p><h3>Options utiles</h3></p>
+<p><pre><code># Supprimer les doublons pendant le tri</p>
+<p>sort -u fichier.txt</p>
+<p># Trier selon un délimiteur (ex: colonne 2, délimiteur :)</p>
+<p>sort -t: -k2 fichier.txt</p>
+<p># Trier numériquement avec去掉 les chaînes non-numériques</p>
+<p>sort -V versions.txt</code></pre></p>
+<p><h3>Exemples concrets</h3></p>
+<p><pre><code># Trier les processus par mémoire utilisée</p>
+<p>ps aux | sort -k4 -rn | head -10</p>
+<p># Trier les fichiers par taille</p>
+<p>ls -la | sort -k5 -rn</p>
+<p># Trier un fichier CSV par la colonne 3</p>
+<p>sort -t',' -k3 usernames.csv</code></pre></p>
+<p><h2>2. uniq — Supprimer les doublons</h2></p>
+<p><p><code>uniq</code> supprime les lignes adjacentes identiques. Utile après un tri.</p></p>
+<p><h3>Utilisation basique</h3></p>
+<p><pre><code># Supprimer les lignes identiques consécutives</p>
+<p>uniq fichier.txt</p>
+<p># Compter les occurrences de chaque ligne</p>
+<p>uniq -c fichier.txt</p>
+<p># Afficher uniquement les lignes DUPLIQUÉES</p>
+<p>uniq -d fichier.txt</p>
+<p># Afficher les lignes qui apparaissent une seule fois</p>
+<p>uniq -u fichier.txt</code></pre></p>
+<p><h3>Combinaison avec sort</h3></p>
+<p><pre><code># Supprimer TOUS les doublons (y compris non-adjacents)</p>
+<p>sort fichier.txt | uniq</p>
+<p># Compter les occurrences uniques</p>
+<p>sort fichier.txt | uniq -c | sort -rn</p>
+<p># Trouver les 10 mots les plus fréquents</p>
+<p>cat words.txt | sort | uniq -c | sort -rn | head -10</code></pre></p>
+<p><h2>3. wc — Compter</h2></p>
+<p><p><code>wc</code> (word count) compte les lignes, mots et caractères.</p></p>
+<p><h3>Commandes de base</h3></p>
+<p><pre><code># Compter les lignes</p>
+<p>wc -l fichier.txt</p>
+<p># Compter les mots</p>
+<p>wc -w fichier.txt</p>
+<p># Compter les caractères</p>
+<p>wc -c fichier.txt</p>
+<p># Tout afficher (lignes, mots, caractères, fichier)</p>
+<p>wc fichier.txt</code></pre></p>
+<p><h3>Exemples concrets</h3></p>
+<p><pre><code># Compter le nombre de fichiers dans un répertoire</p>
+<p>ls -1 | wc -l</p>
+<p># Compter les lignes de code dans un projet</p>
+<p>find . -name "*.py" -exec cat {} \; | wc -l</p>
+<p># Compter le nombre d'utilisateurs</p>
+<p>cat /etc/passwd | wc -l</p>
+<p># Compter les lignes dans plusieurs fichiers</p>
+<p>wc -l *.log</code></pre></p>
+<p><h2>4. Combiner les trois</h2></p>
+<p><pre><code># Trouver les 5 IP les plus fréquentes dans les logs</p>
+<p>cat /var/log/access.log | awk '{print $1}' | sort | uniq -c | sort -rn | head -5</p>
+<p># Lister les utilisateurs uniques connectés</p>
+<p>who | awk '{print $1}' | sort | uniq</p>
+<p># Compter les lignes de chaque type d'erreur</p>
+<p>grep "ERROR" app.log | wc -l</p>
+<p># Analyser les connexions SSH</p>
+<p>last | awk '{print $1}' | sort | uniq -c | sort -rn</code></pre></p>
+<p><h2>Exercices pratiques</h2></p>
+<p><div class="exercise"></p>
+<p><h3>À toi de jouer !</h3></p>
+<p><ol></p>
+<p><li><strong>Tri simple</strong> — Trie le fichier <code>/etc/passwd</code> par ordre alphabétique des noms d'utilisateurs.</li></p>
+<p><li><strong>Dédoublonnage</strong> — À partir d'une liste de mots avec doublons, affiche uniquement les mots uniques.</li></p>
+<p><li><strong>Statistiques</strong> — À partir du fichier <code>/var/log/syslog</code>, compte combien de fois chaque programme apparaît.</li></p>
+<p><li><strong>Analyse</strong> — Trouve les 3 adresses IP qui ont le plus accédé à ton système (utilise <code>last</code> ou les logs SSH).</li></p>
+<p></ol></p>
+<p></div></p>
+<p><h2>Résumé</h2></p>
+<p><div class="table-wrapper"></p>
+<p><table></p>
+<p><tr><th>Commande</th><th>Rôle</th><th>Exemple</th></tr></p>
+<p><tr><td><code>sort</code></td><td>Trier les lignes</td><td><code>sort -n fichier.txt</code></td></tr></p>
+<p><tr><td><code>sort -r</code></td><td>Trier en ordre inverse</td><td><code>sort -r liste.txt</code></td></tr></p>
+<p><tr><td><code>sort -u</code></td><td>Trier et dédoublonner</td><td><code>sort -u fichier.txt</code></td></tr></p>
+<p><tr><td><code>sort -k</code></td><td>Trier par colonne</td><td><code>sort -k3 -t: fichier.txt</code></td></tr></p>
+<p><tr><td><code>uniq</code></td><td>Supprimer les doublons</td><td><code>sort fichier | uniq</code></td></tr></p>
+<p><tr><td><code>uniq -c</code></td><td>Compter les occurrences</td><td><code>uniq -c fichier.txt</code></td></tr></p>
+<p><tr><td><code>uniq -d</code></td><td>Afficher les doublons</td><td><code>uniq -d fichier.txt</code></td></tr></p>
+<p><tr><td><code>wc -l</code></td><td>Compter les lignes</td><td><code>wc -l *.log</code></td></tr></p>
+<p><tr><td><code>wc -w</code></td><td>Compter les mots</td><td><code>wc -w document.txt</code></td></tr></p>
+<p></table></p>
+<p></div></p>
+<p><nav class="nav-bottom"></p>
+<p><a href="50-grep-sed-xargs.html" class="nav-link">← Leçon 50 : grep, sed et xargs</a></p>
+<p><a href="index.html" class="nav-link">Sommaire</a></p>
+<p></nav></p>
+<p><p class="footer">Par Sire Aselophe — Leçon créée en avril 2026</p></p>
+<p></div></p>
+<p></body></p>
+<p></html></p>
+<nav>
+<a href="50-grep-sed-xargs.html">&larr; 50 grep sed xargs</a>
+<a href="index.html">index &rarr;</a>
 </nav>
-
-<header class="header">
-<h1>Leçon 51 : sort, uniq et wc</h1>
-<p class="subtitle">Trier, dédoublonner et compter</p>
-</header>
-
-<h2>Objectif</h2>
-<p>Maîtriser trois commandes essentielles pour traiter des données textuelles : <strong>sort</strong> (trier), <strong>uniq</strong> (dédoublonner) et <strong>wc</strong> (compter).</p>
-
-<h2>Prérequis</h2>
-<ul style="margin-left:20px;color:#ccc;">
-<li>Savoir utiliser les tubes (pipes) (leçon 15)</li>
-<li>Connaître les bases du terminal (leçon 2)</li>
-</ul>
-
-<h2>1. sort — Trier des lignes</h2>
-
-<h3>Tri basique</h3>
-<pre><code># Trier un fichier alphabétiquement
-sort fichier.txt
-
-# Trier numériquement
-sort -n nombres.txt
-
-# Trier en ordre inverse
-sort -r fichier.txt
-
-# Trier par colonne (ex: colonne 3)
-sort -k3 fichier.txt</code></pre>
-
-<h3>Options utiles</h3>
-<pre><code># Supprimer les doublons pendant le tri
-sort -u fichier.txt
-
-# Trier selon un délimiteur (ex: colonne 2, délimiteur :)
-sort -t: -k2 fichier.txt
-
-# Trier numériquement avec去掉 les chaînes non-numériques
-sort -V versions.txt</code></pre>
-
-<h3>Exemples concrets</h3>
-<pre><code># Trier les processus par mémoire utilisée
-ps aux | sort -k4 -rn | head -10
-
-# Trier les fichiers par taille
-ls -la | sort -k5 -rn
-
-# Trier un fichier CSV par la colonne 3
-sort -t',' -k3 usernames.csv</code></pre>
-
-<h2>2. uniq — Supprimer les doublons</h2>
-
-<p><code>uniq</code> supprime les lignes adjacentes identiques. Utile après un tri.</p>
-
-<h3>Utilisation basique</h3>
-<pre><code># Supprimer les lignes identiques consécutives
-uniq fichier.txt
-
-# Compter les occurrences de chaque ligne
-uniq -c fichier.txt
-
-# Afficher uniquement les lignes DUPLIQUÉES
-uniq -d fichier.txt
-
-# Afficher les lignes qui apparaissent une seule fois
-uniq -u fichier.txt</code></pre>
-
-<h3>Combinaison avec sort</h3>
-<pre><code># Supprimer TOUS les doublons (y compris non-adjacents)
-sort fichier.txt | uniq
-
-# Compter les occurrences uniques
-sort fichier.txt | uniq -c | sort -rn
-
-# Trouver les 10 mots les plus fréquents
-cat words.txt | sort | uniq -c | sort -rn | head -10</code></pre>
-
-<h2>3. wc — Compter</h2>
-
-<p><code>wc</code> (word count) compte les lignes, mots et caractères.</p>
-
-<h3>Commandes de base</h3>
-<pre><code># Compter les lignes
-wc -l fichier.txt
-
-# Compter les mots
-wc -w fichier.txt
-
-# Compter les caractères
-wc -c fichier.txt
-
-# Tout afficher (lignes, mots, caractères, fichier)
-wc fichier.txt</code></pre>
-
-<h3>Exemples concrets</h3>
-<pre><code># Compter le nombre de fichiers dans un répertoire
-ls -1 | wc -l
-
-# Compter les lignes de code dans un projet
-find . -name "*.py" -exec cat {} \; | wc -l
-
-# Compter le nombre d'utilisateurs
-cat /etc/passwd | wc -l
-
-# Compter les lignes dans plusieurs fichiers
-wc -l *.log</code></pre>
-
-<h2>4. Combiner les trois</h2>
-
-<pre><code># Trouver les 5 IP les plus fréquentes dans les logs
-cat /var/log/access.log | awk '{print $1}' | sort | uniq -c | sort -rn | head -5
-
-# Lister les utilisateurs uniques connectés
-who | awk '{print $1}' | sort | uniq
-
-# Compter les lignes de chaque type d'erreur
-grep "ERROR" app.log | wc -l
-
-# Analyser les connexions SSH
-last | awk '{print $1}' | sort | uniq -c | sort -rn</code></pre>
-
-<h2>Exercices pratiques</h2>
-
-<div class="exercise">
-<h3>À toi de jouer !</h3>
-<ol>
-<li><strong>Tri simple</strong> — Trie le fichier <code>/etc/passwd</code> par ordre alphabétique des noms d'utilisateurs.</li>
-<li><strong>Dédoublonnage</strong> — À partir d'une liste de mots avec doublons, affiche uniquement les mots uniques.</li>
-<li><strong>Statistiques</strong> — À partir du fichier <code>/var/log/syslog</code>, compte combien de fois chaque programme apparaît.</li>
-<li><strong>Analyse</strong> — Trouve les 3 adresses IP qui ont le plus accédé à ton système (utilise <code>last</code> ou les logs SSH).</li>
-</ol>
 </div>
-
-<h2>Résumé</h2>
-
-<div class="table-wrapper">
-<table>
-<tr><th>Commande</th><th>Rôle</th><th>Exemple</th></tr>
-<tr><td><code>sort</code></td><td>Trier les lignes</td><td><code>sort -n fichier.txt</code></td></tr>
-<tr><td><code>sort -r</code></td><td>Trier en ordre inverse</td><td><code>sort -r liste.txt</code></td></tr>
-<tr><td><code>sort -u</code></td><td>Trier et dédoublonner</td><td><code>sort -u fichier.txt</code></td></tr>
-<tr><td><code>sort -k</code></td><td>Trier par colonne</td><td><code>sort -k3 -t: fichier.txt</code></td></tr>
-<tr><td><code>uniq</code></td><td>Supprimer les doublons</td><td><code>sort fichier | uniq</code></td></tr>
-<tr><td><code>uniq -c</code></td><td>Compter les occurrences</td><td><code>uniq -c fichier.txt</code></td></tr>
-<tr><td><code>uniq -d</code></td><td>Afficher les doublons</td><td><code>uniq -d fichier.txt</code></td></tr>
-<tr><td><code>wc -l</code></td><td>Compter les lignes</td><td><code>wc -l *.log</code></td></tr>
-<tr><td><code>wc -w</code></td><td>Compter les mots</td><td><code>wc -w document.txt</code></td></tr>
-</table>
-</div>
-
-<nav class="nav-bottom">
-<a href="50-grep-sed-xargs.html" class="nav-link">← Leçon 50 : grep, sed et xargs</a>
-<a href="index.html" class="nav-link">Sommaire</a>
-</nav>
-
-<p class="footer">Par Sire Aselophe — Leçon créée en avril 2026</p>
-</div>
+<script>
+function copyCode(el) {
+  var code = el.querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(function() {
+    el.querySelector('.copy-btn').classList.add('copied');
+    setTimeout(function() { el.querySelector('.copy-btn').classList.remove('copied'); }, 1500);
+  });
+}
+document.querySelectorAll('.code-line').forEach(function(el) { el.addEventListener('click', function() { copyCode(el); }); });
+</script>
 </body>
 </html>

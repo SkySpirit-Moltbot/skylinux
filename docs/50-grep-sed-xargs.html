@@ -1,175 +1,195 @@
-# Leçon 50 : grep, sed et xargs — Rechercher, modifier et chaîner
-
-## Objectif
-
-Découvrir trois outils complémentaires pour manipuler du texte en ligne de commande : **grep** (rechercher), **sed** (modifier) et **xargs** (chaîner des commandes).
-
-## Prérequis
-
-- Savoir naviguer dans le terminal (leçon 2)
-- Comprendre les tubes (pipes) (leçon 8)
-
----
-
-## 1. grep — Rechercher du texte
-
-`grep` (Global Regular Expression Print) cherche un motif dans un fichier ou une entrée standard.
-
-### Commandes de base
-
-```bash
-# Rechercher "error" dans un fichier
-grep "error" /var/log/syslog
-
-# Recherche insensible à la casse
-grep -i "warning" app.log
-
-# Afficher les lignes QUI NE contiennent PAS le motif
-grep -v "debug" app.log
-
-# Afficher le numéro des lignes
-grep -n "error" app.log
-
-# Recherche récursive dans un répertoire
-grep -r "failed" /etc/
-```
-
-### Exemples concrets
-
-```bash
-# Trouver les lignes avec une adresse IP
-grep -E "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" logs.txt
-
-# Compter le nombre d'occurrences
-grep -c "error" app.log
-
-# Afficher 3 lignes avant et après chaque match
-grep -B 3 -A 3 "exception" app.log
-```
-
----
-
-## 2. sed — Éditeur de flux
-
-`sed` modifie du texte sans ouvrir de fichier. Il applique des transformations ligne par ligne.
-
-### Remplacer du texte
-
-```bash
-# Remplacer la première occurrence de "foo" par "bar" par ligne
-sed 's/foo/bar/' fichier.txt
-
-# Remplacer TOUTES les occurrences (drapeau g)
-sed 's/foo/bar/g' fichier.txt
-
-# Modifier le fichier directement (-i)
-sed -i 's/localhost/127.0.0.1/g' config.txt
-
-# Remplacer surplace avec backup (.bak)
-sed -i.bak 's/old/new/g' config.txt
-```
-
-### Autres transformations
-
-```bash
-# Supprimer les lignes contenant un motif
-sed '/temporaire/d' logs.txt
-
-# Afficher les lignes 10 à 20
-sed -n '10,20p' grand_fichier.txt
-
-# Ajouter du texte après une ligne
-sed -i '/pattern/a\Nouvelle ligne' fichier.txt
-
-# Remplacer par une expression régulière
-sed -E 's/[0-9]{4}/****/g' fichier.txt
-```
-
-### Exemple concret
-
-```bash
-# Remplacer tous les "http://" par "https://" dans un fichier HTML
-sed -i 's/http:\/\//https:\/\//g' index.html
-
-# Supprimer tous les espaces de fin de ligne
-sed -i 's/[[:space:]]*$//' fichier.txt
-```
-
----
-
-## 3. xargs — Construire des commandes
-
-`xargs` lit des éléments depuis l'entrée standard et les passe comme arguments à une autre commande. Indispensable pour chaîner avec `find`.
-
-### Utilisation de base
-
-```bash
-# Compter le nombre de lignes de chaque fichier trouvé
-find . -name "*.txt" | xargs wc -l
-
-# Supprimer tous les fichiers .tmp trouvés
-find . -name "*.tmp" | xargs rm -f
-
-# Copier tous les fichiers .conf dans backup/
-find /etc -name "*.conf" | xargs -I {} cp {} /backup/
-```
-
-### Avec confirmation
-
-```bash
-# Demander confirmation avant chaque suppression
-find . -name "*.log" -mtime +7 | xargs -p rm -f
-```
-
-### Parallelisation
-
-```bash
-# Lancer 4 processus en parallèle
-find . -name "*.jpg" | xargs -P 4 -I {} convert {} -resize 800x600 {}
-```
-
----
-
-## 4. Combiner les trois
-
-```bash
-# Rechercher les lignes avec "error", remplacer "old" par "new", sauvegarder
-grep "error" app.log | sed 's/old/new/g' > app_new.log
-
-# Trouver les fichiers modifiés récemment, afficher leur contenu
-find . -mtime -7 -name "*.txt" | xargs grep -l "TODO"
-
-# Nettoyer : trouver les .bak, les compresser, supprimer l'original
-find . -name "*.bak" | xargs gzip && find . -name "*.bak" | xargs rm
-```
-
----
-
-## Exercices pratiques
-
-1. **Recherche simple** — Dans `/var/log/syslog`, trouve toutes les lignes contenant "sshd".
-
-2. **Remplacement** — Dans un fichier `config.txt`, remplace "port = 8080" par "port = 443" avec `sed`.
-
-3. **Chaînage** — Trouve tous les fichiers `.log` dans `/var/log/` qui contiennent "error", puis affiche leurs permissions avec `ls -l`.
-
-4. **Nettoyage** — Trouve tous les fichiers `.tmp` de plus de 7 jours et supprime-les avec confirmation.
-
----
-
-## Résumé
-
-| Commande | Rôle | Exemple |
-|----------|------|---------|
-| `grep` | Rechercher un motif | `grep -r "error" /var/log/` |
-| `sed` | Remplacer/modifier | `sed 's/foo/bar/g' fichier` |
-| `xargs` | Chaîner avec arguments | `find . -name "*.txt" \| xargs rm` |
-| `grep -v` | Exclure un motif | `grep -v "debug" log.txt` |
-| `sed -i` | Modifier surplace | `sed -i 's/a/b/g' fichier` |
-| `xargs -I` | Placeholder | `xargs -I {} cp {} /dest/` |
-
----
-
-## Navigation
-
-[← Leçon 49 : journalctl](49-journalctl-logs-systemd.html) | [Leçon 51 : sort, uniq et wc](51-sort-uniq-wc.html) | [Sommaire](index.html)
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; position: relative; transition: background 0.15s; }
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.copy-btn { margin-left: 12px; background: none; border: 1px solid #30363d; border-radius: 6px; cursor: pointer; padding: 4px 8px; opacity: 0.5; transition: opacity 0.2s, border-color 0.2s; flex-shrink: 0; display: flex; align-items: center; }
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 50 : grep, sed et xargs — Rechercher, modifier et chaîner</h1>
+<h2>Objectif</h2>
+<p>Découvrir trois outils complémentaires pour manipuler du texte en ligne de commande : **grep** (rechercher), **sed** (modifier) et **xargs** (chaîner des commandes).</p>
+<h2>Prérequis</h2>
+<ul>
+<li>Savoir naviguer dans le terminal (leçon 2)</li>
+<li>Comprendre les tubes (pipes) (leçon 8)</li>
+</ul>
+<hr />
+<h2>1. grep — Rechercher du texte</h2>
+<p><code>grep</code> (Global Regular Expression Print) cherche un motif dans un fichier ou une entrée standard.</p>
+<h3>Commandes de base</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Rechercher "error" dans un fichier</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep "error" /var/log/syslog</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Recherche insensible à la casse</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep -i "warning" app.log</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Afficher les lignes QUI NE contiennent PAS le motif</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep -v "debug" app.log</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Afficher le numéro des lignes</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep -n "error" app.log</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Recherche récursive dans un répertoire</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep -r "failed" /etc/</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Exemples concrets</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Trouver les lignes avec une adresse IP</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep -E "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" logs.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Compter le nombre d'occurrences</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep -c "error" app.log</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Afficher 3 lignes avant et après chaque match</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep -B 3 -A 3 "exception" app.log</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<hr />
+<h2>2. sed — Éditeur de flux</h2>
+<p><code>sed</code> modifie du texte sans ouvrir de fichier. Il applique des transformations ligne par ligne.</p>
+<h3>Remplacer du texte</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Remplacer la première occurrence de "foo" par "bar" par ligne</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed 's/foo/bar/' fichier.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Remplacer TOUTES les occurrences (drapeau g)</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed 's/foo/bar/g' fichier.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Modifier le fichier directement (-i)</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed -i 's/localhost/127.0.0.1/g' config.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Remplacer surplace avec backup (.bak)</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed -i.bak 's/old/new/g' config.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Autres transformations</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Supprimer les lignes contenant un motif</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed '/temporaire/d' logs.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Afficher les lignes 10 à 20</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed -n '10,20p' grand_fichier.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Ajouter du texte après une ligne</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed -i '/pattern/a\Nouvelle ligne' fichier.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Remplacer par une expression régulière</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed -E 's/[0-9]{4}/****/g' fichier.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Exemple concret</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Remplacer tous les "http://" par "https://" dans un fichier HTML</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed -i 's/http:\/\//https:\/\//g' index.html</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Supprimer tous les espaces de fin de ligne</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sed -i 's/[[:space:]]*$//' fichier.txt</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<hr />
+<h2>3. xargs — Construire des commandes</h2>
+<p><code>xargs</code> lit des éléments depuis l'entrée standard et les passe comme arguments à une autre commande. Indispensable pour chaîner avec <code>find</code>.</p>
+<h3>Utilisation de base</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Compter le nombre de lignes de chaque fichier trouvé</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>find . -name "*.txt" | xargs wc -l</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Supprimer tous les fichiers .tmp trouvés</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>find . -name "*.tmp" | xargs rm -f</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Copier tous les fichiers .conf dans backup/</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>find /etc -name "*.conf" | xargs -I {} cp {} /backup/</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Avec confirmation</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Demander confirmation avant chaque suppression</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>find . -name "*.log" -mtime +7 | xargs -p rm -f</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Parallelisation</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Lancer 4 processus en parallèle</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>find . -name "*.jpg" | xargs -P 4 -I {} convert {} -resize 800x600 {}</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<hr />
+<h2>4. Combiner les trois</h2>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Rechercher les lignes avec "error", remplacer "old" par "new", sauvegarder</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>grep "error" app.log | sed 's/old/new/g' &gt; app_new.log</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Trouver les fichiers modifiés récemment, afficher leur contenu</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>find . -mtime -7 -name "*.txt" | xargs grep -l "TODO"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Nettoyer : trouver les .bak, les compresser, supprimer l'original</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>find . -name "*.bak" | xargs gzip &amp;&amp; find . -name "*.bak" | xargs rm</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<hr />
+<h2>Exercices pratiques</h2>
+<p>1. **Recherche simple** — Dans <code>/var/log/syslog</code>, trouve toutes les lignes contenant "sshd".</p>
+<p>2. **Remplacement** — Dans un fichier <code>config.txt</code>, remplace "port = 8080" par "port = 443" avec <code>sed</code>.</p>
+<p>3. **Chaînage** — Trouve tous les fichiers <code>.log</code> dans <code>/var/log/</code> qui contiennent "error", puis affiche leurs permissions avec <code>ls -l</code>.</p>
+<p>4. **Nettoyage** — Trouve tous les fichiers <code>.tmp</code> de plus de 7 jours et supprime-les avec confirmation.</p>
+<hr />
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Rôle</th><th>Exemple</th></tr>
+<tr><td><code>grep</code></td><td>Rechercher un motif</td><td><code>grep -r "error" /var/log/</code></td></tr>
+<tr><td><code>sed</code></td><td>Remplacer/modifier</td><td><code>sed 's/foo/bar/g' fichier</code></td></tr>
+<tr><td><code>xargs</code></td><td>Chaîner avec arguments</td><td><code>find . -name "*.txt" \</td><td>xargs rm</code></td></tr>
+<tr><td><code>grep -v</code></td><td>Exclure un motif</td><td><code>grep -v "debug" log.txt</code></td></tr>
+<tr><td><code>sed -i</code></td><td>Modifier surplace</td><td><code>sed -i 's/a/b/g' fichier</code></td></tr>
+<tr><td><code>xargs -I</code></td><td>Placeholder</td><td><code>xargs -I {} cp {} /dest/</code></td></tr>
+</table>
+<hr />
+<h2>Navigation</h2>
+<p>[← Leçon 49 : journalctl](49-journalctl-logs-systemd.html) | [Leçon 51 : sort, uniq et wc](51-sort-uniq-wc.html) | [Sommaire](index.html)</p>
+<nav>
+<a href="49-journalctl-logs-systemd.html">&larr; 49 journalctl logs systemd</a>
+<a href="51-sort-uniq-wc.html">51 sort uniq wc &rarr;</a>
+</nav>
+</div>
+<script>
+function copyCode(el) {
+  var code = el.querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(function() {
+    el.querySelector('.copy-btn').classList.add('copied');
+    setTimeout(function() { el.querySelector('.copy-btn').classList.remove('copied'); }, 1500);
+  });
+}
+document.querySelectorAll('.code-line').forEach(function(el) { el.addEventListener('click', function() { copyCode(el); }); });
+</script>
+</body>
+</html>

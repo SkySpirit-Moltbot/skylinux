@@ -1,340 +1,313 @@
-# Leçon 49 : journalctl — Explorer et filtrer les logs systemd
-
-## Objectif
-
-Découvrir `journalctl`, l'outil principal pour consulter les logs gérés par **systemd-journald**. Vous apprendrez à filtrer, chercher et analyser les événements de votre système.
-
-## Prérequis
-
-- Connaissance de base du terminal (leçon 2)
-- Notion de ce qu'est un service systemd (leçon 21)
-
-## 1. Qu'est-ce que journalctl ?
-
-Depuis systemd, les logs ne sont plus écrits uniquement dans des fichiers texte classiques (comme `/var/log/syslog`). Ils sont collectés par **journald** dans un format binaire structuré. `journalctl` est l'outil pour les interroger.
-
-**Avantages :**
-- Logs centralisés et indexés
-- Recherche rapide par date, service, gravité
-- Rotation automatique
-- Persistant ou en mémoire (selon configuration)
-
-## 2. Commandes de base
-
-### Lire les logs (les plus récents en bas)
-
-```bash
-journalctl
-```
-
-### Les 50 dernières lignes (style `tail -f`)
-
-```bash
-journalctl -n 50
-```
-
-### Suivre les nouveaux logs en temps réel
-
-```bash
-journalctl -f
-```
-
-### Logs du boot actuel uniquement
-
-```bash
-journalctl -b
-```
-
-## 3. Filtrer par service
-
-### Logs d'un service spécifique
-
-```bash
-journalctl -u nginx.service
-journalctl -u sshd.service
-journalctl -u NetworkManager.service
-```
-
-### Combiner : service + lignes récentes
-
-```bash
-journalctl -u nginx.service -n 20
-```
-
-### Logs depuis le dernier démarrage d'un service
-
-```bash
-journalctl -u nginx.service --since "1 hour ago"
-```
-
-## 4. Filtrer par date et heure
-
-### Depuis une date précise
-
-```bash
-journalctl --since "2026-04-10 09:00:00"
-```
-
-### Aujourd'hui
-
-```bash
-journalctl --since today
-```
-
-### Hier
-
-```bash
-journalctl --since yesterday --until "00:00:00"
-```
-
-### Dernières 2 heures
-
-```bash
-journalctl --since "2 hours ago"
-```
-
-### Intervalle de dates
-
-```bash
-journalctl --since "2026-04-09" --until "2026-04-10 10:00:00"
-```
-
-## 5. Filtrer par priorité (gravité)
-
-Les niveaux de priorité (du + grave au + détail) :
-
-| Niveau | Nom    | Signification           |
-|--------|--------|--------------------------|
-| 0      | emerg  | Système inutilisable     |
-| 1      | alert  | Action immédiate requise |
-| 2      | crit   | Condition critique       |
-| 3      | err    | Erreur                   |
-| 4      | warning| Avertissement            |
-| 5      | notice | Événement normal notable |
-| 6      | info   | Information              |
-| 7      | debug  | Messages de débogage     |
-
-### Voir uniquement les erreurs et pires
-
-```bash
-journalctl -p err
-```
-
-### Erreurs et avertissements
-
-```bash
-journalctl -p warning..err
-```
-
-## 6. Filtrer par processus ou utilisateur
-
-### Tous les logs d'un PID
-
-```bash
-journalctl _PID=1234
-```
-
-### Tous les logs d'un utilisateur (UID)
-
-```bash
-journalctl _UID=1000
-```
-
-### Logs du noyau (kernel)
-
-```bash
-journalctl -k
-```
-
-### Logs d'un exécutable spécifique
-
-```bash
-journalctl /usr/sbin/nginx
-```
-
-## 7. Options utiles
-
-### Afficher les timestamps en heure locale
-
-```bash
-journalctl --local
-# Ou configurer dans /etc/systemd/journald.conf :
-# Localize=yes
-```
-
-### Taille des logs affichée
-
-```bash
-journalctl --disk-usage
-```
-
-### Purger les anciens logs
-
-```bash
-# Supprimer les logs de plus de 7 jours
-journalctl --vacuum-time=7d
-
-# Garder seulement les 500 Mo de logs
-journalctl --vacuum-size=500M
-```
-
-### Voir le début des logs (logs antiques)
-
-```bash
-journalctl --list-boots   # Lister les boots disponibles
-journalctl -b -1           # Boot précédent
-```
-
-## 8. Exemples pratiques
-
-### Trouver pourquoi un service a échoué
-
-```bash
-# Voir le statut du service
-systemctl status nginx
-
-# Logs du service nginx
-journalctl -u nginx.service -n 100 --no-pager
-
-# Erreurs récentes
-journalctl -u nginx.service -p err --since "1 hour ago"
-```
-
-### Analyser les tentatives de connexion SSH
-
-```bash
-# Connexions SSH récentes
-journalctl -u sshd.service --since "24 hours ago"
-
-# Connexions échouées
-journalctl -u sshd.service | grep "Failed"
-```
-
-### Surveiller les erreurs disque
-
-```bash
-# Logs du noyau liés aux disques
-journalctl -k | grep -i "error\|disque\|sda"
-
-# Erreurs SCSI/SATA
-journalctl -k | grep -i "sd\|ata"
-```
-
-### Trouver qui a redémarré le système
-
-```bash
-journalctl -k | grep -i "reboot\|shutdown\|power"
-```
-
-## 9. Configuration de journald
-
-Le fichier de configuration principal :
-
-```bash
-sudo nano /etc/systemd/journald.conf
-```
-
-Options courantes :
-
-```ini
-[Journal]
-# Taille max des fichiers de logs
-SystemMaxUse=500M
-
-# Durée de conservation
-MaxRetentionSec=30day
-
-# Compression des logs
-Compress=yes
-
-# Synchronisation
-SyncIntervalSec=5m
-```
-
-Après modification :
-
-```bash
-sudo systemctl restart systemd-journald
-```
-
-## 10. Créer un alias pratique
-
-Ajoutez à votre `~/.bashrc` :
-
-```bash
-# Alias pour journalctl
-alias jctl='journalctl -n 50 --no-pager'
-alias jerr='journalctl -p err -n 50 --no-pager'
-alias jfollow='journalctl -f --no-pager'
-```
-
-Appliquez :
-
-```bash
-source ~/.bashrc
-```
-
-## Résumé des commandes principales
-
-| Commande                        | Description                        |
-|---------------------------------|-------------------------------------|
-| `journalctl`                    | Tous les logs                       |
-| `journalctl -u service`         | Logs d'un service                   |
-| `journalctl -b`                 | Logs du boot actuel                 |
-| `journalctl -f`                 | Suivre en temps réel                |
-| `journalctl -n 50`              | 50 dernières lignes                  |
-| `journalctl --since today`      | Logs d'aujourd'hui                  |
-| `journalctl -p err`             | Erreurs uniquement                   |
-| `journalctl -k`                 | Logs du noyau                        |
-| `journalctl --disk-usage`       | Espace utilisé par les logs         |
-| `journalctl --vacuum-time=7d`  | Supprimer logs de plus de 7 jours   |
-
----
-
-## Exercices pratiques
-
-1. Affichez les 30 dernières lignes de logs de votre système :
-   ```bash
-   journalctl -n 30
-   ```
-
-2. Trouvez les erreurs des 24 dernières heures :
-   ```bash
-   journalctl -p err --since "24 hours ago"
-   ```
-
-3. Consultez les logs de votre interface réseau :
-   ```bash
-   journalctl -u NetworkManager.service -n 20
-   ```
-
-4. Créez un alias `jerr` dans votre `.bashrc` pour voir rapidement les erreurs, puis testez-le.
-
-5. Vérifiez l'espace disque utilisé par les logs et supprimez les logs de plus de 3 jours :
-   ```bash
-   journalctl --disk-usage
-   journalctl --vacuum-time=3d
-   ```
-
----
-
-## Pour aller plus loin
-
-- `man journalctl` — documentation complète
-- `man journald.conf` — configuration du démon
-- `logger` — écrire dans les logs depuis un script :
-  ```bash
-  logger -p local0.info "Mon message personnalisé"
-  ```
-
----
-
-**Navigation**
-
-[← Leçon précédente : AWK — Manipuler et transformer du texte](48-awk-manipuler-texte.html)
-
-[Sommaire](index.html)
-
----
-
-* Cours SkyLinux - Leçon 49 par Sire Aselophe
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; position: relative; transition: background 0.15s; }
+.code-line:hover { background: rgba(255,255,255,0.04); }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.copy-btn { margin-left: 12px; background: none; border: 1px solid #30363d; border-radius: 6px; cursor: pointer; padding: 4px 8px; opacity: 0.5; transition: opacity 0.2s, border-color 0.2s; flex-shrink: 0; display: flex; align-items: center; }
+.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
+.copy-btn.copied { border-color: #238636; opacity: 1; }
+.copy-btn svg { width: 14px; height: 14px; fill: #8b949e; display: block; }
+.copy-btn.copied svg { fill: #238636; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 49 : journalctl — Explorer et filtrer les logs systemd</h1>
+<h2>Objectif</h2>
+<p>Découvrir <code>journalctl</code>, l'outil principal pour consulter les logs gérés par **systemd-journald**. Vous apprendrez à filtrer, chercher et analyser les événements de votre système.</p>
+<h2>Prérequis</h2>
+<ul>
+<li>Connaissance de base du terminal (leçon 2)</li>
+<li>Notion de ce qu'est un service systemd (leçon 21)</li>
+</ul>
+<h2>1. Qu'est-ce que journalctl ?</h2>
+<p>Depuis systemd, les logs ne sont plus écrits uniquement dans des fichiers texte classiques (comme <code>/var/log/syslog</code>). Ils sont collectés par **journald** dans un format binaire structuré. <code>journalctl</code> est l'outil pour les interroger.</p>
+<p>**Avantages :**</p>
+<ul>
+<li>Logs centralisés et indexés</li>
+<li>Recherche rapide par date, service, gravité</li>
+<li>Rotation automatique</li>
+<li>Persistant ou en mémoire (selon configuration)</li>
+</ul>
+<h2>2. Commandes de base</h2>
+<h3>Lire les logs (les plus récents en bas)</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Les 50 dernières lignes (style <code>tail -f</code>)</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -n 50</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Suivre les nouveaux logs en temps réel</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -f</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Logs du boot actuel uniquement</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -b</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h2>3. Filtrer par service</h2>
+<h3>Logs d'un service spécifique</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u nginx.service</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u sshd.service</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u NetworkManager.service</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Combiner : service + lignes récentes</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u nginx.service -n 20</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Logs depuis le dernier démarrage d'un service</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u nginx.service --since "1 hour ago"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h2>4. Filtrer par date et heure</h2>
+<h3>Depuis une date précise</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --since "2026-04-10 09:00:00"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Aujourd'hui</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --since today</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Hier</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --since yesterday --until "00:00:00"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Dernières 2 heures</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --since "2 hours ago"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Intervalle de dates</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --since "2026-04-09" --until "2026-04-10 10:00:00"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h2>5. Filtrer par priorité (gravité)</h2>
+<p>Les niveaux de priorité (du + grave au + détail) :</p>
+<table>
+<tr><th>Niveau</th><th>Nom</th><th>Signification</th></tr>
+<tr><td>0</td><td>emerg</td><td>Système inutilisable</td></tr>
+<tr><td>1</td><td>alert</td><td>Action immédiate requise</td></tr>
+<tr><td>2</td><td>crit</td><td>Condition critique</td></tr>
+<tr><td>3</td><td>err</td><td>Erreur</td></tr>
+<tr><td>4</td><td>warning</td><td>Avertissement</td></tr>
+<tr><td>5</td><td>notice</td><td>Événement normal notable</td></tr>
+<tr><td>6</td><td>info</td><td>Information</td></tr>
+<tr><td>7</td><td>debug</td><td>Messages de débogage</td></tr>
+</table>
+<h3>Voir uniquement les erreurs et pires</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -p err</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Erreurs et avertissements</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -p warning..err</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h2>6. Filtrer par processus ou utilisateur</h2>
+<h3>Tous les logs d'un PID</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl _PID=1234</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Tous les logs d'un utilisateur (UID)</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl _UID=1000</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Logs du noyau (kernel)</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -k</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Logs d'un exécutable spécifique</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl /usr/sbin/nginx</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h2>7. Options utiles</h2>
+<h3>Afficher les timestamps en heure locale</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --local</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Ou configurer dans /etc/systemd/journald.conf :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Localize=yes</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Taille des logs affichée</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --disk-usage</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Purger les anciens logs</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Supprimer les logs de plus de 7 jours</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --vacuum-time=7d</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Garder seulement les 500 Mo de logs</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --vacuum-size=500M</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Voir le début des logs (logs antiques)</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl --list-boots   # Lister les boots disponibles</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -b -1           # Boot précédent</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h2>8. Exemples pratiques</h2>
+<h3>Trouver pourquoi un service a échoué</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Voir le statut du service</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>systemctl status nginx</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Logs du service nginx</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u nginx.service -n 100 --no-pager</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Erreurs récentes</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u nginx.service -p err --since "1 hour ago"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Analyser les tentatives de connexion SSH</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Connexions SSH récentes</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u sshd.service --since "24 hours ago"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Connexions échouées</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -u sshd.service | grep "Failed"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Surveiller les erreurs disque</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Logs du noyau liés aux disques</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -k | grep -i "error\|disque\|sda"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code># Erreurs SCSI/SATA</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -k | grep -i "sd\|ata"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h3>Trouver qui a redémarré le système</h3>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>journalctl -k | grep -i "reboot\|shutdown\|power"</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<h2>9. Configuration de journald</h2>
+<p>Le fichier de configuration principal :</p>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>sudo nano /etc/systemd/journald.conf</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div></p>
+<p>Options courantes :</p>
+<p>```ini</p>
+<p>[Journal]</p>
+<p># Taille max des fichiers de logs</p>
+<p>SystemMaxUse=500M</p>
+<p># Durée de conservation</p>
+<p>MaxRetentionSec=30day</p>
+<p># Compression des logs</p>
+<p>Compress=yes</p>
+<p># Synchronisation</p>
+<p>SyncIntervalSec=5m</p>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>Après modification :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p>sudo systemctl restart systemd-journald</p>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>## 10. Créer un alias pratique</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>Ajoutez à votre <code>~/.bashrc</code> :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p># Alias pour journalctl</p>
+<p>alias jctl='journalctl -n 50 --no-pager'</p>
+<p>alias jerr='journalctl -p err -n 50 --no-pager'</p>
+<p>alias jfollow='journalctl -f --no-pager'</p>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>Appliquez :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p>source ~/.bashrc</p>
+<p><div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>## Résumé des commandes principales</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| Commande                        | Description                        |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>|---------------------------------|-------------------------------------|</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl</code>                    | Tous les logs                       |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl -u service</code>         | Logs d'un service                   |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl -b</code>                 | Logs du boot actuel                 |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl -f</code>                 | Suivre en temps réel                |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl -n 50</code>              | 50 dernières lignes                  |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl --since today</code>      | Logs d'aujourd'hui                  |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl -p err</code>             | Erreurs uniquement                   |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl -k</code>                 | Logs du noyau                        |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl --disk-usage</code>       | Espace utilisé par les logs         |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>| <code>journalctl --vacuum-time=7d</code>  | Supprimer logs de plus de 7 jours   |</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>---</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>## Exercices pratiques</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>1. Affichez les 30 dernières lignes de logs de votre système :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p>   journalctl -n 30</p>
+<p>   <div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>2. Trouvez les erreurs des 24 dernières heures :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p>   journalctl -p err --since "24 hours ago"</p>
+<p>   <div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>3. Consultez les logs de votre interface réseau :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p>   journalctl -u NetworkManager.service -n 20</p>
+<p>   <div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>4. Créez un alias <code>jerr</code> dans votre <code>.bashrc</code> pour voir rapidement les erreurs, puis testez-le.</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>5. Vérifiez l'espace disque utilisé par les logs et supprimez les logs de plus de 3 jours :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p>   journalctl --disk-usage</p>
+<p>   journalctl --vacuum-time=3d</p>
+<p>   <div class="code-block"></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>---</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>## Pour aller plus loin</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code></code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>- <code>man journalctl</code> — documentation complète</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>- <code>man journald.conf</code> — configuration du démon</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p><div class="code-line" onclick="copyCode(this)"><code>- <code>logger</code> — écrire dans les logs depuis un script :</code><button class="copy-btn" aria-label="Copier"><svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg></button></div></p>
+<p></div>bash</p>
+<p>  logger -p local0.info "Mon message personnalisé"</p>
+<p>  ```</p>
+<hr />
+<p>**Navigation**</p>
+<p>[← Leçon précédente : AWK — Manipuler et transformer du texte](48-awk-manipuler-texte.html)</p>
+<p>[Sommaire](index.html)</p>
+<hr />
+<p>* Cours SkyLinux - Leçon 49 par Sire Aselophe</p>
+<nav>
+<a href="48-awk-manipuler-texte.html">&larr; 48 awk manipuler texte</a>
+<a href="50-grep-sed-xargs.html">50 grep sed xargs &rarr;</a>
+</nav>
+</div>
+<script>
+function copyCode(el) {
+  var code = el.querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(function() {
+    el.querySelector('.copy-btn').classList.add('copied');
+    setTimeout(function() { el.querySelector('.copy-btn').classList.remove('copied'); }, 1500);
+  });
+}
+document.querySelectorAll('.code-line').forEach(function(el) { el.addEventListener('click', function() { copyCode(el); }); });
+</script>
+</body>
+</html>
