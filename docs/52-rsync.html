@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 52 : rsync — Synchronisation de fichiers</h1>
+
+<h2>Objectif</h2>
+<p>Maîtriser <strong>rsync</strong> pour synchroniser efficacement des fichiers et répertoires en local ou à distance. C'est l'outil de référence pour les sauvegardes et la copie incrémentale.</p>
+
+<h2>Pourquoi rsync ?</h2>
+<ul>
+<li>Ne copie que les <strong>fichiers modifiés</strong> (transfert incrémental)</li>
+<li>Much faster than <code>cp</code> pour les gros transferts</li>
+<li>Compression intégrée pour réduire la bande passante</li>
+<li>Supporte SSH pour des transferts sécurisés</li>
+<li>Peut reprendre un transfert interrompu</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block">
+<div class="code-line"><code>rsync [options] SOURCE DESTINATION</code></div>
+</div>
+
+<h2>Options essentielles</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-a</code></td><td>Mode archive (preserve permissions, owner, timestamps)</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux (affiche les fichiers)</td></tr>
+<tr><td><code>-z</code></td><td>Compression pendant le transfert</td></tr>
+<tr><td><code>-P</code></td><td>Montre la progression et permet la reprise</td></tr>
+<tr><td><code>-n</code></td><td>Mode dry-run (simulation, sans copier)</td></tr>
+<tr><td><code>--delete</code></td><td>Supprime les fichiers dans DEST qui n'existent plus dans SOURCE</td></tr>
+<tr><td><code>--exclude</code></td><td>Exclut certains fichiers/répertoires</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>1. Copie locale simple</h3>
+<div class="code-block">
+<div class="code-line"><code># Synchroniser un répertoire vers un autre</code></div>
+<div class="code-line"><code>rsync -av /home/david/documents/ /backup/documents/</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec barre de progression</code></div>
+<div class="code-line"><code>rsync -avP /home/david/documents/ /backup/documents/</code></div>
+</div>
+
+<h3>2. Transfert via SSH</h3>
+<div class="code-block">
+<div class="code-line"><code># Copier vers un serveur distant</code></div>
+<div class="code-line"><code>rsync -avz -e ssh /local/dir/ user@serveur:/remote/dir/</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Récupérer depuis un serveur distant</code></div>
+<div class="code-line"><code>rsync -avz -e ssh user@serveur:/remote/dir/ /local/dir/</code></div>
+</div>
+
+<h3>3. Simulation avant action</h3>
+<div class="code-block">
+<div class="code-line"><code># Voir ce qui sera copié sans rien modifier</code></div>
+<div class="code-line"><code>rsync -avn /source/ /dest/</code></div>
+</div>
+
+<h3>4. Exclure des fichiers</h3>
+<div class="code-block">
+<div class="code-line"><code># Exclure un type de fichier</code></div>
+<div class="code-line"><code>rsync -av --exclude='*.log' /source/ /dest/</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Exclure plusieurs patterns</code></div>
+<div class="code-line"><code>rsync -av --exclude='*.tmp' --exclude='.git' --exclude='node_modules/' /source/ /dest/</code></div>
+</div>
+
+<h3>5. Synchronisation miroir (identique)</h3>
+<div class="code-block">
+<div class="code-line"><code># Supprime les fichiers absents de la source</code></div>
+<div class="code-line"><code>rsync -av --delete /source/ /dest/</code></div>
+</div>
+
+<h3>6. Sauvegarde quotidienne classique</h3>
+<div class="code-block">
+<div class="code-line"><code># Script de sauvegarde vers un serveur de backup</code></div>
+<div class="code-line"><code>rsync -avz --delete -e ssh /home/david/ user@backup-server:/backup/david/</code></div>
+</div>
+
+<h2>Cas d'usage courants</h2>
+
+<h3>Déployer un site web</h3>
+<div class="code-block">
+<div class="code-line"><code>rsync -avz --delete ./dist/ user@monsite:/var/www/html/</code></div>
+</div>
+
+<h3>Sauvegarder un serveur vers un NAS</h3>
+<div class="code-block">
+<div class="code-line"><code>rsync -avz -e ssh root@monserveur:/var/www/ /mnt/nas/serveur/www/</code></div>
+</div>
+
+<h3>Copier uniquement les fichiers récents (modifiés depuis 7 jours)</h3>
+<div class="code-block">
+<div class="code-line"><code>rsync -avz --modify-window=1 --min-size=1 /source/ /dest/</code></div>
+</div>
+
+<h2>Les slashs comptent !</h2>
+<p>Attention à la présence ou l'absence du <code>/</code> final :</p>
+<table>
+<tr><th>Syntaxe</th><th>Comportement</th></tr>
+<tr><td><code>rsync -a /source /dest</code></td><td>Crée <code>/dest/source/</code></td></tr>
+<tr><td><code>rsync -a /source/ /dest</code></td><td>Crée <code>/dest/</code> (contenu de source)</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Toujours faire un <strong>dry-run</strong> (<code>-n</code>) avant une première synchro</li>
+<li>Utiliser <code>-P</code> pour les gros transferts (reprise si coupure)</li>
+<li>Protéger les transferts distants avec <strong>SSH</strong></li>
+<li>Utiliser <code>--delete</code> avec prudence en mode miroir</li>
+</ul>
+
+<h2>Exercices pratiques</h2>
+<ol>
+<li><strong>Copie locale</strong> — Synchronise ton dossier <code>~/Documents</code> vers <code>/tmp/backup-documents/</code> en mode verbeux.</li>
+<li><strong>Simulation</strong> — Utilise <code>-n</code> pour voir ce qui serait copié sans rien modifier.</li>
+<li><strong>Exclusion</strong> — Synchronise un dossier en excluant tous les fichiers <code>.log</code> et le dossier <code>.git</code>.</li>
+<li><strong>Sauvegarde distante</strong> — Si tu as accès SSH à une machine, synchronise un petit dossier via SSH.</li>
+</ol>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>rsync -av source/ dest/</code></td><td>Synchronisation locale</td></tr>
+<tr><td><code>rsync -avz -e ssh src/ user@host:dst/</code></td><td>Transfert via SSH</td></tr>
+<tr><td><code>rsync -avP src/ dst/</code></td><td>Avec progression et reprise</td></tr>
+<tr><td><code>rsync -avn src/ dst/</code></td><td>Dry-run (simulation)</td></tr>
+<tr><td><code>rsync -av --exclude='*.log' src/ dst/</code></td><td>Avec exclusions</td></tr>
+<tr><td><code>rsync -av --delete src/ dst/</code></td><td>Mirroring (synchro exacte)</td></tr>
+</table>
+
+<nav>
+<a href="51-sort-uniq-wc.html">&larr; Leçon 51 : sort, uniq et wc</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
