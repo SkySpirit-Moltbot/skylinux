@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 53 : cut — Extraire des colonnes de texte</h1>
+
+<h2>Introduction</h2>
+<p>La commande <code>cut</code> permet d'extraire des colonnes ou des portions de texte depuis un fichier ou une entrée standard. C'est l'outil idéal pour manipuler des données structurées par délimiteur (CSV, fichiers de logs, /etc/passwd, etc.).</p>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block">
+<div class="code-line"><code>cut [OPTIONS] fichier</code></div>
+</div>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-d'délim'</code></td><td>Spécifie le délimiteur de champs (par défaut : tabulation)</td></tr>
+<tr><td><code>-f1,3</code></td><td>Sélectionne les champs 1 et 3</td></tr>
+<tr><td><code>-f1-3</code></td><td>Sélectionne les champs 1 à 3</td></tr>
+<tr><td><code>-f3-</code></td><td>Du champ 3 jusqu'à la fin</td></tr>
+<tr><td><code>-c1-10</code></td><td>Sélectionne les caractères 1 à 10</td></tr>
+<tr><td><code>-c1,3,5</code></td><td>Sélectionne les caractères 1, 3 et 5</td></tr>
+<tr><td><code>--complement</code></td><td>Inverse la sélection (affiche tout sauf)</td></tr>
+</table>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Extraire des champs avec un délimiteur</h3>
+<p>Imaginons un fichier <code>users.txt</code> avec le format <code>nom:email:ville</code> :</p>
+<div class="code-block">
+<div class="code-line"><code>alice:alice@email.com:Lyon</code></div>
+<div class="code-line"><code>bob:bob@email.com:Paris</code></div>
+<div class="code-line"><code>charlie:charlie@email.com:Toulouse</code></div>
+</div>
+<p>Pour extraire uniquement les noms (1er champ) :</p>
+<div class="code-block">
+<div class="code-line"><code>cut -d':' -f1 users.txt</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>alice</code></div>
+<div class="code-line"><code>bob</code></div>
+<div class="code-line"><code>charlie</code></div>
+</div>
+
+<h3>2. Extraire plusieurs champs</h3>
+<p>Pour obtenir nom et email (champs 1 et 2) :</p>
+<div class="code-block">
+<div class="code-line"><code>cut -d':' -f1,2 users.txt</code></div>
+</div>
+
+<h3>3. Extraire un intervalle de champs</h3>
+<p>Du champ 2 jusqu'à la fin :</p>
+<div class="code-block">
+<div class="code-line"><code>cut -d':' -f2- users.txt</code></div>
+</div>
+
+<h3>4. Travailler avec des caractères</h3>
+<p>Extraire les 5 premiers caractères de chaque ligne :</p>
+<div class="code-block">
+<div class="code-line"><code>cut -c1-5 users.txt</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>alice</code></div>
+<div class="code-line"><code>bob:b</code></div>
+<div class="code-line"><code>charl</code></div>
+</div>
+
+<h3>5. Travailler avec /etc/passwd</h3>
+<p>Le fichier <code>/etc/passwd</code> utilise <code>:</code> comme délimiteur. Pour extraire uniquement les noms d'utilisateur :</p>
+<div class="code-block">
+<div class="code-line"><code>cut -d':' -f1 /etc/passwd</code></div>
+</div>
+<p>Pour obtenir uniquement les répertoires personnels (champ 6) :</p>
+<div class="code-block">
+<div class="code-line"><code>cut -d':' -f1,6 /etc/passwd</code></div>
+</div>
+
+<h3>6. Utiliser avec des tubes (pipes)</h3>
+<p>Combiner <code>cut</code> avec d'autres commandes :</p>
+<div class="code-block">
+<div class="code-line"><code>ps aux | cut -d' ' -f1</code></div>
+<div class="code-line"><code>ls -l | tail -n +2 | cut -d' ' -f5</code></div>
+</div>
+
+<h3>7. Lire depuis l'entrée standard</h3>
+<p><code>cut</code> peut lire depuis un tube sans fichier :</p>
+<div class="code-block">
+<div class="code-line"><code>echo "pomme,banane,fraise" | cut -d',' -f2</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>banane</code></div>
+</div>
+
+<h2>Cas pratiques</h2>
+
+<h3>Extraire des IPs depuis un log</h3>
+<div class="code-block">
+<div class="code-line"><code>cat access.log | cut -d' ' -f1 | sort | uniq -c | sort -rn | head -10</code></div>
+</div>
+<p>Cette commande extrait la première colonne (IP), compte les occurrences et trie par fréquence.</p>
+
+<h3>Extraire des colonnes d'un fichier CSV</h3>
+<div class="code-block">
+<div class="code-line"><code>cut -d',' -f1,3,7 data.csv</code></div>
+</div>
+
+<h3>Sélection par complément</h3>
+<p>Pour afficher tout SAUF les champs 2 et 3 :</p>
+<div class="code-block">
+<div class="code-line"><code>cut -d':' --complement -f2,3 users.txt</code></div>
+</div>
+
+<h2>Combiner avec d'autres outils</h2>
+<p><code>cut</code> s'intègre parfaitement dans des pipelines pour manipuler du texte structuré :</p>
+<ul>
+<li><code>cat fichier.csv | cut -d',' -f2 | sort | uniq</code> — Extrait une colonne, trie et dédoublonne</li>
+<li><code>ps aux | cut -d' ' -f1,11 | grep utilisateur</code> — Extrait colonnes et filtre</li>
+<li><code>cut -d':' -f1,5 /etc/passwd | head -10</code> — Affiche utilisateurs et shells</li>
+</ul>
+
+<h2>Différence entre -f et -c</h2>
+<table>
+<tr><th>Option</th><th>Usage</th><th>Exemple</th></tr>
+<tr><td><code>-f</code></td><td>Par champs (nécessite -d)</td><td><code>cut -d',' -f1 fichier.csv</code></td></tr>
+<tr><td><code>-c</code></td><td>Par caractères (positions fixes)</td><td><code>cut -c1-10 fichier</code></td></tr>
+</table>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>cut -d':' -f1 fichier</code></td><td>Extraire le 1er champ avec ':' comme séparateur</td></tr>
+<tr><td><code>cut -d',' -f1,3 fichier</code></td><td>Extraire champs 1 et 3 avec ',' comme séparateur</td></tr>
+<tr><td><code>cut -c1-10 fichier</code></td><td>Extraire caractères 1 à 10</td></tr>
+<tr><td><code>cut -d':' -f2- fichier</code></td><td>Du champ 2 jusqu'à la fin</td></tr>
+<tr><td><code>echo "texte" | cut -d' ' -f1</code></td><td>Depuis un pipe / entrée standard</td></tr>
+<tr><td><code>cut --complement -f2 fichier</code></td><td>Inverse : affiche tout sauf champ 2</td></tr>
+</table>
+
+<nav>
+<a href="52-rsync.html">&larr; Leçon 52 : rsync — Synchronisation de fichiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
