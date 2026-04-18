@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 55 : systemctl et les fichiers Unit</h1>
+
+<h2>Introduction</h2>
+<p>Dans la <a href="21-services-systemd.html">leçon 21</a>, nous avons vu comment gérer les services avec <code>systemctl</code> basique. Ici, nous allons plus loin : comprendre les <strong>fichiers unit</strong>, les créer, les modifier et maîtriser les options avancées.</p>
+<p>systemd est le système d'initialisation utilisé par la plupart des distributions Linux modernes (Ubuntu, Debian, Fedora, Arch...). Il gère le démarrage, les services, les sockets, les timers et bien plus.</p>
+
+<h2>Rappels : commandes systemctl de base</h2>
+<div class="code-block">
+<div class="code-line"><code># Lancer / arrêter / redémarrer un service</code></div>
+<div class="code-line"><code>sudo systemctl start nginx</code></div>
+<div class="code-line"><code>sudo systemctl stop nginx</code></div>
+<div class="code-line"><code>sudo systemctl restart nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Activer au démarrage / désactiver</code></div>
+<div class="code-line"><code>sudo systemctl enable nginx</code></div>
+<div class="code-line"><code>sudo systemctl disable nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vérifier le statut</code></div>
+<div class="code-line"><code>systemctl status nginx</code></div>
+</div>
+
+<h2>Les types de fichiers Unit</h2>
+<p>Un fichier unit définit une unité de travail pour systemd. Il existe plusieurs types :</p>
+<table>
+<tr><th>Type</th><th>Extension</th><th>Description</th></tr>
+<tr><td><code>Service</code></td><td>.service</td><td>Démarre un processus (nginx, apache, mysql...)</td></tr>
+<tr><td><code>Socket</code></td><td>.socket</td><td>Un socket AF_UNIX ou réseau, déclenche un service à la connexion</td></tr>
+<tr><td><code>Timer</code></td><td>.timer</td><td>Planification temporelle (comme cron, voir <a href="41-minuteurs-systemd.html">leçon 41</a>)</td></tr>
+<tr><td><code>Path</code></td><td>.path</td><td>Surveille un fichier/répertoire et déclenche un service</td></tr>
+<tr><td><code>Mount</code></td><td>.mount</td><td>Monte un système de fichiers</td></tr>
+<tr><td><code>Target</code></td><td>.target</td><td>Groupe d'unités (comme runlevels, ex: multi-user.target)</td></tr>
+</table>
+
+<h2>Où se trouvent les fichiers Unit ?</h2>
+<div class="code-block">
+<div class="code-line"><code># Unités système (globales)</code></div>
+<div class="code-line"><code>/etc/systemd/system/    # Créées par l'administrateur</code></div>
+<div class="code-line"><code>/usr/lib/systemd/system/  # Installées par les paquets</code></div>
+<div class="code-line"><code>/run/systemd/system/     # Runtime (temporaire)</code></div>
+</div>
+<p>Pour un service utilisateur, c'est dans <code>~/.config/systemd/user/</code>.</p>
+
+<h2>Examiner un fichier Unit existant</h2>
+<p>Regardons un exemple concret. affiche son contenu :</p>
+<div class="code-block">
+<div class="code-line"><code>cat /lib/systemd/system/sshd.service</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>[Unit]</code></div>
+<div class="code-line"><code>Description=OpenSSH server daemon</code></div>
+<div class="code-line"><code>After=network.target</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>[Service]</code></div>
+<div class="code-line"><code>Type=notify</code></div>
+<div class="code-line"><code>ExecStart=/usr/sbin/sshd -D $SSHD_OPTIONS</code></div>
+<div class="code-line"><code>Restart=always</code></div>
+<div class="code-line"><code>KillMode=mixed</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>[Install]</code></div>
+<div class="code-line"><code>WantedBy=multi-user.target</code></div>
+</div>
+
+<h2>Structure d'un fichier Unit</h2>
+
+<h3>[Unit] — Métadonnées et dépendances</h3>
+<div class="code-block">
+<div class="code-line"><code>[Unit]</code></div>
+<div class="code-line"><code>Description=Mon service personnalisé    # Description lisible</code></div>
+<div class="code-line"><code>Documentation=https://monsite.com    # Docs (optionnel)</code></div>
+<div class="code-line"><code>After=network.target mysql.service    # Démarre APRÈS ces unités</code></div>
+<div class="code-line"><code>Before=nginx.service               # Démarre AVANT cette unité</code></div>
+<div class="code-line"><code>Requires=mysql.service             # Dépendance stricte (échoue si absent)</code></div>
+<div class="code-line"><code>Wants=redis.service                # Dépendance souple (démarre même si absent)</code></div>
+</div>
+
+<h3>[Service] — Configuration du processus</h3>
+<div class="code-block">
+<div class="code-line"><code>[Service]</code></div>
+<div class="code-line"><code>Type=simple              # Le programme ne fait pas de fork (defaut)</code></div>
+<div class="code-line"><code># Type=forking          # Le programme fait un fork (PID attendu)</code></div>
+<div class="code-line"><code># Type=oneshot          # Une seule exécution puis s'arrête</code></div>
+<div class="code-line"><code># Type=notify           # Le programme notifie systemd quand prêt</code></div>
+<div class="code-line"><code># Type=dbus            # Le service apparaît sur D-Bus</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>ExecStart=/usr/bin/mon_script.sh    # Commande de démarrage</code></div>
+<div class="code-line"><code>ExecStop=/usr/bin/mon_script.sh --stop  # Commande d'arrêt (optionnel)</code></div>
+<div class="code-line"><code>ExecReload=/bin/kill -HUP $MAINPID   # Commande de reload</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>Restart=always        # Redémarre en cas d'échec</code></div>
+<div class="code-line"><code># Restart=on-failure   # Redémarre uniquement en cas d'erreur</code></div>
+<div class="code-line"><code># Restart=no           # Ne redémarre jamais</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>RestartSec=5           # Pause de 5 secondes avant redémarrage</code></div>
+<div class="code-line"><code>TimeoutStartSec=30     # Temps max pour démarrer</code></div>
+<div class="code-line"><code>TimeoutStopSec=10      # Temps max pour arrêter</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>User=www-data          # Utilisateur qui exécute le processus</code></div>
+<div class="code-line"><code>Group=www-data         # Groupe du processus</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>WorkingDirectory=/var/www    # Répertoire de travail</code></div>
+<div class="code-line"><code>Environment="PORT=8080" "ENV=prod"  # Variables d'environnement</code></div>
+<div class="code-line"><code>EnvironmentFile=/etc/monapp.env    # Fichier variables</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>PIDFile=/run/monapp.pid     # Fichier PID (pour Type=forking)</code></div>
+<div class="code-line"><code>StandardOutput=journal    # Sortie vers les logs</code></div>
+<div class="code-line"><code>StandardError=journal     # Erreurs vers les logs</code></div>
+</div>
+
+<h3>[Install] — Comportement au démarrage</h3>
+<div class="code-block">
+<div class="code-line"><code>[Install]</code></div>
+<div class="code-line"><code>WantedBy=multi-user.target    # S'active au boot en mode multi-utilisateur</code></div>
+<div class="code-line"><code># WantedBy=graphical.target  # Pour un environnement graphique</code></div>
+<div class="code-line"><code># WantedBy=default.target   # Pour les services utilisateur</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>Also=autre-service.service   # Active/désactive aussi cette unité</code></div>
+</div>
+
+<h2>Créer son propre service</h2>
+
+<h3>Exemple : un script Python qui tourne en continu</h3>
+<p>Crée d'abord ton script :</p>
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># /opt/monapp/mon_script.sh</code></div>
+<div class="code-line"><code>while true; do</code></div>
+<div class="code-line"><code>    echo "Mon app tourne..."</code></div>
+<div class="code-line"><code>    sleep 10</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>chmod +x /opt/monapp/mon_script.sh</code></div>
+</div>
+
+<p>Crée le fichier unit :</p>
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/systemd/system/monapp.service</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>[Unit]</code></div>
+<div class="code-line"><code>Description=Mon application personnalisée</code></div>
+<div class="code-line"><code>After=network.target</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>[Service]</code></div>
+<div class="code-line"><code>Type=simple</code></div>
+<div class="code-line"><code>ExecStart=/opt/monapp/mon_script.sh</code></div>
+<div class="code-line"><code>Restart=always</code></div>
+<div class="code-line"><code>RestartSec=5</code></div>
+<div class="code-line"><code>User=root</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>[Install]</code></div>
+<div class="code-line"><code>WantedBy=multi-user.target</code></div>
+</div>
+
+<p>Active le service :</p>
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl daemon-reload              # Recharger systemd après modification</code></div>
+<div class="code-line"><code>sudo systemctl enable --now monapp        # Activer et démarrer</code></div>
+<div class="code-line"><code>systemctl status monapp                   # Vérifier</code></div>
+</div>
+
+<h2>Commandes avancées systemctl</h2>
+
+<h3>Lister et filtrer</h3>
+<div class="code-block">
+<div class="code-line"><code># Lister toutes les unités actives</code></div>
+<div class="code-line"><code>systemctl list-units --type=service --state=running</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lister tous les services (actifs et inactifs)</code></div>
+<div class="code-line"><code>systemctl list-unit-files --type=service</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lister les services activés au boot</code></div>
+<div class="code-line"><code>systemctl list-dependencies multi-user.target</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir les services qui ont échoué</code></div>
+<div class="code-line"><code>systemctl --failed --type=service</code></div>
+</div>
+
+<h3>Manipuler les unités</h3>
+<div class="code-block">
+<div class="code-line"><code># Relancer (stop + start)</code></div>
+<div class="code-line"><code>sudo systemctl try-restart nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Recharger la config sans redémarrer</code></div>
+<div class="code-line"><code>sudo systemctl reload nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Forcer l'arrêt (kill)</code></div>
+<div class="code-line"><code>sudo systemctl kill -s SIGTERM monapp</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Masquer (rend impossible à démarrer)</code></div>
+<div class="code-line"><code>sudo systemctl mask nginx</code></div>
+<div class="code-line"><code># Démasquer</code></div>
+<div class="code-line"><code>sudo systemctl unmask nginx</code></div>
+</div>
+
+<h3>Vérifications</h3>
+<div class="code-block">
+<div class="code-line"><code># Voir si activé au boot</code></div>
+<div class="code-line"><code>systemctl is-enabled nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir si actif (en cours d'exécution)</code></div>
+<div class="code-line"><code>systemctl is-active nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir les dépendances d'un service</code></div>
+<div class="code-line"><code>systemctl list-dependencies nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir les propriétés d'une unité</code></div>
+<div class="code-line"><code>systemctl show nginx | grep -E "MainPID|ExecStart|LoadState"</code></div>
+</div>
+
+<h2>Les Targets (cibles)</h2>
+<p>Les targets regroupent des unités. Les plus courantes :</p>
+<table>
+<tr><th>Target</th><th>Usage</th></tr>
+<tr><td><code>basic.target</code></td><td>Configuration de base</td></tr>
+<tr><td><code>sysinit.target</code></td><td>Initialisation du système</td></tr>
+<tr><td><code>local-fs.target</code></td><td>Montage des systèmes de fichiers locaux</td></tr>
+<tr><td><code>network.target</code></td><td>Réseau disponible</td></tr>
+<tr><td><code>multi-user.target</code></td><td>Mode multi-utilisateur (sans GUI)</td></tr>
+<tr><td><code>graphical.target</code></td><td>Mode graphique (avec GUI)</td></tr>
+<tr><td><code>poweroff.target</code></td><td>Arrêt de la machine</td></tr>
+<tr><td><code>reboot.target</code></td><td>Redémarrage</td></tr>
+</table>
+<div class="code-block">
+<div class="code-line"><code># Changer de target</code></div>
+<div class="code-line"><code>sudo systemctl isolate multi-user.target</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Définir le target par défaut</code></div>
+<div class="code-line"><code>sudo systemctl set-default multi-user.target</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir le target actuel</code></div>
+<div class="code-line"><code>systemctl get-default</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li><strong> daemon-reload</strong> — Après toute modification d'un fichier unit, fais toujours <code>sudo systemctl daemon-reload</code></li>
+<li><strong>Logs</strong> — Les logs du service via <code>journalctl -u monapp -f</code> (suivre en temps réel) ou <code>-n 50</code> (50 dernières lignes)</li>
+<li><strong>Type=forking</strong> — Utilise-le seulement si ton programme fait explicitement un fork, sinon <code>simple</code></li>
+<li><strong>RestartSec</strong> — Configure toujours un délai pour éviter les boucles de redémarrage rapides</li>
+<li><strong>Environment</strong> — Privilégie <code>EnvironmentFile</code> pour les variables sensibles au lieu de les mettre en dur</li>
+<li><strong>User=</strong> — Ne fais jamais tourner un service en root sauf nécessité absolue</li>
+</ul>
+
+<h2>Dépanner un service qui ne démarre pas</h2>
+<div class="code-block">
+<div class="code-line"><code># 1. Statut détaillé</code></div>
+<div class="code-line"><code>systemctl status monapp</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 2. Logs du service</code></div>
+<div class="code-line"><code>journalctl -u monapp -e       # logs depuis le début</code></div>
+<div class="code-line"><code>journalctl -u monapp --since today  # logs du jour</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 3. Tester la commande ExecStart manuellement</code></div>
+<div class="code-line"><code>/opt/monapp/mon_script.sh</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 4. Valider la syntaxe du fichier unit</code></div>
+<div class="code-line"><code>systemd-analyze verify /etc/systemd/system/monapp.service</code></div>
+</div>
+
+<h2>Résumé des options principales</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>Type=simple</code></td><td>Processus principal sans fork</td></tr>
+<tr><td><code>Type=forking</code></td><td>Processus qui fait un fork</td></tr>
+<tr><td><code>Type=oneshot</code></td><td>Exécution unique puis arrêt</td></tr>
+<tr><td><code>ExecStart</code></td><td>Commande de démarrage</td></tr>
+<tr><td><code>ExecStop</code></td><td>Commande d'arrêt</td></tr>
+<tr><td><code>Restart=always</code></td><td>Redémarre toujours</td></tr>
+<tr><td><code>Restart=on-failure</code></td><td>Redémarre en cas d'erreur</td></tr>
+<tr><td><code>After=</code></td><td>Démarre après ces unités</td></tr>
+<tr><td><code>Wants=</code></td><td>Démarre aussi si ces unités sont présentes</td></tr>
+<tr><td><code>User=</code></td><td>Utilisateur qui exécute le service</td></tr>
+<tr><td><code>Environment=</code></td><td>Variables d'environnement</td></tr>
+<tr><td><code>WantedBy=</code></td><td>Target qui déclenche l'activation</td></tr>
+</table>
+
+<nav>
+<a href="54-df-du-espace-disque.html">&larr; Leçon 54 : df et du — Gérer l'espace disque</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
