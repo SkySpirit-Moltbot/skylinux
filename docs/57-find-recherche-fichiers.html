@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>find — Recherche avancée de fichiers</h1>
+
+<p>La commande <code>find</code> est l'un des outils les plus puissants sous Linux. Elle permet de rechercher des fichiers et répertoires selon de nombreux critères : nom, type, taille, date, permissions, propriétaire, et bien plus.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>find [chemin] [options] [action]</code></div>
+</div>
+
+<p>Par défaut, <code>find</code> parcourt récursivement tous les sous-répertoires à partir du chemin indiqué.</p>
+
+<h2>Recherche par nom</h2>
+
+<h3>Recherche par nom exact</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "rapport.txt"</code></div>
+</div>
+
+<p>Recherche le fichier <code>rapport.txt</code> dans <code>/home</code>.</p>
+
+<h3>Recherche avec joker (pattern)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /var/log -name "*.log"</code></div>
+</div>
+
+<p>Recherche tous les fichiers se terminant par <code>.log</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.pdf"</code></div>
+</div>
+
+<p>Recherche tous les fichiers PDF.</p>
+
+<h3>Insensible à la casse</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -iname "README*"</code></div>
+</div>
+
+<p>L'option <code>-iname</code> ignore la casse (README, readme, Readme...).</p>
+
+<h2>Recherche par type</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-type f</code></td><td>Fichiers réguliers</td></tr>
+<tr><td><code>-type d</code></td><td>Répertoires</td></tr>
+<tr><td><code>-type l</code></td><td>Liens symboliques</td></tr>
+<tr><td><code>-type s</code></td><td>Sockets</td></tr>
+<tr><td><code>-type p</code></td><td>FIFOs (tubes nommés)</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -type d -name "Backup"</code></div>
+</div>
+
+<p>Recherche un répertoire nommé "Backup".</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /var -type l</code></div>
+</div>
+
+<p>Liste tous les liens symboliques dans <code>/var</code>.</p>
+
+<h2>Recherche par taille</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-size 100c</code></td><td>Exactement 100 octets</td></tr>
+<tr><td><code>-size +100c</code></td><td>Plus de 100 octets</td></tr>
+<tr><td><code>-size -100c</code></td><td>Moins de 100 octets</td></tr>
+<tr><td><code>-size 1M</code></td><td>Exactly 1 Mo</td></tr>
+<tr><td><code>-size +500M</code></td><td>Plus de 500 Mo</td></tr>
+<tr><td><code>-size -10G</code></td><td>Moins de 10 Go</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -size +100M</code></div>
+</div>
+
+<p>Trouve tous les fichiers de plus de 100 Mo dans <code>/home</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /var/log -size +1G -name "*.log"</code></div>
+</div>
+
+<p>Trouve les fichiers log de plus de 1 Go.</p>
+
+<h2>Recherche par date</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-mtime n</code></td><td>Modifié il y a n jours</td></tr>
+<tr><td><code>-mtime +n</code></td><td>Modifié il y a plus de n jours</td></tr>
+<tr><td><code>-mtime -n</code></td><td>Modifié il y a moins de n jours</td></tr>
+<tr><td><code>-atime</code></td><td>Dernier accès</td></tr>
+<tr><td><code>-ctime</code></td><td>Dernier changement de statut</td></tr>
+<tr><td><code>-mmin</code></td><td>Minutes (au lieu de jours)</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -mtime -7</code></div>
+</div>
+
+<p>Trouve les fichiers modifiés dans les 7 derniers jours.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /var/log -name "*.log" -mtime +30</code></div>
+</div>
+
+<p>Trouve les fichiers log non modifiés depuis plus de 30 jours.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -atime +365</code></div>
+</div>
+
+<p>Trouve les fichiers non accédés depuis plus d'un an.</p>
+
+<h2>Recherche par permissions</h2>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -perm 644</code></div>
+</div>
+
+<p>Trouve les fichiers avec les permissions exactes 644.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -perm -200</code></div>
+</div>
+
+<p>Trouve les fichiers qui ont au moins le bit d'écriture pour le propriétaire.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -perm /222</code></div>
+</div>
+
+<p>Trouve les fichiers accessibles en écriture par quelqu'un.</p>
+
+<h2>Recherche par propriétaire</h2>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -user david</code></div>
+</div>
+
+<p>Trouve les fichiers appartenant à l'utilisateur <code>david</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -group developers</code></div>
+</div>
+
+<p>Trouve les fichiers belonging au groupe <code>developers</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -nouser</code></div>
+</div>
+
+<p>Trouve les fichiers sans propriétaire valide (utilisateur supprimé).</p>
+
+<h2>Combinaison de critères</h2>
+
+<h3>Opérateur AND (implicite)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.txt" -size +1M</code></div>
+</div>
+
+<p>Trouve les fichiers .txt de plus de 1 Mo.</p>
+
+<h3>Opérateur OR</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home \( -name "*.jpg" -o -name "*.png" \)</code></div>
+</div>
+
+<p>Trouve les fichiers JPEG ou PNG.</p>
+
+<h3>Négation</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.log" ! -mtime -7</code></div>
+</div>
+
+<p>Trouve les fichiers .log non modifiés récemment (équivalent à +7).</p>
+
+<h3>Combiner avec AND/OR</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home \( -name "*.doc" -o -name "*.docx" \) -mtime -30</code></div>
+</div>
+
+<p>Trouve les documents Word modifiés dans les 30 derniers jours.</p>
+
+<h2>Actions sur les résultats</h2>
+
+<h3>Lister avec -ls</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.pdf" -ls</code></div>
+</div>
+
+<p>Affiche un listing détaillé des résultats.</p>
+
+<h3>Supprimer avec -delete</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /tmp -name "*.tmp" -delete</code></div>
+</div>
+
+<p>Supprime les fichiers temporaires trouvés. <strong>Attention :</strong> vérifiez d'abord sans <code>-delete</code> !</p>
+
+<h3>Exécuter une commande avec -exec</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.bak" -exec rm {} \;</code></div>
+</div>
+
+<p>Supprime tous les fichiers .bak. Le <code>{}</code> est remplacé par le nom du fichier trouvé.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.jpg" -exec cp {} /backup/photos/ \;</code></div>
+</div>
+
+<p>Copie tous les fichiers JPEG vers /backup/photos/.</p>
+
+<h3>Confirmer avant action avec -ok</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.tmp" -ok rm {} \;</code></div>
+</div>
+
+<p>Demande confirmation avant de supprimer chaque fichier.</p>
+
+<h3>Importer dans une variable avec xargs</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.log" | xargs tar -czf logs.tar.gz</code></div>
+</div>
+
+<p>Archive tous les fichiers log trouvés.</p>
+
+<h2>Limiter la profondeur de recherche</h2>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -maxdepth 2 -name "*.txt"</code></div>
+</div>
+
+<p>Recherche uniquement dans les 2 premiers niveaux de répertoires.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -mindepth 3 -name "*.txt"</code></div>
+</div>
+
+<p>Recherche uniquement à partir du 3ème niveau.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -maxdepth 1 -type d</code></div>
+</div>
+
+<p>Liste uniquement les répertoires immédiats de /home.</p>
+
+<h2>Recherche vide</h2>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -empty</code></div>
+</div>
+
+<p>Trouve les fichiers et répertoires vides.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /tmp -empty -delete</code></div>
+</div>
+
+<p>Supprime tous les fichiers et répertoires vides dans /tmp.</p>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Trouver les gros fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -type f -size +100M -exec ls -lh {} \;</code></div>
+</div>
+
+<p>Affiche详细信息 des fichiers de plus de 100 Mo.</p>
+
+<h3>Trouver les fichiers récents d'un utilisateur</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -user david -mtime -1 -ls</code></div>
+</div>
+
+<p>Affiche les fichiers modifiés aujourd'hui par david.</p>
+
+<h3>Nettoyer les fichiers temporaires vieux</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /tmp -name "*.tmp" -atime +7 -delete</code></div>
+</div>
+
+<p>Supprime les fichiers temporaires non accédés depuis 7 jours.</p>
+
+<h3>Trouver les liens cassés</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -type l ! -exec test -e {} \; -print</code></div>
+</div>
+
+<p>Trouve les liens symboliques qui pointent vers des fichiers inexistants.</p>
+
+<h3>Trouver par inode</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -inum 12345678</code></div>
+</div>
+
+<p>Trouve le fichier avec l'inode 12345678 (utile pour supprimer les fichiers spéciaux).</p>
+
+<h3>Archiver les fichiers modifiés récemment</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /var/www -mtime -7 -type f | tar -czf backup-web.tar.gz -T -</code></div>
+</div>
+
+<p>Crée une archive de tous les fichiers du site web modifiés cette semaine.</p>
+
+<h2>Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-name</code></td><td>Recherche par nom de fichier</td></tr>
+<tr><td><code>-iname</code></td><td>Recherche par nom (insensible à la casse)</td></tr>
+<tr><td><code>-path</code></td><td>Recherche dans le chemin complet</td></tr>
+<tr><td><code>-ipath</code></td><td>Comme -path mais insensible à la casse</td></tr>
+<tr><td><code>-regex</code></td><td>Expression régulière sur le chemin complet</td></tr>
+<tr><td><code>-iregex</code></td><td>Comme -regex mais insensible à la casse</td></tr>
+<tr><td><code>-maxdepth n</code></td><td>Limite la profondeur de recherche</td></tr>
+<tr><td><code>-mindepth n</code></td><td>Commence à au moins n niveaux de profondeur</td></tr>
+<tr><td><code>-mount</code></td><td>Ne traverse pas les points de montage</td></tr>
+</table>
+
+<h2>Performance</h2>
+
+<p>Pour les recherches fréquentes ou sur de grandes arborescences, quelques conseils :</p>
+
+<ul>
+<li>Spécifiez toujours le chemin de départ le plus précis possible</<li>
+<li>Utilisez <code>-maxdepth</code> pour limiter la profondeur si possible</li>
+<li>Placez les critères les plus restrictifs en premier</li>
+<li>Pour une recherche par nom uniquement, <code>locate</code> peut être plus rapide (base de données), mais <code>find</code> est toujours à jour</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Mettre à jour la base locate (si installé)
+sudo updatedb
+
+# Recherche rapide par nom
+locate rapport.txt</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<p>La commande <code>find</code> est un outil极为 puissant pour rechercher des fichiers selon de multiples critères. Combinez les options pour créer des recherches très précises, et utilisez <code>-exec</code> ou <code>xargs</code> pour effectuer des actions sur les résultats.</p>
+
+<p>L'essentiel à retenir :</p>
+<ul>
+<li><code>find /chemin -name "*.ext"</code> — recherche basique par extension</li>
+<li><code>-type f/d/l</code> — filtre par type de fichier</li>
+<li><code>-size +100M</code> — filtre par taille</li>
+<li><code>-mtime -7</code> — filtre par date de modification</li>
+<li><code>-exec cmd {} \;</code> — exécute une commande sur chaque résultat</li>
+<li><code>-delete</code> — supprime les fichiers trouvés (avec prudence !)</li>
+</ul>
+
+<nav>
+<a href="56-chmod-chown-permissions-avancees.html">&larr; chmod et chown — Permissions avancées</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
