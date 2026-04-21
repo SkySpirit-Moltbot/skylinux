@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Alias et fonctions Bash</h1>
+
+<p>Les <code>alias</code> et les <code>fonctions</code> sont des outils essentiels pour personnaliser votre environnement Bash. Ils vous permettent de créer vos propres commandes, de raccourcir des commandes longues, et d'automatiser des tâches répétitives.</p>
+
+<h2>Les alias</h2>
+
+<p>Un alias est un raccourci qui remplace une commande ou une série de commandes. C'est la méthode la plus simple pour personnaliser votre terminal.</p>
+
+<h2>Créer un alias</h2>
+
+<h3>Syntaxe de base</h3>
+
+<div class="code-block">
+<div class="code-line"><code>alias nom='commande'</code></div>
+</div>
+
+<h3>Exemples simples</h3>
+
+<div class="code-block">
+<div class="code-line"><code>alias ll='ls -la'</code></div>
+</div>
+
+<p>Maintenant, taper <code>ll</code> équivaut à taper <code>ls -la</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>alias update='sudo apt update && sudo apt upgrade -y'</code></div>
+</div>
+
+<p>Crée une commande <code>update</code> qui met à jour le système automatiquement.</p>
+
+<div class="code-block">
+<div class="code-line"><code>alias gs='git status'</code></div>
+</div>
+
+<p>Raccourci pour <code>git status</code>.</p>
+
+<h2>Lister et supprimer les alias</h2>
+
+<h3>Voir tous les alias</h3>
+
+<div class="code-block">
+<div class="code-line"><code>alias</code></div>
+</div>
+
+<p>Affiche tous les alias actuellement définis.</p>
+
+<h3>Supprimer un alias</h3>
+
+<div class="code-block">
+<div class="code-line"><code>unalias nom_alias</code></div>
+</div>
+
+<h3>Supprimer tous les alias</h3>
+
+<div class="code-block">
+<div class="code-line"><code>unalias -a</code></div>
+</div>
+
+<h2>Alias avec arguments (limites)</h2>
+
+<p>Les alias ne peuvent pas gérer d'arguments directement. Si vous écrivez :</p>
+
+<div class="code-block">
+<div class="code-line"><code>alias gp='git pull origin'</code></div>
+</div>
+
+<p>Et que vous tapez <code>gp main</code>, le <code>main</code> sera appendu après la commande complète. Cela fonctionne dans ce cas, mais pour des cas plus complexes, mieux vaut utiliser une fonction.</p>
+
+<h2>Les fonctions Bash</h2>
+
+<p>Les fonctions sont plus puissantes que les alias. Elles peuvent accepter des paramètres, utiliser des conditions, des boucles, et返回值.</p>
+
+<h2>Syntaxe des fonctions</h2>
+
+<div class="code-block">
+<div class="code-line"><code>nom_fonction() {
+    # commandes
+}</code></div>
+</div>
+
+<p>Ou avec le mot-clé <code>function</code> (optionnel) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>function nom_fonction {
+    # commandes
+}</code></div>
+</div>
+
+<h2>Exemples concrets</h2>
+
+<h3>Fonction avec paramètres</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function backup() {
+    cp "$1" "$1.bak-$(date +%Y%m%d)"
+}</code></div>
+</div>
+
+<p>Utilisation : <code>backup monfichier.txt</code> crée une copie备份 avec la date dans le nom.</p>
+
+<h3>Fonction avec plusieurs paramètres</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function copier_suite() {
+    cp "$1" "$2"
+    echo "Copié $1 vers $2"
+}</code></div>
+</div>
+
+<h3>Fonction avec valeur de retour</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function taille_fichier() {
+    du -h "$1" | cut -f1
+}</code></div>
+</div>
+
+<p>Appel : <code>taille_fichier document.pdf</code></p>
+
+<h2>Structure conditionnelle dans les fonctions</h2>
+
+<div class="code-block">
+<div class="code-line"><code>function est_fichier() {
+    if [ -f "$1" ]; then
+        echo "$1 est un fichier"
+    else
+        echo "$1 n'est pas un fichier"
+    fi
+}</code></div>
+</div>
+
+<h3>Opérateurs de test courants</h3>
+
+<table>
+<tr><th>Test</th><th>Description</th></tr>
+<tr><td><code>-f</code></td><td>Vérifie si c'est un fichier</td></tr>
+<tr><td><code>-d</code></td><td>Vérifie si c'est un répertoire</td></tr>
+<tr><td><code>-e</code></td><td>Vérifie si l'élément existe</td></tr>
+<tr><td><code>-z</code></td><td>Vérifie si la chaîne est vide</td></tr>
+<tr><td><code>-n</code></td><td>Vérifie si la chaîne n'est pas vide</td></tr>
+<tr><td><code>-eq</code></td><td>Vérifie l'égalité numérique</td></tr>
+</table>
+
+<h2>Fonctions avec valeur de retour (return)</h2>
+
+<div class="code-block">
+<div class="code-line"><code>function verification() {
+    if [ -f "$1" ]; then
+        return 0  # Succès
+    else
+        return 1  # Échec
+    fi
+}</code></div>
+</div>
+
+<p>Utilisation :</p>
+
+<div class="code-block">
+<div class="code-line"><code>verification monfichier.txt
+if [ $? -eq 0 ]; then
+    echo "Le fichier existe"
+fi</code></div>
+</div>
+
+<h2>Variables dans les fonctions</h2>
+
+<h3>Variables locales</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function calculer() {
+    local resultat=$(( $1 + $2 ))
+    echo $resultat
+}</code></div>
+</div>
+
+<p>Le mot-clé <code>local</code> limite la variable à la fonction. Sans cela, la variable serait globale.</p>
+
+<h3>Variables spéciales</h3>
+
+<table>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$1, $2, ...</code></td><td>Paramètres positionnels</td></tr>
+<tr><td><code>$#</code></td><td>Nombre de paramètres</td></tr>
+<tr><td><code>$@</code></td><td>Tous les paramètres</td></tr>
+<tr><td><code>$?</code></td><td>Code de retour de la dernière commande</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Créer un répertoire et s'y déplacer</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function mkcd() {
+    mkdir -p "$1"
+    cd "$1"
+}</code></div>
+</div>
+
+<p>Utilisation : <code>mkcd mon_projet</code></p>
+
+<h3>Sauvegarde avec horodatage</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function bak() {
+    if [ -f "$1" ]; then
+        cp "$1" "$1.$(date +%Y%m%d-%H%M%S).bak"
+        echo "Backup créé : $1.$(date +%Y%m%d-%H%M%S).bak"
+    else
+        echo "Erreur : $1 n'est pas un fichier"
+    fi
+}</code></div>
+</div>
+
+<h3>Extraction intelligente</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function extraire() {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.tar.bz2) tar xjf "$1" ;;
+            *.tar.gz)  tar xzf "$1" ;;
+            *.bz2)     bunzip2 "$1" ;;
+            *.gz)      gunzip "$1" ;;
+            *.tar)     tar xf "$1" ;;
+            *.tbz2)    tar xjf "$1" ;;
+            *.tgz)     tar xzf "$1" ;;
+            *.zip)     unzip "$1" ;;
+            *.7z)      7z x "$1" ;;
+            *)         echo "Format non supporté : $1" ;;
+        esac
+    else
+        echo "Erreur : $1 n'existe pas"
+    fi
+}</code></div>
+</div>
+
+<h3>Recherche dans l'historique</h3>
+
+<div class="code-block">
+<div class="code-line"><code>function hc() {
+    history | grep "$1"
+}</code></div>
+</div>
+
+<p>Utilisation : <code>hc git</code> cherche les commandes git dans l'historique.</p>
+
+<h2>Rendre les alias et fonctions permanents</h2>
+
+<p>Par défaut, les alias et fonctions définis dans le terminal sont temporaires. Pour les rendre permanents, ajoutez-les dans un fichier de configuration.</p>
+
+<h3>Fichier ~/.bashrc</h3>
+
+<div class="code-block">
+<div class="code-line"><code> nano ~/.bashrc</code></div>
+</div>
+
+<p>Ajoutez vos alias et fonctions à la fin du fichier.</p>
+
+<h3>Appliquer les changements</h3>
+
+<div class="code-block">
+<div class="code-line"><code>source ~/.bashrc</code></div>
+</div>
+
+<p>Ou plus court :</p>
+
+<div class="code-block">
+<div class="code-line"><code>. ~/.bashrc</code></div>
+</div>
+
+<h3>~/.bash_aliases (recommandé)</h3>
+
+<p>Sur certaines distributions, on peut créer un fichier séparé :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Dans ~/.bashrc, ajoutez :
+if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi</code></div>
+</div>
+
+<p>Puis créez <code>~/.bash_aliases</code> avec vos alias et fonctions.</p>
+
+<h2>Alias système (pour tous les utilisateurs)</h2>
+
+<p>Pour des alias visibles par tous les utilisateurs du système, ajoutez-les dans :</p>
+
+<div class="code-block">
+<div class="code-line"><code># /etc/bash.bashrc (Ubuntu/Debian)
+# /etc/bashrc (Red Hat/CentOS)</code></div>
+</div>
+
+<p>Ou dans <code>/etc/profile.d/</code> pour une organisation plus propre.</p>
+
+<h2>Alias vs Fonctions : quand utiliser chacun ?</h2>
+
+<table>
+<tr><th>Critère</th><th>Alias</th><th>Fonctions</th></tr>
+<tr><td>Simplicité</td><td>Bonne pour les commandes simples</td><td>Mieux pour les commandes complexes</td></tr>
+<tr><td>Paramètres</td><td>Limité (pas de logique)</td><td>Support complet</td></tr>
+<tr><td>Conditions</td><td>Non supportées</td><td>Supportées (if, case, etc.)</td></tr>
+<tr><td>Valeur de retour</td><td>Non supportée</td><td>Supportée</td></tr>
+<tr><td>Performance</td><td>Plus rapide</td><td>Légèrement plus lent</td></tr>
+</table>
+
+<h2>Liste de alias utiles</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Sécurité
+alias rm='rm -i'      # Confirmation avant suppression
+alias cp='cp -i'      # Confirmation avant copie
+alias mv='mv -i'      # Confirmation avant déplacement
+
+# Git
+alias gs='git status'
+alias ga='git add .'
+alias gc='git commit -m'
+alias gp='git push'
+alias gl='git log --oneline --graph --all'
+alias gd='git diff'
+
+# Système
+alias df='df -h'
+alias du='du -h'
+alias天气='curl wttr.in/Tavannes'
+
+# Maintenance
+alias清理='sudo apt autoremove && sudo apt clean'
+alias更新='sudo apt update && sudo apt upgrade -y'</code></div>
+</div>
+
+<h2>Liste de fonctions utiles</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un projet et s'y déplacer
+mproj() { mkdir -p "$1" && cd "$1"; }
+
+# Rechercher et tuer un processus
+killp() { ps aux | grep "$1" | grep -v grep | awk '{print $2}' | xargs kill -9; }
+
+# Compter les fichiers par type
+count_ext() { find . -type f -name "*.$1" | wc -l; }
+
+# Afficher l'adresse IP publique
+monip() { curl ifconfig.me; }
+
+# Créer un point de montage et monter
+mountimg() { sudo mount -o loop "$1" /mnt/tmp; }
+
+# Exporter une variable PATH personnalisée
+addpath() { export PATH="$PATH:$1"; }</code></div>
+</div>
+
+<h2>Debugging des fonctions</h2>
+
+<p>Pour déboguer une fonction, utilisez <code>set -x</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>function teste() {
+    set -x
+    local resultat=$(( $1 * 2 ))
+    echo "Résultat : $resultat"
+    set +x
+}</code></div>
+</div>
+
+<p>Les commandes seront affichées avant leur exécution.</p>
+
+<h2>Résumé</h2>
+
+<p>Les alias et fonctions transforment votre terminal en outil personnalisé :</p>
+
+<ul>
+<li><code>alias nom='commande'</code> — crée un raccourci simple</li>
+<li><code>unalias nom</code> — supprime un alias</li>
+<li><code>nom_fonction() { ... }</code> — crée une fonction complexe</li>
+<li>Utilisez <code>local</code> pour les variables locales</li>
+<li>Placez vos alias/fonctions dans <code>~/.bashrc</code> pour les rendre permanents</li>
+<li>Séparez dans <code>~/.bash_aliases</code> pour une meilleure organisation</li>
+</ul>
+
+<nav>
+<a href="57-find-recherche-fichiers.html">&larr; find — Recherche avancée de fichiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
