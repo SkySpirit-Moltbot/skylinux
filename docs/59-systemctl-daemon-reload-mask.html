@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 59 : systemctl daemon-reload, mask et liens symboliques</h1>
+
+<p>Quand tu modifies un fichier unit systemd ou que tu installes un service, systemd ne le sait pas toujours tout seul. Cette leçon couvre les commandes essentielles pour recharger la configuration, protéger des services, et organiser tes unit files avec des liens symboliques.</p>
+
+<h2>Recharger la configuration systemd</h2>
+
+<h3>Pourquoi daemon-reload ?</h3>
+
+<p>Systemd lit sa configuration au démarrage. Si tu modifies un fichier unit ou si tu installes un nouveau service, systemd ne le remarque pas automatiquement. La commande <code>daemon-reload</code> recharger la configuration complète.</p>
+
+<h3>Syntaxe</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl daemon-reload</code></div>
+</div>
+
+<h3>Cas d'utilisation</h3>
+
+<ul>
+<li>Tu as modifié un fichier unit dans <code>/etc/systemd/system/</code></li>
+<li>Tu as installé un nouveau service (ex: Nginx, MariaDB)</li>
+<li>Tu as supprimé un fichier unit manuellement</li>
+<li>Tu as ajouté un drop-in snippet</li>
+</ul>
+
+<h3>Exemple concret</h3>
+
+<div class="code-block">
+<div class="code-line"><code># 1. Tu modifies le fichier unit
+sudo nano /etc/systemd/system/mon-service.service
+
+# 2. systemd ne le sait pas encore, tu recharges
+sudo systemctl daemon-reload
+
+# 3. Puis tu redémarres le service
+sudo systemctl restart mon-service</code></div>
+</div>
+
+<h3>Quand est-ce vraiment nécessaire ?</h3>
+
+<table>
+<tr><th>Action</th><th>daemon-reload nécessaire ?</th></tr>
+<tr><td>Modifier un fichier .service existant</td><td>Oui</td></tr>
+<tr><td>Ajouter un nouveau fichier .service</td><td>Oui</td></tr>
+<tr><td>Modifier un timer systemd</td><td>Oui</td></tr>
+<tr><td>Utiliser <code>systemctl edit</code></td><td>Non (fait automatiquement)</td></tr>
+<tr><td>Modifier via <code>/etc/systemd/system/</code></td><td>Oui</td></tr>
+</table>
+
+<h2>Comprendre les emplacements des unit files</h2>
+
+<p>Systemd cherche les unit files dans plusieurs répertoires, dans un ordre de priorité précis :</p>
+
+<table>
+<tr><th>Emplacement</th><th>Description</th><th>Priorité</th></tr>
+<tr><td><code>/etc/systemd/system/</code></td><td>Units personnalisés (admin)</td><td>1 (最高)</td></tr>
+<tr><td><code>/run/systemd/system/</code></td><td>Units temporaires runtime</td><td>2</td></tr>
+<tr><td><code>/usr/lib/systemd/system/</code></td><td>Units installés par les paquets</td><td>3</td></tr>
+</table>
+
+<h3>Visualiser la priorité</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir où systemd trouve un service
+systemctl show nginx | grep FragmentPath</code></div>
+</div>
+
+<p>Le premier trouvé wins. Si tu crées un unit dans <code>/etc/systemd/system/</code>, il cache celui de <code>/usr/lib/systemd/system/</code>.</p>
+
+<h2>Masquer un service (mask)</h2>
+
+<h3>Pourquoi masquer ?</h3>
+
+<p>Un service masqué ne peut <strong>absolument pas</strong> être démarré, même par root. C'est plus fort qu'un simple <code>stop</code> ou <code>disable</code>. Utile pour :</p>
+
+<ul>
+<li>Désactiver un service qui entre en conflit avec un autre</li>
+<li>Bloquer un service qu'on ne veut jamais démarrer</li>
+<li>Empêcher un service de démarrer accidentellement</li>
+</ul>
+
+<h3>Masquer un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl mask nginx</code></div>
+</div>
+
+<p>Résultat : un lien symbolique est créé :</p>
+
+<div class="code-block">
+<div class="code-line"><code>/etc/systemd/system/nginx.service -> /dev/null</code></div>
+</div>
+
+<p>Toutes les tentatives de démarrage échoueront, même avec <code>sudo systemctl start nginx</code>.</p>
+
+<h3>Vérifier qu'un service est masqué</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl is-active nginx
+# Affiche : masked</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl status nginx
+# Affiche : Loaded: loaded (/dev/null; masked)</code></div>
+</div>
+
+<h3>Démasquer un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl unmask nginx</code></div>
+</div>
+
+<p>Le lien symbolique est supprimé et le service redevient normal.</p>
+
+<h3>Liste des services masqués</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-units --type=service --state=masked</code></div>
+</div>
+
+<h3>Exemple : masquer cups (impression)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier d'abord
+systemctl status cups
+
+# Masquer pour empêcher tout démarrage
+sudo systemctl mask cups
+
+# Le service est maintenant bloqué
+systemctl is-enabled cups
+# Affiche : masked</code></div>
+</div>
+
+<h2>Créer un service via lien symbolique</h2>
+
+<h3>Principe</h3>
+
+<p>Plutôt que de copier un fichier unit, on crée un lien symbolique. Avantages :</p>
+
+<ul>
+<li>Modification unique = affecte tous les liens</li>
+<li>Moins de duplication</li>
+<li>Organisation claire des services actifs</li>
+</ul>
+
+<h3>Créer un lien symbolique pour un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Méthode 1 : avec ln
+sudo ln -s /usr/lib/systemd/system/mon-service.service \
+       /etc/systemd/system/mon-service.service</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Méthode 2 : avec systemctl enable (automatic)
+sudo systemctl enable mon-service
+# Cela crée automatiquement les liens nécessaires</code></div>
+</div>
+
+<h3>Voir les liens symboliques actifs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister les liens dans /etc/systemd/system/
+ls -la /etc/systemd/system/*.wants/</code></div>
+</div>
+
+<h3>Cas pratique : service multi-instances</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Tu as un template service : nginx@.service
+# Tu veux deux instances : nginx@1 et nginx@2
+
+sudo systemctl enable nginx@1
+sudo systemctl enable nginx@2
+
+# Les liens créés :
+# /etc/systemd/system/nginx@1.service -> /usr/lib/systemd/system/nginx@.service
+# /etc/systemd/system/nginx@2.service -> /usr/lib/systemd/system/nginx@.service</code></div>
+</div>
+
+<h2>Organiser ses services avec les répertoires .wants</h2>
+
+<h3>Les répertoires .wants</h3>
+
+<p>Quand tu fais <code>systemctl enable service</code>, systemd crée un lien dans un répertoire <code>*.wants</code>. Ces répertoires définissent les dépendances.</p>
+
+<div class="code-block">
+<div class="code-line"><code>/etc/systemd/system/multi-user.target.wants/
+/etc/systemd/system/sockets.target.wants/
+/etc/systemd/system/timers.target.wants/</code></div>
+</div>
+
+<h3>Comprendre les targets</h3>
+
+<table>
+<tr><th>Target</th><th>Description</th></tr>
+<tr><td><code>multi-user.target</code></td><td> Système multi-utilisateur (mode texte)</td></tr>
+<tr><td><code>graphical.target</code></td><td>Système avec interface graphique</td></tr>
+<tr><td><code>network.target</code></td><td>Réseau disponible</td></tr>
+<tr><td><code>remote-fs.target</code></td><td>Systèmes de fichiers distants montés</td></tr>
+</table>
+
+<h3>Ajouter manuellement une dépendance</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Faire en sorte que mon-service démarre après le réseau
+sudo ln -s /etc/systemd/system/mon-service.service \
+       /etc/systemd/system/network.target.wants/mon-service.service</code></div>
+</div>
+
+<h2>Workflow complet : créer et activer un service</h2>
+
+<div class="code-block">
+<div class="code-line"><code># 1. Créer le fichier unit
+sudo nano /etc/systemd/system/mon-script.service</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Unit]
+Description=Mon script de surveillance
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/david/scripts/mon-script.sh
+Restart=always
+User=david
+
+[Install]
+WantedBy=multi-user.target</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># 2. Recharger systemd
+sudo systemctl daemon-reload
+
+# 3. Activer (créer les liens)
+sudo systemctl enable mon-script.service
+
+# 4. Démarrer le service
+sudo systemctl start mon-script.service
+
+# 5. Vérifier
+systemctl status mon-script.service</code></div>
+</div>
+
+<h2>Commandes de diagnostic</h2>
+
+<h3>Voir la configuration chargée</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir le fichier unit actif (et sa source)
+systemctl cat nginx</code></div>
+</div>
+
+<h3>Voir les propriétés d'un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl show nginx --no-pager</code></div>
+</div>
+
+<h3>Voir pourquoi un service a échoué</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl status nginx
+journalctl -u nginx -n 50 --no-pager</code></div>
+</div>
+
+<h3>Lister tous les services et leur état</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Services actifs
+systemctl list-units --type=service --state=running
+
+# Tous les services
+systemctl list-units --type=service --all</code></div>
+</div>
+
+<h2>Erreurs courantes et solutions</h2>
+
+<h3>Erreur : "Unit file does not exist"</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Tu as supprimé le fichier ou fait une faute de frappe
+sudo systemctl daemon-reload
+systemctl reset-failed</code></div>
+</div>
+
+<h3>Erreur : "Service is masked"</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Il faut démasquer avant de démarrer
+sudo systemctl unmask nom-service
+sudo systemctl start nom-service</code></div>
+</div>
+
+<h3>Erreur : "Process exited"</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Le script s'est terminé trop vite
+# Ajoute Type=oneshot ou RemainAfterExit=yes
+
+[Service]
+Type=oneshot
+ExecStart=/chemin/vers/script.sh
+RemainAfterExit=yes</code></div>
+</div>
+
+<h3>Modifications non appliquées</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Toujours faire :
+sudo systemctl daemon-reload
+sudo systemctl restart nom-service</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Toujours utiliser <code>sudo</code> pour les commandes systemctl</li>
+<li>Après toute modification de fichier unit, faire <code>daemon-reload</code></li>
+<li>Vérifier avec <code>systemctl status</code> après chaque action</li>
+<li>Utiliser <code>journalctl -u service -n 50</code> pour diagnostiquer</li>
+<li>Masquer plutôt que désactiver quand on veut empêcher tout démarrage</li>
+<li>Préférer les liens symboliques aux copies pour maintenir une seule source de vérité</li>
+<li>Ne jamais éditer directement les fichiers dans <code>/usr/lib/systemd/</code></li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>systemctl daemon-reload</code></td><td>Recharger la configuration systemd après modification</td></tr>
+<tr><td><code>systemctl mask service</code></td><td>Bloquer définitivement un service (même root ne peut pas le démarrer)</td></tr>
+<tr><td><code>systemctl unmask service</code></td><td>Retirer le masque d'un service</td></tr>
+<tr><td><code>systemctl cat service</code></td><td>Voir le fichier unit chargé</td></tr>
+<tr><td><code>systemctl show service</code></td><td>Voir toutes les propriétés d'un service</td></tr>
+<tr><td><code>systemctl list-units --state=masked</code></td><td>Lister les services masqués</td></tr>
+</table>
+
+<nav>
+<a href="58-alias-fonctions-bash.html">&larr; Leçon 58 : Alias et fonctions Bash</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
