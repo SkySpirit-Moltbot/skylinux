@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 60 : Canaux nommés (Named Pipes / FIFO)</h1>
+
+<p>Tu connais les pipes <code>|</code> du shell ? Ils sont parfaits mais temporaires : les données transitent et disparaissent. Un canal nommé (aussi appelé <strong>FIFO</strong> pour First In, First Out) est un fichier spécial qui persiste. Tu peux y écrire depuis un terminal et lire depuis un autre, comme un vrai tuyau de communication entre processus.</p>
+
+<h2>Qu'est-ce qu'un canal nommé ?</h2>
+
+<h3>Principe</h3>
+
+<p>Un canal nommé (named pipe ou FIFO) est un fichier spécial de type <code>p</code>. Contrairement à un pipe anonyme (<code>|</code>) qui n'existe que pendant l'exécution d'un processus, le FIFO existe dans le système de fichiers et peut être utilisé par n'importe quel processus, à n'importe quel moment.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un canal nommé
+mkfifo mondossier/mon-fifo
+
+# Vérifier son type
+ls -la mondossier/mon-fifo
+# Résultat : prw-r--r-- 1 david david 0 ... mon-fifo
+#                  ^
+#                  |_ Le 'p' indique que c'est un pipe (FIFO)</code></div>
+</div>
+
+<h3>Pourquoi utiliser un canal nommé ?</h3>
+
+<ul>
+<li>Communication entre processus qui ne sont pas liés par un pipe classique</li>
+<li>Un processus écrit, un autre lit, à des moments différents</li>
+<li>Débogage : rediriger la sortie d'un programme vers un fichier lisible à distance</li>
+<li>Logs en temps réel consultables par plusieurs outils simultanément</li>
+<li>Architecture simple sans réseau ni sockets TCP</li>
+</ul>
+
+<h3>FIFO vs fichier classique vs pipe anonyme</h3>
+
+<table>
+<tr><th>Caractéristique</th><th>Canal nommé (FIFO)</th><th>Fichier classique</th><th>Pipe anonyme <code>|</code></th></tr>
+<tr><td>Persistant après exécution</td><td>Oui (jusqu'à suppression)</td><td>Oui</td><td>Non</td></tr>
+<tr><td>Communication inter-processus</td><td>Oui</td><td>Oui (via fichier)</td><td>Oui (entre deux processus)</td></tr>
+<tr><td>Plusieurs lecteurs simultanés</td><td>Oui</td><td>Oui</td><td>Oui</td></tr>
+<tr><td>Plusieurs écrivains simultanés</td><td>Oui</td><td>Oui</td><td>Oui</td></tr>
+<tr><td>Utilise le disque</td><td>Non (en mémoire)</td><td>Oui</td><td>Non</td></tr>
+<tr><td>Accessible par nom</td><td>Oui</td><td>Oui</td><td>Non (anonyme)</td></tr>
+</table>
+
+<h2>Créer et utiliser un canal nommé</h2>
+
+<h3>Créer un FIFO avec mkfifo</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe simple
+mkfifo /tmp/mon-fifo
+
+# Créer dans ton dossier personnel
+mkfifo ~/mon-fifo
+
+# Vérifier la création
+file ~/mon-fifo
+# Affiche : /home/david/mon-fifo: fifo (named pipe)</code></div>
+</div>
+
+<h3>Écrire dans un FIFO</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire du texte dans le FIFO
+echo "Bonjour depuis le terminal" > ~/mon-fifo
+
+# Écrire plusieurs lignes
+printf "Ligne 1\nLigne 2\nLigne 3\n" > ~/mon-fifo
+
+# Écrire depuis un fichier
+cat fichier.txt > ~/mon-fifo</code></div>
+</div>
+
+<h3>Lire depuis un FIFO</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire le contenu (bloque jusqu'à données disponibles)
+cat ~/mon-fifo
+
+# Lire ligne par ligne avec read
+while IFS= read -r ligne; do
+    echo "Reçu : $ligne"
+done < ~/mon-fifo</code></div>
+</div>
+
+<h3>Exemple complet : communication entre deux terminaux</h3>
+
+<p>Ouvre deux terminaux. Dans le premier :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Terminal 1 : créer le FIFO et lire
+mkfifo ~/chat-fifo
+cat ~/chat-fifo</code></div>
+</div>
+
+<p>Dans le second :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Terminal 2 : écrire dans le FIFO
+echo "Salut, ça fonctionne !" > ~/chat-fifo</code></div>
+</div>
+
+<p>Le message apparaît dans le terminal 1. Chaque nouveau message envoyé depuis le terminal 2 sera affiché dans le terminal 1.</p>
+
+<h2>Cas d'utilisation pratiques</h2>
+
+<h3>1. Rediriger la sortie de plusieurs programmes vers un seul fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un FIFO comme fichier de log central
+mkfifo /tmp/log-central
+
+# Terminal 1 : tous les logs在这儿
+cat /tmp/log-central > ~/application.log &
+
+# Terminal 2 : plusieurs programmes écrivent dedans
+echo "$(date) : Service démarré" > /tmp/log-central
+echo "$(date) : Utilisateur connecté" > /tmp/log-central
+nginx -g 'daemon off;' > /tmp/log-central 2>&1 &
+mysqld --log=/tmp/log-central &</code></div>
+</div>
+
+<h3>2. Débogage en temps réel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un FIFO pour capturer les logs
+mkfifo ~/debug-pipe
+
+# Terminal 1 : surveiller les logs en direct
+tail -f ~/debug-pipe &
+
+# Terminal 2 : ta commande génère des logs
+./mon-script.sh > ~/debug-pipe 2>&1</code></div>
+</div>
+
+<h3>3. Communication entre un script parent et un script enfant</h3>
+
+<div class="code-block">
+<div class="code-line"><code># script-parent.sh
+#!/bin/bash
+mkfifo /tmp/pipe-parent
+
+# Démarrer l'enfant en arrière-plan
+bash script-enfant.sh &
+
+# Envoyer des commandes
+echo "START" > /tmp/pipe-parent
+sleep 5
+echo "STOP" > /tmp/pipe-parent
+sleep 1
+echo "QUIT" > /tmp/pipe-parent
+
+# Nettoyer
+rm -f /tmp/pipe-parent</code></div>
+</div>
+
+<div class="code-block">
+<千年 code-line"><code># script-enfant.sh
+#!/bin/bash
+while true; do
+    IFS= read -r cmd < /tmp/pipe-parent
+    case "$cmd" in
+        START) echo "Enfant : démarrage..." ;;
+        STOP)  echo "Enfant : arrêt..." ;;
+        QUIT)  echo "Enfant : au revoir !"; exit 0 ;;
+    esac
+done</code></div>
+</div>
+
+<h3>4. Faire communiquer un serveur et un client sans réseau</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Serveur : lit les commandes depuis le FIFO
+mkfifo /tmp/serveur-fifo
+while IFS= read -r cmd < /tmp/serveur-fifo; do
+    echo "Commande reçue : $cmd"
+    # Exécuter la commande
+    eval "$cmd"
+done > /tmp/serveur-output 2>&1 &</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Client : envoyer des commandes
+echo "ls -la /home" > /tmp/serveur-fifo
+echo "df -h" > /tmp/serveur-fifo
+
+# Lire les résultats
+cat /tmp/serveur-output</code></div>
+</div>
+
+<h3>5. pipewire / audio via FIFO (exemple simplification)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Si un programme ne peut输出 qu'vers un fichier, utiliser un FIFO
+mkfifo /tmp/audio-stream
+cat /tmp/audio-stream | ton-programme-audio &</code></div>
+</div>
+
+<h2>Les commandes principales</h2>
+
+<h3>mkfifo — Créer un FIFO</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe de base
+mkfifo /chemin/vers/fifo
+
+# Avec permissions personnalisées
+mkfifo -m 600 /tmp/fifo-prive
+
+# Créer plusieurs
+mkfifo ~/pipe1 ~/pipe2 ~/pipe3</code></div>
+</div>
+
+<h3>file — Vérifier le type</h3>
+
+<div class="code-block">
+<div class="code-line"><code>file ~/mon-fifo
+# Affiche : /home/david/mon-fifo: fifo (named pipe)</code></div>
+</div>
+
+<h3>ls -la — Identifier les FIFO</h3>
+
+<div class="code-block">
+<div class="code-line"><code>ls -la /tmp/*.fifo /tmp/*.pipe 2>/dev/null
+# ou lister tout
+ls -la | grep '^p'</code></div>
+</div>
+
+<h2>Comportement de lecture et écriture</h2>
+
+<h3>Principe fondamental : bloquant</h3>
+
+<p>Les opérations de lecture et d'écriture sur un FIFO sont <strong>bloquantes par défaut</strong>. Cela signifie :</p>
+
+<ul>
+<li>Un <code>read</code> bloque jusqu'à ce que des données soient disponibles</li>
+<li>Un <code>write</code> bloque jusqu'à ce que les données soient lues</li>
+<li>C'est ce comportement qui permet de synchroniser deux processus</li>
+</ul>
+
+<h3>Écriture sans blocage (non-blockant)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ouvrir le FIFO en mode non-bloquant
+exec 3> /tmp/mon-fifo
+echo "Texte" >&3</code></div>
+</div>
+
+<h3>Lecture sans blocage</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Utiliser timeout pour ne pas bloquer indéfiniment
+timeout 5 cat /tmp/mon-fifo
+# Affiche les données ou rien si timeout</code></div>
+</div>
+
+<h3>Ouvrir un FIFO dans les deux sens</h3>
+
+<p>Si tu veux qu'un processus lise et écrive sur le même FIFO, ouvre-le dans les deux directions :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Processus bidirectionnel
+mkfifo /tmp/fifo-bidir
+
+# Ouvre une extrémité en lecture, l'autre en écriture
+exec 3<>/tmp/fifo-bidir
+
+# Écrire
+echo "Question" >&3
+
+# Lire la réponse
+timeout 5 cat <&3</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Toujours supprimer les FIFO quand tu n'en as plus besoin : <code>rm ~/mon-fifo</code></li>
+<li>Utiliser des noms explicites : <code>/tmp/serveur-cmds</code>, <code>/tmp/logs-app</code></li>
+<li>Placer les FIFO dans <code>/tmp</code> ou ton dossier personnel (pas dans <code>/dev</code>)</li>
+<li>Penser à la gestion du bloquage : utilise <code>timeout</code> si ton lecteur doit mourir proprement</li>
+<li>En bash, utiliser <code>while IFS= read -r ligne &lt; "$FIFO"</code> pour lire ligne par ligne</li>
+<li>Ne jamais écrire dans un FIFO sans lecteur actif (le write bloquera indéfiniment)</li>
+<li>Utiliser un fichier temporaire classique (<code>file()</code>) pour les gros volumes de données</li>
+</ul>
+
+<h2>Erreurs courantes et solutions</h2>
+
+<h3>Erreur : write bloque indéfiniment</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Personne ne lit le FIFO, l'écriture bloque
+echo "test" > ~/mon-fifo
+# ^ bloque ici
+
+# Solution : avoir un processus qui lit, ou utiliser non-bloquant
+timeout 1 cat ~/mon-fifo &
+sleep 0.5
+echo "test" > ~/mon-fifo</code></div>
+</div>
+
+<h3>Erreur : ls montre le FIFO mais cat ne renvoie rien</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Le FIFO est vide (les données ont déjà été lues)
+# ou personne n'a encore écrit dedans
+# Vérifier que l'écrivain a bien envoyé quelque chose
+
+# Un lecteur précédent a tout consommé
+# Recommencer :
+# Terminal 1 : cat ~/mon-fifo   (lance le lecteur)
+# Terminal 2 : echo "msg" > ~/mon-fifo   (envoie après)</code></div>
+</div>
+
+<h3>Le FIFO disparaît après un reboot</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Les FIFO sont en mémoire, pas sur disque
+# Solution : créer le FIFO au démarrage du script
+if [ ! -p ~/mon-fifo ]; then
+    mkfifo ~/mon-fifo
+fi</code></div>
+</div>
+
+<h3>Plusieurs écrivains, un lecteur : données mélangées</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Si plusieurs programmes écrivent simultanément
+# Les lignes peuvent se mélanger
+
+# Solution : utiliser un lock ou unbuffering
+{ flock -n 3 || true; echo "msg"; } > ~/mon-fifo</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>mkfifo /chemin/fifo</code></td><td>Créer un canal nommé (FIFO)</td></tr>
+<tr><td><code>file /chemin/fifo</code></td><td>Vérifier que c'est bien un FIFO</td></tr>
+<tr><td><code>ls -la | grep '^p'</code></td><td>Lister tous les FIFO du répertoire</td></tr>
+<tr><td><code>echo "msg" > ~/fifo</code></td><td>Écrire dans un FIFO</td></tr>
+<tr><td><code>cat ~/fifo</code></td><td>Lire depuis un FIFO</td></tr>
+<tr><td><code>rm ~/fifo</code></td><td>Supprimer un FIFO</td></tr>
+<tr><td><code>timeout N cat ~/fifo</code></td><td>Lecture avec timeout (non-bloquante)</td></tr>
+</table>
+
+<p>Les canaux nommés sont un outil puissant pour la communication inter-processus sur Linux. Ils permettent de créer des architectures simples sans réseau ni configuration avancée. Maîtrise-les et tu disposeras d'un outil supplémentaire pour structurer tes scripts et automatisations.</p>
+
+<nav>
+<a href="59-systemctl-daemon-reload-mask.html">&larr; Leçon 59 : systemctl daemon-reload, mask et liens symboliques</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
