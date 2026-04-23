@@ -144,7 +144,7 @@ echo "Salut, ça fonctionne !" > ~/chat-fifo</code></div>
 <div class="code-line"><code># Créer un FIFO comme fichier de log central
 mkfifo /tmp/log-central
 
-# Terminal 1 : tous les logs在这儿
+# Terminal 1 : tous les logs arrivent ici
 cat /tmp/log-central > ~/application.log &
 
 # Terminal 2 : plusieurs programmes écrivent dedans
@@ -189,7 +189,7 @@ rm -f /tmp/pipe-parent</code></div>
 </div>
 
 <div class="code-block">
-<千年 code-line"><code># script-enfant.sh
+<div class="code-line"><code># script-enfant.sh
 #!/bin/bash
 while true; do
     IFS= read -r cmd < /tmp/pipe-parent
@@ -225,7 +225,7 @@ cat /tmp/serveur-output</code></div>
 <h3>5. pipewire / audio via FIFO (exemple simplification)</h3>
 
 <div class="code-block">
-<div class="code-line"><code># Si un programme ne peut输出 qu'vers un fichier, utiliser un FIFO
+<div class="code-line"><code># Si un programme ne peut qu'écrire dans un fichier, utiliser un FIFO
 mkfifo /tmp/audio-stream
 cat /tmp/audio-stream | ton-programme-audio &</code></div>
 </div>
