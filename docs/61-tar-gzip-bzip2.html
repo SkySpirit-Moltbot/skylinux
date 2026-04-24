@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>61 - tar, gzip et bzip2 — Archiver et compresser</h1>
+
+<p>Sur Linux, архивировать и сжимать данные — повседневная задача. Trois outils couvrent ce besoin : <code>tar</code> pour assembler des fichiers, <code>gzip</code> pour une compression rapide, et <code>bzip2</code> pour une meilleure compression. Maîtrise-les et tu pourras sauvegarder, partager et optimiser l'espace disque efficacement.</p>
+
+<h2>1. tar — assembler sans comprimer</h2>
+
+<p><code>tar</code> ne compresse rien — il empile plusieurs fichiers et dossiers en un seul fichier appelé archive. Par convention, une archive tar a l'extension <code>.tar</code>.</p>
+
+<h3>Créer une archive</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Archiver un dossier entier
+tar -cvf mon-archive.tar /chemin/vers/dossier
+
+# Archiver plusieurs fichiers
+tar -cvf mes-fichiers.tar fichier1.txt fichier2.txt image.png
+
+# Explication des flags :
+# -c  : créer (create)
+# -v  : mode verbeux (affiche les fichiers)
+# -f  : utiliser ce nom de fichier</code></div>
+</div>
+
+<h3>Lister le contenu d'une archive</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tar -tvf mon-archive.tar
+# Affiche les fichiers avec leurs permissions, taille et date</code></div>
+</div>
+
+<h3>Extraire une archive</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Extraire dans le répertoire courant
+tar -xvf mon-archive.tar
+
+# Extraire dans un répertoire spécifique
+tar -xvf mon-archive.tar -C /destination/
+
+# -x : extraire (extract)
+# -C : changer de répertoire</code></div>
+</div>
+
+<h2>2. gzip — compression rapide</h2>
+
+<p><code>gzip</code> compresse un fichier pour réduire sa taille. Le fichier original est remplacé par un fichier <code>.gz</code>. La compression est rapide mais moins efficace que bzip2.</p>
+
+<h3>Compresser avec gzip</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser un fichier
+gzip mon-fichier.txt
+# → crée mon-fichier.txt.gz et supprime l'original
+
+# Compression maximale (niveau 9)
+gzip -9 gros-fichier.bin
+
+# Compression minimale (plus rapide)
+gzip -1 fichier.txt
+
+# Conserver le fichier original
+gzip -c mon-fichier.txt > mon-fichier.txt.gz</code></div>
+</div>
+
+<h3>Décompresser avec gunzip</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Décompresser un fichier .gz
+gunzip mon-fichier.txt.gz
+
+# Équivalent à :
+gzip -d mon-fichier.txt.gz</code></div>
+</div>
+
+<h3>Tester l'intégrité d'un fichier gzip</h3>
+
+<div class="code-block">
+<div class="code-line"><code>gzip -t fichier-compresse.gz
+# Si rien ne s'affiche, le fichier est intact</code></div>
+</div>
+
+<h2>3. bzip2 — meilleure compression</h2>
+
+<p><code>bzip2</code> compresse mieux que gzip mais prend plus de temps. Idéal pour les fichiers volumineux où chaque mégabyte compte.</p>
+
+<h3>Compresser avec bzip2</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser un fichier
+bzip2 mon-fichier.txt
+# → crée mon-fichier.txt.bz2
+
+# Mode fastest (moins compressé)
+bzip2 -1 fichier.txt
+
+# Mode best (compression maximale)
+bzip2 -9 fichier.txt</code></div>
+</div>
+
+<h3>Décompresser avec bunzip2</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Décompresser
+bunzip2 mon-fichier.txt.bz2
+
+# Équivalent à :
+bzip2 -d mon-fichier.txt.bz2</code></div>
+</div>
+
+<h2>4. Combiner tar + compression</h2>
+
+<p>La vraie puissance vient de la combinaison. Tu peux créer une archive tar compressée en une seule commande.</p>
+
+<h3>Archive tar.gz (gzip)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer une archive compressée gzip
+tar -cvzf archive.tar.gz /dossier/a/sauvegarder
+
+# Extraire une archive tar.gz
+tar -xvzf archive.tar.gz
+
+# -z : utiliser gzip pour la compression</code></div>
+</div>
+
+<h3>Archive tar.bz2 (bzip2)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer une archive compressée bzip2
+tar -cvjf archive.tar.bz2 /dossier/a/sauvegarder
+
+# Extraire une archive tar.bz2
+tar -xvjf archive.tar.bz2
+
+# -j : utiliser bzip2 pour la compression</code></div>
+</div>
+
+<h3>Archive tar.xz (compression maximale)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># xz offre la meilleure compression mais est plus lent
+tar -cvJf archive.tar.xz /dossier/a/sauvegarder
+tar -xvJf archive.tar.xz
+
+# -J : utiliser xz</code></div>
+</div>
+
+<h2>5. Comparaison des méthodes</h2>
+
+<table>
+<tr><th>Méthode</th><th>Extension</th><th>Compression</th><th>Vitesse</th><th>Usage</th></tr>
+<tr><td>tar seul</td><td>.tar</td><td>Aucune</td><td>Très rapide</td><td>Assembler sans comprimer</td></tr>
+<tr><td>tar + gzip</td><td>.tar.gz / .tgz</td><td>Bonne</td><td>Rapide</td><td>Usage courant</td></tr>
+<tr><td>tar + bzip2</td><td>.tar.bz2 / .tbz2</td><td>Très bonne</td><td>Moyenne</td><td>Fichiers volumineux</td></tr>
+<tr><td>tar + xz</td><td>.tar.xz / .txz</td><td>Excellente</td><td>Lente</td><td>Archives à longue conservation</td></tr>
+</table>
+
+<h2>6. Cas pratiques</h2>
+
+<h3>Sauvegarder un répertoire personnel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarde compressée du home
+tar -cvzf backup-home-$(date +%Y%m%d).tar.gz /home/utilisateur
+
+# La date est automatiquement ajoutée au nom du fichier</code></div>
+</div>
+
+<h3>Exclure des fichiers ou dossiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exclure un dossier (cache, node_modules, etc.)
+tar --exclude='*/node_modules' \
+    --exclude='*/.cache' \
+    -cvzf projet.tar.gz /chemin/vers/projet
+
+# Exclure par extension
+tar --exclude='*.log' --exclude='*.tmp' -cvzf data.tar.gz /data</code></div>
+</div>
+
+<h3>Vérifier l'espace avant compression</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir la taille d'un dossier avant archivage
+du -sh /dossier/a/archiver
+
+# Lister sans extraire
+tar -tzf archive.tar.gz | head -20
+# Affiche les 20 premiers fichiers de l'archive</code></div>
+</div>
+
+<h3>Mettre à jour une archive incrémentielle</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister les différences avec une archive existante
+tar -diff -f archive.tar.gz -F '%Y-%m-%d %H:%M:%S'
+
+# Ajouter des fichiers à une archive NON compressée
+tar -rvf archive.tar nouveau-fichier.txt
+# (ne fonctionne pas avec .tar.gz)</code></div>
+</div>
+
+<h2>7. Formats de compression alternatifs</h2>
+
+<h3>zip — compatible Windows</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un fichier zip
+zip -r mon-fichier.zip /dossier/
+
+# Décompresser
+unzip mon-fichier.zip
+
+# Zip est utile pour partager avec des utilisateurs Windows</code></div>
+</div>
+
+<h3>7z — taux de compression élevé</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer une archive 7z (nécessite p7zip)
+7z a archive.7z /dossier/
+
+# Extraire
+7z x archive.7z
+
+# Bon rapport compression/vitesse</code></div>
+</div>
+
+<h2>8. Décompresser sans connaître le format</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Détecter automatiquement le format
+file archive.tar.gz
+# archive.tar.gz: gzip compressed data
+
+# Avec un outil comme atool :
+atool -x archive.tar.gz
+# atool détecte automatiquement le format</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>tar -cvf archive.tar /dossier</code></td><td>Créer une archive tar</td></tr>
+<tr><td><code>tar -xvf archive.tar</code></td><td>Extraire une archive tar</td></tr>
+<tr><td><code>tar -tvf archive.tar</code></td><td>Lister le contenu d'une archive</td></tr>
+<tr><td><code>gzip fichier</code></td><td>Compresser avec gzip</td></tr>
+<tr><td><code>gunzip fichier.gz</code></td><td>Décompresser un .gz</td></tr>
+<tr><td><code>bzip2 fichier</code></td><td>Compresser avec bzip2</td></tr>
+<tr><td><code>bunzip2 fichier.bz2</code></td><td>Décompresser un .bz2</td></tr>
+<tr><td><code>tar -cvzf arc.tar.gz /dossier</code></td><td>Archive compressée gzip</td></tr>
+<tr><td><code>tar -cvjf arc.tar.bz2 /dossier</code></td><td>Archive compressée bzip2</td></tr>
+<tr><td><code>tar --exclude='*/cache' ...</code></td><td>Exclure des dossiers de l'archive</td></tr>
+<tr><td><code>zip -r fichier.zip /dossier</code></td><td>Créer un fichier zip</td></tr>
+</table>
+
+<p>Ces outils forment le socle de toute gestion de fichiers compressés sur Linux. Pratique chaque format jusqu'à connaître instinctively lequel utiliser selon le contexte — sauvegarde rapide, partage multiplateforme, ou archivage à long terme.</p>
+
+<nav>
+<a href="60-canaux-nommes-fifo.html">&larr; Leçon 60 : Canaux nommés (FIFO) — Communication inter-processus</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
