@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>62 - useradd, usermod et groupadd — Créer et administrer des utilisateurs</h1>
+
+<p>Sur un système Linux, chaque personne qui utilise la machine a son propre compte. Créer un utilisateur, lui attribuer des groupes, modifier ses paramètres ou verrouiller un accès — voici les commandes essentielles pour gérer les utilisateurs et les groupes de manière sécurisée.</p>
+
+<h2>1. Anatomie d'un compte utilisateur</h2>
+
+<p>Chaque utilisateur sur Linux est défini par plusieurs informations stockées dans deux fichiers clés :</p>
+
+<ul>
+<li><code>/etc/passwd</code> — informations du compte (login, UID, GID principal, shell, etc.)</li>
+<li><code>/etc/shadow</code> — mot de passe chiffré (accessible uniquement à root)</li>
+<li><code>/etc/group</code> — liste des groupes et de leurs membres</li>
+<li><code>/etc/gshadow</code> — mots de passe des groupes (rarement utilisé)</li>
+</ul>
+
+<h3>Format d'une ligne dans /etc/passwd</h3>
+
+<div class="code-block">
+<div class="code-line"><code>utilisateur:x:1001:1001:Prénom Nom:/home/utilisateur:/bin/bash
+  │        │ │    │    │         │              │
+  │        │ │    │    │         │              └─ Shell par défaut
+  │        │ │    │    │         └─ Répertoire personnel
+  │        │ │    │    └─ Champ GECOS (nom complet, etc.)
+  │        │ │    └─ GID du groupe principal
+  │        │ └─ UID (numéro unique de l'utilisateur)
+  │        └─ x = mot de passe dans /etc/shadow
+  └─ Nom de connexion</code></div>
+</div>
+
+<h2>2. useradd — Créer un nouvel utilisateur</h2>
+
+<h3>Création simple</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un utilisateur standard
+sudo useradd -m utilisateur
+
+# Explique :
+# -m  : crée aussi le répertoire personnel (/home/utilisateur)</code></div>
+</div>
+
+<h3>Création avec options complètes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer avec un commentaire (champ GECOS)
+sudo useradd -m -c "Jean Dupont, Service IT" -s /bin/bash utilisateur
+
+# Spécifier l'UID
+sudo useradd -m -u 1500 utilisateur
+
+# Spécifier le groupe principal (doit exister)
+sudo useradd -m -g developers -s /bin/bash utilisateur
+
+# Spécifier les groupes secondaires (séparés par virgules)
+sudo useradd -m -G sudo,audio,video utilisateur
+
+# Spécifier le répertoire personnel (si différent de /home/login)
+sudo useradd -m -d /data/utilisateurs/jean utilisateur
+
+# Définir un shell par défaut
+sudo useradd -m -s /bin/zsh utilisateur
+
+# Créer un compte système (pas de login interactif possible)
+sudo useradd -r service-account
+
+# Définir la date d'expiration du compte
+sudo useradd -m -e 2025-12-31 utilisateur</code></div>
+</div>
+
+<h3>Vérifier après création</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir l'utilisateur dans /etc/passwd
+grep utilisateur /etc/passwd
+
+# Vérifier son répertoire personnel
+ls -la /home/utilisateur/
+
+# Lister tous les groupes d'un utilisateur
+groups utilisateur</code></div>
+</div>
+
+<h2>3. passwd — Définir le mot de passe</h2>
+
+<p>Après <code>useradd</code>, il faut attribuer un mot de passe :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Définir le mot de passe d'un utilisateur
+sudo passwd utilisateur
+
+# L'utilisateur peut changer son propre mot de passe
+passwd
+
+# Forcer un changement de mot de passe au prochain login
+sudo passwd -e utilisateur
+
+# Vérouiller un compte (désactive le mot de passe)
+sudo passwd -l utilisateur
+
+# Déverrouiller un compte
+sudo passwd -u utilisateur
+
+# Supprimer le mot de passe (connexion sans mot de passe)
+sudo passwd -d utilisateur</code></div>
+</div>
+
+<h2>4. usermod — Modifier un utilisateur existant</h2>
+
+<h3>Changer les attributs de base</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Changer le nom de connexion
+sudo usermod -l nouveau_nom ancien_nom
+
+# Changer le répertoire personnel
+sudo usermod -d /nouveau/chemin -m utilisateur
+# -m : déplace aussi le contenu de l'ancien répertoire
+
+# Ajouter un commentaire
+sudo usermod -c "Nouveau commentaire" utilisateur
+
+# Changer le shell par défaut
+sudo usermod -s /bin/zsh utilisateur
+
+# Changer l'UID
+sudo usermod -u 1600 utilisateur
+
+# Changer le GID du groupe principal
+sudo usermod -g 1500 utilisateur</code></div>
+</div>
+
+<h3>Gérer les groupes d'un utilisateur</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter l'utilisateur à un groupe supplémentaire
+sudo usermod -a -G audio utilisateur
+# -a (append) est OBLIGATOIRE pour ajouter sans remplacer
+
+# Ajouter à plusieurs groupes
+sudo usermod -a -G sudo,video,bluetooth utilisateur
+
+# Remplacer tous les groupes secondaires (sans -a)
+sudo usermod -G developers,admins utilisateur
+
+# Retirer un utilisateur d'un groupe
+sudo gpasswd -d utilisateur groupe</code></div>
+</div>
+
+<h3>Vérouiller ou désactiver un compte</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérouiller le compte (ajoute ! devant le mot de passe)
+sudo usermod -L utilisateur
+
+# Déverrouiller le compte
+sudo usermod -U utilisateur
+
+# Définir une date d'expiration
+sudo usermod -e 2025-12-31 utilisateur
+
+# Désactiver le compte (aussi via chsh -s /bin/false)
+sudo usermod -s /bin/false utilisateur</code></div>
+</div>
+
+<h2>5. groupadd — Créer et gérer des groupes</h2>
+
+<h3>Créer un groupe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un groupe standard
+sudo groupadd developers
+
+# Créer un groupe système (GID < 1000)
+sudo groupadd -r service-group
+
+# Spécifier un GID
+sudo groupadd -g 1500 developers</code></div>
+</div>
+
+<h3>gpasswd — Gérer les membres d'un groupe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter un utilisateur au groupe
+sudo gpasswd -a utilisateur developers
+
+# Retirer un utilisateur du groupe
+sudo gpasswd -d utilisateur developers
+
+# Définir les administrateurs du groupe (peuvent ajouter/retirer des membres)
+sudo gpasswd -A utilisateur developers
+
+# Ajouter plusieurs utilisateurs
+sudo gpasswd -M user1,user2,user3 developers
+# (remplace tous les membres existants)</code></div>
+</div>
+
+<h3>groupmod — Modifier un groupe existant</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Changer le nom du groupe
+sudo groupmod -n nouveau_nom ancien_nom
+
+# Changer le GID
+sudo groupmod -g 1600 developers</code></div>
+</div>
+
+<h3>groupdel — Supprimer un groupe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer un groupe
+sudo groupdel developers
+
+# Un groupe ne peut pas être supprimé s'il est le groupe principal d'un utilisateur</code></div>
+</div>
+
+<h2>6. userdel — Supprimer un utilisateur</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer l'utilisateur (conserve le répertoire personnel)
+sudo userdel utilisateur
+
+# Supprimer l'utilisateur ET son répertoire personnel
+sudo userdel -r utilisateur
+
+# Forcer la suppression même si l'utilisateur est connecté
+sudo userdel -f utilisateur</code></div>
+</div>
+
+<h2>7. who et w — Qui est connecté ?</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Qui est connecté actuellement
+who
+
+# Liste détaillée avec durée de connexion
+w
+
+# Exemple de sortie de w :
+#  USER     TTY      FROM             LOGIN@  IDLE  JCPU   PCPU WHAT
+#  jean     pts/0    192.168.1.10     09:23   1.00s 0.50s  0.10s bash</code></div>
+</div>
+
+<h2>8. id — Afficher les informations UID/GID</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Informations complètes d'un utilisateur
+id utilisateur
+# uid=1001(utilisateur) gid=1001(utilisateur) groupes=1001(utilisateur),27(sudo),29(audio)
+
+# Juste le nom d'utilisateur
+whoami
+
+# Vérifier si un utilisateur existe
+id -u utilisateur   # retourne 0 si existe, 1 si non</code></div>
+</div>
+
+<h2>9. Cas pratiques</h2>
+
+<h3>Créer un compte pour un nouvel employé</h3>
+
+<div class="code-block">
+<div class="code-line"><code># 1. Créer le compte avec home
+sudo useradd -m -c "Marie Martin" -s /bin/bash -G sudo marie
+
+# 2. Définir le mot de passe
+sudo passwd marie
+
+# 3. Vérifier
+id marie
+groups marie</code></div>
+</div>
+
+<h3>Créer un compte de service (sans login interactif)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compte système, pas de mot de passe, shell désactivé
+sudo useradd -r -s /bin/false -M service-app
+
+# Utiliser pour exécuter un service systemd
+# Dans le fichier unit :
+# User=service-app
+# Group=service-app</code></div>
+</div>
+
+<h3>Transférer un compte vers un nouveau groupe principal</h3>
+
+<div class="code-block">
+<div class="code-line"><code># 1. Créer le groupe s'il n'existe pas
+sudo groupadd projet_x
+
+# 2. Ajouter l'utilisateur au nouveau groupe
+sudo usermod -a -G projet_x utilisateur
+
+# 3. Changer le groupe principal
+sudo usermod -g projet_x utilisateur
+
+# 4. Vérifier
+id utilisateur</code></div>
+</div>
+
+<h3>Auditer les comptes utilisateurs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister tous les utilisateurs ordinaires (UID >= 1000)
+getent passwd | awk -F: '$3 >= 1000 && $3 < 65534 {print $1}'
+
+# Lister les comptes sans mot de passe
+sudo awk -F: '($2 == "") {print $1}' /etc/shadow
+
+# Lister les comptes expirés
+sudo awk -F: '($8 == "0") {print $1}' /etc/shadow</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>sudo useradd -m utilisateur</code></td><td>Créer un utilisateur avec répertoire personnel</td></tr>
+<tr><td><code>sudo passwd utilisateur</code></td><td>Définir le mot de passe</td></tr>
+<tr><td><code>sudo usermod -a -G groupe user</code></td><td>Ajouter à un groupe (append)</td></tr>
+<tr><td><code>sudo usermod -L utilisateur</code></td><td>Verrouiller le compte</td></tr>
+<tr><td><code>sudo usermod -e YYYY-MM-DD user</code></td><td>Définir date d'expiration</td></tr>
+<tr><td><code>sudo groupadd groupe</code></td><td>Créer un groupe</td></tr>
+<tr><td><code>sudo gpasswd -a user groupe</code></td><td>Ajouter un membre à un groupe</td></tr>
+<tr><td><code>sudo groupdel groupe</code></td><td>Supprimer un groupe</td></tr>
+<tr><td><code>sudo userdel -r utilisateur</code></td><td>Supprimer utilisateur et home</td></tr>
+<tr><td><code>id utilisateur</code></td><td>Afficher UID, GID et groupes</td></tr>
+<tr><td><code>who</code></td><td>Qui est connecté</td></tr>
+<tr><td><code>groups utilisateur</code></td><td>Groupes d'un utilisateur</td></tr>
+</table>
+
+<p>La gestion des utilisateurs est une compétence fondamentale pour tout administrateur Linux. Ces commandes te permettent de créer, configurer, protéger et supprimer des comptes en toute sécurité.</p>
+
+<nav>
+<a href="61-tar-gzip-bzip2.html">&larr; Leçon 61 : tar, gzip et bzip2 — Archiver et compresser</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
