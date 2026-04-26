@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.exercise { background: rgba(0,217,255,0.05); border: 1px solid rgba(0,217,255,0.2); border-radius: 10px; padding: 20px; margin: 20px 0; }
+.exercise h3 { color: #00d9ff; margin-top: 0; }
+.tip { background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.25); border-radius: 8px; padding: 12px 16px; margin: 15px 0; }
+.tip strong { color: #a855f7; }
+.warning { background: rgba(255,200,0,0.05); border: 1px solid rgba(255,200,0,0.25); border-radius: 8px; padding: 12px 16px; margin: 15px 0; }
+.warning strong { color: #ffc800; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>63 - rsync — Synchronisation de fichiers</h1>
+
+<p>Dans cette leçon, tu vas découvrir <code>rsync</code>, l'outil de synchronisation de fichiers le plus puissant sous Linux. Il permet de copier et synchroniser des fichiers localement ou à distance, en ne transférant que les différences pour optimiser la bande passante.</p>
+
+<h2>1. Pourquoi rsync ?</h2>
+
+<p>Comparé à <code>cp</code> ou <code>scp</code>, <code>rsync</code> offre plusieurs avantages :</p>
+
+<ul>
+<li><strong>Ne transfère que les modifications</strong> — seules les différences sont envoyées</li>
+<li><strong>Compression à la volée</strong> — réduit l'utilisation de la bande passante</li>
+<li><strong>Conservation des permissions et timestamps</strong> — reproduit fidèlement les fichiers</li>
+<li><strong>Peut traverser SSH</strong> — communication chiffrée pour les transferts distants</li>
+<li><strong>Mode dry-run</strong> — permet de prévisualiser les changements</li>
+</ul>
+
+<h2>2. Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>rsync [options] source destination</code></div>
+</div>
+
+<h2>3. Options essentielles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-a</code></td><td>Mode archivage (preserve permissions, timestamps, symlinks, etc.)</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux (affiche les fichiers traités)</td></tr>
+<tr><td><code>-z</code></td><td>Compression pendant le transfert</td></tr>
+<tr><td><code>-P</code></td><td>Affiche la progression et conserve les fichiers partiellement transférés</td></tr>
+<tr><td><code>--delete</code></td><td>Supprime dans la destination les fichiers qui n'existent plus dans la source</td></tr>
+<tr><td><code>-n</code> ou <code>--dry-run</code></td><td>Simulation (aucun fichier n'est réellement modifié)</td></tr>
+<tr><td><code>--exclude</code></td><td>Exclut certains fichiers ou répertoires</td></tr>
+<tr><td><code>-r</code></td><td>Copie récursive (sous-répertoires)</td></tr>
+<tr><td><code>-u</code></td><td>Ne remplace pas les fichiers plus récents sur la destination</td></tr>
+</table>
+
+<h2>4. Exemples locaux</h2>
+
+<h3>Copie simple d'un répertoire vers un autre</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Synchroniser /home/user/documents vers /backup/documents
+rsync -av /home/user/documents/ /backup/documents/
+
+# Le slash à la fin de la source est important :
+# /home/user/documents/   → copie le contenu du répertoire
+# /home/user/documents     → copie le répertoire lui-même</code></div>
+</div>
+
+<h3>Synchronisation avec suppression des fichiers absents</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Supprime aussi dans destination les fichiers qui n'existent plus dans la source
+rsync -av --delete /home/user/documents/ /backup/documents/</code></div>
+</div>
+
+<div class="warning">
+<strong>⚠️ Attention :</strong> L'option <code>--delete</code> peut détruire des données si elle est mal utilisée. Toujours tester d'abord avec <code>--dry-run</code>.
+</div>
+
+<h3>Exclure des fichiers ou répertoires</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exclure tous les fichiers .log
+rsync -av --exclude="*.log" /source/ /dest/
+
+# Exclure plusieurs patterns
+rsync -av --exclude="*.log" --exclude="node_modules/" --exclude=".git/" /source/ /dest/
+
+# Exclure un répertoire précis
+rsync -av --exclude="cache/" /home/user/ /backup/user/</code></div>
+</div>
+
+<h2>5. Simulation avant exécution</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Tester sans rien modifier
+rsync -avn --delete /source/ /dest/
+
+# Ajouter -P pour voir ce qui serait fait
+rsync -avnP /source/ /dest/
+
+# La sortie indique :
+# >f+++++++++ fichier_nouveau.txt    (fichier serait créé)
+# >f..t....... fichier_existant.txt (timestamps seraient mis à jour)
+# >deleting   fichier_supprime.txt  (fichier serait supprimé)</code></div>
+</div>
+
+<h2>6. Transferts distants via SSH</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe avec SSH
+rsync -avP -e ssh /local/path/ user@serveur:/remote/path/
+
+# Spécifier un port SSH différent
+rsync -avP -e "ssh -p 2222" /local/ user@serveur:/remote/
+
+#Télécharger depuis un serveur distant
+rsync -avP user@serveur:/remote/backup.tar.gz /local/backup/</code></div>
+</div>
+
+<div class="tip">
+<strong>💡 Astuce :</strong> Si tu utilises une clé SSH sans passphrase, tu peux automatiser les synchronisations sans干预 humaine.
+</div>
+
+<h2>7. Options de compression et vitesse</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Avec compression (réduit la bande passante, ralentit le CPU)
+rsync -avzP /source/ user@serveur:/dest/
+
+# Sans compression (rapide pour les fichiers déjà compressés comme .zip, .mp4, .jpg)
+rsync -avP /source/ /dest/
+
+# Taille du buffer (par défaut 8192 octets,augmenter pour gros fichiers)
+rsync --block-size=32768 -avP /source/ /dest/</code></div>
+</div>
+
+<h2>8. Utilisation avancée</h2>
+
+<h3>Sauvegarde incrémentale avec suppression</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Synchroniser et supprimer les fichiers absents de la source
+rsync -av --delete /home/user/ /backup/user/
+
+# Pour une vraie sauvegarde avec historique, utiliser --backup
+rsync -av --backup --backup-dir=/backup/old /source/ /dest/</code></div>
+</div>
+
+<h3>Lister les différences sans copier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir ce qui diffère entre deux répertoires
+rsync -avn /source/ /dest/ | grep "^[<>]"
+
+# Ou utiliser l'option -i pour un affichage détaillé
+rsync -avni /source/ /dest/</code></div>
+</div>
+
+<h3>Limiter la bande passante</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Limiter à 500 Ko/s (utile pour ne pas saturer la connexion)
+rsync -avzP --bwlimit=500 /source/ user@serveur:/dest/
+
+# --bwlimit en Ko/s (kilobytes), pas kb/s (kilobits)</code></div>
+</div>
+
+<h2>9. Cas d'usage courants</h2>
+
+<h3>Sauvegarde vers un disque externe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Monter le disque et synchroniser
+sudo mount /dev/sdb1 /mnt/backup
+rsync -av --delete /home/ /mnt/backup/home/
+sudo umount /mnt/backup</code></div>
+</div>
+
+<h3>Synchronisation de sites web via SSH</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Envoyer les fichiers du site vers le serveur de production
+rsync -avzP -e ssh --exclude="node_modules/" --exclude=".git/" \
+  /local/website/ user@monserveur.com:/var/www/html/</code></div>
+</div>
+
+<h3>Mirroring un dossier distant</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Mirror complet (supprime tout ce qui n'existe plus à la source)
+rsync -avzP --delete -e ssh user@serveur:/remote/dossier/ /local/dossier/</code></div>
+</div>
+
+<h2>10. Script de sauvegarde automatique</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+# script_backup.sh
+
+SOURCE="/home/user/documents"
+DEST="/backup/documents"
+SERVER="user@serveur.example.com"
+REMOTE_PATH="/backup/user-documents"
+
+# Sync local
+rsync -av --delete "$SOURCE/" "$DEST/"
+
+# Sync distant via SSH (compression + progress)
+rsync -avzP -e ssh --delete "$SOURCE/" "$SERVER:$REMOTE_PATH/"
+
+echo "Sauvegarde terminée le $(date)"</code></div>
+</div>
+
+<p>Pour automatiser, ajoute-le dans <code>crontab</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarde quotidienne à 2h du matin
+0 2 * * * /home/user/script_backup.sh >> /home/user/logs/backup.log 2>&1</code></div>
+</div>
+
+<h2>11. Tableau récapitulatif</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>rsync -av source/ dest/</code></td><td>Synchronisation locale avec détails</td></tr>
+<tr><td><code>rsync -avP source/ dest/</code></td><td>Avec barre de progression</td></tr>
+<tr><td><code>rsync -avz source/ dest/</code></td><td>Avec compression</td></tr>
+<tr><td><code>rsync -av --delete source/ dest/</code></td><td>Supprime les fichiers absents de la source</td></tr>
+<tr><td><code>rsync -avn source/ dest/</code></td><td>Simulation (dry-run)</td></tr>
+<tr><td><code>rsync -av --exclude="*.tmp" source/ dest/</code></td><td>Exclure certains fichiers</td></tr>
+<tr><td><code>rsync -avzP -e ssh source/ user@host:dest/</code></td><td>Transfert distant chiffré</td></tr>
+<tr><td><code>rsync -avzP --bwlimit=500 source/ dest/</code></td><td>Limiter la bande passante (Ko/s)</td></tr>
+</table>
+
+<h2>12. Exercice pratique</h2>
+
+<div class="exercise">
+<h3>Exercice : Synchroniser ton répertoire Documents</h3>
+
+<p><strong>Objectif :</strong> Créer une sauvegarde de ton répertoire <code>~/Documents</code> vers un dossier de backup.</p>
+
+<pre><code># 1. Créer le dossier de backup
+mkdir -p ~/backup_test
+
+# 2. Synchroniser avec dry-run pour voir ce qui serait fait
+rsync -avn ~/Documents/ ~/backup_test/
+
+# 3. Si tout est correct, exécuter réellement
+rsync -avP ~/Documents/ ~/backup_test/
+
+# 4. Vérifier que les fichiers sont copiés
+ls ~/backup_test/
+
+# 5. Ajouter un fichier dans Documents et resynchroniser
+echo "Nouveau fichier de test" > ~/Documents/test_sync.txt
+rsync -avP ~/Documents/ ~/backup_test/
+
+# 6. Vérifier que le nouveau fichier est présent
+ls ~/backup_test/test_sync.txt</code></pre>
+
+<p><strong>Bonus :</strong> Exclure tous les fichiers temporaires (<code>*.tmp</code>) et vérifier avec <code>-n</code> que le pattern fonctionne avant de lancer la vraie sync.</p>
+</div>
+
+<p><code>rsync</code> est l'outil indispensable pour toute sauvegarde ou synchronisation sous Linux. Sa capacité à ne transférer que les différences en fait l'outil le plus efficace pour maintenir des copies synchronisées, que ce soit en local ou à distance via SSH.</p>
+
+<nav>
+<a href="62-useradd-usermod-groupadd.html">&larr; 62 - useradd, usermod et groupadd — Créer et administrer des utilisateurs</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
