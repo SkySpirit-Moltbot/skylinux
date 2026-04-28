@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Les liens symboliques — Astuces pratiques</h1>
+
+<p>Les liens symboliques (symlinks) sont omniprésents sur Linux. Cette leçon vous montre comment les utiliser efficacement pour organiser vos fichiers et simplifier votre quotidien.</p>
+
+<h2>Créer un lien symbolique</h2>
+
+<p>La commande <code>ln -s</code> crée un lien symbolique qui pointe vers un autre fichier ou dossier.</p>
+
+<div class="code-block">
+<div class="code-line"><code>ln -s /chemin/vers/fichier lien_name</code></div>
+</div>
+
+<h3>Exemple pratique</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un lien vers un fichier
+ln -s /var/log/syslog logs_actuels
+
+# Vérifier que le lien existe
+ls -la logs_actuels
+# lrwxrwxrwx 1 user user 13 Apr 28 08:00 /home/user/logs_actuels -> /var/log/syslog</code></div>
+</div>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>1. Raccourcir des chemins longs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Au lieu de taper le chemin complet à chaque fois
+ln -s /mnt/sandbox/experiments/scripts mes_scripts
+
+# Maintenant vous pouvez faire
+cd mes_scripts
+./deploy.sh</code></div>
+</div>
+
+<h3>2. Plusieurs versions d'un même logiciel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vous avez plusieurs versions installées
+ls /opt/mon_app/
+# 1.0.0  2.1.0  3.0.0
+
+# Créer un lien "version actuelle"
+ln -s /opt/mon_app/3.0.0 /opt/mon_app/current
+
+# Vos scripts utilisent toujours /opt/mon_app/current
+# Pour changer de version, modifiez juste le lien</code></div>
+</div>
+
+<h3>3. Dossier "data" dans un projet</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Organiser un projet
+mkdir ~/mon_projet
+cd ~/mon_projet
+ln -s /media/donnees/partagees data
+
+# Le contenu distant apparaît comme un dossier local
+cd data && ls</code></div>
+</div>
+
+<h2>Identifier les liens symboliques</h2>
+
+<p>Plusieurs indices révèlent un lien symbolique :</p>
+
+<ul>
+<li>La flèche <code>-></code> dans <code>ls -la</code></li>
+<li>Le <code>l</code> en premier caractère des permissions</li>
+<li>La taille du lien (généralement petite, ~13 octets pour un chemin court)</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Identifier visuellement
+ls -la | grep "^l"
+
+# Avec la commande file
+file mon_lien
+# mon_lien: symbolic link to /chemin/vers/cible</code></div>
+</div>
+
+<h2>Liens symboliques vs liens durs</h2>
+
+<table>
+<tr><th>Caractéristique</th><th>Lien symbolique</th><th>Lien dur</th></tr>
+<tr><td>Commande</td><td><code>ln -s</code></td><td><code>ln</code></td></tr>
+<tr><td>Peut traverser partitions</td><td>Oui</td><td>Non</td></tr>
+<tr><td>Peut pointer vers un dossier</td><td>Oui</td><td>Non</td></tr>
+<tr><td>Survit si la cible est supprimée</td><td>Non (lien brisé)</td><td>Oui</td></tr>
+<tr><td>Inode différent</td><td>Oui</td><td>Non (même inode)</td></tr>
+</table>
+
+<h2>Trouver tous les liens symboliques cassés</h2>
+
+<p>Quand une cible est supprimée, le lien devient "orphelin". Voici comment les détecter :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les liens cassés dans le répertoire courant
+find . -type l ! -exec test -e {} \; -print
+
+# Ou avec une approche plus lisible
+find . -type l -xtype l
+
+# Dans tout le système (nécessite sudo)
+sudo find /home -type l -xtype l</code></div>
+</div>
+
+<h2>Modifier ou supprimer un lien</h2>
+
+<p>Les liens ne sont pas modifiables — il faut les recréer :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer un lien (ne supprime PAS le fichier cible)
+rm mon_lien
+
+# Ou
+unlink mon_lien
+
+# Recréer avec une nouvelle cible
+ln -s /nouveau/chemin mon_lien</code></div>
+</div>
+
+<h2>Astuce : Copier des liens вместо des fichiers</h2>
+
+<p>Quand vous copiez un dossier contenant des liens, utilisez <code>-L</code> ou <code>-P</code> selon votre besoin :</p>
+
+<div class="code-block">
+<div class="code-line"><code># -L : copier le contenu des liens (suivre)
+cp -Lr liens/ destination/
+
+# -P : garder les liens tels quels
+cp -Pr liens/ destination/
+
+# -s : créer automatiquement des liens symboliques vers les fichiers copiés
+cp -s * ../destination/</code></div>
+</div>
+
+<h2>Exemple concret : Structure de projet</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Structure typique d'un projet
+~/projet/
+├── code/           # Scripts sources
+├── data/           # Lien vers données (montage réseau)
+├── logs/           # Lien vers /var/log/projet
+├── releases/       # Versions compilées
+│   ├── current -> releases/3.2.1  # Lien vers version actuelle
+│   └── 3.2.1/
+└── README.md
+
+# Le lien "current" permet de changer de version sans modifier les scripts
+# Pour mettre à jour : rm current && ln -s releases/3.3.0 current</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><td><code>ln -s cible nom</code></td><td>Créer un lien symbolique</td></tr>
+<tr><td><code>ls -la | grep "^l"</code></td><td>Trouver les liens dans le dossier</td></tr>
+<tr><td><code>file lien</code></td><td>Vérifier le type et la cible</td></tr>
+<tr><td><code>find . -type l -xtype l</code></td><td>Trouver les liens cassés</td></tr>
+<tr><td><code>rm lien</code></td><td>Supprimer le lien (pas la cible)</td></tr>
+</table>
+
+<nav>
+<a href="64-watch-surveillance-temps-reel.html">&larr; watch — Surveillance en temps reel</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
