@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>nproc, uname et hostname — Identifier le système</h1>
+
+<p>Trois commandes essentielles pour obtenir des informations sur votre système Linux : le nombre de processeurs, les détails du noyau, et le nom de la machine.</p>
+
+<h2>nproc — Nombre de processeurs</h2>
+
+<p><code>nproc</code> affiche le nombre d'unités de traitement disponibles. Très utile pour optimiser les performances ou comprendre les capacités de votre serveur.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher le nombre de cœurs/processeurs
+nproc</code></div>
+<div class="code-line"><code># 4</code></div>
+</div>
+
+<h3>Options courantes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher seulement les processeurs alloués au processus courant
+nproc --ignore=1</code></div>
+<div class="code-line"><code># --all : montrer tous les processeurs (y compris offline si班)
+nproc --all</code></div>
+</div>
+
+<h3>Cas d'utilisation</h3>
+
+<ul>
+<li>Déterminer le nombre de jobs parallèles pour <code>make -j</code></li>
+<li>Configurer des conteneurs Docker avec <code>--cpus</code></li>
+<li>Évaluer les performances d'un serveur</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Combien de cœurs pour cette compilation ?
+make -j$(nproc)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Dans un script : nombre de workers
+workers=$(nproc)</code></div>
+</div>
+
+<h2>uname — Informations sur le noyau</h2>
+
+<p><code>uname</code> affiche des informations détaillées sur le système d'exploitation et le noyau Linux.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher toutes les informations
+uname -a</code></div>
+<div class="code-line"><code># Linux monserveur 6.1.0-18-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.76-1 (2024-01-18) x86_64 GNU/Linux</code></div>
+</div>
+
+<h3>Options spécifiques</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>-s</code></td><td>Nom du noyau</td><td>Linux</td></tr>
+<tr><td><code>-n</code></td><td>Nom d'hôte réseau</td><td>monserveur</td></tr>
+<tr><td><code>-r</code></td><td>Version du noyau</td><td>6.1.0-18-amd64</td></tr>
+<tr><td><code>-v</code></td><td>Version du noyau (build)</td><td>#1 SMP PREEMPT_DYNAMIC...</td></tr>
+<tr><td><code>-m</code></td><td>Architecture matérielle</td><td>x86_64</td></tr>
+<tr><td><code>-p</code></td><td>Type de processeur</td><td>x86_64</td></tr>
+<tr><td><code>-o</code></td><td> Système d'exploitation</td><td>GNU/Linux</td></tr>
+</table>
+
+<h3>Exemples pratiques</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir la version du noyau seulement
+uname -r
+# 6.1.0-18-amd64</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vérifier si on est en 64 bits
+uname -m
+# x86_64  (64 bits)
+# i686    (32 bits)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Dans un script : adapter selon l'architecture
+if [[ $(uname -m) == "x86_64" ]]; then
+    echo "Installation version 64 bits"
+else
+    echo "Installation version 32 bits"
+fi</code></div>
+</div>
+
+<h2>hostname — Nom de la machine</h2>
+
+<p><code>hostname</code> gère le nom d'hôte de votre machine. Il existe trois types de noms :</p>
+
+<ul>
+<li><strong>Nom statique</strong> — défini dans <code>/etc/hostname</code>, persiste au redémarrage</li>
+<li><strong>Nom transitoire</strong> — modifié en mémoire, perdu au reboot</li>
+<li><strong>Nom "pretty"</strong> — nom lisible pour l'affichage (ex: "PC de David")</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher le nom d'hôte actuel
+hostname</code></div>
+<div class="code-line"><code># monserveur</code></div>
+</div>
+
+<h3>Voir tous les noms</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher le nom de domaine complet (FQDN)
+hostname -f
+# monserveur.mondomaine.local</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Afficher le domaine DNS
+hostname -d
+# mondomaine.local</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Afficher l'adresse IP
+hostname -I
+# 192.168.1.100</code></div>
+</div>
+
+<h3>Modifier le nom d'hôte</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Changer le nom temporairement (jusqu'au prochain reboot)
+hostname nouveau_nom</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Changer le nom permanent (Debian/Ubuntu)
+hostnamectl set-hostname nouveau_nom</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Modifier le fichier /etc/hostname manuellement
+sudo nano /etc/hostname</code></div>
+</div>
+
+<h2>Combiner les trois commandes</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Script d'informations système
+echo "=== Informations Système ==="
+echo "Machine   : $(hostname)"
+echo "Noyau     : $(uname -r)"
+echo "Architecture : $(uname -m)"
+echo "CPU       : $(nproc) cœurs"
+echo "IP        : $(hostname -I | cut -d' ' -f1)"</code></div>
+</div>
+
+<h2>Fichiers associés</h2>
+
+<table>
+<tr><th>Fichier</th><th>Description</th></tr>
+<tr><td><code>/etc/hostname</code></td><td>Nom d'hôte statique persistant</td></tr>
+<tr><td><code>/etc/hosts</code></td><td>Mappage nom d'hôte ↔ IP</td></tr>
+<tr><td><code>/proc/sys/kernel/hostname</code></td><td>Nom d'hôte courant (lecture seule)</td></tr>
+</table>
+
+<h2>Exercices pratiques</h2>
+
+<ol>
+<li><strong>Informations de base</strong> — Exécute <code>uname -a</code> et identifie chaque champ.</li>
+<li><strong>Nom d'hôte</strong> — Affiche ton nom de machine, puis le domaine avec <code>hostname -d</code>.</li>
+<li><strong>Script diagnostic</strong> — Écris un script qui affiche le nombre de cœurs et l'architecture CPU.</li>
+<li><strong>Planification</strong> — Utilise <code>nproc</code> pour déterminer le nombre optimal de jobs de compilation.</li>
+</ol>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>nproc</code></td><td>Nombre de processeurs/cœurs</td></tr>
+<tr><td><code>nproc --all</code></td><td>Tous les processeurs (y compris offline)</td></tr>
+<tr><td><code>uname -a</code></td><td>Toutes les informations système</td></tr>
+<tr><td><code>uname -r</code></td><td>Version du noyau</td></tr>
+<tr><td><code>uname -m</code></td><td>Architecture (x86_64, i686...)</td></tr>
+<tr><td><code>hostname</code></td><td>Nom d'hôte</td></tr>
+<tr><td><code>hostname -I</code></td><td>Adresse IP</td></tr>
+<tr><td><code>hostnamectl set-hostname X</code></td><td>Changer le nom permanent</td></tr>
+</table>
+
+<nav>
+<a href="65-liens-symboliques-pratique.html">&larr; Les liens symboliques — Astuces pratiques</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
