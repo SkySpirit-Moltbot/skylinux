@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 67 : xargs — Construire des commandes à partir de résultats</h1>
+
+<p>La commande <code>xargs</code> est un outil puissant qui permet de construire et d'exécuter des commandes à partir de résultats lus sur l'entrée standard. Elle est particulièrement utile pour chaîner des commandes avec des Pipes et traiter de grandes quantités de données.</p>
+
+<h2>1. Comment fonctionne xargs ?</h2>
+
+<p><code>xargs</code> lit des données depuis l'entrée standard (stdin), puis les utilise comme arguments pour exécuter une commande. Sans argument, il exécute <code>echo</code> par défaut.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe de base</code></div>
+<div class="code-line"><code>commande | xargs commande_target</code></div>
+</div>
+
+<h2>2. Exemples pratiques</h2>
+
+<h3>2.1 Supprimer plusieurs fichiers</h3>
+
+<p>Trouver et supprimer des fichiers spécifiques avec <code>find</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>find ~/documents -name "*.tmp" | xargs rm</code></div>
+</div>
+
+<p>Ici, <code>xargs</code> prend chaque résultat de <code>find</code> et le passe comme argument à <code>rm</code>.</p>
+
+<h3>2.2 Utiliser un délimiteur personnalisé</h3>
+
+<p>Par défaut, <code>xargs</code> utilise les espaces et sauts de ligne comme délimiteurs. Vous pouvez spécifier un autre délimiteur avec <code>-d</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>echo "f1.txt,f2.txt,f3.txt" | xargs -d ',' rm</code></div>
+</div>
+
+<h3>2.3 Spécifier le nombre d'arguments par ligne</h3>
+
+<p>Par défaut, <code>xargs</code> passe autant d'arguments que possible sur une seule ligne. Utilisez <code>-n</code> pour limiter :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter rm avec 1 fichier à la fois</code></div>
+<div class="code-line"><code>find ~/documents -name "*.tmp" | xargs -n 1 rm</code></div>
+</div>
+
+<h2>3. Utilisation avec des espaces et caractères spéciaux</h2>
+
+<h3>3.1 Le problème des espaces dans les noms de fichiers</h3>
+
+<p>Si un nom de fichier contient des espaces, <code>xargs</code> peut mal l'interpréter. La solution est d'utiliser <code>find -print0</code> et <code>xargs -0</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Traitement sécurisé des noms de fichiers avec espaces</code></div>
+<div class="code-line"><code>find ~/documents -name "*.txt" -print0 | xargs -0 rm</code></div>
+</div>
+
+<h3>3.2 Utiliser un substitut de position</code></h3>
+
+<p>Par défaut, les arguments sont ajoutés à la fin de la commande. Utilisez <code>-I</code> pour spécifier où insérer les arguments :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Copier chaque fichier vers un répertoire</code></div>
+<div class="code-line"><code>find ~/documents -name "*.pdf" | xargs -I {} cp {} ~/backup/</code></div>
+</div>
+
+<p>Le symbole <code>{}</code> est remplacé par chaque argument lu.</p>
+
+<h2>4. Exécuter plusieurs commandes</h2>
+
+<h3>4.1 Avec -I pour enchaîner des actions</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer une archive pour chaque fichier trouvé</code></div>
+<div class="code-line"><code>ls *.log | xargs -I {} tar -czf {}.tar.gz {}</code></div>
+</div>
+
+<h3>4.2 Combiner avec un script Bash</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter un script personnalisé sur chaque fichier</code></div>
+<div class="code-line"><code>find ~/documents -type f | xargs -I {} bash -c 'echo "Traitement de: {}"'</code></div>
+</div>
+
+<h2>5. Utilisation avancée</h2>
+
+<h3>5.1 Demander confirmation avant exécution</h3>
+
+<p>Utilisez <code>-p</code> pour afficher la commande et demander confirmation :</p>
+
+<div class="code-block">
+<div class="code-line"><code>find ~/documents -name "*.tmp" | xargs -p rm</code></div>
+</div>
+
+<h3>5.2 Afficher les commandes sans les exécuter</h3>
+
+<p>Utilisez <code>-t</code> pour afficher les commandes exécutées (mode verbose) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>find ~/documents -name "*.tmp" | xargs -t rm</code></div>
+</div>
+
+<h3>5.3 Limiter le nombre de lignes de commande</h3>
+
+<p>Utilisez <code>-s</code> pour limiter la longueur totale de la ligne de commande :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Limiter à 500 caractères par ligne</code></div>
+<div class="code-line"><code>find ~/documents -name "*.txt" | xargs -s 500 ls -l</code></div>
+</div>
+
+<h2>6. Cas d'utilisation courants</h2>
+
+<h3>6.1 Rechercher et modifier des permissions</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Changer les permissions de plusieurs fichiers</code></div>
+<div class="code-line"><code>find ~/documents -name "*.sh" | xargs chmod 755</code></div>
+</div>
+
+<h3>6.2 Rechercher et compter les lignes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compter les lignes de plusieurs fichiers</code></div>
+<div class="code-line"><code>find ~/documents -name "*.py" | xargs wc -l</code></div>
+</div>
+
+<h3>6.3 Envoyer des emails pour chaque résultat</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Envoyer un email pour chaque résultat de grep</code></div>
+<div class="code-line"><code>grep -r "error" /var/log | xargs -I {} mail -s "Alerte" admin@example.com</code></div>
+</div>
+
+<h2>7. Résumé des options courantes</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n N</code></td><td>Limiter à N arguments par commande</td></tr>
+<tr><td><code>-d CAR</code></td><td>Utiliser CAR comme délimiteur</td></tr>
+<tr><td><code>-0</code></td><td>Traiter les NUL comme délimiteurs (avec find -print0)</td></tr>
+<tr><td><code>-I {}</code></td><td>Remplacer {} par les arguments</td></tr>
+<tr><td><code>-p</code></td><td>Demander confirmation avant exécution</td></tr>
+<tr><td><code>-t</code></td><td>Afficher la commande avant exécution</td></tr>
+<tr><td><code>-s N</code></td><td>Limiter la longueur de ligne à N caractères</td></tr>
+</table>
+
+<h2>8. Exercices pratiques</h2>
+
+<ol>
+<li>Trouvez tous les fichiers <code>.log</code> de votre répertoire personnel et affichez leur taille avec <code>ls -lh</code> en utilisant <code>xargs</code>.</li>
+<li>Créez une commande qui utilise <code>find</code> et <code>xargs</code> pour compter le nombre de lignes dans tous les fichiers <code>.txt</code> d'un répertoire.</li>
+<li>Utilisez <code>xargs -I</code> pour copier chaque fichier d'un répertoire vers un autre.</li>
+<li>Expérimentez avec <code>xargs -p</code> pour voir comment fonctionne la confirmation interactive.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><code>xargs</code> est un outil essentiel pour tout administrateur Linux. Il permet de chaîner des commandes de manière flexible et puissante, transformant les résultats d'une commande en arguments pour une autre. Combiné avec <code>find</code> et les Pipes, il devient un outil de manipulation de fichiers très puissant.</p>
+
+<nav>
+<a href="66-nproc-uname-hostname.html">&larr; Leçon 66 : nproc, uname et hostname</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
