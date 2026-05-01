@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 68 : tee — Lire depuis l'entrée et écrire partout</h1>
+
+<p>La commande <code>tee</code> permet de lire depuis l'entrée standard et d'écrire la sortie simultanément dans un fichier ET dans la sortie standard. C'est l'outil idéal pour "espionner" un pipe tout en sauvegardant le résultat.</p>
+
+<h2>1. Comment fonctionne tee ?</h2>
+
+<p>Imaginons un té (T) de plomberie : l'eau arrive d'un côté, se divise en deux directions. <code>tee</code> fait pareil avec les données : elles arrivent du pipe, et une copie part vers le fichier pendant que l'autre continue son chemin.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Schéma de fonctionnement</code></div>
+<div class="code-line"><code>commande1 | tee fichier.txt | commande2</code></div>
+</div>
+
+<p>Le contenu est écrit dans <code>fichier.txt</code> ET passe à <code>commande2</code>.</p>
+
+<h2>2. Utilisation de base</h2>
+
+<h3>2.1 Sauvegarder et voir le résultat</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarder la liste des fichiers ET l'afficher</code></div>
+<div class="code-line"><code>ls -la | tee liste_fichiers.txt</code></div>
+</div>
+
+<h3>2.2 Écrire dans un fichier sans perdre la redirection</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire dans un fichier ET continuer le pipe</code></div>
+<div class="code-line"><code>echo "Bonjour le monde" | tee salut.txt | wc -c</code></div>
+</div>
+
+<p>Ce comando écrit "Bonjour le monde" dans <code>salut.txt</code> ET le compte avec <code>wc -c</code>.</p>
+
+<h2>3. Ajouter à un fichier existant</h2>
+
+<h3>3.1 Avec l'option -a (append)</h3>
+
+<p>Par défaut, <code>tee</code> écrase le fichier. Avec <code>-a</code>, il ajoute à la fin :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter au lieu d'écraser</code></div>
+<div class="code-line"><code>echo "Ligne 1" | tee log.txt</code></div>
+<div class="code-line"><code>echo "Ligne 2" | tee -a log.txt</code></div>
+<div class="code-line"><code>cat log.txt</code></div>
+</div>
+
+<h2>4. Utilisation avec les droits administrateur</h2>
+
+<h3>4.1 Écrire dans un fichier protégé</h3>
+
+<p><code>tee</code> est très utile quand vous devez écrire dans un fichier root avec sudo :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter une ligne à un fichier système</code></div>
+<div class="code-line"><code>echo "127.0.0.1 monserveur" | sudo tee -a /etc/hosts</code></div>
+</div>
+
+<p>Cette technique est plus propre que <code>sudo sh -c 'echo ... >> fichier'</code>.</p>
+
+<h3>4.2 Modifier un fichier de configuration</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter une variable d'environnement</code></div>
+<div class="code-line"><code>echo "export MON_APPLI=prod" | sudo tee -a /etc/environment</code></div>
+</div>
+
+<h2>5. tee avec plusieurs fichiers</h2>
+
+<h3>5.1 Écrire dans plusieurs fichiers</h3>
+
+<p> tee peut envoyer le contenu vers plusieurs fichiers simultanément :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire dans plusieurs fichiers d'un coup</code></div>
+<div class="code-line"><code>echo "Données de backup" | tee fichier1.txt fichier2.txt fichier3.txt</code></div>
+</div>
+
+<h2>6. Combinaison avec d'autres commandes</h2>
+
+<h3>6.1 logger — Consigner dans syslog ET afficher</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Logger un message ET l'afficher</code></div>
+<div class="code-line"><code>echo "Installation terminée" | tee /dev/tty | logger</code></div>
+</div>
+
+<h3>6.2 tee avec grep</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarder les lignes filtrées</code></div>
+<div class="code-line"><code>cat logs.txt | tee temp.txt | grep "ERROR"</code></div>
+</div>
+
+<h3>6.3 tee avec xargs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarder ET traiter</code></div>
+<div class="code-line"><code>echo "fichier1.txt fichier2.txt" | tr ' ' '\n' | tee liste.txt | xargs wc -l</code></div>
+</div>
+
+<h2>7. Astuces avancées</h2>
+
+<h3>7.1 tee vers stderr</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire dans stdout ET stderr</code></div>
+<div class="code-line"><code>commande 2>&1 | tee /dev/stderr | autre_commande</code></div>
+</div>
+
+<h3>7.2 tee invisible (sans affichage)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire uniquement dans le fichier, sans stdout</code></div>
+<div class="code-line"><code>commande | tee fichier.txt > /dev/null</code></div>
+</div>
+
+<h3>7.3 tee avec timestamp</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter la date aux lignes</code></div>
+<div class="code-line"><code>echo "Événement important" | tee -a journal.txt</code></div>
+<div class="code-line"><code>date | tee -a journal.txt</code></div>
+</div>
+
+<h2>8. Cas d'utilisation courants</h2>
+
+<h3>8.1 Logger l'installation d'un logiciel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Capturer la sortie ET l'afficher</code></div>
+<div class="code-line"><code>sudo apt install mon-logiciel 2>&1 | tee install_log.txt</code></div>
+</div>
+
+<h3>8.2 Sauvegarder un résultat intermédiaire</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarder ET continuer le traitement</code></div>
+<div class="code-line"><code>ps aux | tee processus.txt | grep python</code></div>
+</div>
+
+<h3>8.3 Créer un fichier depuis un pipe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un fichier de configuration rapidement</code></div>
+<div class="code-line"><code>cat <<EOF | tee config.txt
+serveur=192.168.1.1
+port=8080
+mode=debug
+EOF</code></div>
+</div>
+
+<h2>9. Résumé des options</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-a, --append</code></td><td>Ajouter au fichier au lieu d'écraser</td></tr>
+<tr><td><code>-i, --ignore-interrupts</code></td><td>Ignorer les signaux d'interruption</td></tr>
+</table>
+
+<h2>10. Exercices pratiques</h2>
+
+<ol>
+<li>Créez un fichier <code>liste.txt</code> contenant le résultat de <code>ls -R ~</code> tout en l'affichant à l'écran.</li>
+<li>Utilisez <code>tee -a</code> pour ajouter plusieurs lignes de texte à un même fichier.</li>
+<li>Sauvegardez la sortie d'une commande <code>ps</code> filtrée avec <code>grep</code>, puis utilisez <code>tee</code> pour la sauvegarder ET l'afficher.</li>
+<li>Créez un script qui utilise <code>tee</code> pour logger les étapes d'une installation dans un fichier.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><code>tee</code> est une commande simple mais puissante. Elle permet de dupliquer un flux de données sans interrompre le pipe, ce qui est idéal pour le débogage, la sauvegarde de résultats intermédiaires, ou l'écriture dans des fichiers protégés. Associé à sudo, il devient un outil indispensable pour administrer un système Linux.</p>
+
+<nav>
+<a href="67-xargs.html">&larr; Leçon 67 : xargs</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
