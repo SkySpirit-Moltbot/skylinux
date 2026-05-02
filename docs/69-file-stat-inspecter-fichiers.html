@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 69 : file et stat — Inspecter les fichiers</h1>
+
+<p>Quand vous travaillez sur un serveur Linux, vous tomberez souvent sur des fichiers mystérieux : des binaires, des scripts, des archives… Deux commandes essentielles permettent d'inspecter n'importe quel fichier sans l'ouvrir : <code>file</code> et <code>stat</code>.</p>
+
+<h2>1. La commande file — Déterminer le type de fichier</h2>
+
+<p><code>file</code> analyze le contenu d'un fichier (pas juste l'extension) et vous dit ce qu'il contient vraiment.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe de base</code></div>
+<div class="code-line"><code>file [options] fichier</code></div>
+</div>
+
+<h3>Exemples pratiques</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier le type d'un fichier</code></div>
+<div class="code-line"><code>$ file mon_fichier.txt</code></div>
+<div class="code-line"><code>mon_fichier.txt: ASCII text</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier plusieurs fichiers à la fois</code></div>
+<div class="code-line"><code>$ file /bin/ls /etc/passwd ~/document.pdf</code></div>
+<div class="code-line"><code>/bin/ls:      ELF 64-bit LSB executable, x86-64, version 1 (SYSV)</code></div>
+<div class="code-line"><code>/etc/passwd:  ASCII text</code></div>
+<div class="code-line"><code>document.pdf: PDF document, version 1.4</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier tous les fichiers d'un répertoire</code></div>
+<div class="code-line"><code>$ file /home/*.sh</code></div>
+<div class="code-line"><code>backup.sh:      Bourne-Again shell script, ASCII text</code></div>
+<div class="code-line"><code>install.sh:    POSIX shell script, Unicode text, UTF-8 text executable</code></div>
+<div class="code-line"><code>test_script.sh: empty</code></div>
+</div>
+
+<h3>Options utiles</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-b</code></td><td>Mode bref : n'affiche pas le nom du fichier</td></tr>
+<tr><td><code>-i</code></td><td>Affiche le type MIME (ex: text/plain)</td></tr>
+<tr><td><code>-z</code></td><td>Tente de lire le contenu des fichiers compressés</td></tr>
+<tr><td><code>-L</code></td><td>Suivre les liens symboliques</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Mode bref</code></div>
+<div class="code-line"><code>$ file -b script.sh</code></div>
+<div class="code-line"><code>Bourne-Again shell script, ASCII text</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Type MIME (pour le développement web par exemple)</code></div>
+<div class="code-line"><code>$ file -i image.jpg</code></div>
+<div class="code-line"><code>image.jpg: image/jpeg</code></div>
+</div>
+
+<h2>2. La commande stat — Métadonnées détaillées</h2>
+
+<p><code>stat</code> affiche des informations complètes sur un fichier : taille, dates, permissions, inode, etc.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe de base</code></div>
+<div class="code-line"><code>stat [options] fichier</code></div>
+</div>
+
+<h3>Exemple de sortie</h3>
+
+<div class="code-block">
+<div class="code-line"><code>$ stat /bin/bash</code></div>
+<div class="code-line"><code>  File: /bin/bash</code></div>
+<div class="code-line"><code>  Size: 1234567    Blocks: 2416       IO Block: 4096   regular file</code></div>
+<div class="code-line"><code>Device: 801/8193  Inode: 131073     Links: 1</code></div>
+<div class="code-line"><code>Access: (0755/-rwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)</code></div>
+<div class="code-line"><code>Access: 2026-04-15 10:23:45.123456789 +0200</code></div>
+<div class="code-line"><code>Modify: 2025-12-10 09:15:30.987654321 +0100</code></div>
+<div class="code-line"><code>Change: 2025-12-10 09:15:30.987654321 +0100</code></div>
+</div>
+
+<h3>Explication des champs</h3>
+
+<table>
+<tr><th>Champ</th><th>Description</th></tr>
+<tr><td><code>Size</code></td><td>Taille du fichier en octets</td></tr>
+<tr><td><code>Blocks</code></td><td>Nombre de blocs de 512 octets utilisés</td></tr>
+<tr><td><code>IO Block</code></td><td>Taille du bloc d'entrée/sortie</td></tr>
+<tr><td><code>Inode</code></td><td>Numéro d'inode unique sur le système</td></tr>
+<tr><td><code>Links</code></td><td>Nombre de liens vers ce fichier</td></tr>
+<tr><td><code>Access</code></td><td>Permissions (rwx) et dates d'accès</td></tr>
+<tr><td><code>Modify</code></td><td>Date de dernière modification du contenu</td></tr>
+<tr><td><code>Change</code></td><td>Date de dernier changement de métadonnées</td></tr>
+</table>
+
+<h3>Options utiles de stat</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Format personnalisé (avec printf-style)</code></div>
+<div class="code-line"><code>$ stat -c '%n %s %Y' fichier.txt</code></div>
+<div class="code-line"><code>fichier.txt 2048 1709234567</code></div>
+</div>
+
+<table>
+<tr><th>Format</th><th>Description</th></tr>
+<tr><td><code>%n</code></td><td>Nom du fichier</td></tr>
+<tr><td><code>%s</code></td><td>Taille en octets</td></tr>
+<tr><td><code>%Y</code></td><td>Date de modification (timestamp)</td></tr>
+<tr><td><code>%a</code></td><td>Permissions en octal</td></tr>
+<tr><td><code>%u</code></td><td>UID du propriétaire</td></tr>
+<tr><td><code>%g</code></td><td>GID du groupe</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher uniquement le type de fichier (suite à link)</code></div>
+<div class="code-line"><code>$ stat -c '%F' /bin/bash</code></div>
+<div class="code-line"><code>regular file</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Ne pas suivre les liens symboliques</code></div>
+<div class="code-line"><code>$ stat -L /bin/bash  # Suit le lien</code></div>
+<div class="code-line"><code>$ stat /bin/bash       # Montre le lien lui-même</code></div>
+</div>
+
+<h2>3. Différences clés entre file et stat</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage principal</th><th>Ce qu'elle montre</th></tr>
+<tr><td><code>file</code></td><td>Identifier le type de contenu</td><td>Texte, binaire, image, archive...</td></tr>
+<tr><td><code>stat</code></td><td>Voir les propriétés du fichier</td><td>Taille, dates, permissions, inode</td></tr>
+</table>
+
+<h2>4. Cas d'utilisation courants</h2>
+
+<h3>Identifier un script avant exécution</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Avant d'exécuter un script inconnu, vérifiez son type</code></div>
+<div class="code-line"><code>$ file script_mystere.sh</code></div>
+<div class="code-line"><code>script_mystere.sh: Python script, ASCII text</code></div>
+</div>
+
+<h3>Vérifier l'intégrité d'un téléchargement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vous avez téléchargé un fichier, vérifiez son type</code></div>
+<div class="code-line"><code>$ file logiciel.tar.gz</code></div>
+<div class="code-line"><code>logiciel.tar.gz: gzip compressed data, last modified: ...</code></div>
+</div>
+
+<h3>Trouver les fichiers vides</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister tous les fichiers vides</code></div>
+<div class="code-line"><code>$ find /tmp -type f -exec sh -c 'file -b "$1" | grep -q "^empty" && echo "$1"' _ {} \;</code></div>
+</div>
+
+<h3>Audit de sécurité</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les fichiers qui ne sont pas des exécutables légitimes</code></div>
+<div class="code-line"><code>$ file /usr/bin/* | grep -v "executable\|shared"</code></div>
+</div>
+
+<h2>5. Combiner avec d'autres commandes</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver tous les fichiers texte dans un répertoire</code></div>
+<div class="code-line"><code>$ find /home -type f -exec file {} \; | grep "ASCII text"</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Lister les plus gros fichiers avec leur taille exacte</code></div>
+<div class="code-line"><code>$ find /var/log -type f -exec stat -c '%s %n' {} \; | sort -rn | head -5</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier tous les fichiers d'un répertoire récursivement</code></div>
+<div class="code-line"><code>$ file /home/utilisateur/*</code></div>
+</div>
+
+<h2>Exercice pratique</h2>
+
+<p>Essayez ces commandes sur votre système :</p>
+
+<ol>
+<li><code>file /bin/ls</code> — Quel type de fichier est l'exécutable ls ?</li>
+<li><code>file /etc/hostname</code> — Vérifiez le type du fichier hostname</li>
+<li><code>stat ~/.bashrc</code> — Quelles sont les permissions de votre fichier bashrc ?</li>
+<li><code>file -i ~/Documents/*</code> — Listez les types MIME de tous vos documents</li>
+<li><code>stat -c '%a %n' /etc/passwd</code> — Affichez les permissions en octal du fichier passwd</li>
+</ol>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Rôle</th><th>Exemple</th></tr>
+<tr><td><code>file</code></td><td>Déterminer le type de contenu</td><td><code>file image.png</code></td></tr>
+<tr><td><code>stat</code></td><td>Afficher les métadonnées complètes</td><td><code>stat fichier</code></td></tr>
+</table>
+
+<p>Ces deux commandes sont vos meilleures alliées pour inspecter n'importe quel fichier sous Linux. <code>file</code> vous dit "ce que contient le fichier", tandis que <code>stat</code> vous dit "tout ce qu'il faut savoir sur ce fichier".</p>
+
+<nav>
+<a href="68-tee.html">&larr; Leçon 68 : tee</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
