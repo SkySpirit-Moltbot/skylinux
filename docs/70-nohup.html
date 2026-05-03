@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 70 : nohup — Exécuter des commandes persistantes</h1>
+
+<p>Quand vous lancez une commande dans un terminal, elle s'arrête si vous fermez ce terminal. <code>nohup</code> (no hangup) permet de lancer des processus qui continuent à tourner même après la fermeture du terminal. C'est indispensable pour les serveur, les scripts longs, ou toute tâche qui doit survivre à une déconnexion.</p>
+
+<h2>1. Le problème : les signaux et la déconnexion</h2>
+
+<p>Sous Linux, quand un terminal se ferme, il envoie un signal <code>SIGHUP</code> (Signal Hang UP) à tous les processus enfants. Ce signal cause normalement l'arrêt du processus. C'est un mécanisme historiqueherited du temps où les terminaux étaient des machines physiques.</p>
+
+<h3>Exemple du problème</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer un script long en arrière-plan</code></div>
+<div class="code-line"><code>$ ./backup_complete.sh &</code></div>
+<div class="code-line"><code>[1] 12345</code></div>
+<div class="code-line"><code>$ exit</code></div>
+<div class="code-line"><code># Le script s'est arrêté !</code></div>
+</div>
+
+<h2>2. La solution : nohup</h2>
+
+<p><code>nohup</code> protège un processus contre le signal <code>SIGHUP</code>. Le processus continuera à tourner même si le terminal est fermé.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe de base</code></div>
+<div class="code-line"><code>nohup commande [arguments] &</code></div>
+</div>
+
+<h3>Exemples pratiques</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer un script qui survit à la déconnexion</code></div>
+<div class="code-line"><code>$ nohup ./backup.sh &</code></div>
+<div class="code-line"><code>nohup: appending output to 'nohup.out'</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer avec redirection de sortie</code></div>
+<div class="code-line"><code>$ nohup ./script.sh > resultat.log 2>&1 &</code></div>
+<div class="code-line"><code>[1] 12346</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer sans générer de fichier nohup.out</code></div>
+<div class="code-line"><code>$ nohup ./script.sh > /dev/null 2>&1 &</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer une commande système</code></div>
+<div class="code-line"><code>$ nohup wget -r https://example.com/fichier.zip &</code></div>
+<div class="code-line"><code>nohup: appending output to 'nohup.out'</code></div>
+</div>
+
+<h2>3. Où va la sortie ?</h2>
+
+<p>Par défaut, <code>nohup</code> redirige la sortie standard vers <code>nohup.out</code>. Vous pouvez changer ce comportement :</p>
+
+<table>
+<tr><th>Commande</th><th>Résultat</th></tr>
+<tr><td><code>nohup cmd &</code></td><td>Sortie dans nohup.out</td></tr>
+<tr><td><code>nohup cmd > fichier.log &</code></td><td>Sortie dans fichier.log</td></tr>
+<tr><td><code>nohup cmd > /dev/null &</code></td><td>Sortie ignorée</td></tr>
+<tr><td><code>nohup cmd > fichier.log 2>&1 &</code></td><td>Sortie + erreurs dans fichier.log</td></tr>
+</table>
+
+<h2>4. Vérifier que le processus tourne</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Voir les processus nohup</code></div>
+<div class="code-line"><code>$ ps aux | grep nohup</code></div>
+<div class="code-line"><code>user  12346  0.0  0.0  14400  1024 ?  S    14:30   0:00 nohup ./backup.sh > resultat.log 2>&1</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier le fichier de sortie</code></div>
+<div class="code-line"><code>$ tail -f nohup.out</code></div>
+</div>
+
+<h2>5. nohup vs disown vs screen</h2>
+
+<p>Il existe plusieurs ways de détacher un processus :</p>
+
+<table>
+<tr><th>Méthode</th><th>Protège de SIGHUP</th><th>Survit fermeture terminal</th><th>Peut être récupéré</th></tr>
+<tr><td><code>nohup</code></td><td>Oui</td><td>Oui</td><td>Non (en principe)</td></tr>
+<tr><td><code>disown</code></td><td>Oui</td><td>Oui</td><td>Non</td></tr>
+<tr><td><code>screen</code></td><td>Oui</td><td>Oui</td><td>Oui (session réattachable)</td></tr>
+<tr><td><code>tmux</code></td><td>Oui</td><td>Oui</td><td>Oui (session réattachable)</td></tr>
+</table>
+
+<h3>Exemple avec disown</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer, puis détacher un job déjà actif</code></div>
+<div class="code-line"><code>$ ./script.sh &</code></div>
+<div class="code-line"><code>$ disown %1</code></div>
+<div class="code-line"><code># Le processus继续 même après exit</code></div>
+</div>
+
+<h2>6. Cas d'usage concrets</h2>
+
+<h3>Téléchargement long</h3>
+
+<div class="code-block">
+<div class="code-line"><code>$ nohup wget -c https://example.com/iso.zip -O fichier.iso &</code></div>
+<div class="code-line"><code>$ exit</code></div>
+<div class="code-line"><code># Le téléchargement continue !</code></div>
+</div>
+
+<h3>Script de sauvegarde</h3>
+
+<div class="code-block">
+<div class="code-line"><code>$ nohup ./sauvegarde.sh > /var/log/sauvegarde.log 2>&1 &</code></div>
+<div class="code-line"><code>$ echo "Sauvegarde lancée, ID: $!"</code></div>
+</div>
+
+<h3>Service temporaire</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer un serveur Python temporaire</code></div>
+<div class="code-line"><code>$ nohup python3 -m http.server 8080 > /var/log/server.log 2>&1 &</code></div>
+</div>
+
+<h2>7. Arrêter un processus nohup</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver le PID</code></div>
+<div class="code-line"><code>$ ps aux | grep backup.sh</code></div>
+<div class="code-line"><code>user  12346  0.0  0.0  14400  1024 ?  S    14:30   0:00 nohup ./backup.sh</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># L'arrêter</code></div>
+<div class="code-line"><code>$ kill 12346</code></div>
+<div class="code-line"><code># ou</code></div>
+<div class="code-line"><code>$ killall backup.sh</code></div>
+</div>
+
+<h2>8. Scripts pratiques avec nohup</h2>
+
+<h3>Relancer automatiquement si plantage</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># script de surveillance</code></div>
+<div class="code-line"><code>while true; do</code></div>
+<div class="code-line"><code>  nohup python3 mon_script.py > /var/log/mon_script.log 2>&1</code></div>
+<div class="code-line"><code>  echo "Script arrêté, redémarrage dans 5s..."</code></div>
+<div class="code-line"><code>  sleep 5</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<ul>
+<li><code>nohup commande &</code> — Lance une commande immune au signal SIGHUP</li>
+<li>Par défaut, la sortie va dans <code>nohup.out</code></li>
+<li>Redirigez la sortie vers un fichier ou /dev/null selon vos besoins</li>
+<li>Vérifiez avec <code>ps aux | grep</code> que le processus tourne toujours</li>
+<li>Pour un contrôle plus avancé, utilisez <code>screen</code> ou <code>tmux</code> (voir leçons 27 et 41)</li>
+</ul>
+
+<nav>
+<a href="69-file-stat-inspecter-fichiers.html">&larr; Leçon 69 : file et stat</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
