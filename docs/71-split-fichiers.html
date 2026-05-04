@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 71 : split et cat — Diviser et assembler des fichiers</h1>
+
+<p>Parfois, un fichier est trop volumineux pour être transmis par email ou stocké sur un médium limité. La commande <code>split</code> permet de diviser un fichier en plusieurs parties plus petites, et <code>cat</code> permet de les reassembler. Ces deux commandes forment un duo indispensable pour manipuler de gros fichiers.</p>
+
+<h2>1. split — Diviser un fichier</h2>
+
+<p>La syntaxe de base de <code>split</code> est simple :</p>
+
+<div class="code-block"><div class="code-line"><code>split [OPTIONS] [FICHIER_ENTREE] [PREFIXE]</code></div></div>
+
+<p>Par défaut, <code>split</code> crée des fichiers de 1000 lignes chacun. Le préfixe par défaut est <code>x</code>, donc les fichiers générés s'appellent <code>xaa</code>, <code>xab</code>, <code>xac</code>, etc.</p>
+
+<h2>2. Options principales de split</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-l N</code></td><td>Diviser par nombre de lignes (par défaut : 1000)</td></tr>
+<tr><td><code>-b TAILLE</code></td><td>Diviser par taille en octets (ex: 10M, 1G)</td></tr>
+<tr><td><code>-d</code></td><td>Utiliser des suffixes numériques au lieu de lettres</td></tr>
+<tr><td><code>-a N</code></td><td>Longueur du suffixe (par défaut : 2)</td></tr>
+<tr><td><code>-n N</code></td><td>Nombre de fichiers de sortie</td></tr>
+<tr><td><code>--verbose</code></td><td>Afficher les actions effectuées</td></tr>
+</table>
+
+<h2>3. Exemples pratiques</h2>
+
+<h3>Diviser par lignes</h3>
+
+<p>Pour diviser un fichier de log en morceaux de 500 lignes :</p>
+
+<div class="code-block"><div class="code-line"><code>split -l 500 mon_fichier.log partie_</code></div></div>
+
+<p>Cela crée des fichiers <code>partie_aa</code>, <code>partie_ab</code>, etc.</p>
+
+<h3>Diviser par taille</h3>
+
+<p>Pour créer des fichiers de 10 Mo chacun :</p>
+
+<div class="code-block"><div class="code-line"><code>split -b 10M fichier_iso.iso piece_</code></div></div>
+
+<p>Ou des fichiers de 1,5 Mo (utile pour les disquettes/CDs) :</p>
+
+<div class="code-block"><div class="code-line"><code>split -b 1500k grande_image.img bloc_</code></div></div>
+
+<h3>Diviser avec suffixes numériques</h3>
+
+<p>Pour avoir des suffixes plus lisibles :</p>
+
+<div class="code-block"><div class="code-line"><code>split -d -l 1000 donnees.csv data_</code></div></div>
+
+<p>Résultat : <code>data_00</code>, <code>data_01</code>, <code>data_02</code>, etc.</p>
+
+<h3>Spécifier le nombre de fichiers</h3>
+
+<p>Pour diviser en exactement 4 parties :</p>
+
+<div class="code-block"><div class="code-line"><code>split -n 4 fichier.zip part_</code></div></div>
+
+<h2>4. cat — Réassembler les fichiers</h2>
+
+<p>Pour reconstruire le fichier original, utilisez <code>cat</code> avec une redirection :</p>
+
+<div class="code-block"><div class="code-line"><code>cat partie_* > fichier_complet.log</code></div></div>
+
+<p>Ou avec des suffixes numériques :</p>
+
+<div class="code-block"><div class="code-line"><code>cat data_* > fichier_original.csv</code></div></div>
+
+<p>Attention : l'ordre de concatenation depend de l'ordre alphabétique. Si vos suffixes sont <code>data_00</code>, <code>data_01</code>, etc., le tri alphabétique fonctionne parfaitement.</p>
+
+<h2>5. Cas d'usage courants</h2>
+
+<h3>Transfert de fichiers volumineux par email</h3>
+
+<p>Diviser une archive pour l'envoyer en pieces :</p>
+
+<div class="code-block"><div class="code-line"><code># Compresser puis diviser
+tar czf - gros_repertoire/ | split -b 25M - archive.tar.gz.part_
+
+# Sur le destinataire, reassembler
+cat archive.tar.gz.part_* | tar xzf -</code></div></div>
+
+<h3>Transfert sur CD ou clé USB limitée</h3>
+
+<div class="code-block"><div class="code-line"><code># Diviser une image disque
+dd if=/dev/sdb | split -b 700M - imageusb_
+
+# Sur une autre machine, remonter l'image
+cat imageusb_* | dd of=/dev/sdc</code></div></div>
+
+<h3>Sauvegarde incrémentale par blocs</h3>
+
+<div class="code-block"><div class="code-line"><code># Diviser les logs mensuels
+split -l 10000 /var/log/syslog log_mensuel_
+
+# Traiter chaque partie separement
+for part in log_mensuel_*; do
+    echo "Traitement de $part"
+    # Votre script de traitement ici
+done</code></div></div>
+
+<h2>6. Vérifier l'intégrité après reassemblage</h2>
+
+<p>Pour vous assurer que le fichier reassemblé est identique à l'original :</p>
+
+<div class="code-block"><div class="code-line"><code># Calculer le hash avant division
+md5sum fichier_original.zip
+
+# Après reassemblage
+cat parties_* > fichier_reconstruit.zip
+md5sum fichier_reconstruit.zip</code></div></div>
+
+<p>Les deux hashes doivent être identiques.</p>
+
+<h2>7. Astuces utiles</h2>
+
+<h3>Voir la progression avec pv</h3>
+
+<div class="code-block"><div class="code-line"><code># Installer pv si nécessaire (Pipe Viewer)
+sudo apt install pv
+
+# Reassembler avec barre de progression
+cat parties_* | pv -s $(cat parties_* | wc -c) > fichier_reconstruit</code></div></div>
+
+<h3>Diviser depuis stdin</h3>
+
+<p>Si vous recevez des données via un tube :</p>
+
+<div class="code-block"><div class="code-line"><code># Diviser la sortie d'une commande
+make clean | split -b 1M - sortie_</code></div></div>
+
+<h2>8. Résumé des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>split -l 500 fichier.txt part_</code></td><td>Diviser en fichiers de 500 lignes</td></tr>
+<tr><td><code>split -b 10M fichier.iso piece_</code></td><td>Diviser en fichiers de 10 Mo</td></tr>
+<tr><td><code>split -d -l 1000 fichier.txt part_</code></td><td>Diviser avec suffixes numériques</td></tr>
+<tr><td><code>split -n 4 fichier.zip</code></td><td>Diviser en exactement 4 parties</td></tr>
+<tr><td><code>cat parties_* > original</code></td><td>Réassembler toutes les parties</td></tr>
+<tr><td><code>cat fichier.iso.part_* | tar xzf -</code></td><td>Réassembler et extraire directement</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li>Créez un fichier texte contenant plusieurs lignes (utilisez <code>seq 1 5000 > test.txt</code>)</li>
+<li>Divisez-le en fichiers de 1000 lignes : <code>split -l 1000 test.txt bloc_</code></li>
+<li>Listez les fichiers créés : <code>ls -lh bloc_*</code></li>
+<li>Réassemblez-les : <code>cat bloc_* > test_reconstruit.txt</code></li>
+<li>Vérifiez l'intégrité : <code>diff test.txt test_reconstruit.txt</code> (ne doit rien afficher)</li>
+<li>Supprimez les fichiers temporaires : <code>rm bloc_* test.txt test_reconstruit.txt</code></li>
+</ol>
+
+<nav>
+<a href="70-nohup.html">&larr; Leçon 70 : nohup — Commandes persistantes après déconnexion</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
