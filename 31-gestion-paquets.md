@@ -16,8 +16,8 @@ Un **paquet** est un fichier compressé qui contient un logiciel prêt à être 
 - `.rpm` → Fedora, RHEL, CentOS (système **dnf/yum**)
 
 **Formats modernes :**
-- **Snap** → Ubuntu,通用的 sandbox
-- **Flatpak** → Linux通用的, sandbox
+- **Snap** → Ubuntu,sandbox universel
+- **Flatpak** → sandbox universel pour Linux
 
 ---
 
@@ -520,8 +520,8 @@ li { line-height: 1.7; color: #bbb; margin: 5px 0; }
 </ul>
 <p><strong>Formats modernes :</strong></p>
 <ul>
-<li><strong>Snap</strong> → Ubuntu,通用的 sandbox</li>
-<li><strong>Flatpak</strong> → Linux通用的, sandbox</li>
+<li><strong>Snap</strong> → Ubuntu,sandbox universel</li>
+<li><strong>Flatpak</strong> → sandbox universel pour Linux</li>
 </ul>
 <hr />
 <h2>2. APT (Debian/Ubuntu)</h2>
