@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 72 : Jobs et processus en arrière-plan</h1>
+
+<h2>Introduction</h2>
+<p>Quand vous lancez une commande dans le terminal, elle s'exécute au premier plan (foreground) par défaut. Mais Linux vous permet de gérer plusieurs tâches simultanément : envoyer un processus en arrière-plan, le ramener au premier plan, ou encore l'arrêter proprement. C'est ce que nous allons voir dans cette leçon.</p>
+
+<h2>Comprendre les jobs (tâches)</h2>
+<p>Un <strong>job</strong> est une commande qui s'exécute dans votre terminal. shell maintient une liste des jobs actifs. Chaque job a un numéro (job ID) que vous pouvez utiliser pour le manipuler.</p>
+
+<h2>Les signaux de base</h2>
+<p>Avant de parler des commandes, voici les signaux les plus importants que vous pouvez envoyer aux processus :</p>
+
+<table>
+<tr><th>Signal</th><th>Numéro</th><th>Description</th></tr>
+<tr><td><code>SIGTERM</code></td><td>15</td><td>Demande d'arrêt normale (par défaut)</td></tr>
+<tr><td><code>SIGINT</code></td><td>2</td><td>Interruption (comme Ctrl+C)</td></tr>
+<tr><td><code>SIGKILL</code></td><td>9</td><td>Arrêt forcé immédiat</td></tr>
+<tr><td><code>SIGSTOP</code></td><td>19</td><td>Suspension du processus</td></tr>
+<tr><td><code>SIGCONT</code></td><td>18</td><td>Reprise du processus suspendu</td></tr>
+</table>
+
+<h2>Ctrl+C — Interrompre un processus</h2>
+<p>Pour envoyer un signal d'interruption à un processus en cours d'exécution au premier plan :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Exemple : lancer une commande longue, puis l'interrompre
+sleep 100
+# Appuyez sur Ctrl+C pour interrompre</code></div>
+</div>
+
+<h2>Ctrl+Z — Suspendre un processus</h2>
+<p>Pour suspendre un processus et le mettre en arrière-plan suspendu :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer une commande
+sleep 100
+# Appuyez sur Ctrl+Z pour suspendre
+# Vous verrez quelque chose comme :
+# [1]+  Stopped    sleep 100</code></div>
+</div>
+
+<h2>jobs — Lister les jobs actifs</h2>
+<p>La commande <code>jobs</code> affiche tous les jobs du terminal actuel :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe
+jobs [options]
+
+# Exemple
+jobs -l    # Affiche aussi le PID</code></div>
+</div>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-l</code></td><td>Affiche les PID en plus des job IDs</td></tr>
+<tr><td><code>-p</code></td><td>Affiche uniquement les PID</td></tr>
+<tr><td><code>-r</code></td><td>Affiche uniquement les jobs en cours d'exécution</td></tr>
+<tr><td><code>-s</code></td><td>Affiche uniquement les jobs suspendus</td></tr>
+</table>
+
+<h2>fg — Remettre un job au premier plan</h2>
+<p><code>fg</code> (foreground) ramène un job suspendu ou en arrière-plan au premier plan :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe
+fg [%job_id]
+
+# Exemples
+fg         # Remet le dernier job suspendu
+fg %1      # Remet le job 1
+fg %2      # Remet le job 2</code></div>
+</div>
+
+<h2>bg — Reprendre un job en arrière-plan</h2>
+<p><code>bg</code> (background) reprend un job suspendu et le fait tourner en arrière-plan :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe
+bg [%job_id]
+
+# Exemple pratique
+# 1. Lancer une commande
+sleep 100
+
+# 2. Suspendre avec Ctrl+Z
+# [1]+  Stopped    sleep 100
+
+# 3. Reprendre en arrière-plan
+bg %1
+# [1]+ sleep 100 &
+
+# La commande tourne maintenant en arrière-plan</code></div>
+</div>
+
+<h2>kill — Envoyer des signaux aux processus</h2>
+<p><code>kill</code> envoie un signal à un processus. Par défaut, il envoie <code>SIGTERM</code> (demande d'arrêt) :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe
+kill [signal] PID
+
+# Exemples
+kill 1234          # Demande d'arrêt normal au processus 1234
+kill -15 1234      # Identique au-dessus (SIGTERM)
+kill -9 1234       # Arrêt forcé (SIGKILL)
+kill -SIGSTOP 1234 # Suspendre le processus
+kill -SIGCONT 1234 # Reprendre le processus</code></div>
+</div>
+
+<p>Pour tuer tous les processus d'une commande spécifique :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Utiliser pkill pour tuer par nom
+pkill sleep        # Tuer tous les processus "sleep"
+pkill -f "python"  # Tuer tous les processus contenant "python"</code></div>
+</div>
+
+<h2>killall — Tuer par nom de commande</h2>
+<p><code>killall</code> tue tous les processus correspondant à un nom :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe
+killall [signal] nom_processus
+
+# Exemples
+killall firefox        # Tuer tous les Firefox
+killall -9 chromium    # Forcer l'arrêt de Chromium
+killall -r "chrome.*"  # Utiliser une expression régulière</code></div>
+</div>
+
+<h2>wait — Attendre la fin d'un job</h2>
+<p>La commande <code>wait</code> attend qu'un job spécifique se termine :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Attendre le job 1
+wait %1
+
+# Attendre tous les jobs en arrière-plan
+wait</code></div>
+</div>
+
+<h2>nohup — Protéger contre la déconnexion</h2>
+<p><code>nohup</code> permet à une commande de continuer après déconnexion du terminal :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer une commande immune à la déconnexion
+nohup ./script.sh &
+
+# La sortie est redirigée vers nohup.out par défaut
+# Vous pouvez aussi spécifier une sortie :
+nohup ./script.sh > output.log &</code></div>
+</div>
+
+<h2>disown — Détacher un job du shell</h2>
+<p><code>disown</code> retire un job de la table des jobs, le protégeant contre les effets de la déconnexion :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Détacher le dernier job
+disown
+
+# Détacher un job spécifique
+disown %1
+
+# Détacher tous les jobs
+disown -a</code></div>
+</div>
+
+<h2>trap — Intercepter les signaux dans les scripts</h2>
+<p><code>trap</code> permet de définir des actions à exécuter quand un signal est reçu (très utile dans les scripts) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+trap "echo 'Interruption détectée!'" SIGINT SIGTERM
+
+echo "Script en cours... Ctrl+C pour tester"
+sleep 60</code></div>
+</div>
+
+<p>Pour nettoyer avant de quitter :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+cleanup() {
+    echo "Nettoyage en cours..."
+    rm -f /tmp/tempfile
+    exit 0
+}
+
+trap cleanup EXIT INT TERM
+
+echo "Script en cours..."
+sleep 60</code></div>
+</div>
+
+<h2>Signaux spéciaux dans les scripts</h2>
+<table>
+<tr><th>Signal</th><th>Usage dans trap</th></tr>
+<tr><td><code>EXIT</code></td><td>Exécuté à la fin du script</td></tr>
+<tr><td><code>RETURN</code></td><td>Exécuté quand une fonction se termine</td></tr>
+<tr><td><code>ERR</code></td><td>Exécuté quand une commande échoue</td></tr>
+<tr><td><code>DEBUG</code></td><td>Exécuté après chaque commande</td></tr>
+</table>
+
+<h2>Exemple pratique : gestionnaire de tâches</h2>
+<p>Voici un script qui gère plusieurs tâches en arrière-plan :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+
+# Lancer 3 tâches en arrière-plan
+echo "Démarrage des tâches..."
+./tache1.sh &
+PID1=$!
+./tache2.sh &
+PID2=$!
+./tache3.sh &
+PID3=$!
+
+echo "Tâches lancées: $PID1, $PID2, $PID3"
+echo "Tapez 'jobs' pour voir l'état"
+
+# Attendre tous les jobs
+wait
+
+echo "Toutes les tâches sont terminées!"</code></div>
+</div>
+
+<h2>Raccourcis clavier utiles</h2>
+<table>
+<tr><th>Raccourci</th><th>Description</th></tr>
+<tr><td><code>Ctrl+C</code></td><td>Interrompre le processus au premier plan</td></tr>
+<tr><td><code>Ctrl+Z</code></td><td>Suspendre le processus actuel</td></tr>
+<tr><td><code>Ctrl+D</code></td><td>Fin d'entrée (EOF)</td></tr>
+<tr><td><code>Ctrl+L</code></td><td>Effacer l'écran</td></tr>
+<tr><td><code>Ctrl+S</code></td><td>Suspendre l'affichage</td></tr>
+<tr><td><code>Ctrl+Q</code></td><td>Reprendre l'affichage</td></tr>
+</table>
+
+<h2>Résumé</h2>
+<ul>
+<li><code>Ctrl+C</code> interrompt un processus au premier plan</li>
+<li><code>Ctrl+Z</code> suspend un processus et le met en pause</li>
+<li><code>jobs</code> liste les jobs actifs du terminal</li>
+<li><code>fg</code> ramène un job au premier plan</li>
+<li><code>bg</code> reprend un job suspendu en arrière-plan</li>
+<li><code>kill</code> envoie un signal à un processus (par PID)</li>
+<li><code>killall</code> tue tous les processus d'une commande</li>
+<li><code>nohup</code> protège contre la déconnexion</li>
+<li><code>disown</code> détache un job du shell</li>
+<li><code>trap</code> intercepte les signaux dans les scripts</li>
+</ul>
+
+<nav>
+<a href="71-split-fichiers.html">&larr; split et cat — Diviser et assembler des fichiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
