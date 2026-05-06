@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 73 : Cron — Automatiser les tâches sous Linux</h1>
+
+<h2>Introduction</h2>
+<p>Cron est le gestionnaire de tâches planifiées le plus utilisé sous Linux. Il permet d'automatiser l'exécution de commandes ou de scripts à des intervalles réguliers : chaque jour à minuit, chaque lundi à 8h, tous les 15 minutes… C'est un outil indispensable pour tout administrateur système ou utilisateur Linux avancé.</p>
+
+<h2>Le service cron</h2>
+<p>Sur les systèmes utilisant <strong>systemd</strong>, le service cron s'appelle généralement <code>cron</code> ou <code>crond</code>. Il tourne en arrière-plan et vérifie toutes les minutes s'il doit exécuter une tâche.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier que cron tourne
+systemctl status cron
+
+# Le démarrer automatiquement au boot
+systemctl enable cron
+
+# Démarrer maintenant
+systemctl start cron
+
+# Redémarrer après modification
+systemctl restart cron</code></div>
+</div>
+
+<h2>Le format cron (les 5 champs)</h2>
+<p>Chaque ligne d'une crontab suit ce format :</p>
+
+<div class="code-block">
+<div class="code-line"><code># ┌───────────── minute (0-59)
+# │ ┌───────────── heure (0-23)
+# │ │ ┌───────────── jour du mois (1-31)
+# │ │ │ ┌───────────── mois (1-12)
+# │ │ │ │ ┌───────────── jour de la semaine (0-7, 0 et 7 = dimanche)
+# │ │ │ │ │
+# │ │ │ │ │
+# * * * * * commande</code></div>
+</div>
+
+<h2>Les caractères spéciaux</h2>
+
+<table>
+<tr><th>Caractère</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>*</code></td><td>N'importe quelle valeur</td><td><code>* * * * *</code> = chaque minute</td></tr>
+<tr><td><code>,</code></td><td>Liste de valeurs</td><td><code>1,15 * * * *</code> = minutes 1 et 15</td></tr>
+<tr><td><code>-</code></td><td>Plage de valeurs</td><td><code>9-17 * * * *</code> = de 9h à 17h</td></tr>
+<tr><td><code>/</code></td><td>Périodicité (step)</td><td><code>*/5 * * * *</code> = toutes les 5 minutes</td></tr>
+</table>
+
+<h2>Exemples courants</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Toutes les minutes
+* * * * * /opt/mon-script.sh
+
+# Toutes les 5 minutes
+*/5 * * * * /opt/mon-script.sh
+
+# Toutes les heures (à la minute 0)
+0 * * * * /opt/mon-script.sh
+
+# Chaque jour à 3h du matin
+0 3 * * * /opt/mon-script.sh
+
+# Chaque lundi à 8h
+0 8 * * 1 /opt/mon-script.sh
+
+# Chaque 1er du mois à midi
+0 12 1 * * /opt/mon-script.sh
+
+# Du lundi au vendredi à 9h
+0 9 * * 1-5 /opt/mon-script.sh
+
+# Toutes les 30 minutes de 9h à 17h
+*/30 9-17 * * * /opt/mon-script.sh
+
+# Tous les 3 mois, le 15 du mois à 2h
+0 2 15 */3 * /opt/mon-script.sh</code></div>
+</div>
+
+<h2>Jours de la semaine</h2>
+
+<table>
+<tr><th>Valeur</th><th>Jour</th></tr>
+<tr><td><code>0</code></td><td>Dimanche</td></tr>
+<tr><td><code>1</code></td><td>Lundi</td></tr>
+<tr><td><code>2</code></td><td>Mardi</td></tr>
+<tr><td><code>3</code></td><td>Mercredi</td></tr>
+<tr><td><code>4</code></td><td>Jeudi</td></tr>
+<tr><td><code>5</code></td><td>Vendredi</td></tr>
+<tr><td><code>6</code></td><td>Samedi</td></tr>
+<tr><td><code>7</code></td><td>Dimanche</td></tr>
+</table>
+
+<h2>Gestion de la crontab</h2>
+<p><code>crontab -e</code> ouvre l'éditeur pour modifier la crontab de l'utilisateur actuel :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Éditer sa crontab
+crontab -e
+
+# Voir sa crontab sans éditer
+crontab -l
+
+# Supprimer toute la crontab (demande confirmation)
+crontab -r
+
+# Supprimer sans confirmation
+crontab -r -i</code></div>
+</div>
+
+<h2>Éditeurs et sélection</h2>
+<p>La première utilisation de <code>crontab -e</code> demande de choisir un éditeur. <code>nano</code> est recommandé pour les débutants :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Sélectionner nano par défaut
+select-editor
+# Ou forcer nano
+EDITOR=nano crontab -e</code></div>
+</div>
+
+<h2>Écrire une crontab complète</h2>
+<p>Exemple de crontab avec commentaires et variables d'environnement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># ┌── Variables d'environnement
+# │
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=contact@hinni-swiss.com
+
+# ┌── Backup quotidien à 3h
+# │
+0 3 * * * /opt/scripts/backup.sh >> /var/log/backup.log 2>&1
+
+# ┌── Nettoyage des logs tous les dimanches à 4h
+# │
+0 4 * * 0 /opt/scripts/cleanup-logs.sh
+
+# ┌── Surveillance toutes les 5 minutes
+# │
+*/5 * * * * /opt/scripts/check-services.sh</code></div>
+</div>
+
+<h2>Redirections et logs</h2>
+<p>Par défaut, cron envoie la sortie par e-mail à l'utilisateur. Pour éviter cela ou rediriger ailleurs :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ne pas envoyer d'e-mail (rediriger vers /dev/null)
+0 3 * * * /opt/scripts/backup.sh > /dev/null 2>&1
+
+# Ajouter la date au log
+0 3 * * * /opt/scripts/backup.sh >> /var/log/backup_$(date +\%Y\%m\%d).log 2>&1
+
+# Écrire un log propre avec horodatage
+0 3 * * * /opt/scripts/backup.sh 2>&1 | logger -t backup
+
+# Les erreurs seulement dans un fichier
+0 3 * * * /opt/scripts/backup.sh 2>> /var/log/backup_errors.log</code></div>
+</div>
+
+<h2>Crontab système</h2>
+<p>Il existe aussi des crontabs système dans <code>/etc/cron.d/</code> et <code>/etc/cron.daily/</code>, <code>/etc/cron.hourly/</code>, etc. :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Emplacements système
+/etc/crontab           # Crontab principale du système
+/etc/cron.d/           # Fichiers cron supplémentaires
+/etc/cron.daily/       # Scripts exécutés quotidiennement
+/etc/cron.hourly/      # Scripts exécutés chaque heure
+/etc/cron.weekly/      # Scripts exécutés chaque semaine
+/etc/cron.monthly/     # Scripts exécutés chaque mois
+
+# Ajouter une tâche au système
+sudo nano /etc/cron.d/mon-script
+# Format complet (inclut l'utilisateur) :
+# 0 3 * * * root /opt/scripts/backup.sh</code></div>
+</div>
+
+<h2>Restriction d'accès (cron.allow / cron.deny)</h2>
+<p>On peut autoriser ou interdire l'usage de cron par utilisateur :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Autoriser certains utilisateurs
+sudo nano /etc/cron.allow
+# david
+# marie
+
+# Interdire certains utilisateurs
+sudo nano /etc/cron.deny
+# guest
+# testuser</code></div>
+</div>
+
+<h2>Vérifier le fonctionnement</h2>
+<p>Quelques tricks pour vérifier que cron fonctionne correctement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Voir les dernières entrées du journal systemd
+journalctl -u cron -e
+
+# Ou via syslog
+grep CRON /var/log/syslog
+
+# Lister les tâches cron actives
+sudo systemctl status cron
+
+# Simuler une exécution (tester avant de planifier)
+run-parts /etc/cron.hourly --dry-run</code></div>
+</div>
+
+<h2>Anacron — Pour les machines non allumées en permanence</h2>
+<p><code>cron</code> ne lance pas une tâche manquée si la machine était éteinte. <code>anacron</code> comble ce manque en exécutant les tâches en retard au prochain démarrage :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Installer anacron
+sudo apt install anacron
+
+# Fichier de configuration
+/etc/anacrontab
+
+# Format :
+# periode  delai  identifiant  commande
+# jours    min     nom         script
+1         5       daily       /opt/scripts/backup.sh
+7         10      weekly      /opt/scripts/cleanup.sh</code></div>
+</div>
+
+<h2>Exemple de script pour cron</h2>
+<p>Un bon script lancé par cron doit être autonome (chemins absolus, gestion des erreurs) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+# Script de backup — à planifier avec cron
+
+DATE=$(date +\%Y\%m\%d_\%H\%M\%S)
+SOURCE="/home/david/documents"
+DEST="/backup/docs_\${DATE}.tar.gz"
+LOG="/var/log/backup.log"
+
+echo "[${DATE}] Début du backup" >> "${LOG}"
+
+# Vérifier que la source existe
+if [ ! -d "${SOURCE}" ]; then
+    echo "[${DATE}] ERREUR: Source ${SOURCE} introuvable" >> "${LOG}"
+    exit 1
+fi
+
+# Créer l'archive
+tar -czf "${DEST}" "${SOURCE}" 2>> "${LOG}"
+
+if [ $? -eq 0 ]; then
+    echo "[${DATE}] Backup réussi: ${DEST}" >> "${LOG}"
+else
+    echo "[${DATE}] ERREUR lors du backup" >> "${LOG}"
+    exit 1
+fi
+
+echo "[${DATE}] Fin du backup" >> "${LOG}"</code></div>
+</div>
+
+<h2>Résumé</h2>
+<ul>
+<li>Cron = planificateur de tâches basé sur le temps, vérifié chaque minute</li>
+<li>Format : <code>minute heure jour_du_mois mois jour_de_la_semaine</code></li>
+<li><code>*</code> = toute valeur, <code>/n</code> = toutes les n unités, <code>-</code> = plage</li>
+<li><code>crontab -e</code> = éditer la crontab de l'utilisateur courant</li>
+<li><code>crontab -l</code> = voir sa crontab, <code>crontab -r</code> = supprimer</li>
+<li>SHELL, PATH et MAILTO peuvent être définis en haut de crontab</li>
+<li>Rediriger stdout et stderr vers un log : <code>> fichier 2>&1</code></li>
+<li><code>/etc/cron.d/</code> = crontabs système, <code>/etc/cron.hourly/</code> = scripts horaires</li>
+<li><code>anacron</code> = exécution des tâches manquées au prochain boot</li>
+<li>Un bon script cron utilise des <strong>chemins absolus</strong> et journalise ses actions</li>
+</ul>
+
+<nav>
+<a href="72-jobs-processus-arriere-plan.html">&larr; Jobs et processus en arrière-plan</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
