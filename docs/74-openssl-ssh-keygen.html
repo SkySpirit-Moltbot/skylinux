@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 74 : openssl et ssh-keygen — Cryptographie et clés SSH</h1>
+
+<h2>Introduction</h2>
+<p>Quand on travaille avec Linux, la sécurité des communications et des données est un sujet central. <code>openssl</code> est la boîte à outils reine pour la cryptographie sous Linux : générér des clés, créer des certificats, calculer des hashs, chiffrer des fichiers. <code>ssh-keygen</code> est son pendant spécialisé pour les clés SSH. Dans cette leçon, vous apprendrez à utiliser ces deux outils pour sécuriser vos échanges.</p>
+
+<h2>Générer des clés SSH avec ssh-keygen</h2>
+<p><code>ssh-keygen</code> crée les paires de clés (publique/privée) utilisées pour l'authentification SSH sans mot de passe. Le principe : vous gardez la clé privée au chaud, et vous partagez la clé publique avec les serveurs distants.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Générer une clé RSA 4096 bits (recommandé)
+ssh-keygen -t rsa -b 4096 -C "david@hinni-swiss.com"
+
+# Générer une clé Ed25519 (moderne, plus compacte)
+ssh-keygen -t ed25519 -C "david@hinni-swiss.com"
+
+# Générer une clé avec un nom personnalisé
+ssh-keygen -t ed25519 -f ~/.ssh/cle_prod -C "serveur-prod"
+
+# Générer une clé RSA avec une phrase de passe (passphrase)
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/cle_backup</code></div>
+</div>
+
+<p>Questions posées lors de la génération :</p>
+<ul>
+<li><strong>Emplacement</strong> : valider le chemin par défaut (<code>~/.ssh/id_ed25519</code>) ou en indiquer un autre</li>
+<li><strong>Passphrase</strong> : fortement recommandée — elle chiffre la clé privée sur le disque</li>
+</ul>
+
+<h2>Types de clés disponibles</h2>
+
+<table>
+<tr><th>Type</th><th>Options</th><th>Recommandation</th></tr>
+<tr><td><code>rsa</code></td><td><code>-t rsa -b 4096</code></td><td>Compatible partout, validé par la plupart des serveurs</td></tr>
+<tr><td><code>ed25519</code></td><td><code>-t ed25519</code></td><td>Recommandé : rapide, sécurisé, clé courte</td></tr>
+<tr><td><code>ecdsa</code></td><td><code>-t ecdsa -b 256</code></td><td>Alternative moderne, moins compatible</td></tr>
+<tr><td><code>rsa</code> (ancienne)</td><td><code>-t rsa -b 2048</code></td><td>À éviter, longueur insuffisante</td></tr>
+</table>
+
+<h2>La passphrase — protection de la clé privée</h2>
+<p>Sans passphrase, quiconque accède à votre clé privée peut l'utiliser. Avec une passphrase, elle est chiffrée sur le disque :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Chiffrer une clé existante avec une nouvelle passphrase
+ssh-keygen -p -f ~/.ssh/id_ed25519
+
+# Retirer la passphrase (déconseillé)
+ssh-keygen -p -N "" -f ~/.ssh/id_ed25519
+
+# Vérifier le fingerprint d'une clé
+ssh-keygen -lf ~/.ssh/id_ed25519.pub
+
+# Afficher la clé publique
+cat ~/.ssh/id_ed25519.pub
+
+# Copier la clé publique sur un serveur distant
+ssh-copy-id user@srv001.example.com
+
+# Ou manuellement :
+cat ~/.ssh/id_ed25519.pub | ssh user@srv001.example.com "mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys"</code></div>
+</div>
+
+<h2>Le fichier known_hosts</h2>
+<p>Lors de la première connexion SSH à un serveur, son fingerprint est enregistré dans <code>~/.ssh/known_hosts</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Voir les entrées known_hosts (hashées)
+cat ~/.ssh/known_hosts
+
+# Lister les fingerprints connus
+ssh-keygen -lf ~/.ssh/known_hosts
+
+# Supprimer un serveur du known_hosts (après changement de clé serveur)
+ssh-keygen -R srv001.example.com
+
+# Connexion avec fingerprint en mode détaillé
+ssh -vvv user@srv001.example.com</code></div>
+</div>
+
+<h2>Clés SSH pour多个 connexions</h2>
+<p>On peut créer des clés dédiées pour différents environnements :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Clé pour le travail
+ssh-keygen -t ed25519 -f ~/.ssh/cle_travail -C "david@travail"
+
+# Clé pour le serveur de production
+ssh-keygen -t ed25519 -f ~/.ssh/cle_prod -C "prod@srv001"
+
+# Fichier ~/.ssh/config pour automatiser
+nano ~/.ssh/config</code></div>
+</div>
+
+<p>Contenu du fichier <code>~/.ssh/config</code> :</p>
+<div class="code-block">
+<div class="code-line"><code># Config pour le serveur de travail
+Host srv-travail
+    HostName 192.168.1.100
+    User david
+    Port 22
+    IdentityFile ~/.ssh/cle_travail
+    IdentitiesOnly yes
+
+# Config pour le serveur de prod
+Host srv-prod
+    HostName prod.example.com
+    User admin
+    Port 2222
+    IdentityFile ~/.ssh/cle_prod
+    IdentitiesOnly yes
+
+# Alias court
+Host github
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/cle_travail
+    IdentitiesOnly yes</code></div>
+</div>
+
+<h2>Calculer des hashs avec openssl</h2>
+<p><code>openssl dgst</code> calcule l'empreinte (hash) d'un fichier — utile pour vérifier l'intégrité d'un téléchargement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Hash SHA-256 (recommandé)
+openssl dgst -sha256 fichier.tar.gz
+
+# Hash SHA-512
+openssl dgst -sha512 fichier.tar.gz
+
+# Hash MD5 (déconseillé, juste pour compatibilité)
+openssl dgst -md5 fichier.tar.gz
+
+# Vérifier un hash téléchargé
+# 1. Télécharger le fichier et sa somme .sha256
+# 2. Vérifier :
+openssl dgst -sha256 fichier.tar.gz</code></div>
+</div>
+
+<h2>Vérifier l'intégrité avec shasum</h2>
+<p>En complément de <code>openssl</code>, <code>sha256sum</code> / <code>sha512sum</code> sont souvent préinstallées :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Calculer un hash
+sha256sum fichier.tar.gz
+# a3f8b2c1...  fichier.tar.gz
+
+# Vérifier un hash (le fichier hashes.txt contient les empreintes)
+sha256sum -c hashes.txt
+
+# Générer un fichier de hash pour distribuer
+sha256sum fichier.tar.gz > fichier.tar.gz.sha256
+
+# Vérification
+sha256sum -c fichier.tar.gz.sha256</code></div>
+</div>
+
+<h2>Générer des données aléatoires</h2>
+<p><code>openssl rand</code> génère des octets pseudo-aléatoires — utile pour des mots de passe ou des clés de session :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Générer 32 octets en hexadécimal (64 caractères)
+openssl rand -hex 32
+
+# Générer 32 octets en base64 (environ 44 caractères)
+openssl rand -base64 32
+
+# Générer un mot de passe de 20 caractères
+openssl rand -base64 20
+
+# Générer des données brutes (32 octets)
+openssl rand -out /tmp/aleatoire.bin 32
+
+# Vérifier le contenu
+hexdump -C /tmp/aleatoire.bin</code></div>
+</div>
+
+<h2>Chiffrer et déchiffrer des fichiers avec openssl</h2>
+<p><code>openssl enc</code> permet de chiffrer un fichier avec un mot de passe (AES-256-CBC par défaut) :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Chiffrer un fichier (AES-256-CBC)
+openssl enc -aes-256-cbc -salt -in fichier.txt -out fichier.enc
+
+# Déchiffrer
+openssl enc -aes-256-cbc -d -in fichier.enc -out fichier_decrypted.txt
+
+# Chiffrer avec un mot de passe en ligne de commande (pour scripts)
+openssl enc -aes-256-cbc -salt -in backup.tar -out backup.tar.enc -pass pass:MonMotDePasse
+
+# Utiliser un fichier comme mot de passe
+openssl enc -aes-256-cbc -salt -in fichier.txt -out fichier.enc -pass file:/root/.encrypt_pass</code></div>
+</div>
+
+<h2>Créer un certificat SSL auto-signé</h2>
+<p>Pour tester un serveur web en HTTPS sans passer par une autorité de certification :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Générer une clé privée RSA
+openssl genrsa -out server.key 2048
+
+# Créer un certificat auto-signé (valide 365 jours)
+openssl req -new -x509 -key server.key -out server.crt -days 365
+
+# Questions posées :
+# - Country Name: CH
+# - State: Bern
+# - Locality: Tavannes
+# - Organization: Hinni Swiss
+# - Common Name: monserveur.local (important!)
+
+# Afficher le certificat
+openssl x509 -in server.crt -text -noout
+
+# Vérifier la clé privée
+openssl rsa -in server.key -check
+
+# Tester avec openssl s_client
+echo | openssl s_client -connect localhost:443 -servername monserveur.local</code></div>
+</div>
+
+<h2>Vérifier un certificat SSL distant</h2>
+<p>Pour inspecter le certificat d'un site web depuis le terminal :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Voir le certificat d'un site
+echo | openssl s_client -connect github.com:443 -servername github.com 2>/dev/null | openssl x509 -noout -text
+
+# Afficher juste les infos essentielles
+echo | openssl s_client -connect github.com:443 2>/dev/null | openssl x509 -noout -dates -subject
+
+# Vérifier l'expiration d'un certificat
+echo | openssl s_client -connect google.com:443 2>/dev/null | openssl x509 -noout -enddate
+
+# Test de connexion SSL complète
+openssl s_client -connect github.com:443</code></div>
+</div>
+
+<h2>Conversions de format</h2>
+<p><code>openssl</code> peut convertir des clés et certificats entre différents formats :</p>
+
+<div class="code-block">
+<div class="code-line"><code># PEM vers DER (binaire)
+openssl x509 -in cert.pem -outform DER -out cert.der
+
+# DER vers PEM
+openssl x509 -in cert.der -inform DER -out cert.pem
+
+# Clé privée RSA vers format PEM
+openssl rsa -in private.key -out private_pem.pem
+
+# PEM vers PKCS12 (pour Java/Windows)
+openssl pkcs12 -export -in cert.pem -inkey private.key -out keystore.p12
+
+# Extraire la clé publique d'un certificat
+openssl x509 -in cert.pem -pubkey -noout > public.key
+
+# Vérifier qu'une clé privée correspond à un certificat
+openssl x509 -in cert.pem -noout -modulus | openssl md5
+openssl rsa -in private.key -noout -modulus | openssl md5
+# Les deux doivent donner le même hash</code></div>
+</div>
+
+<h2>Générer un CSR (Certificate Signing Request)</h2>
+<p>Pour obtenir un certificat signé par une autorité (Let's Encrypt, DigiCert…), il faut d'abord créer un CSR :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Générer une clé privée
+openssl genrsa -out domaine.key 2048
+
+# Créer le CSR (avec toutes les infos du domaine)
+openssl req -new -key domaine.key -out domaine.csr
+
+# Questions :
+# - Country: CH
+# - State: Bern
+# - Locality: Tavannes
+# - Organization: MaBoîte
+# - Common Name: www.mondomaine.com (le sous-domaine principal!)
+# - Email: admin@mondomaine.com
+
+# Afficher le CSR
+openssl req -in domaine.csr -text -noout
+
+# CSR auto-signé pour test
+openssl req -x509 -key domaine.key -out domaine.crt -days 365</code></div>
+</div>
+
+<h2>Agent SSH — ne taper sa passphrase qu'une fois</h2>
+<p><code>ssh-agent</code> garde les clés déchiffrées en mémoire pour la session :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Démarrer l'agent
+eval "$(ssh-agent -s)"
+# Agent pid 12345
+
+# Ajouter sa clé (demande la passphrase)
+ssh-add ~/.ssh/cle_travail
+
+# Lister les clés chargées
+ssh-add -l
+
+# Supprimer une clé
+ssh-add -d ~/.ssh/cle_prod
+
+# Supprimer toutes les clés
+ssh-add -D</code></div>
+</div>
+
+<h2>SSHFP — fingerprint DNS pour SSH</h2>
+<p>SSHFP est un enregistrement DNS qui permet à SSH de vérifier automatiquement l'authenticité du serveur :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Récupérer le fingerprint SSH d'un serveur
+ssh-keyscan -r srv001.example.com
+
+# Générer l'enregistrement SSHFP à ajouter à la zone DNS
+ssh-keyscan -H srv001.example.com | sshfp dns-zone.txt
+
+# Côté client, activer la vérification SSHFP
+nano ~/.ssh/config
+# Ajouter : VerifyHostKeyDNS ask</code></div>
+</div>
+
+<h2>Bonnes pratiques de sécurité</h2>
+
+<table>
+<tr><th>Règle</th><th>Recommandation</th></tr>
+<tr><td>Clés</td><td>Utiliser Ed25519, minimum 4096 bits pour RSA</td></tr>
+<tr><td>Passphrase</td><td>Toujours protéger les clés privées par une passphrase</td></tr>
+<tr><td>Droits fichiers</td><td><code>chmod 700 ~/.ssh</code> et <code>chmod 600 ~/.ssh/*</code></td></tr>
+<tr><td>Clé par usage</td><td>Une clé différente pour prod, dev, backup</td></tr>
+<tr><td>Révoquer</td><td>Supprimer la clé publique des serveurs si compromise</td></tr>
+<tr><td> Empreinte</td><td>Toujours vérifier le fingerprint d'un nouveau serveur</td></tr>
+<tr><td>Certificates SSH</td><td>Pour infrastructure grande échelle, utiliser des certificats SSH signés par une CA</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Corriger les droits après copie d'une clé
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_ed25519
+chmod 644 ~/.ssh/id_ed25519.pub
+chmod 600 ~/.ssh/known_hosts
+chmod 600 ~/.ssh/config
+
+# Vérifier la configuration SSH
+ssh -G user@srv001.example.com | grep -E "(identityfile|port|user)"</code></div>
+</div>
+
+<h2>Résumé</h2>
+<ul>
+<li><code>ssh-keygen -t ed25519</code> = clé SSH moderne recommandée</li>
+<li><code>ssh-copy-id user@serveur</code> = copier la clé publique sur un serveur</li>
+<li><code>~/.ssh/config</code> = définir des alias et clés par serveur</li>
+<li><code>ssh-agent</code> = retenir la passphrase pour la session</li>
+<li><code>ssh-keygen -R serveur</code> = retirer un serveur du known_hosts</li>
+<li><code>openssl dgst -sha256 fichier</code> = calculer un hash SHA-256</li>
+<li><code>sha256sum -c hashes.txt</code> = vérifier l'intégrité de fichiers</li>
+<li><code>openssl rand -base64 32</code> = générer des données aléatoires</li>
+<li><code>openssl enc -aes-256-cbc -salt -in f.txt -out f.enc</code> = chiffrer un fichier</li>
+<li><code>openssl req -x509 -key key.pem -out cert.pem -days 365</code> = certificat auto-signé</li>
+<li><code>openssl s_client -connect site:443</code> = inspecter le certificat d'un serveur</li>
+<li>Toujours <code>chmod 600</code> sur les clés privées, <code>chmod 700</code> sur <code>~/.ssh</code></li>
+</ul>
+
+<nav>
+<a href="73-cron-automatiser-taches.html">&larr; Cron — Automatiser les tâches</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
