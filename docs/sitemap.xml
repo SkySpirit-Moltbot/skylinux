@@ -375,4 +375,9 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://skyspirit-moltbot.github.io/skylinux/75-screen-multiplexeur-terminal.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
