@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>nftables — Le pare-feu nouvelle génération</h1>
+
+<p>Si <code>iptables</code> est le pare-feu historique de Linux, <code>nftables</code> est son héritier moderne. Introduit avec le noyau Linux 3.13, il simplifie la gestion des règles tout en offrant des performances accrues et des fonctionnalités avancées comme le suivi de connexion étatisé et la NAT intégrés.</p>
+
+<h2>Pourquoi passer à nftables ?</h2>
+
+<p><code>iptables</code> utilise quatre outils distincts (<code>iptables</code>, <code>ip6tables</code>, <code>arptables</code>, <code>ebtables</code>) pour gérer IPv4, IPv6, ARP et les bridges. <code>nftables</code> unifie tout cela dans un seul outil cohérent. De plus, les règles <code>iptables</code> sont directement convertibles vers <code>nftables</code>.</p>
+
+<h2>Concepts fondamentaux</h2>
+
+<h3>Tables, chaînes et règles</h3>
+
+<p><code>nftables</code> organise les règles en trois niveaux :</p>
+
+<ul>
+<li><strong>Table</strong> : conteneur de niveau supérieur, attaché à une famille réseau (ip, ip6, inet, arp, bridge, netdev)</li>
+<li><strong>Chaîne</strong> : contient les règles, possède un type (filter, nat, route, etc.) et un crochet (hook)</li>
+<li><strong>Règle</strong> : action appliquée à un paquet (accepter, rejeter,.Drop, NATer...)</li>
+</ul>
+
+<h3>Famille réseau</h3>
+
+<ul>
+<li><code>ip</code> : IPv4 uniquement</li>
+<li><code>ip6</code> : IPv6 uniquement</li>
+<li><code>inet</code> : mélange IPv4 et IPv6 (recommandé)</li>
+<li><code>arp</code> : protocole ARP</li>
+<li><code>bridge</code> : pont réseau</li>
+<li><code>netdev</code> : attaches de bas niveau</li>
+</ul>
+
+<h2>Premiers pas avec nftables</h2>
+
+<h3>Vérifier si nftables est installé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>which nft</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo nft list ruleset</code></div>
+</div>
+
+<p>Affiche les règles actuelles (vide si aucune règle n'est définie).</p>
+
+<h3>Créer une table de base</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add table inet mon_parefeu</code></div>
+</div>
+
+<p>Crée une table nommée <code>mon_parefeu</code> dans la famille <code>inet</code> (IPv4 + IPv6).</p>
+
+<h3>Créer une chaîne INPUT</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add chain inet mon_parefeu input { type filter hook input priority 0 \; policy drop \; }</code></div>
+</div>
+
+<p>Crée une chaîne INPUT de type <code>filter</code> accrochée sur le hook <code>input</code>, avec priorité 0 et politique par défaut <code>drop</code>.</p>
+
+<h3>Ajouter des règles</h3>
+
+<h4>Autoriser le loopback</h4>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input iif lo accept</code></div>
+</div>
+
+<h4>Autoriser les connexions établies et connexes</h4>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input ct state established,related accept</code></div>
+</div>
+
+<h4>Autoriser SSH (port 22)</h4>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input tcp dport 22 accept</code></div>
+</div>
+
+<h4>Autoriser HTTP et HTTPS (ports 80 et 443)</h4>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input tcp dport 80 accept</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input tcp dport 443 accept</code></div>
+</div>
+
+<h2>Afficher les règles</h2>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft list ruleset</code></div>
+</div>
+
+<p>Affiche toutes les règles actives.</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft list table inet mon_parefeu</code></div>
+</div>
+
+<p>Affiche uniquement les règles de la table demandée.</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft list chain inet mon_parefeu input</code></div>
+</div>
+
+<p>Affiche uniquement les règles de la chaîne input.</p>
+
+<h2>Supprimer des règles</h2>
+
+<h3>Supprimer une règle par son handle (identifiant)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft -a list ruleset</code></div>
+</div>
+
+<p>L'option <code>-a</code> affiche les handles de chaque règle.</p>
+<div class="code-block">
+<div class="code-line"><code>sudo nft delete rule inet mon_parefeu input handle 3</code></div>
+</div>
+
+<p>Supprime la règle portant le handle 3.</p>
+
+<h3>Supprimer une chaîne</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft delete chain inet mon_parefeu input</code></div>
+</div>
+
+<h3>Supprimer une table</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft delete table inet mon_parefeu</code></div>
+</div>
+
+<h3>Vider toutes les règles</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft flush ruleset</code></div>
+</div>
+
+<p>Attention : cela supprime toutes les tables et règles.</p>
+
+<h2>Insérer et remplacer des règles</h2>
+
+<h3>Insérer une règle au début d'une chaîne</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft insert rule inet mon_parefeu input ip saddr 192.168.1.50 drop</code></div>
+</div>
+
+<p>Cette règle bloque le trafic entrant depuis 192.168.1.50.</p>
+
+<h3>Insérer à une position précise</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft insert rule inet mon_parefeu input position 3 ip saddr 10.0.0.0/8 drop</code></div>
+</div>
+
+<h3>Remplacer une règle</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft replace rule inet mon_parefeu input handle 5 tcp dport 2222 accept</code></div>
+</div>
+
+<h2>Bloquage avancé</h2>
+
+<h3>Bloquer une adresse IP spécifique</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input ip saddr 203.0.113.50 drop</code></div>
+</div>
+
+<h3>Bloquer un réseau entier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input ip saddr 192.168.100.0/24 drop</code></div>
+</div>
+
+<h3>Bloquer un port entrant</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input tcp dport 8080 drop</code></div>
+</div>
+
+<h3>Limiter le nombre de connexions (rate limiting)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input tcp dport 80 limit rate 10/second accept</code></div>
+</div>
+
+<p>Limite à 10 connexions par seconde sur le port 80.</p>
+
+<h3>Loguer les paquets bloqués</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet mon_parefeu input drop log level 4 prefix "nftables DROP: "</code></div>
+</div>
+
+<p>Les logs apparaîtront dans <code>/var/log/kern.log</code> ou <code>/var/log/syslog</code>.</p>
+
+<h2>NAT (Network Address Translation)</h2>
+
+<h3>Configurer du NAT de base</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add table nat</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo nft add chain nat postrouting { type nat hook postrouting priority 100 \; }</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule nat postrouting ip saddr 192.168.1.0/24 oif eth0 masquerade</code></div>
+</div>
+
+<p>Active le MASQUERADE pour le réseau 192.168.1.0/24 sur l'interface eth0 (partage de connexion).</p>
+
+<h3>DNAT (redirection de port)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add chain nat prerouting { type nat hook prerouting priority -100 \; }</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule nat prerouting iif eth0 tcp dport 8080 dnat to 192.168.1.100:80</code></div>
+</div>
+
+<p>Redirige le trafic TCP du port 8080 vers 192.168.1.100:80.</p>
+
+<h2>Sauvegarder et restaurer les règles</h2>
+
+<h3>Sauvegarder avec nftables-save</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft list ruleset > ~/nftables.rules</code></div>
+</div>
+
+<h3>Restaurer au démarrage (Debian/Ubuntu)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo cp ~/nftables.rules /etc/nftables.conf</code></div>
+</div>
+
+<p>Le service nftables charge automatiquement <code>/etc/nftables.conf</code> au démarrage.</p>
+
+<h3>Activer le service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl enable nftables</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl start nftables</code></div>
+</div>
+
+<h3>Restaurer manuellement</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft -f /etc/nftables.conf</code></div>
+</div>
+
+<h2>Exemple complet : pare-feu pour serveur web</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/sbin/nft -f</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>flush ruleset</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>table inet parefeu_serveur {</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>  chain input {</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    type filter hook input priority 0; policy drop;</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    # Loopback</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    iif lo accept</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    # Connexions établies</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    ct state established,related accept</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    # SSH</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    tcp dport 22 accept</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    # HTTP / HTTPS</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    tcp dport 80 accept</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    tcp dport 443 accept</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    # Ping (ICMP)</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    icmp type echo-request accept</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>  }</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>  chain forward {</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>    type filter hook forward priority 0; policy drop;</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>  }</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>}</code></div>
+</div>
+
+<p>Sauvegarde ce contenu dans <code>/etc/nftables.conf</code> et charge-le avec <code>sudo nft -f /etc/nftables.conf</code>.</p>
+
+<h2>Convertir iptables vers nftables</h2>
+
+<p>La commande <code>iptables-restore</code> peut convertir automatiquement tes règles iptables :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo iptables-save | sudo iptables-restore-translate -f - | sudo nft -f -</code></div>
+</div>
+
+<p>Ou de façon permanente :</p>
+<div class="code-block">
+<div class="code-line"><code>sudo iptables-save > ~/iptables.rules</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo iptables-restore-translate -f ~/iptables.rules | sudo nft -f /etc/nftables.conf</code></div>
+</div>
+
+<h2>Tableau comparatif iptables vs nftables</h2>
+
+<table>
+<tr><th>Aspect</th><th>iptables</th><th>nftables</th></tr>
+<tr><td>Unification</td><td>4 outils séparés</td><td>Un seul outil</td></tr>
+<tr><td>Tables</td><td>Filter, nat, mangle, raw</td><td>Personnalisables</td></tr>
+<tr><td>Suivi de connexion</td><td>Module externe</td><td>Intégré (ct)</td></tr>
+<tr><td>NAT</td><td>Module externe</td><td>Intégré</td></tr>
+<tr><td>Performance</td><td>Bonne</td><td>Meilleure</td></tr>
+<tr><td>Syntaxe</td><td>Complexe, fragmentée</td><td>Cohérente et flexible</td></tr>
+<tr><td>Configuration au démarrage</td><td>/etc/iptables/rules.v4</td><td>/etc/nftables.conf</td></tr>
+<tr><td>Support noyau</td><td>Depuis 2.4</td><td>Depuis 3.13</td></tr>
+</table>
+
+<h2>Commandes utiles pour le diagnostic</h2>
+
+<ul>
+<li><code>sudo nft list ruleset -a</code> : afficher avec les handles</li>
+<li><code>sudo nft monitor</code> : afficher les changements de règles en temps réel</li>
+<li><code>sudo nft monitor trace</code> : tracer le trajet des paquets</li>
+<li><code>sudo nft reset table inet mon_parefeu</code> : réinitialiser une table</li>
+</ul>
+
+<h2>Bonnes pratiques</h2>
+
+<ol>
+<li><strong>Commence toujours par une politique drop</strong> sur la chaîne input</li>
+<li><strong>Utilise la famille inet</strong> pour gérer IPv4 et IPv6 dans la même table</li>
+<li><strong>Teste avec une session SSH ouverte</strong> avant d'activer le pare-feu — garde toujours un accès</li>
+<li><strong>Sauvegarde dans /etc/nftables.conf</strong> pour le démarrage automatique</li>
+<li><strong>Utilise un script</strong> pour décrire tes règles de manière lisible (voir exemple ci-dessus)</li>
+<li><strong>Vérifie régulièrement</strong> tes règles avec <code>nft list ruleset</code></li>
+</ol>
+
+<h2>Exercices pratiques</h2>
+
+<ol>
+<li>Vérifie si nftables est installé sur ta machine : <code>which nft && nft -v</code></li>
+<li>Crée une table <code>inet test_parefeu</code> et ajoute les règles de base (loopback, established, SSH, HTTP/HTTPS).</li>
+<li>Affiche tes règles avec <code>sudo nft list ruleset</code>.</li>
+<li>Bloque le trafic depuis une IP de test (par exemple <code>10.255.255.1</code>).</li>
+<li>Sauvegarde tes règles dans un fichier et restaure-les.</li>
+<li>Inverse le problème : remplace une règle existante par une autre.</li>
+</ol>
+
+<nav>
+<a href="78-iptables-pare-feu.html">&larr; iptables — Le pare-feu Linux</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
