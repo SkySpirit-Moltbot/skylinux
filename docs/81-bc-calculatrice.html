@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 81 : bc — La calculatrice en ligne de commande</h1>
+
+<h2>Introduction</h2>
+<p>Sous Linux, <code>bc</code> est la calculatrice arbitrary-precision (précision arbitraire) du terminal. Contrairement à <code>expr</code> qui ne gère que des nombres entiers, <code>bc</code> supporte les nombres décimaux, les fonctions mathématiques avancées (trigonométrie, racines carrées, logarithmes), et peut même lire des calculs depuis un fichier ou un pipe.</p>
+<p>Son nom vient de <strong>"Basic Calculator"</strong>. C'est l'outil idéal pour des calculs rapides sans quitter le terminal.</p>
+
+<h2>Installation</h2>
+<p><code>bc</code> est généralement préinstallé sur les distributions Linux. Si ce n'est pas le cas :</p>
+<div class="code-block"><div class="code-line"><code># Debian/Ubuntu
+sudo apt install bc
+
+# Fedora/RHEL
+sudo dnf install bc
+
+# Arch Linux
+sudo pacman -S bc</code></div></div>
+
+<h2>Utilisation basique</h2>
+<h3>Lancer le mode interactif</h3>
+<div class="code-block"><div class="code-line"><code>$ bc
+bc 1.07.1
+Copyright 1991-1994, 1997, 1998, 1999, 2000, 2004, 2017 Free Software Foundation, Inc.
+This is free software with ABSOLUTELY NO WARRANTY.
+For details type `warranty'.
+5 + 3
+8
+10 * 2.5
+25.0
+quit</code></div></div>
+<p>Dans le mode interactif, tapez vos calculs et appuyez sur Entrée. Tapez <code>quit</code> pour quitter.</p>
+
+<h3>Calcul en une seule ligne</h3>
+<div class="code-block"><div class="code-line"><code>$ echo "15 * 3.5" | bc
+52.5
+
+$ echo "scale=2; 100 / 3" | bc
+33.33</code></div></div>
+<p>La variable <code>scale</code> définit le nombre de décimales affichées (par défaut : 0).</p>
+
+<h2>Opérateurs disponibles</h2>
+<table>
+<tr><th>Opérateur</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>+</code></td><td>Addition</td><td><code>5 + 3 → 8</code></td></tr>
+<tr><td><code>-</code></td><td>Soustraction</td><td><code>10 - 4 → 6</code></td></tr>
+<tr><td><code>*</code></td><td>Multiplication</td><td><code>6 * 7 → 42</code></td></tr>
+<tr><td><code>/</code></td><td>Division</td><td><code>22 / 7 → 3</code> (scale=0)</td></tr>
+<tr><td><code>%</code></td><td>Modulo (reste)</td><td><code>17 % 5 → 2</code></td></tr>
+<tr><td><code>^</code></td><td>Puissance</td><td><code>2 ^ 10 → 1024</code></td></tr>
+<tr><td><code>sqrt(n)</code></td><td>Racine carrée</td><td><code>sqrt(16) → 4</code></td></tr>
+</table>
+
+<h2>La variable scale</h2>
+<p>Par défaut, <code>bc</code> affiche uniquement des nombres entiers. Pour obtenir des décimales, utilisez <code>scale</code> :</p>
+<div class="code-block"><div class="code-line"><code>$ echo "scale=4; 10 / 3" | bc
+3.3333
+
+$ echo "scale=10; sqrt(2)" | bc
+1.4142135623</code></div></div>
+<p>Sans <code>scale</code>, la division donne un résultat entier arrondi.</p>
+
+<h2>Fonctions mathématiques</h2>
+<p><code>bc</code> intègre une bibliothèque mathématique complète. Activez-la avec <code>-l</code> :</p>
+<div class="code-block"><div class="code-line"><code>$ echo "scale=6; s(3.14159)" | bc -l
+.000002</code></div></div>
+<p>Fonctions disponibles avec <code>-l</code> :</p>
+<table>
+<tr><th>Fonction</th><th>Description</th></tr>
+<tr><td><code>s(x)</code></td><td>Sinus (x en radians)</td></tr>
+<tr><td><code>c(x)</code></td><td>Cosinus (x en radians)</td></tr>
+<tr><td><code>a(x)</code></td><td>Arc tangente (retourne un angle en radians)</td></tr>
+<tr><td><code>l(x)</code></td><td>Logarithme naturel (ln)</td></tr>
+<tr><td><code>e(x)</code></td><td>Exponentielle (e^x)</td></tr>
+<tr><td><code>j(n, x)</code></td><td>Fonction de Bessel</td></tr>
+</table>
+
+<h2>Utilisation avancée</h2>
+<h3>Calculs depuis un fichier</h3>
+<div class="code-block"><div class="code-line"><code>$ cat > calculs.txt << 'EOF'
+scale=2
+a = 150
+b = 45
+a + b
+a * b / 100
+sqrt(a)
+EOF
+
+$ bc -q calculs.txt
+195.00
+67.50
+12.24</code></div></div>
+<p>L'option <code>-q</code> supprime le message de bienvenue.</p>
+
+<h3>Substitution de variable</h3>
+<div class="code-block"><div class="code-line"><code>$ echo "longueur=50; largeur=20; longueur * largeur" | bc
+1000
+
+$ resultat=$(echo "scale=2; (100 - 25) * 1.19" | bc)
+$ echo $resultat
+89.25</code></div></div>
+
+<h3>Calculs avec des conditions</h3>
+<div class="code-block"><div class="code-line"><code>$ echo "if (5 > 3) 100 else 0" | bc
+100
+
+$ echo "result = (75 >= 60) ? 1 : 0; result" | bc
+1</code></div></div>
+<p><code>bc</code> supporte les opérateurs de comparaison (<code>></code>, <code><</code>, <code>>=</code>, <code><=</code>, <code>==</code>, <code>!=</code>) et les instructions <code>if/else</code>, <code>while</code>, <code>for</code>.</p>
+
+<h3>Boucle pour calculer une factorielle</h3>
+<div class="code-block"><div class="code-line"><code>$ echo "
+factorial = 1
+for (i = 1; i <= 10; i++) {
+    factorial = factorial * i
+}
+factorial
+" | bc
+3628800</code></div></div>
+
+<h2>Conversion de bases</h2>
+<p><code>bc</code> peut convertir entre différentes bases grâce à <code>ibase</code> et <code>obase</code> :</p>
+<div class="code-block"><div class="code-line"><code># Décimal vers binaire
+$ echo "obase=2; 42" | bc
+101010
+
+# Binaire vers décimal
+$ echo "ibase=2; 101010" | bc
+42
+
+# Hexadécimal vers décimal
+$ echo "ibase=16; FF" | bc
+255
+
+# Décimal vers hexadécimal
+$ echo "obase=16; 255" | bc
+FF</code></div></div>
+
+<h2>Exemples pratiques</h2>
+<h3>Calculer un pourcentage</h3>
+<div class="code-block"><div class="code-line"><code># 15% de 200
+$ echo "200 * 15 / 100" | bc
+30
+
+# Vérifier si un nombre est dans un pourcentage
+$ echo "if (45 >= 50) 1 else 0" | bc
+0</code></div></div>
+
+<h3>Calculer une augmentation</h3>
+<div class="code-block"><div class="code-line"><code># Prix avec TVA 7.7%
+$ echo "scale=2; prix_ht = 150; prix_ht * 1.077" | bc
+161.55</code></div></div>
+
+<h3>Usage dans des scripts bash</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Calculer la moyenne de 3 notes
+note1=85
+note2=90
+note3=78
+
+moyenne=$(echo "scale=2; ($note1 + $note2 + $note3) / 3" | bc)
+echo "Moyenne : $moyenne"
+
+# Vérifier si l'élève réussit (moyenne >= 60)
+resultat=$(echo "if ($moyenne >= 60) 1 else 0" | bc)
+if [ "$resultat" -eq 1 ]; then
+    echo "Réussi !"
+else
+    echo "Échec"
+fi</code></div></div>
+
+<h2>bc vs expr vs autres outils</h2>
+<table>
+<tr><th>Outil</th><th>Décimaux</th><th>Fonctions math</th><th>Usage typique</th></tr>
+<tr><td><code>expr</code></td><td>Non (entiers seulement)</td><td>Non</td><td>Calculs simples dans scripts</td></tr>
+<tr><td><code>bc</code></td><td>Oui (scale configurable)</td><td>Oui (trigo, log, sqrt...)</td><td>Calculs précis, scripts</td></tr>
+<tr><td><code>awk</code></td><td>Oui</td><td>Oui</td><td>Traitement de données tabulaires</td></tr>
+<tr><td><code>python</code></td><td>Oui</td><td>Oui (complet)</td><td>Calculs complexes, scripts</td></tr>
+</table>
+
+<h2>Raccourcis et options utiles</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-q</code></td><td>Mode silencieux (sans message de bienvenue)</td></tr>
+<tr><td><code>-l</code></td><td>Utiliser la bibliothèque mathématique (scale=20 par défaut)</td></tr>
+<tr><td><code>-c</code></td><td>Compiler seulement (sans exécuter)</td></tr>
+</table>
+
+<h2>Exercices pratiques</h2>
+<ol>
+<li>Calculez 256 * 1024 sans calculatrice ni Python.</li>
+<li>Trouvez la racine carrée de 2 avec 10 décimales.</li>
+<li>Convertissez le nombre 255 en binaire et en hexadécimal.</li>
+<li>Créez un script qui convertit des degrés Celsius en Fahrenheit.</li>
+<li>Calculez la factorielle de 20 avec une boucle dans <code>bc</code>.</li>
+</ol>
+
+<h2>Corrections</h2>
+<ol>
+<li><code>echo "256 * 1024" | bc</code> → 262144</li>
+<li><code>echo "scale=10; sqrt(2)" | bc</code> → 1.4142135623</li>
+<li>Binaire : <code>echo "obase=2; 255" | bc</code> → 11111111<br>Hexadécimal : <code>echo "obase=16; 255" | bc</code> → FF</li>
+<li>Script : <code>echo "scale=2; celsius * 9 / 5 + 32" | bc</code> où celsius est une variable</li>
+<li><code>echo "f=1; for(i=1;i<=20;i++) f*=i; f" | bc</code> → 2432902008176640000</li>
+</ol>
+
+<nav>
+<a href="80-tr-transformer-texte.html">&larr; tr — Transformer du texte</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
