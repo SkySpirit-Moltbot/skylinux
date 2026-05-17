@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 84 : wc — Compter lignes, mots et caractères</h1>
+
+<p>La commande <code>wc</code> (word count) est un outil indispensable sous Linux pour compter les lignes, les mots et les caractères d'un fichier ou d'une entrée. Bien que simple, elle est utilisée très fréquemment dans les scripts et l'analyse de données.</p>
+
+<h2>📖 Utilisation de base</h2>
+
+<p>La syntaxe de base de <code>wc</code> est simple :</p>
+<div class="code-block"><div class="code-line"><code>wc [options] fichiers</code></div></div>
+
+<h3>Compter les lignes d'un fichier</h3>
+<div class="code-block"><div class="code-line"><code>wc -l fichier.txt</code></div></div>
+
+<p>L'option <code>-l</code> (lines) affiche le nombre de lignes. C'est l'utilisation la plus courante de <code>wc</code>.</p>
+
+<h3>Compter les mots</h3>
+<div class="code-block"><div class="code-line"><code>wc -w fichier.txt</code></div></div>
+
+<p>L'option <code>-w</code> (words) compte le nombre de mots dans le fichier.</p>
+
+<h3>Compter les caractères</h3>
+<div class="code-block"><div class="code-line"><code>wc -c fichier.txt</code></div></div>
+
+<p>L'option <code>-c</code> (characters) affiche le nombre d'octets (caractères) dans le fichier.</p>
+
+<h3>Affichage par défaut</h3>
+<div class="code-block"><div class="code-line"><code>wc fichier.txt</code></div></div>
+
+<p>Sans option, <code>wc</code> affiche les trois informations : lignes, mots et caractères, dans cet ordre, séparés par des espaces.</p>
+
+<h2>🔧 Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>-l</code></td><td>Compter les lignes</td><td><code>wc -l fichier.txt</code></td></tr>
+<tr><td><code>-w</code></td><td>Compter les mots</td><td><code>wc -w fichier.txt</code></td></tr>
+<tr><td><code>-c</code></td><td>Compter les octets/caractères</td><td><code>wc -c fichier.txt</code></td></tr>
+<tr><td><code>-m</code></td><td>Compter les caractères (multibyte)</td><td><code>wc -m fichier.txt</code></td></tr>
+<tr><td><code>-L</code></td><td>Afficher la longueur de la ligne la plus longue</td><td><code>wc -L fichier.txt</code></td></tr>
+<tr><td><code>--help</code></td><td>Afficher l'aide</td><td><code>wc --help</code></td></tr>
+</table>
+
+<h2>💡 Combinaisons utiles</h2>
+
+<h3>Compter plusieurs fichiers</h3>
+<div class="code-block"><div class="code-line"><code>wc fichier1.txt fichier2.txt</code></div></div>
+
+<p><code>wc</code> peut traiter plusieurs fichiers. Il affichera les statistiques pour chaque fichier, plus un total.</p>
+
+<h3>Compter avec un pipe</h3>
+<div class="code-block"><div class="code-line"><code>cat fichier.txt | wc -l</code></div></div>
+
+<p>Vous pouvez utiliser <code>wc</code> avec d'autres commandes via un pipe pour compter le résultat.</p>
+
+<h3>Compter le nombre de fichiers</h3>
+<div class="code-block"><div class="code-line"><code>ls -1 | wc -l</code></div></div>
+
+<p>Une utilisation classique : compter le nombre de fichiers ou répertoires dans le répertoire courant. L'option <code>-1</code> de <code>ls</code> affiche un fichier par ligne.</p>
+
+<h3>Compter le nombre de processus</h3>
+<div class="code-block"><div class="code-line"><code>ps aux | wc -l</code></div></div>
+
+<p>Compter le nombre de processus en cours. Le résultat inclut la ligne d'en-tête de <code>ps</code>, donc retirez 1 pour avoir le nombre exact de processus.</p>
+
+<h3>Compter le nombre de connexions SSH</h3>
+<div class="code-block"><div class="code-line"><code>who | wc -l</code></div></div>
+
+<p>Permet de savoir combien d'utilisateurs sont connectés au système.</p>
+
+<h3>Compter le nombre de lignes dans un script</h3>
+<div class="code-block"><div class="code-line"><code>wc -l script.sh</code></div></div>
+
+<p>Utile pour évaluer la taille d'un script ou comparer deux versions.</p>
+
+<h2>🎯 Cas d'utilisation courants</h2>
+
+<h3>Trouver le nombre de lignes dans un log</h3>
+<div class="code-block"><div class="code-line"><code>wc -l /var/log/syslog</code></div></div>
+
+<p>Permet de connaître le nombre d'entrées dans un fichier de log.</p>
+
+<h3>Compter les erreurs dans un log</h3>
+<div class="code-block"><div class="code-line"><code>grep -i error /var/log/syslog | wc -l</code></div></div>
+
+<p>Combinez <code>grep</code> et <code>wc</code> pour compter les lignes contenant un motif spécifique.</p>
+
+<h3>Compter le nombre de packages installés</h3>
+<div class="code-block"><div class="code-line"><code>dpkg -l | wc -l</code></div></div>
+<div class="code-block"><div class="code-line"><code>rpm -qa | wc -l</code></div></div>
+
+<p>Sur Debian/Ubuntu ou Red Hat/CentOS, comptez facilement le nombre de packages installés.</p>
+
+<h3>Compter le nombre de fichiers dans une archive</h3>
+<div class="code-block"><div class="code-line"><code>tar -tzf archive.tar.gz | wc -l</code></div></div>
+
+<p>Listez le contenu d'une archive et comptez le nombre de fichiers qu'elle contient.</p>
+
+<h3>Compter les lignes de code dans un projet</h3>
+<div class="code-block"><div class="code-line"><code>find . -name "*.py" -o -name "*.js" | xargs wc -l</code></div></div>
+
+<p>Pour les développeurs, comptez rapidement le nombre de lignes de code par langage.</p>
+
+<h3>Longueur maximale d'une ligne</h3>
+<div class="code-block"><div class="code-line"><code>wc -L fichier.txt</code></div></div>
+
+<p>L'option <code>-L</code> affiche la longueur de la ligne la plus longue. Très utile pour formater du texte ou détecter des lignes problématique.</p>
+
+<h2>📝 Exercices pratiques</h2>
+
+<h3>Exercice 1</h3>
+<p>Comptez le nombre de lignes du fichier <code>/etc/passwd</code> pour voir combien d'utilisateurs sont définis sur le système.</p>
+<div class="code-block"><div class="code-line"><code>wc -l /etc/passwd</code></div></div>
+
+<h3>Exercice 2</h3>
+<p>Combien de mots contient votre fichier <code>.bashrc</code> ou <code>.bash_history</code> ?</p>
+<div class="code-block"><div class="code-line"><code>wc -w ~/.bashrc</code></div></div>
+
+<h3>Exercice 3</h3>
+<p>Trouvez le nombre de fichiers dans votre répertoire personnel :</p>
+<div class="code-block"><div class="code-line"><code>ls -1 ~ | wc -l</code></div></div>
+
+<h3>Exercice 4</h3>
+<p>Comptez le nombre de lignes contenant le mot "root" dans <code>/etc/passwd</code> :</p>
+<div class="code-block"><div class="code-line"><code>grep root /etc/passwd | wc -l</code></div></div>
+
+<h3>Exercice 5</h3>
+<p>Utilisez <code>wc</code> pour vérifier la longueur de la ligne la plus longue dans un fichier texte :</p>
+<div class="code-block"><div class="code-line"><code>wc -L fichier.txt</code></div></div>
+
+<h2>🔗 Commandes liées</h2>
+
+<ul>
+<li><code>cat</code> — Afficher le contenu d'un fichier (voir <a href="02-commandes-base.html">Leçon 2</a>)</li>
+<li><code>head</code> et <code>tail</code> — Afficher le début ou la fin d'un fichier (voir <a href="83-head-tail.html">Leçon 83</a>)</li>
+<li><code>sort</code> — Trier les lignes (voir <a href="51-sort-uniq-wc.html">Leçon 51</a>)</li>
+<li><code>grep</code> — Rechercher du texte (voir <a href="50-grep-sed-xargs.html">Leçon 50</a>)</li>
+</ul>
+
+<h2>📚 Pour aller plus loin</h2>
+
+<p>La commande <code>wc</code> est souvent utilisée dans les scripts bash pour prendre des décisions basées sur le nombre de lignes ou de mots. Par exemple, vous pouvez vérifier qu'un fichier n'est pas vide avant de le traiter, ou compter le nombre de résultats d'une recherche avant de lancer une opération.</p>
+
+<p>Remember: <code>wc</code> compte réellement les séparateurs de mots pour déterminer le nombre de mots. Un mot est défini comme une séquence de caractères séparée par des espaces, tabulations ou sauts de ligne.</p>
+
+<nav>
+<a href="83-head-tail.html">&larr; head et tail — Visualiser le début et la fin des fichiers</a>
+<a href="index.html">Sommanoire</a>
+</nav>
+</div>
+</body>
+</html>
