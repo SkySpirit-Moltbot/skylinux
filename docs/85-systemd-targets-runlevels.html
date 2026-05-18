@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 85 : Les targets systemd (runlevels)</h1>
+
+<p>Les <strong>targets</strong> systemd sont l'équivalent moderne des runlevels (niveaux d'exécution) du système SysVinit. Elles permettent de définir un état particulier du système — par exemple un système multi-utilisateurs avec réseau, ou un système en mode rescue. Comprendre les targets est essentiel pour maîtriser le démarrage et la gestion des services sous Linux.</p>
+
+<h2>📖 Comprendre les targets</h2>
+
+<p>Sous SysVinit, le système démarrait dans l'un des runlevels 0 à 6. Chaque runlevel déclenchait un ensemble de services. Systemd remplace ce mécanisme par des <strong>targets</strong>, qui sont des groupes d'unités (services, sockets, mounts...) devant être actifs simultanément.</p>
+
+<h3>Targets principales</h3>
+
+<table>
+<tr><th>Target</th><th>Équivalent SysV</th><th>Description</th></tr>
+<tr><td><code>poweroff.target</code></td><td>Runlevel 0</td><td>Arrêt complet du système</td></tr>
+<tr><td><code>rescue.target</code></td><td>Runlevel 1 / S</td><td>Mode rescue (single user)</td></tr>
+<tr><td><code>multi-user.target</code></td><td>Runlevel 2, 3, 4, 5</td><td>Multi-utilisateurs, sans interface graphique</td></tr>
+<tr><td><code>graphical.target</code></td><td>Runlevel 5</td><td>Multi-utilisateurs avec interface graphique</td></tr>
+<tr><td><code>reboot.target</code></td><td>Runlevel 6</td><td>Redémarrage du système</td></tr>
+<tr><td><code>emergency.target</code></td><td>-</td><td>Mode emergency (shell minimal)</td></tr>
+<tr><td><code>default.target</code></td><td>-</td><td>Target par défaut (généralement graphical.target)</td></tr>
+</table>
+
+<h2>🔧 Commandes de base</h2>
+
+<h3>Voir le runlevel actuel</h3>
+<div class="code-block"><div class="code-line"><code>systemctl get-default</code></div></div>
+
+<p>Affiche la target par défaut vers laquelle le système démarre.</p>
+
+<h3>Définir la target par défaut</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl set-default multi-user.target</code></div></div>
+<div class="code-block"><div class="code-line"><code>sudo systemctl set-default graphical.target</code></div></div>
+
+<p>Configure le système pour démarrer en mode texte ou avec interface graphique.</p>
+
+<h3>Changer de target à chaud</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl isolate multi-user.target</code></div></div>
+
+<p>Passe immédiatement dans la target spécifiée, sans redémarrer. Tous les services non requis par la nouvelle target sont arrêtés.</p>
+
+<h3>Lister les targets disponibles</h3>
+<div class="code-block"><div class="code-line"><code>systemctl list-units --type=target --all</code></div></div>
+
+<p>Affiche toutes les targets connues sur le système, avec leur état.</p>
+
+<h3>Isoler une target au démarrage</h3>
+
+<p>Au démarrage, dans le menu GRUB, ajoutez <code>systemd.unit=multi-user.target</code> au noyau pour démarrer en mode texte.</p>
+
+<h2>💡 Relations entre targets</h2>
+
+<h3>Voir les dépendances d'une target</h3>
+<div class="code-block"><div class="code-line"><code>systemctl list-dependencies graphical.target</code></div></div>
+
+<p>Affiche l'arbre complet des unités requises par la target. Très utile pour comprendre pourquoi un service ne démarre pas.</p>
+
+<h3>Voir les unités activées par une target</h3>
+<div class="code-block"><div class="code-line"><code>systemctl list-unit-files --type=target</code></div></div>
+
+<p>Liste toutes les target-units installées sur le système.</p>
+
+<h3>Vérifier l'état actuel</h3>
+<div class="code-block"><div class="code-line"><code>systemctl list-units --type=target</code></div></div>
+
+<p>Affiche les targets actuellement actives sur le système.</p>
+
+<h2>🔍 Targets et emergency/rescue</h2>
+
+<h3>Mode rescue</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl rescue</code></div></div>
+
+<p>Passe en mode rescue. Tous les services sont arrêtés sauf ceux essentiels. Équivalent de <code>init 1</code>.</p>
+
+<h3>Mode emergency</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl emergency</code></div></div>
+
+<p>Mode plus minimal encore que rescue. Monte uniquement le root filesystem en lecture seule. Très utile pour diagnostiquer des problèmes de démarrage.</p>
+
+<h3>Arrêter ou redémarrer</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl poweroff</code></div></div>
+<div class="code-block"><div class="code-line"><code>sudo systemctl reboot</code></div></div>
+
+<p>Équivalents de <code>halt</code> et <code>reboot</code>, mais via systemd.</p>
+
+<h2>📝 Créer une target personnalisée</h2>
+
+<h3>Fichier .target</h3>
+<div class="code-block"><div class="code-line"><code>sudo nano /etc/systemd/system/mon-service.target</code></div></div>
+
+<p>Exemple minimal :</p>
+<div class="code-block"><div class="code-line"><code>[Unit]
+Description=Ma target personnalisée
+Documentation=https://example.com
+After=network-online.target
+Wants=network-online.target
+
+[Install]
+WantedBy=multi-user.target</code></div></div>
+
+<h3>Activer la target</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl daemon-reload</code></div></div>
+<div class="code-block"><div class="code-line"><code>sudo systemctl enable mon-service.target</code></div></div>
+
+<h2>🆚 Targets vs Runlevels : tableau comparatif</h2>
+
+<table>
+<tr><th>Aspect</th><th>SysVinit (runlevels)</th><th>systemd (targets)</th></tr>
+<tr><td>Définition</td><td>Scripts shell numérotés (0-6)</td><td>Fichiers .target avec dépendances</td></tr>
+<tr><td>Commande de changement</td><td><code>init 3</code></td><td><code>systemctl isolate multi-user.target</code></td></tr>
+<tr><td>Parallélisme</td><td>Séquentiel</td><td>Parallèle (plus rapide)</td></tr>
+<tr><td>Configuration</td><td>Répertoires <code>/etc/rc.d/</code></td><td>Fichiers dans <code>/etc/systemd/</code></td></tr>
+<tr><td>Activation</td><td>Liens symboliques <code>/etc/rc.d/rc3.d/</code></td><td>Directive <code>WantedBy=</code> dans l'unité</td></tr>
+</table>
+
+<h2>📝 Exercices pratiques</h2>
+
+<h3>Exercice 1</h3>
+<p>Découvrez quelle est la target par défaut de votre système :</p>
+<div class="code-block"><div class="code-line"><code>systemctl get-default</code></div></div>
+
+<h3>Exercice 2</h3>
+<p>Listez toutes les targets actuellement actives :</p>
+<div class="code-block"><div class="code-line"><code>systemctl list-units --type=target</code></div></div>
+
+<h3>Exercice 3</h3>
+<p>Découvrez les services dépendants de la target <code>multi-user.target</code> :</p>
+<div class="code-block"><div class="code-line"><code>systemctl list-dependencies multi-user.target</code></div></div>
+
+<h3>Exercice 4</h3>
+<p>Passez temporairement en mode rescue (avec sudo) pour voir la différence :</p>
+<div class="code-block"><div class="code-line"><code>sudo systemctl isolate rescue.target</code></div></div>
+<p>Puis revenez avec <code>sudo systemctl isolate graphical.target</code> ou <code>sudo systemctl isolate multi-user.target</code>.</p>
+
+<h3>Exercice 5</h3>
+<p>Vérifiez si <code>graphical.target</code> dépend bien de <code>multi-user.target</code> :</p>
+<div class="code-block"><div class="code-line"><code>systemctl list-dependencies graphical.target | grep multi-user</code></div></div>
+
+<h2>🔗 Commandes liées</h2>
+
+<ul>
+<li><code>systemctl</code> — Gestion des services et targets (voir <a href="21-services-systemd.html">Leçon 21</a>)</li>
+<li><code>systemctl daemon-reload</code> — Recharger la configuration (voir <a href="59-systemctl-daemon-reload-mask.html">Leçon 59</a>)</li>
+<li><code>journalctl</code> — Explorer les logs systemd (voir <a href="49-journalctl-logs-systemd.html">Leçon 49</a>)</li>
+<li><code>systemd-analyze</code> — Analyser le temps de démarrage (voir <a href="35-demarrage-systemd.html">Leçon 35</a>)</li>
+</ul>
+
+<h2>📚 Pour aller plus loin</h2>
+
+<p>Les targets systemd offrent une flexibilité bien supérieure aux runlevels SysVinit. Chaque target peut dépendre d'autres targets, créant un graphe de dépendances résolu en parallèle par systemd. Cela réduit considérablement le temps de démarrage par rapport à l'approche séquentielle de SysVinit.</p>
+
+<p>Le fichier <code>/lib/systemd/system/graphical.target</code> est équippé de <code>Wants=multi-user.target</code>, ce qui signifie que graphical.target "veut" que multi-user.target soit actif — mais multi-user peut fonctionner seul, tandis que graphical ne le peut pas.</p>
+
+<p>Pour les machines sans interface graphique (serveurs), privilégiez <code>multi-user.target</code> comme target par défaut. C'est plus léger et plus rapide à démarrer.</p>
+
+<nav>
+<a href="84-wc.html">&larr; wc — Compter lignes, mots et caractères</a>
+<a href="index.html">Sommanoire</a>
+</nav>
+</div>
+</body>
+</html>
