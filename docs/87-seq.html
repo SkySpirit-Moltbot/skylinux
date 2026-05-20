@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 87 : seq — Générer des suites de nombres</h1>
+
+<h2>Introduction</h2>
+<p><code>seq</code> est une commande qui génère une suite de nombres entiers. Très simple, elle s'avère incroyablement utile dans les scripts Bash pour créer des boucles, générer des noms de fichiers numérotés, ou alimenter d'autres commandes.</p>
+
+<h2>Utilisation de base</h2>
+
+<h3>Compter de 1 à N</h3>
+<div class="code-block">
+<div class="code-line"><code>seq 5
+# Résultat :
+# 1
+# 2
+# 3
+# 4
+# 5</code></div>
+</div>
+
+<h3>Spécifier un début et une fin</h3>
+<div class="code-block">
+<div class="code-line"><code>seq 3 8
+# Résultat : 3, 4, 5, 6, 7, 8</code></div>
+</div>
+
+<h3>Compter avec un pas personnalisé</h3>
+<div class="code-block">
+<div class="code-line"><code># De 0 à 20 par pas de 5
+seq 0 5 20
+# Résultat : 0, 5, 10, 15, 20
+
+# De 10 à 1 (décompte)
+seq 10 -1 1
+# Résultat : 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+
+# De 1 à 10 par pas de 2
+seq 1 2 10
+# Résultat : 1, 3, 5, 7, 9</code></div>
+</div>
+
+<h2>Utilisation dans un script Bash</h2>
+
+<h3>Boucle for avec seq</h3>
+<div class="code-block">
+<div class="code-line"><code># Créer 5 fichiers backups numérotés
+for i in $(seq 1 5); do
+    touch "backup_$i.txt"
+    echo "Fichier backup_$i.txt créé"
+done</code></div>
+</div>
+
+<h3>Générer un rapport quotidien</h3>
+<div class="code-block">
+<div class="code-line"><code># Générer un rapport pour chaque jour de la semaine
+for jour in $(seq 1 7); do
+    fichier="rapport_jour_${jour}.txt"
+    echo "Rapport du jour $jour" > "$fichier"
+    echo "→ $fichier créé"
+done</code></div>
+</div>
+
+<h3>Utiliser seq avec un格式 personnalisé</h3>
+<div class="code-block">
+<div class="code-line"><code># Format largeurs fixes (padding avec zéros)
+seq -w 1 10
+# Résultat :
+# 01
+# 02
+# ...
+# 10
+
+# Format avec largeur fixe
+seq -f "fichier_%g.txt" 1 3
+# Résultat :
+# fichier_1.txt
+# fichier_2.txt
+# fichier_3.txt
+
+# Format avec précision décimale
+seq -f "%.1f" 1 0.5 3
+# Résultat : 1.0, 1.5, 2.0, 2.5, 3.0</code></div>
+</div>
+
+<h2>Combiner seq avec d'autres commandes</h2>
+
+<h3>Avec xargs</h3>
+<div class="code-block">
+<div class="code-line"><code># paralleliser une tâche sur 4 processus
+seq 1 4 | xargs -I {} echo "Traitement lot {}"
+# Résultat :
+# Traitement lot 1
+# Traitement lot 2
+# Traitement lot 3
+# Traitement lot 4</code></div>
+</div>
+
+<h3>Avec while read</h3>
+<div class="code-block">
+<div class="code-line"><code># Additionner tous les nombres de 1 à 100
+somme=0
+seq 1 100 | while read n; do
+    somme=$((somme + n))
+done
+echo "Somme = $somme"  # Affiche : Somme = 5050</code></div>
+</div>
+
+<h3>Générer des noms de ports</h3>
+<div class="code-block">
+<div class="code-line"><code># Vérifier si les ports 8000 à 8005 sont ouverts
+for port in $(seq 8000 8005); do
+    nc -z localhost $port 2>/dev/null && echo "Port $port : OUVERT" || echo "Port $port : FERMÉ"
+done</code></div>
+</div>
+
+<h2>Options utiles de seq</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>-w</code></td><td>Aligner les nombres avec des zéros</td><td><code>seq -w 1 10</code> → 01, 02...10</td></tr>
+<tr><td><code>-f format</code></td><td>Format de sortie (comme printf)</td><td><code>seq -f "Item %g" 1 3</code></td></tr>
+<tr><td><code>-s separateur</code></td><td>Changer le séparateur (défaut : newline)</td><td><code>seq -s "," 1 3</code> → 1,2,3</td></tr>
+</table>
+
+<h3>Exemple avec séparateur personnalisé</h3>
+<div class="code-block">
+<div class="code-line"><code># Obtenir une ligne unique avec virgules
+seq -s "," 1 5
+# Résultat : 1,2,3,4,5
+
+# Utiliser un séparateur pour un tableau Bash
+IFS=',' read -ra nums <<< "$(seq -s ',' 1 5)"
+echo "${nums[2]}"  # Affiche : 3</code></div>
+</div>
+
+<h2>Exercices pratiques</h2>
+
+<h3>Exercice 1 — Numérotation de fichiers</h3>
+<div class="code-block">
+<div class="code-line"><code># Créer 10 fichiers "rapport_01.txt" à "rapport_10.txt"
+for i in $(seq -w 1 10); do
+    touch "rapport_$i.txt"
+done
+ls rapport_*.txt | head</code></div>
+</div>
+
+<h3>Exercice 2 — Table de multiplication</h3>
+<div class="code-block">
+<div class="code-line"><code># Afficher la table de 7
+echo "Table de 7 :"
+for i in $(seq 1 10); do
+    echo "7 x $i = $((7 * i))"
+done</code></div>
+</div>
+
+<h3>Exercice 3 — Compteur de pages</h3>
+<div class="code-block">
+<div class="code-line"><code># Simuler une pagination (pages 1 à 20)
+echo "Génération des pages..."
+for page in $(seq -w 1 20); do
+    echo "Page $page générée"
+done</code></div>
+</div>
+
+<h3>Exercice 4 — Décompte pour un minuteur</h3>
+<div class="code-block">
+<div class="code-line"><code># Décompte de 10 à 1
+echo "Décollage dans :"
+for count in $(seq 10 -1 1); do
+    echo -ne "\r$count secondes... "
+    sleep 1
+done
+echo -e "\r🚀 Décollage !            "</code></div>
+</div>
+
+<h2>Points clés à retenir</h2>
+
+<ul>
+<li><code>seq debut fin</code> → génère les nombres de debut à fin</li>
+<li><code>seq debut pas fin</code> → génère avec un incrément personnalisé</li>
+<li><code>-w</code> ajoute des zéros pour aligner (01 au lieu de 1)</li>
+<li><code>-f</code> permet un format personnalisé (style printf)</li>
+<li><code>-s</code> change le séparateur entre les nombres</li>
+<li>Indispensable dans les boucles <code>for i in $(seq ...)</code></li>
+</ul>
+
+<nav>
+<a href="86-locate-which-whereis-type.html">&larr; Leçon 86 : locate, which, whereis et type — Rechercher efficacement</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
