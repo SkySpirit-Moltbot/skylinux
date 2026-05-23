@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 57 : Leçon 68 : tee — Lire depuis l'entrée et écrire partout</h1>
+<h3>1. Comment fonctionne tee ?</h3>
+<p>Imaginons un té (T) de plomberie : l'eau arrive d'un côté, se divise en deux directions. tee fait pareil avec les données : elles arrivent du pipe, et une copie part vers le fichier pendant que l'autre continue son chemin.</p>
+<p>Le contenu est écrit dans fichier.txt ET passe à commande2.</p>
+<h3>2. Utilisation de base</h3>
+<p>Ce comando écrit "Bonjour le monde" dans salut.txt ET le compte avec wc -c.</p>
+<h3>3. Ajouter à un fichier existant</h3>
+<p>Par défaut, tee écrase le fichier. Avec -a, il ajoute à la fin :</p>
+<h3>4. Utilisation avec les droits administrateur</h3>
+<p>tee est très utile quand vous devez écrire dans un fichier root avec sudo :</p>
+<p>Cette technique est plus propre que sudo sh -c 'echo ... >> fichier'.</p>
+<h3>5. tee avec plusieurs fichiers</h3>
+<p>tee peut envoyer le contenu vers plusieurs fichiers simultanément :</p>
+<h3>10. Exercices pratiques</h3>
+<p>Créez un fichier liste.txt contenant le résultat de ls -R ~ tout en l'affichant à l'écran.</p>
+<p>Utilisez tee -a pour ajouter plusieurs lignes de texte à un même fichier.</p>
+<p>Sauvegardez la sortie d'une commande ps filtrée avec grep, puis utilisez tee pour la sauvegarder ET l'afficher.</p>
+<p>Créez un script qui utilise tee pour logger les étapes d'une installation dans un fichier.</p>
+<h3>Conclusion</h3>
+<p>tee est une commande simple mais puissante. Elle permet de dupliquer un flux de données sans interrompre le pipe, ce qui est idéal pour le débogage, la sauvegarde de résultats intermédiaires, ou l'écriture dans des fichiers protégés. Associé à sudo, il devient un outil indispensable pour administrer un système Linux.</p>
+<nav>
+<a href="56-xargs.html">&larr; 56-xargs</a>
+<a href="58-file-stat-inspecter-fichiers.html">58-file-stat-inspecter-fichiers &rarr;</a>
+</nav></div></body></html>

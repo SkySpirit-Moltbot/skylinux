@@ -1,944 +1,474 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 33 : Compilation et Développement (gcc / make) - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/33-compilation-et-developpement-gcc-make.html">
-<meta property="og:title" content="Leçon 33 : Compilation et Développement (gcc / make) - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 33 : Compilation et Développement (gcc / make) - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 33  compilation et dveloppement gcc  make, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 33 : Compilation et Développement (gcc / make)</h1>
 <p>Dans cette leçon, tu vas apprendre à compiler du code source en programmes exécutables avec <code>gcc</code>, et à automatiser le processus de construction avec <code>make</code>. Ces outils sont fondamentaux pour tout développeur ou administrateur Linux qui travaille avec du code source.</p>
-<hr />
+<hr/>
 <h2>1. Préparer l'environnement de développement</h2>
 <p>Avant de compiler, installe les outils nécessaires :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Sur Debian/Ubuntu
-sudo apt update
-sudo apt install build-essential
-
-# Le package build-essential inclut :
-# - gcc (compilateur C)
-# - g++ (compilateur C++)
-# - make (outil de construction)
-# - libc6-dev (bibliothèque C standard)
-
-# Vérifier les installations
-gcc --version
-g++ --version
-make --version</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Sur Debian/Ubuntu</p>
+<p>sudo apt update</p>
+<p>sudo apt install build-essential</p>
+<p># Le package build-essential inclut :</p>
+<p># - gcc (compilateur C)</p>
+<p># - g++ (compilateur C++)</p>
+<p># - make (outil de construction)</p>
+<p># - libc6-dev (bibliothèque C standard)</p>
+<p># Vérifier les installations</p>
+<p>gcc --version</p>
+<p>g++ --version</p>
+<p>make --version</code></div></div></p>
+<hr/>
 <h2>2. Les bases de gcc</h2>
 <p><code>gcc</code> (GNU Compiler Collection) est le compilateur principal sur Linux. Il transforme ton code source en exécutable.</p>
 <h3>Compilation simple</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un fichier source C
-cat &gt; salut.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-
-int main() {
-    printf(&quot;Bonjour le monde !
-&quot;);
-    return 0;
-}
-EOF
-
-# Compiler le programme
-gcc salut.c -o salut
-
-# Exécuter le résultat
-./salut</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer un fichier source C</p>
+<p>cat &gt; salut.c &lt;&lt; 'EOF'</p>
+<p>#include &lt;stdio.h&gt;</p>
+<p>int main() {</p>
+<p>    printf("Bonjour le monde !\n");</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p># Compiler le programme</p>
+<p>gcc salut.c -o salut</p>
+<p># Exécuter le résultat</p>
+<p>./salut</code></div></div></p>
 <h3>Les étapes de compilation</h3>
 <p>gcc compile en plusieurs étapes :</p>
 <table>
-<thead>
-<tr>
-<th>Étape</th>
-<th>Description</th>
-<th>Fichier produit</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Préprocessing</strong></td>
-<td>Traitement des <code>#include</code> et <code>#define</code></td>
-<td><code>.i</code></td>
-</tr>
-<tr>
-<td><strong>Compilation</strong></td>
-<td>Traduction en assembleur</td>
-<td><code>.s</code></td>
-</tr>
-<tr>
-<td><strong>Assemblage</strong></td>
-<td>Conversion en code machine</td>
-<td><code>.o</code></td>
-</tr>
-<tr>
-<td><strong>Linking</strong></td>
-<td>Assemblage des fichiers objets</td>
-<td>exécutable</td>
-</tr>
-</tbody>
+<tr><th>Étape</th><th>Description</th><th>Fichier produit</th></tr>
+<tr><td>**Préprocessing**</td><td>Traitement des <code>#include</code> et <code>#define</code></td><td><code>.i</code></td></tr>
+<tr><td>**Compilation**</td><td>Traduction en assembleur</td><td><code>.s</code></td></tr>
+<tr><td>**Assemblage**</td><td>Conversion en code machine</td><td><code>.o</code></td></tr>
+<tr><td>**Linking**</td><td>Assemblage des fichiers objets</td><td>exécutable</td></tr>
 </table>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir chaque étape单独
-gcc -E salut.c -o salut.i    # Préprocessing seulement
-gcc -S salut.c -o salut.s   # Générer l'assembleur
-gcc -c salut.c -o salut.o   # Compiler sans linker (fichier objet)
-gcc salut.o -o salut         # Linker pour créer l'exécutable</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Voir chaque étape单独</p>
+<p>gcc -E salut.c -o salut.i    # Préprocessing seulement</p>
+<p>gcc -S salut.c -o salut.s   # Générer l'assembleur</p>
+<p>gcc -c salut.c -o salut.o   # Compiler sans linker (fichier objet)</p>
+<p>gcc salut.o -o salut         # Linker pour créer l'exécutable</code></div></div></p>
 <h3>Options utiles de gcc</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Mode verbose (afficher les étapes)
-gcc -v salut.c -o salut
-
-# Activer tous les warnings
-gcc -Wall -Wextra salut.c -o salut
-
-# Débogage (ajouter les symboles de debug)
-gcc -g salut.c -o salut
-
-# Optimisation
-gcc -O2 salut.c -o salut    # Niveau 2 d'optimisation
-
-# Spécifier le standard C
-gcc -std=c11 salut.c -o salut
-gcc -std=c99 salut.c -o salut
-
-# Compiler pour une architecture différente
-gcc -march=native salut.c -o salut  # Optimisé pour ta machine</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Mode verbose (afficher les étapes)</p>
+<p>gcc -v salut.c -o salut</p>
+<p># Activer tous les warnings</p>
+<p>gcc -Wall -Wextra salut.c -o salut</p>
+<p># Débogage (ajouter les symboles de debug)</p>
+<p>gcc -g salut.c -o salut</p>
+<p># Optimisation</p>
+<p>gcc -O2 salut.c -o salut    # Niveau 2 d'optimisation</p>
+<p># Spécifier le standard C</p>
+<p>gcc -std=c11 salut.c -o salut</p>
+<p>gcc -std=c99 salut.c -o salut</p>
+<p># Compiler pour une architecture différente</p>
+<p>gcc -march=native salut.c -o salut  # Optimisé pour ta machine</code></div></div></p>
 <h3>Exemple complet avec messages d'erreur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Programme avec une erreur volontaire
-cat &gt; test_erreur.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-
-int main() {
-    int x = 10;
-    printf(&quot;La valeur est %d
-&quot;, x);
-    return 0;
-}
-EOF
-
-# Compiler avec warnings
-gcc -Wall -Wextra test_erreur.c -o test_erreur
-
-# Exécuter
-./test_erreur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Programme avec une erreur volontaire</p>
+<p>cat &gt; test_erreur.c &lt;&lt; 'EOF'</p>
+<p>#include &lt;stdio.h&gt;</p>
+<p>int main() {</p>
+<p>    int x = 10;</p>
+<p>    printf("La valeur est %d\n", x);</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p># Compiler avec warnings</p>
+<p>gcc -Wall -Wextra test_erreur.c -o test_erreur</p>
+<p># Exécuter</p>
+<p>./test_erreur</code></div></div></p>
+<hr/>
 <h2>3. Compiler du C++ avec g++</h2>
 <p><code>g++</code> est le compilateur C++ (en fait, c'est un wrapper autour de gcc).</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Programme C++
-cat &gt; salut.cpp &lt;&lt; 'EOF'
-#include &lt;iostream&gt;
-
-int main() {
-    std::cout &lt;&lt; &quot;Bonjour depuis C++ !&quot; &lt;&lt; std::endl;
-    return 0;
-}
-EOF
-
-# Compiler avec g++
-g++ salut.cpp -o salut
-
-# Exécuter
-./salut
-
-# Avec C++11 et plus récent
-g++ -std=c++17 salut.cpp -o salut</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Programme C++</p>
+<p>cat &gt; salut.cpp &lt;&lt; 'EOF'</p>
+<p>#include &lt;iostream&gt;</p>
+<p>int main() {</p>
+<p>    std::cout &lt;&lt; "Bonjour depuis C++ !" &lt;&lt; std::endl;</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p># Compiler avec g++</p>
+<p>g++ salut.cpp -o salut</p>
+<p># Exécuter</p>
+<p>./salut</p>
+<p># Avec C++11 et plus récent</p>
+<p>g++ -std=c++17 salut.cpp -o salut</code></div></div></p>
 <h3>Compiler plusieurs fichiers</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># fichier1.c
-int addition(int a, int b) {
-    return a + b;
-}
-
-// fichier2.c
-#include &lt;stdio.h&gt;
-
-extern int addition(int a, int b);
-
-int main() {
-    int resultat = addition(5, 3);
-    printf(&quot;5 + 3 = %d
-&quot;, resultat);
-    return 0;
-}
-
-# Compiler chaque fichier séparément
-gcc -c fichier1.c -o fichier1.o
-gcc -c fichier2.c -o fichier2.o
-
-# Linker ensemble
-gcc fichier1.o fichier2.o -o programme
-
-./programme
-# Résultat : 5 + 3 = 8</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># fichier1.c</p>
+<p>int addition(int a, int b) {</p>
+<p>    return a + b;</p>
+<p>}</p>
+<p>// fichier2.c</p>
+<p>#include &lt;stdio.h&gt;</p>
+<p>extern int addition(int a, int b);</p>
+<p>int main() {</p>
+<p>    int resultat = addition(5, 3);</p>
+<p>    printf("5 + 3 = %d\n", resultat);</p>
+<p>    return 0;</p>
+<p>}</p>
+<p># Compiler chaque fichier séparément</p>
+<p>gcc -c fichier1.c -o fichier1.o</p>
+<p>gcc -c fichier2.c -o fichier2.o</p>
+<p># Linker ensemble</p>
+<p>gcc fichier1.o fichier2.o -o programme</p>
+<p>./programme</p>
+<p># Résultat : 5 + 3 = 8</code></div></div></p>
+<hr/>
 <h2>4. Introduction à make et les Makefiles</h2>
-<p><code>make</code> automatise la compilation. Au lieu de retaper toutes les commandes, tu décris ton projet dans un <strong>Makefile</strong>.</p>
+<p><code>make</code> automatise la compilation. Au lieu de retaper toutes les commandes, tu décris ton projet dans un **Makefile**.</p>
 <h3>Un Makefile simple</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>cat &gt; Makefile &lt;&lt; 'EOF'
-CC = gcc
-CFLAGS = -Wall -g
-TARGET = salut
-
-all: $(TARGET)
-
-$(TARGET): salut.c
-    $(CC) $(CFLAGS) salut.c -o $(TARGET)
-
-clean:
-    rm -f $(TARGET) *.o
-
-run: $(TARGET)
-    ./$(TARGET)
-EOF</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>cat &gt; Makefile &lt;&lt; 'EOF'</p>
+<p>CC = gcc</p>
+<p>CFLAGS = -Wall -g</p>
+<p>TARGET = salut</p>
+<p>all: $(TARGET)</p>
+<p>$(TARGET): salut.c</p>
+<p>	$(CC) $(CFLAGS) salut.c -o $(TARGET)</p>
+<p>clean:</p>
+<p>	rm -f $(TARGET) *.o</p>
+<p>run: $(TARGET)</p>
+<p>	./$(TARGET)</p>
+<p>EOF</code></div></div></p>
 <h3>Utiliser le Makefile</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Compiler le projet
-make
-
-# Exécuter
-make run
-
-# Nettoyer les fichiers générés
-make clean
-
-# Forcer la recompilation
-make clean &amp;&amp; make</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Compiler le projet</p>
+<p>make</p>
+<p># Exécuter</p>
+<p>make run</p>
+<p># Nettoyer les fichiers générés</p>
+<p>make clean</p>
+<p># Forcer la recompilation</p>
+<p>make clean &amp;&amp; make</code></div></div></p>
 <h3>Syntaxe d'un Makefile</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Variables
-CC = gcc           # Compilateur
-CFLAGS = -Wall     # Options
-TARGET = monprog   # Nom de l'exécutable
-
-# Règle par défaut (ce qui est exécuté avec 'make')
-all: $(TARGET)
-
-# Règle : dépendance -&gt; actions (TAB obligatoire !)
-$(TARGET): main.o fonc.o
-    $(CC) $(CFLAGS) main.o fonc.o -o $(TARGET)
-
-main.o: main.c
-    $(CC) $(CFLAGS) -c main.c
-
-fonc.o: fonc.c
-    $(CC) $(CFLAGS) -c fonc.c
-
-clean:
-    rm -f $(TARGET) *.o
-
-.PHONY: all clean  # Indique que ces cibles ne sont pas des fichiers</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Important</strong> : Les lignes d'actions doivent commencer par une <strong>TABULATION</strong> (tab), pas des espaces !</p>
-<h3>Variables automatiques de make</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># $&lt; = fichier source dépendant
-# $@ = cible
-# $^ = toutes les dépendances
-
-$(TARGET): $(OBJ)
-    $(CC) $^ -o $@    # Équivalent à : gcc main.o fonc.o -o monprog
-
-%.o: %.c
-    $(CC) $(CFLAGS) -c $&lt; -o $@
-# Équivalent à : gcc -Wall -g -c main.c -o main.o</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p>```makefile</p>
+<p># Variables</p>
+<p>CC = gcc           # Compilateur</p>
+<p>CFLAGS = -Wall     # Options</p>
+<p>TARGET = monprog   # Nom de l'exécutable</p>
+<p># Règle par défaut (ce qui est exécuté avec 'make')</p>
+<p>all: $(TARGET)</p>
+<p># Règle : dépendance -> actions (TAB obligatoire !)</p>
+<p>$(TARGET): main.o fonc.o</p>
+<p>	$(CC) $(CFLAGS) main.o fonc.o -o $(TARGET)</p>
+<p>main.o: main.c</p>
+<p>	$(CC) $(CFLAGS) -c main.c</p>
+<p>fonc.o: fonc.c</p>
+<p>	$(CC) $(CFLAGS) -c fonc.c</p>
+<p>clean:</p>
+<p>	rm -f $(TARGET) *.o</p>
+<p>.PHONY: all clean  # Indique que ces cibles ne sont pas des fichiers</p>
+<p><div class="code-block"><div class="code-line"><code>**Important** : Les lignes d'actions doivent commencer par une **TABULATION** (tab), pas des espaces !</p>
+<h3>Variables automatiques de make</code></div></div>makefile</h3>
+<p># $< = fichier source dépendant</p>
+<p># $@ = cible</p>
+<p># $^ = toutes les dépendances</p>
+<p>$(TARGET): $(OBJ)</p>
+<p>	$(CC) $^ -o $@    # Équivalent à : gcc main.o fonc.o -o monprog</p>
+<p>%.o: %.c</p>
+<p>	$(CC) $(CFLAGS) -c $< -o $@</p>
+<p># Équivalent à : gcc -Wall -g -c main.c -o main.o</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
 <h2>5. Un vrai projet multi-fichiers</h2>
-<h3>Structure du projet</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>monprojet/
-├── include/
-│   └── calcul.h
-├── src/
-│   ├── main.c
-│   └── calcul.c
-└── Makefile</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Les fichiers source</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>mkdir -p monprojet/include monprojet/src
-cd monprojet
-
-# Header
-cat &gt; include/calcul.h &lt;&lt; 'EOF'
-#ifndef CALCUL_H
-#define CALCUL_H
-
-int addition(int a, int b);
-int soustraction(int a, int b);
-
-#endif
-EOF
-
-# Implémentation
-cat &gt; src/calcul.c &lt;&lt; 'EOF'
-#include &quot;calcul.h&quot;
-
-int addition(int a, int b) {
-    return a + b;
-}
-
-int soustraction(int a, int b) {
-    return a - b;
-}
-EOF
-
-# Programme principal
-cat &gt; src/main.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-#include &quot;calcul.h&quot;
-
-int main() {
-    int x = 10, y = 3;
-    printf(&quot;%d + %d = %d
-&quot;, x, y, addition(x, y));
-    printf(&quot;%d - %d = %d
-&quot;, x, y, soustraction(x, y));
-    return 0;
-}
-EOF</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Le Makefile complet</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>CC = gcc
-CFLAGS = -Wall -g -Iinclude
-TARGET = calculatrice
-SRC = src
-OBJ = $(SRC)/main.o $(SRC)/calcul.o
-
-all: $(TARGET)
-
-$(TARGET): $(OBJ)
-    $(CC) $(OBJ) -o $(TARGET)
-
-$(SRC)/main.o: $(SRC)/main.c include/calcul.h
-    $(CC) $(CFLAGS) -c $(SRC)/main.c -o $(SRC)/main.o
-
-$(SRC)/calcul.o: $(SRC)/calcul.c include/calcul.h
-    $(CC) $(CFLAGS) -c $(SRC)/calcul.c -o $(SRC)/calcul.o
-
-clean:
-    rm -f $(TARGET) $(SRC)/*.o
-
-.PHONY: all clean</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Compiler et tester</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>make
-# Résultat : cc -Wall -g -Iinclude -c src/main.c -o src/main.o
-#            cc -Wall -g -Iinclude -c src/calcul.c -o src/calcul.o
-#            cc src/main.o src/calcul.o -o calculatrice
-
-./calculatrice
-# Résultat : 10 + 3 = 13
-#            10 - 3 = 7</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<h3>Structure du projet</code></div></div></h3>
+<p>monprojet/</p>
+<p>├── include/</p>
+<p>│   └── calcul.h</p>
+<p>├── src/</p>
+<p>│   ├── main.c</p>
+<p>│   └── calcul.c</p>
+<p>└── Makefile</p>
+<p><div class="code-block"><div class="code-line"><code>### Les fichiers source</code></div></div>bash</p>
+<p>mkdir -p monprojet/include monprojet/src</p>
+<p>cd monprojet</p>
+<p># Header</p>
+<p>cat > include/calcul.h << 'EOF'</p>
+<p>#ifndef CALCUL_H</p>
+<p>#define CALCUL_H</p>
+<p>int addition(int a, int b);</p>
+<p>int soustraction(int a, int b);</p>
+<p>#endif</p>
+<p>EOF</p>
+<p># Implémentation</p>
+<p>cat > src/calcul.c << 'EOF'</p>
+<p>#include "calcul.h"</p>
+<p>int addition(int a, int b) {</p>
+<p>    return a + b;</p>
+<p>}</p>
+<p>int soustraction(int a, int b) {</p>
+<p>    return a - b;</p>
+<p>}</p>
+<p>EOF</p>
+<p># Programme principal</p>
+<p>cat > src/main.c << 'EOF'</p>
+<p>#include <stdio.h></p>
+<p>#include "calcul.h"</p>
+<p>int main() {</p>
+<p>    int x = 10, y = 3;</p>
+<p>    printf("%d + %d = %d\n", x, y, addition(x, y));</p>
+<p>    printf("%d - %d = %d\n", x, y, soustraction(x, y));</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p><div class="code-block"><div class="code-line"><code>### Le Makefile complet</code></div></div>makefile</p>
+<p>CC = gcc</p>
+<p>CFLAGS = -Wall -g -Iinclude</p>
+<p>TARGET = calculatrice</p>
+<p>SRC = src</p>
+<p>OBJ = $(SRC)/main.o $(SRC)/calcul.o</p>
+<p>all: $(TARGET)</p>
+<p>$(TARGET): $(OBJ)</p>
+<p>	$(CC) $(OBJ) -o $(TARGET)</p>
+<p>$(SRC)/main.o: $(SRC)/main.c include/calcul.h</p>
+<p>	$(CC) $(CFLAGS) -c $(SRC)/main.c -o $(SRC)/main.o</p>
+<p>$(SRC)/calcul.o: $(SRC)/calcul.c include/calcul.h</p>
+<p>	$(CC) $(CFLAGS) -c $(SRC)/calcul.c -o $(SRC)/calcul.o</p>
+<p>clean:</p>
+<p>	rm -f $(TARGET) $(SRC)/*.o</p>
+<p>.PHONY: all clean</p>
+<p><div class="code-block"><div class="code-line"><code>### Compiler et tester</code></div></div>bash</p>
+<p>make</p>
+<p># Résultat : cc -Wall -g -Iinclude -c src/main.c -o src/main.o</p>
+<p>#            cc -Wall -g -Iinclude -c src/calcul.c -o src/calcul.o</p>
+<p>#            cc src/main.o src/calcul.o -o calculatrice</p>
+<p>./calculatrice</p>
+<p># Résultat : 10 + 3 = 13</p>
+<p>#            10 - 3 = 7</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
 <h2>6. Compiler avec des bibliothèques</h2>
-<h3>Bibliothèque standard</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Bibliothèque math (à linker avec -lm)
-cat &gt; math_demo.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-#include &lt;math.h&gt;
-
-int main() {
-    double x = 16.0;
-    printf(&quot;sqrt(%.1f) = %.2f
-&quot;, x, sqrt(x));
-    printf(&quot;pow(2, 8) = %.1f
-&quot;, pow(2, 8));
-    return 0;
-}
-EOF
-
-gcc math_demo.c -o math_demo -lm
-./math_demo</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Bibliothèque externe</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Exemple avec curl (libcurl)
-# sudo apt install libcurl4-openssl-dev
-
-cat &gt; web_test.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-#include &lt;curl/curl.h&gt;
-
-int main() {
-    CURL *curl = curl_easy_init();
-    if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, &quot;https://example.com&quot;);
-        curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-    }
-    return 0;
-}
-EOF
-
-gcc web_test.c -o web_test -lcurl</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>7. make -n (dry run) et debugging</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir ce que make ferait SANS exécuter
-make -n
-
-# Makefile avec debugging
-# Ajouter des echoes pour voir les valeurs
-$(TARGET): $(OBJ)
-    @echo &quot;Compilation de $(TARGET)...&quot;
-    $(CC) $(OBJ) -o $(TARGET)
-    @echo &quot;Terminé !&quot;
-
-# Vérifier la syntaxe makefile
-make -n
-
-# make avec debug
-make DEBUG=1</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<h3>Bibliothèque standard</code></div></div>bash</h3>
+<p># Bibliothèque math (à linker avec -lm)</p>
+<p>cat > math_demo.c << 'EOF'</p>
+<p>#include <stdio.h></p>
+<p>#include <math.h></p>
+<p>int main() {</p>
+<p>    double x = 16.0;</p>
+<p>    printf("sqrt(%.1f) = %.2f\n", x, sqrt(x));</p>
+<p>    printf("pow(2, 8) = %.1f\n", pow(2, 8));</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p>gcc math_demo.c -o math_demo -lm</p>
+<p>./math_demo</p>
+<p><div class="code-block"><div class="code-line"><code>### Bibliothèque externe</code></div></div>bash</p>
+<p># Exemple avec curl (libcurl)</p>
+<p># sudo apt install libcurl4-openssl-dev</p>
+<p>cat > web_test.c << 'EOF'</p>
+<p>#include <stdio.h></p>
+<p>#include <curl/curl.h></p>
+<p>int main() {</p>
+<p>    CURL *curl = curl_easy_init();</p>
+<p>    if(curl) {</p>
+<p>        curl_easy_setopt(curl, CURLOPT_URL, "https://example.com");</p>
+<p>        curl_easy_perform(curl);</p>
+<p>        curl_easy_cleanup(curl);</p>
+<p>    }</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p>gcc web_test.c -o web_test -lcurl</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>7. make -n (dry run) et debugging</code></div></div>bash</h2>
+<p># Voir ce que make ferait SANS exécuter</p>
+<p>make -n</p>
+<p># Makefile avec debugging</p>
+<p># Ajouter des echoes pour voir les valeurs</p>
+<p>$(TARGET): $(OBJ)</p>
+<p>	@echo "Compilation de $(TARGET)..."</p>
+<p>	$(CC) $(OBJ) -o $(TARGET)</p>
+<p>	@echo "Terminé !"</p>
+<p># Vérifier la syntaxe makefile</p>
+<p>make -n</p>
+<p># make avec debug</p>
+<p>make DEBUG=1</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
 <h2>8. Scripts de build plus avancés</h2>
-<h3>Makefile avec options conditionnelles</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Mode release (optimisé) ou debug
-MODE = debug
-
-ifeq ($(MODE),debug)
-    CFLAGS = -Wall -g -O0
-    TARGET = $(PROGRAM)_debug
-else
-    CFLAGS = -Wall -O2
-    TARGET = $(PROGRAM)
-endif
-
-# Changer de mode :
-# make MODE=release
-# make MODE=debug</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Ajouter un target "install"</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>PREFIX = /usr/local
-
-install: $(TARGET)
-    install -d $(PREFIX)/bin
-    install -m 755 $(TARGET) $(PREFIX)/bin
-
-uninstall:
-    rm -f $(PREFIX)/bin/$(TARGET)</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<h3>Makefile avec options conditionnelles</code></div></div>makefile</h3>
+<p># Mode release (optimisé) ou debug</p>
+<p>MODE = debug</p>
+<p>ifeq ($(MODE),debug)</p>
+<p>    CFLAGS = -Wall -g -O0</p>
+<p>    TARGET = $(PROGRAM)_debug</p>
+<p>else</p>
+<p>    CFLAGS = -Wall -O2</p>
+<p>    TARGET = $(PROGRAM)</p>
+<p>endif</p>
+<p># Changer de mode :</p>
+<p># make MODE=release</p>
+<p># make MODE=debug</p>
+<p><div class="code-block"><div class="code-line"><code>### Ajouter un target "install"</code></div></div>makefile</p>
+<p>PREFIX = /usr/local</p>
+<p>install: $(TARGET)</p>
+<p>	install -d $(PREFIX)/bin</p>
+<p>	install -m 755 $(TARGET) $(PREFIX)/bin</p>
+<p>uninstall:</p>
+<p>	rm -f $(PREFIX)/bin/$(TARGET)</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
 <h2>9. Exercices pratiques</h2>
-<h3>Exercice 1 : Premier programme compilé</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Créer un fichier salut.c
-cat &gt; salut.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-
-int main() {
-    printf(&quot;Hello, Linux !
-&quot;);
-    return 0;
-}
-EOF
-
-# 2. Compiler avec gcc
-gcc salut.c -o salut
-
-# 3. Exécuter
-./salut
-
-# 4. Voir le fichier généré
-ls -la salut
-file salut</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Exercice 2 : Programme avec fonctions</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Créer un programme qui calcule la factorielle
-cat &gt; factorielle.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-
-long factorielle(int n) {
-    if (n &lt;= 1) return 1;
-    return n * factorielle(n - 1);
-}
-
-int main() {
-    int n = 5;
-    printf(&quot;%d! = %ld
-&quot;, n, factorielle(n));
-    return 0;
-}
-EOF
-
-# 2. Compiler avec warnings
-gcc -Wall -Wextra factorielle.c -o factorielle
-
-# 3. Exécuter
-./factorielle</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Exercice 3 : Projet multi-fichiers avec Makefile</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Créer la structure
-mkdir -p triangle/src triangle/include
-
-# 2. Les fichiers
-cat &gt; triangle/include/aire.h &lt;&lt; 'EOF'
-#ifndef AIRE_H
-#define AIRE_H
-double aire_cercle(double rayon);
-double aire_rectangle(double largeur, double hauteur);
-#endif
-EOF
-
-cat &gt; triangle/src/aire.c &lt;&lt; 'EOF'
-#include &quot;aire.h&quot;
-#define PI 3.14159
-
-double aire_cercle(double rayon) {
-    return PI * rayon * rayon;
-}
-
-double aire_rectangle(double largeur, double hauteur) {
-    return largeur * hauteur;
-}
-EOF
-
-cat &gt; triangle/src/main.c &lt;&lt; 'EOF'
-#include &lt;stdio.h&gt;
-#include &quot;aire.h&quot;
-
-int main() {
-    printf(&quot;Aire cercle (r=3): %.2f
-&quot;, aire_cercle(3.0));
-    printf(&quot;Aire rectangle (5x4): %.2f
-&quot;, aire_rectangle(5.0, 4.0));
-    return 0;
-}
-EOF
-
-# 3. Le Makefile
-cat &gt; triangle/Makefile &lt;&lt; 'EOF'
-CC = gcc
-CFLAGS = -Wall -g -Isrc/include -Isrc
-SRC = src
-TARGET = aire_calc
-
-all: $(TARGET)
-
-$(TARGET): $(SRC)/main.o $(SRC)/aire.o
-    $(CC) $(SRC)/main.o $(SRC)/aire.o -o $(TARGET)
-
-$(SRC)/main.o: $(SRC)/main.c $(SRC)/include/aire.h
-    $(CC) $(CFLAGS) -c $(SRC)/main.c -o $(SRC)/main.o
-
-$(SRC)/aire.o: $(SRC)/aire.c $(SRC)/include/aire.h
-    $(CC) $(CFLAGS) -c $(SRC)/aire.c -o $(SRC)/aire.o
-
-clean:
-    rm -f $(TARGET) $(SRC)/*.o
-
-.PHONY: all clean
-EOF
-
-# 4. Compiler et tester
-cd triangle
-make
-./aire_calc
-cd ..</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Exercice 4 : Automatiser la compilation avec un script</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un script build.sh
-cat &gt; build.sh &lt;&lt; 'EOF'
-#!/bin/bash
-
-set -e  # Arrêter en cas d'erreur
-
-echo &quot;=== Compilation du projet ===&quot;
-
-# Nettoyer
-make clean 2&gt;/dev/null || true
-
-# Compiler
-make
-
-# Exécuter si la compilation a réussi
-if [ -f &quot;./monprog&quot; ]; then
-    echo &quot;&quot;
-    echo &quot;=== Exécution ===&quot;
-    ./monprog
-else
-    echo &quot;Erreur : la compilation a échoué&quot;
-    exit 1
-fi
-EOF
-
-chmod +x build.sh
-./build.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<h3>Exercice 1 : Premier programme compilé</code></div></div>bash</h3>
+<p># 1. Créer un fichier salut.c</p>
+<p>cat > salut.c << 'EOF'</p>
+<p>#include <stdio.h></p>
+<p>int main() {</p>
+<p>    printf("Hello, Linux !\n");</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p># 2. Compiler avec gcc</p>
+<p>gcc salut.c -o salut</p>
+<p># 3. Exécuter</p>
+<p>./salut</p>
+<p># 4. Voir le fichier généré</p>
+<p>ls -la salut</p>
+<p>file salut</p>
+<p><div class="code-block"><div class="code-line"><code>### Exercice 2 : Programme avec fonctions</code></div></div>bash</p>
+<p># 1. Créer un programme qui calcule la factorielle</p>
+<p>cat > factorielle.c << 'EOF'</p>
+<p>#include <stdio.h></p>
+<p>long factorielle(int n) {</p>
+<p>    if (n <= 1) return 1;</p>
+<p>    return n * factorielle(n - 1);</p>
+<p>}</p>
+<p>int main() {</p>
+<p>    int n = 5;</p>
+<p>    printf("%d! = %ld\n", n, factorielle(n));</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p># 2. Compiler avec warnings</p>
+<p>gcc -Wall -Wextra factorielle.c -o factorielle</p>
+<p># 3. Exécuter</p>
+<p>./factorielle</p>
+<p><div class="code-block"><div class="code-line"><code>### Exercice 3 : Projet multi-fichiers avec Makefile</code></div></div>bash</p>
+<p># 1. Créer la structure</p>
+<p>mkdir -p triangle/src triangle/include</p>
+<p># 2. Les fichiers</p>
+<p>cat > triangle/include/aire.h << 'EOF'</p>
+<p>#ifndef AIRE_H</p>
+<p>#define AIRE_H</p>
+<p>double aire_cercle(double rayon);</p>
+<p>double aire_rectangle(double largeur, double hauteur);</p>
+<p>#endif</p>
+<p>EOF</p>
+<p>cat > triangle/src/aire.c << 'EOF'</p>
+<p>#include "aire.h"</p>
+<p>#define PI 3.14159</p>
+<p>double aire_cercle(double rayon) {</p>
+<p>    return PI * rayon * rayon;</p>
+<p>}</p>
+<p>double aire_rectangle(double largeur, double hauteur) {</p>
+<p>    return largeur * hauteur;</p>
+<p>}</p>
+<p>EOF</p>
+<p>cat > triangle/src/main.c << 'EOF'</p>
+<p>#include <stdio.h></p>
+<p>#include "aire.h"</p>
+<p>int main() {</p>
+<p>    printf("Aire cercle (r=3): %.2f\n", aire_cercle(3.0));</p>
+<p>    printf("Aire rectangle (5x4): %.2f\n", aire_rectangle(5.0, 4.0));</p>
+<p>    return 0;</p>
+<p>}</p>
+<p>EOF</p>
+<p># 3. Le Makefile</p>
+<p>cat > triangle/Makefile << 'EOF'</p>
+<p>CC = gcc</p>
+<p>CFLAGS = -Wall -g -Isrc/include -Isrc</p>
+<p>SRC = src</p>
+<p>TARGET = aire_calc</p>
+<p>all: $(TARGET)</p>
+<p>$(TARGET): $(SRC)/main.o $(SRC)/aire.o</p>
+<p>	$(CC) $(SRC)/main.o $(SRC)/aire.o -o $(TARGET)</p>
+<p>$(SRC)/main.o: $(SRC)/main.c $(SRC)/include/aire.h</p>
+<p>	$(CC) $(CFLAGS) -c $(SRC)/main.c -o $(SRC)/main.o</p>
+<p>$(SRC)/aire.o: $(SRC)/aire.c $(SRC)/include/aire.h</p>
+<p>	$(CC) $(CFLAGS) -c $(SRC)/aire.c -o $(SRC)/aire.o</p>
+<p>clean:</p>
+<p>	rm -f $(TARGET) $(SRC)/*.o</p>
+<p>.PHONY: all clean</p>
+<p>EOF</p>
+<p># 4. Compiler et tester</p>
+<p>cd triangle</p>
+<p>make</p>
+<p>./aire_calc</p>
+<p>cd ..</p>
+<p><div class="code-block"><div class="code-line"><code>### Exercice 4 : Automatiser la compilation avec un script</code></div></div>bash</p>
+<p># Créer un script build.sh</p>
+<p>cat > build.sh << 'EOF'</p>
+<p>#!/bin/bash</p>
+<p>set -e  # Arrêter en cas d'erreur</p>
+<p>echo "=== Compilation du projet ==="</p>
+<p># Nettoyer</p>
+<p>make clean 2>/dev/null || true</p>
+<p># Compiler</p>
+<p>make</p>
+<p># Exécuter si la compilation a réussi</p>
+<p>if [ -f "./monprog" ]; then</p>
+<p>    echo ""</p>
+<p>    echo "=== Exécution ==="</p>
+<p>    ./monprog</p>
+<p>else</p>
+<p>    echo "Erreur : la compilation a échoué"</p>
+<p>    exit 1</p>
+<p>fi</p>
+<p>EOF</p>
+<p>chmod +x build.sh</p>
+<p>./build.sh</p>
+<p>```</p>
+<hr/>
 <h2>10. Résumé des commandes</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>gcc -o prog source.c</code></td>
-<td>Compiler un fichier C</td>
-</tr>
-<tr>
-<td><code>g++ -o prog source.cpp</code></td>
-<td>Compiler un fichier C++</td>
-</tr>
-<tr>
-<td><code>gcc -c source.c</code></td>
-<td>Compiler sans linker (fichier .o)</td>
-</tr>
-<tr>
-<td><code>gcc -Wall source.c</code></td>
-<td>Activer tous les warnings</td>
-</tr>
-<tr>
-<td><code>gcc -g source.c</code></td>
-<td>Ajouter les symboles de debug</td>
-</tr>
-<tr>
-<td><code>gcc -O2 source.c</code></td>
-<td>Compiler avec optimisation niveau 2</td>
-</tr>
-<tr>
-<td><code>gcc -lm source.c</code></td>
-<td>Linker avec la bibliothèque math</td>
-</tr>
-<tr>
-<td><code>make</code></td>
-<td>Exécuter le Makefile</td>
-</tr>
-<tr>
-<td><code>make clean</code></td>
-<td>Nettoyer les fichiers générés</td>
-</tr>
-<tr>
-<td><code>make -n</code></td>
-<td>Simuler sans exécuter</td>
-</tr>
-<tr>
-<td><code>make -C dir</code></td>
-<td>Exécuter make dans un autre répertoire</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>gcc -o prog source.c</code></td><td>Compiler un fichier C</td></tr>
+<tr><td><code>g++ -o prog source.cpp</code></td><td>Compiler un fichier C++</td></tr>
+<tr><td><code>gcc -c source.c</code></td><td>Compiler sans linker (fichier .o)</td></tr>
+<tr><td><code>gcc -Wall source.c</code></td><td>Activer tous les warnings</td></tr>
+<tr><td><code>gcc -g source.c</code></td><td>Ajouter les symboles de debug</td></tr>
+<tr><td><code>gcc -O2 source.c</code></td><td>Compiler avec optimisation niveau 2</td></tr>
+<tr><td><code>gcc -lm source.c</code></td><td>Linker avec la bibliothèque math</td></tr>
+<tr><td><code>make</code></td><td>Exécuter le Makefile</td></tr>
+<tr><td><code>make clean</code></td><td>Nettoyer les fichiers générés</td></tr>
+<tr><td><code>make -n</code></td><td>Simuler sans exécuter</td></tr>
+<tr><td><code>make -C dir</code></td><td>Exécuter make dans un autre répertoire</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>11. Aller plus loin</h2>
 <ul>
-<li><strong>CMake</strong> : Système de build plus moderne et portable (utilisé par de gros projets)</li>
-<li><strong>Autotools (configure/make)</strong> : Le système classique de build Unix</li>
-<li><strong>IDE</strong> : VSCode, CLion, ou Qt Creator pour développer visuellement</li>
-<li><strong>Valgrind</strong> : Détecter les fuites mémoire (<code>valgrind ./programme</code>)</li>
-<li><strong>gdb</strong> : Débogueur GNU (<code>gdb ./programme</code>)</li>
-<li><strong>strace</strong> : Voir les appels système d'un programme (<code>strace ./programme</code>)</li>
+<li>**CMake** : Système de build plus moderne et portable (utilisé par de gros projets)</li>
+<li>**Autotools (configure/make)** : Le système classique de build Unix</li>
+<li>**IDE** : VSCode, CLion, ou Qt Creator pour développer visuellement</li>
+<li>**Valgrind** : Détecter les fuites mémoire (<code>valgrind ./programme</code>)</li>
+<li>**gdb** : Débogueur GNU (<code>gdb ./programme</code>)</li>
+<li>**strace** : Voir les appels système d'un programme (<code>strace ./programme</code>)</li>
 </ul>
-</div>
 <nav>
-<a href="32-expressions-regulieres.html" style="color:#00d9ff;text-decoration:none;">&larr; 32 - Expressions Régulières (Regex)</a> | <span style="color:#666;">33</span> | <a href="34-surveillance-optimisation-performances.html" style="color:#00d9ff;text-decoration:none;">34 - Surveillance et optimisation des performances système &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="32-expressions-regulieres.html">&larr; 32-expressions-regulieres</a>
+<a href="34-surveillance-optimisation-performances.html">34-surveillance-optimisation-performances &rarr;</a>
+</nav></div></body></html>

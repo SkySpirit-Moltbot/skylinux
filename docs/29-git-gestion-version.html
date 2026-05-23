@@ -1,911 +1,395 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 29 : Git - Gestion de version - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/29-git-gestion-de-version.html">
-<meta property="og:title" content="Leçon 29 : Git - Gestion de version - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 29 : Git - Gestion de version - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 29  git  gestion de version, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 29 : Git - Gestion de version</h1>
 <p>Dans cette leçon, tu vas découvrir Git, l'outil de gestion de version le plus utilisé au monde. Git permet de suivre les modifications de tes fichiers, de collaborer avec d'autres et de revenir à des versions précédentes. Que tu codes seul ou en équipe, Git est indispensable.</p>
-<hr />
-<h2>1. Qu'est-ce que Git ?</h2>
-<p><strong>Git</strong> est un système de gestion de version distribué. Il enregistre les modifications de tes fichiers dans un historique et te permet de :
-- Suivre chaque changement effectué
-- Revenir à une version antérieure
-- Travailler sur plusieurs versions (branches) en parallèle
-- Collaborer avec d'autres sur le même projet</p>
-<p><strong>Concepts de base :</strong>
-- <strong>Repository (dépôt)</strong> : le dossier contenant ton projet et l'historique Git
-- <strong>Commit</strong> : une capture (snapshot) de l'état de tes fichiers à un moment donné
-- <strong>Branch (branche)</strong> : une ligne de développement indépendante
-- <strong>Merge</strong> : la fusion de deux branches</p>
-<hr />
-<h2>2. Installation et configuration</h2>
+<hr/>
+<h2>1. Pourquoi un outil de gestion de versions ?</h2>
+<p>Voici ce qui se passe sans Git :</p>
+<p><div class="code-block"><div class="code-line"><code>Tu modifies script.sh</p>
+<p>  → Tu ajoutes une fonctionnalité</p>
+<p>  → Ça casse tout</p>
+<p>  → Tu n'as plus la version qui marchait</p>
+<p>  → Panique</code></div></div></p>
+<p>**Avec Git**, chaque modification est enregistrée. Tu peux revenir à n'importe quel moment, voir exactement ce qui a changé, et travailler avec d'autres personnes sans écraser leur travail.</p>
+<hr/>
+<hr/>
+<h2>14. Qu'est-ce que Git ?</h2>
+<p>**Git** est un système de gestion de version distribué. Il enregistre les modifications de tes fichiers dans un historique et te permet de :</p>
+<ul>
+<li>Suivre chaque changement effectué</li>
+<li>Revenir à une version antérieure</li>
+<li>Travailler sur plusieurs versions (branches) en parallèle</li>
+<li>Collaborer avec d'autres sur le même projet</li>
+</ul>
+<p>**Concepts de base :**</p>
+<ul>
+<li>**Repository (dépôt)** : le dossier contenant ton projet et l'historique Git</li>
+<li>**Commit** : une capture (snapshot) de l'état de tes fichiers à un moment donné</li>
+<li>**Branch (branche)** : une ligne de développement indépendante</li>
+<li>**Merge** : la fusion de deux branches</li>
+</ul>
+<hr/>
+<h2>14. Installation et configuration</h2>
 <h3>Installation</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ubuntu / Debian
-sudo apt update
-sudo apt install git
-
-# Vérifier l'installation
-git --version</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Ubuntu / Debian</p>
+<p>sudo apt update</p>
+<p>sudo apt install git</p>
+<p># Vérifier l'installation</p>
+<p>git --version</code></div></div></p>
 <h3>Configuration initiale</h3>
 <p>Avant ta première utilisation, configure ton identité :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ton nom (remplace par ton vrai nom)
-git config --global user.name &quot;Ton Nom&quot;
-
-# Ton email (utilise le même que sur GitHub/GitLab)
-git config --global user.email &quot;ton.email@example.com&quot;
-
-# Vérifier ta configuration
-git config --list</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Ton nom (remplace par ton vrai nom)</p>
+<p>git config --global user.name "Ton Nom"</p>
+<p># Ton email (utilise le même que sur GitHub/GitLab)</p>
+<p>git config --global user.email "ton.email@example.com"</p>
+<p># Vérifier ta configuration</p>
+<p>git config --list</code></div></div></p>
 <h3>Configuration de l'éditeur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Par défaut, Git utilise Vim. Tu peux changer :
-git config --global core.editor nano
-
-# couleur dans le terminal
-git config --global color.ui auto</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>3. Créer un dépôt Git</h2>
+<p><div class="code-block"><div class="code-line"><code># Par défaut, Git utilise Vim. Tu peux changer :</p>
+<p>git config --global core.editor nano</p>
+<p># couleur dans le terminal</p>
+<p>git config --global color.ui auto</code></div></div></p>
+<hr/>
+<h2>14. Créer un dépôt Git</h2>
 <h3>git init - Initialiser un nouveau dépôt</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un nouveau projet
-mkdir mon-projet
-cd mon-projet
-
-# Initialiser Git
-git init</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer un nouveau projet</p>
+<p>mkdir mon-projet</p>
+<p>cd mon-projet</p>
+<p># Initialiser Git</p>
+<p>git init</code></div></div></p>
 <p>Résultat :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>Initialized empty Git repository in /home/david/mon-projet/.git/</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>Initialized empty Git repository in /home/david/mon-projet/.git/</code></div></div></p>
 <p>Un dossier <code>.git/</code> a été créé. C'est le cœur de Git — il contient tout l'historique.</p>
 <h3>git clone - Cloner un dépôt existant</h3>
 <p>Si tu veux travailler sur un projet existant (sur GitHub par exemple) :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Cloner un dépôt public
-git clone https://github.com/someuser/some-repo.git
-
-# Cloner dans un dossier spécifique
-git clone https://github.com/someuser/some-repo.git mon-dossier</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>4. Les états d'un fichier</h2>
+<p><div class="code-block"><div class="code-line"><code># Cloner un dépôt public</p>
+<p>git clone https://github.com/someuser/some-repo.git</p>
+<p># Cloner dans un dossier spécifique</p>
+<p>git clone https://github.com/someuser/some-repo.git mon-dossier</code></div></div></p>
+<hr/>
+<h2>14. Les états d'un fichier</h2>
 <p>Dans Git, chaque fichier peut être dans l'un de ces états :</p>
 <table>
-<thead>
-<tr>
-<th>État</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Modified</strong></td>
-<td>Fichier modifié mais pas encore indexé</td>
-</tr>
-<tr>
-<td><strong>Staged</strong></td>
-<td>Fichier indexé, prêt à être commité</td>
-</tr>
-<tr>
-<td><strong>Committed</strong></td>
-<td>Fichier enregistré dans l'historique</td>
-</tr>
-</tbody>
+<tr><th>État</th><th>Description</th></tr>
+<tr><td>**Modified**</td><td>Fichier modifié mais pas encore indexé</td></tr>
+<tr><td>**Staged**</td><td>Fichier indexé, prêt à être commité</td></tr>
+<tr><td>**Committed**</td><td>Fichier enregistré dans l'historique</td></tr>
 </table>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>┌──────────────┐    edit     ┌──────────────┐   add    ┌──────────────┐   commit    ┌──────────────┐
-│   Untracked  │ ─────────►  │   Modified    │ ───────► │    Staged    │ ─────────►  │  Committed   │
-│  (non suivi) │             │  (modifié)    │          │   (indexé)   │             │  (enregistré)│
-└──────────────┘             └──────────────┘          └──────────────┘             └──────────────┘</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>5. Les commandes de base</h2>
+<p><div class="code-block"><div class="code-line"><code>┌──────────────┐    edit     ┌──────────────┐   add    ┌──────────────┐   commit    ┌──────────────┐</p>
+<p>│   Untracked  │ ─────────►  │   Modified    │ ───────► │    Staged    │ ─────────►  │  Committed   │</p>
+<p>│  (non suivi) │             │  (modifié)    │          │   (indexé)   │             │  (enregistré)│</p>
+<p>└──────────────┘             └──────────────┘          └──────────────┘             └──────────────┘</code></div></div></p>
+<hr/>
+<h2>14. Les commandes de base</h2>
 <h3>git status - État du dépôt</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>git status</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>git status</code></div></div></p>
 <p>Affiche quels fichiers sont modifiés, stagés ou commité.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>On branch master
-Changes not staged for commit:
-  modified:   readme.txt
-
-Untracked files:
-  nouveau.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>On branch master</p>
+<p>Changes not staged for commit:</p>
+<p>  modified:   readme.txt</p>
+<p>Untracked files:</p>
+<p>  nouveau.txt</code></div></div></p>
 <h3>git add - Indexer un fichier</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Indexer un fichier précis
-git add readme.txt
-
-# Indexer tous les fichiers modifiés
-git add .
-
-# Indexer tous les fichiers
-git add -A</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Indexer un fichier précis</p>
+<p>git add readme.txt</p>
+<p># Indexer tous les fichiers modifiés</p>
+<p>git add .</p>
+<p># Indexer tous les fichiers</p>
+<p>git add -A</code></div></div></p>
 <h3>git commit - Enregistrer les modifications</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Commiter avec un message (OBLIGATOIRE)
-git commit -m &quot;Ajout du fichier readme&quot;
-
-# Indexer ET commiter en une commande
-git commit -am &quot;Correction d'un bug&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Commiter avec un message (OBLIGATOIRE)</p>
+<p>git commit -m "Ajout du fichier readme"</p>
+<p># Indexer ET commiter en une commande</p>
+<p>git commit -am "Correction d'un bug"</code></div></div></p>
 <blockquote>
 <p>⚠️ L'option <code>-am</code> ne fonctionne que pour les fichiers déjà suivis. Les nouveaux fichiers doivent être ajoutés avec <code>git add</code> d'abord.</p>
 </blockquote>
-<hr />
-<h2>6. L'historique des commits</h2>
+<hr/>
+<h2>14. L'historique des commits</h2>
 <h3>git log - Voir l'historique</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir l'historique complet
-git log
-
-# Affichage condensé sur une ligne
-git log --oneline
-
-# Voir les 5 derniers commits
-git log -5
-
-# Affichage avec graphe des branches
-git log --oneline --all --graph</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Voir l'historique complet</p>
+<p>git log</p>
+<p># Affichage condensé sur une ligne</p>
+<p>git log --oneline</p>
+<p># Voir les 5 derniers commits</p>
+<p>git log -5</p>
+<p># Affichage avec graphe des branches</p>
+<p>git log --oneline --all --graph</code></div></div></p>
 <p>Exemple de sortie <code>--oneline</code> :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>a1b2c3d Fix navigation bug
-e4f5g6h Add user profile page
-i7j8k9l Initial commit</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>a1b2c3d Fix navigation bug</p>
+<p>e4f5g6h Add user profile page</p>
+<p>i7j8k9l Initial commit</code></div></div></p>
 <p>Chaque commit a un identifiant court (ex: <code>a1b2c3d</code>).</p>
 <h3>git show - Détails d'un commit</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir les détails d'un commit
-git show a1b2c3d
-
-# Voir seulement le message
-git log -1 --format=&quot;%B&quot; a1b2c3d</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>7. Les branches</h2>
+<p><div class="code-block"><div class="code-line"><code># Voir les détails d'un commit</p>
+<p>git show a1b2c3d</p>
+<p># Voir seulement le message</p>
+<p>git log -1 --format="%B" a1b2c3d</code></div></div></p>
+<hr/>
+<h2>14. Les branches</h2>
 <p>Les branches permettent de travailler sur des fonctionnalités isolées sans perturber le code principal.</p>
 <h3>git branch - Lister et créer des branches</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Lister les branches (celle avec * est la branche active)
-git branch
-
-# Créer une nouvelle branche
-git branch ma-fonctionnalite
-
-# Créer et basculer sur la nouvelle branche
-git checkout -b ma-fonctionnalite
-
-# Raccourci moderne (Git 2.23+)
-git switch -c ma-fonctionnalite</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Lister les branches (celle avec * est la branche active)</p>
+<p>git branch</p>
+<p># Créer une nouvelle branche</p>
+<p>git branch ma-fonctionnalite</p>
+<p># Créer et basculer sur la nouvelle branche</p>
+<p>git checkout -b ma-fonctionnalite</p>
+<p># Raccourci moderne (Git 2.23+)</p>
+<p>git switch -c ma-fonctionnalite</code></div></div></p>
 <h3>git checkout / git switch - Changer de branche</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Basculer sur une branche existante
-git checkout master
-git switch master
-
-# Revenir à la branche principale (souvent master ou main)</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Basculer sur une branche existante</p>
+<p>git checkout master</p>
+<p>git switch master</p>
+<p># Revenir à la branche principale (souvent master ou main)</code></div></div></p>
 <h3>git merge - Fusionner des branches</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Basculer sur la branche principale
-git checkout master
-
-# 2. Fusionner la branche secondaire
-git merge ma-fonctionnalite</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># 1. Basculer sur la branche principale</p>
+<p>git checkout master</p>
+<p># 2. Fusionner la branche secondaire</p>
+<p>git merge ma-fonctionnalite</code></div></div></p>
 <h3>git branch -d - Supprimer une branche</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Supprimer une branche (après fusion)
-git branch -d ma-fonctionnalite
-
-# Supprimer de force (même si pas fusionnée)
-git branch -D ma-fonctionnalite</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>8. Annuler des modifications</h2>
+<p><div class="code-block"><div class="code-line"><code># Supprimer une branche (après fusion)</p>
+<p>git branch -d ma-fonctionnalite</p>
+<p># Supprimer de force (même si pas fusionnée)</p>
+<p>git branch -D ma-fonctionnalite</code></div></div></p>
+<hr/>
+<h2>14. Annuler des modifications</h2>
 <h3>git checkout - Annuler les modifications non commitées</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Annuler les modifications d'un fichier
-git checkout -- fichier.txt
-
-# Syntaxe moderne
-git restore fichier.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Annuler les modifications d'un fichier</p>
+<p>git checkout -- fichier.txt</p>
+<p># Syntaxe moderne</p>
+<p>git restore fichier.txt</code></div></div></p>
 <h3>git reset - Annuler l'indexation</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Retirer un fichier de l'index (sans supprimer les modifications)
-git reset fichier.txt
-
-# Retirer TOUT de l'index
-git reset</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Retirer un fichier de l'index (sans supprimer les modifications)</p>
+<p>git reset fichier.txt</p>
+<p># Retirer TOUT de l'index</p>
+<p>git reset</code></div></div></p>
 <h3>git revert - Annuler un commit (en créant un nouveau commit)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Annuler le dernier commit (crée un nouveau commit)
-git revert HEAD
-
-# Annuler un commit spécifique
-git revert a1b2c3d</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Annuler le dernier commit (crée un nouveau commit)</p>
+<p>git revert HEAD</p>
+<p># Annuler un commit spécifique</p>
+<p>git revert a1b2c3d</code></div></div></p>
 <blockquote>
-<p>💡 <code>git revert</code> est <strong>sûr</strong> car il ne réécrit pas l'historique. Il crée un nouveau commit qui "défait" les modifications.</p>
+<p>💡 <code>git revert</code> est **sûr** car il ne réécrit pas l'historique. Il crée un nouveau commit qui "défait" les modifications.</p>
 </blockquote>
 <h3>git reset - Revenir à un commit précédent</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Revenir au dernier commit (garde les modifications staged)
-git reset --soft HEAD~1
-
-# Revenir au dernier commit (garde les modifications, enlève du staging)
-git reset --mixed HEAD~1
-
-# Revenir au dernier commit (SUPPRIME les modifications !)
-git reset --hard HEAD~1</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Revenir au dernier commit (garde les modifications staged)</p>
+<p>git reset --soft HEAD~1</p>
+<p># Revenir au dernier commit (garde les modifications, enlève du staging)</p>
+<p>git reset --mixed HEAD~1</p>
+<p># Revenir au dernier commit (SUPPRIME les modifications !)</p>
+<p>git reset --hard HEAD~1</code></div></div></p>
 <blockquote>
 <p>⚠️ <code>--hard</code> est dangereux : il supprime définitivement les modifications. Utilise-le avec prudence.</p>
 </blockquote>
-<hr />
-<h2>9. Travailler avec un remote (GitHub/GitLab)</h2>
+<hr/>
+<h2>14. Travailler avec un remote (GitHub/GitLab)</h2>
 <h3>git remote - Gérer les dépôts distants</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir les dépôts distants
-git remote -v
-
-# Ajouter un remote
-git remote add origin https://github.com/user/repo.git
-
-# Renommer le remote
-git remote rename origin github
-
-# Supprimer un remote
-git remote remove origin</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Voir les dépôts distants</p>
+<p>git remote -v</p>
+<p># Ajouter un remote</p>
+<p>git remote add origin https://github.com/user/repo.git</p>
+<p># Renommer le remote</p>
+<p>git remote rename origin github</p>
+<p># Supprimer un remote</p>
+<p>git remote remove origin</code></div></div></p>
 <h3>git push - Envoyer sur le remote</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Envoyer la branche master sur origin
-git push origin master
-
-# Raccourci (si origin et master sont les valeurs par défaut)
-git push
-
-# Premier push avec création de la branche distante
-git push -u origin ma-branche</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Envoyer la branche master sur origin</p>
+<p>git push origin master</p>
+<p># Raccourci (si origin et master sont les valeurs par défaut)</p>
+<p>git push</p>
+<p># Premier push avec création de la branche distante</p>
+<p>git push -u origin ma-branche</code></div></div></p>
 <h3>git pull - Récupérer les modifications</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Récupérer et fusionner les modifications distantes
-git pull
-
-# Récupérer sans fusionner (voir ce qui va changer)
-git fetch</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Récupérer et fusionner les modifications distantes</p>
+<p>git pull</p>
+<p># Récupérer sans fusionner (voir ce qui va changer)</p>
+<p>git fetch</code></div></div></p>
 <h3>git fetch vs git pull</h3>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Récupère</th>
-<th>Fusionne</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>git fetch</code></td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td><code>git pull</code></td>
-<td>✅</td>
-<td>✅</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Récupère</th><th>Fusionne</th></tr>
+<tr><td><code>git fetch</code></td><td>✅</td><td>❌</td></tr>
+<tr><td><code>git pull</code></td><td>✅</td><td>✅</td></tr>
 </table>
 <p><code>fetch</code> te permet de voir ce qui a changé avant de fusionner.</p>
-<hr />
-<h2>10. Ignorer des fichiers (.gitignore)</h2>
+<hr/>
+<h2>14. Ignorer des fichiers (.gitignore)</h2>
 <p>Le fichier <code>.gitignore</code> indique à Git quels fichiers ne doivent pas être suivis.</p>
 <h3>Créer un .gitignore</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano .gitignore</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>nano .gitignore</code></div></div></p>
 <h3>Exemple de .gitignore classique</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Fichiers temporaires
-*.tmp
-*.log
-
-# Dossiers de cache
-__pycache__/
-*.pyc
-node_modules/
-
-# Fichiers secrets
-.env
-*.pem
-
-# OS
-.DS_Store
-Thumbs.db</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Cas d'usage : Python</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Virtual environments
-venv/
-env/
-.env
-
-# IDE
-.vscode/
-.idea/
-
-# Logs
-*.log</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>Cas d'usage : Node.js</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>node_modules/
-package-lock.json
-.env
-dist/
-build/</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
-<h2>11. Résumé des commandes</h2>
+<p>```gitignore</p>
+<p># Fichiers temporaires</p>
+<p>*.tmp</p>
+<p>*.log</p>
+<p># Dossiers de cache</p>
+<p>__pycache__/</p>
+<p>*.pyc</p>
+<p>node_modules/</p>
+<p># Fichiers secrets</p>
+<p>.env</p>
+<p>*.pem</p>
+<p># OS</p>
+<p>.DS_Store</p>
+<p>Thumbs.db</p>
+<p><div class="code-block"><div class="code-line"><code>### Cas d'usage : Python</code></div></div>gitignore</p>
+<p># Byte-compiled / optimized / DLL files</p>
+<p>__pycache__/</p>
+<p>*.py[cod]</p>
+<p>*$py.class</p>
+<p># Virtual environments</p>
+<p>venv/</p>
+<p>env/</p>
+<p>.env</p>
+<p># IDE</p>
+<p>.vscode/</p>
+<p>.idea/</p>
+<p># Logs</p>
+<p>*.log</p>
+<p><div class="code-block"><div class="code-line"><code>### Cas d'usage : Node.js</code></div></div>gitignore</p>
+<p>node_modules/</p>
+<p>package-lock.json</p>
+<p>.env</p>
+<p>dist/</p>
+<p>build/</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>8. Commandes utiles du quotidien</code></div></div>bash</h2>
+<p># État du dépôt</p>
+<p>git status              # quoi de modifié</p>
+<p>git diff                # détails des changements</p>
+<p>git log --oneline       # historique concis</p>
+<p># Ajouter et valider</p>
+<p>git add fichier.txt     # indexer un fichier précis</p>
+<p>git add .               # indexer TOUS les fichiers modifiés</p>
+<p>git commit -m "Message" # valider avec message</p>
+<p># Branches</p>
+<p>git branch              # lister les branches</p>
+<p>git checkout -b nom     # créer et basculer</p>
+<p>git checkout master     # revenir à master</p>
+<p>git merge branche       # fusionner une branche</p>
+<p># Synchronisation</p>
+<p>git clone url            # télécharger un dépôt</p>
+<p>git push origin master   # envoyer sur le serveur</p>
+<p>git pull origin master   # récupérer du serveur</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<hr/>
+<h2>14. Résumé des commandes</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>git init</code></td>
-<td>Créer un nouveau dépôt</td>
-</tr>
-<tr>
-<td><code>git clone url</code></td>
-<td>Cloner un dépôt existant</td>
-</tr>
-<tr>
-<td><code>git status</code></td>
-<td>Voir l'état du dépôt</td>
-</tr>
-<tr>
-<td><code>git add fichier</code></td>
-<td>Indexer un fichier</td>
-</tr>
-<tr>
-<td><code>git commit -m "msg"</code></td>
-<td>Enregistrer les modifications</td>
-</tr>
-<tr>
-<td><code>git log</code></td>
-<td>Voir l'historique</td>
-</tr>
-<tr>
-<td><code>git log --oneline</code></td>
-<td>Historique condensé</td>
-</tr>
-<tr>
-<td><code>git branch</code></td>
-<td>Lister les branches</td>
-</tr>
-<tr>
-<td><code>git branch nom</code></td>
-<td>Créer une branche</td>
-</tr>
-<tr>
-<td><code>git checkout branche</code></td>
-<td>Basculer sur une branche</td>
-</tr>
-<tr>
-<td><code>git switch branche</code></td>
-<td>Basculer (syntaxe moderne)</td>
-</tr>
-<tr>
-<td><code>git merge branche</code></td>
-<td>Fusionner une branche</td>
-</tr>
-<tr>
-<td><code>git push</code></td>
-<td>Envoyer sur le remote</td>
-</tr>
-<tr>
-<td><code>git pull</code></td>
-<td>Récupérer depuis le remote</td>
-</tr>
-<tr>
-<td><code>git fetch</code></td>
-<td>Récupérer sans fusionner</td>
-</tr>
-<tr>
-<td><code>git restore fichier</code></td>
-<td>Annuler les modifications</td>
-</tr>
-<tr>
-<td><code>git revert commit</code></td>
-<td>Annuler un commit</td>
-</tr>
-<tr>
-<td><code>git reset --hard</code></td>
-<td>Revenir à un commit (⚠️ destructif)</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>git init</code></td><td>Créer un nouveau dépôt</td></tr>
+<tr><td><code>git clone url</code></td><td>Cloner un dépôt existant</td></tr>
+<tr><td><code>git status</code></td><td>Voir l'état du dépôt</td></tr>
+<tr><td><code>git add fichier</code></td><td>Indexer un fichier</td></tr>
+<tr><td><code>git commit -m "msg"</code></td><td>Enregistrer les modifications</td></tr>
+<tr><td><code>git log</code></td><td>Voir l'historique</td></tr>
+<tr><td><code>git log --oneline</code></td><td>Historique condensé</td></tr>
+<tr><td><code>git branch</code></td><td>Lister les branches</td></tr>
+<tr><td><code>git branch nom</code></td><td>Créer une branche</td></tr>
+<tr><td><code>git checkout branche</code></td><td>Basculer sur une branche</td></tr>
+<tr><td><code>git switch branche</code></td><td>Basculer (syntaxe moderne)</td></tr>
+<tr><td><code>git merge branche</code></td><td>Fusionner une branche</td></tr>
+<tr><td><code>git push</code></td><td>Envoyer sur le remote</td></tr>
+<tr><td><code>git pull</code></td><td>Récupérer depuis le remote</td></tr>
+<tr><td><code>git fetch</code></td><td>Récupérer sans fusionner</td></tr>
+<tr><td><code>git restore fichier</code></td><td>Annuler les modifications</td></tr>
+<tr><td><code>git revert commit</code></td><td>Annuler un commit</td></tr>
+<tr><td><code>git reset --hard</code></td><td>Revenir à un commit (⚠️ destructif)</td></tr>
 </table>
-<hr />
-<h2>12. Exercice pratique</h2>
+<hr/>
+<h2>14. Exercice pratique</h2>
 <h3>Exercice : Ton premier projet Git</h3>
-<p><strong>Objectif</strong> : Créer un projet avec Git, faire des modifications et les pousser sur GitHub.</p>
-<p><strong>Étape 1 : Création du projet</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>mkdir projet-test
-cd projet-test
-git init
-git config user.name &quot;Ton Nom&quot;
-git config user.email &quot;ton.email@example.com&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 2 : Premier commit</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo &quot;# Mon Projet&quot; &gt; README.md
-git add README.md
-git commit -m &quot;Premier commit : ajout du README&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 3 : Modifier et suivre les changements</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Modifier le README
-echo &quot;Description de mon projet&quot; &gt;&gt; README.md
-
-# Vérifier l'état
-git status
-
-# Indexer et commiter
-git add .
-git commit -m &quot;Ajout de la description&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 4 : Voir l'historique</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>git log --oneline</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 5 : Créer une branche</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une branche pour une fonctionnalité
-git checkout -b feature-calculatrice
-
-# Ajouter un fichier
-echo &quot;print('Calculatrice')&quot; &gt; calculatrice.py
-git add .
-git commit -m &quot;Ajout de la calculatrice&quot;
-
-# Revenir sur master
-git checkout master</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 6 : Simuler un conflit de fusion</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Merger la feature sur master
-git merge feature-calculatrice</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 7 : Annuler une erreur (optionnel)</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Si tu veux revenir au dernier commit propre
-git log --oneline
-# Note le hash du commit propre
-git reset --hard HEAD~1</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>✅ Tu connais maintenant les bases de Git !</p>
-<hr />
-<h2>13. Bonnes pratiques</h2>
+<p>**Objectif** : Créer un projet avec Git, faire des modifications et les pousser sur GitHub.</p>
+<p>**Étape 1 : Création du projet**</code></div></div>bash</p>
+<p>mkdir projet-test</p>
+<p>cd projet-test</p>
+<p>git init</p>
+<p>git config user.name "Ton Nom"</p>
+<p>git config user.email "ton.email@example.com"</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 2 : Premier commit**</code></div></div>bash</p>
+<p>echo "# Mon Projet" > README.md</p>
+<p>git add README.md</p>
+<p>git commit -m "Premier commit : ajout du README"</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 3 : Modifier et suivre les changements**</code></div></div>bash</p>
+<p># Modifier le README</p>
+<p>echo "Description de mon projet" >> README.md</p>
+<p># Vérifier l'état</p>
+<p>git status</p>
+<p># Indexer et commiter</p>
+<p>git add .</p>
+<p>git commit -m "Ajout de la description"</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 4 : Voir l'historique**</code></div></div>bash</p>
+<p>git log --oneline</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 5 : Créer une branche**</code></div></div>bash</p>
+<p># Créer une branche pour une fonctionnalité</p>
+<p>git checkout -b feature-calculatrice</p>
+<p># Ajouter un fichier</p>
+<p>echo "print('Calculatrice')" > calculatrice.py</p>
+<p>git add .</p>
+<p>git commit -m "Ajout de la calculatrice"</p>
+<p># Revenir sur master</p>
+<p>git checkout master</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 6 : Simuler un conflit de fusion**</code></div></div>bash</p>
+<p># Merger la feature sur master</p>
+<p>git merge feature-calculatrice</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 7 : Annuler une erreur (optionnel)**</code></div></div>bash</p>
+<p># Si tu veux revenir au dernier commit propre</p>
+<p>git log --oneline</p>
+<p># Note le hash du commit propre</p>
+<p>git reset --hard HEAD~1</p>
+<p><div class="code-block"><div class="code-line"><code>✅ Tu connais maintenant les bases de Git !</p>
+<hr/>
+<h2>15. Bonnes pratiques</h2>
 <ul>
-<li><strong>Commits atomiques</strong> : un commit = une modification logique</li>
-<li><strong>Messages de commit clairs</strong> : décris ce qui a changé, pas comment</li>
-<li><strong>Braches courtes</strong> : fusionne fréquemment pour éviter les conflits</li>
-<li><strong>.gitignore</strong> : configure-le dès le début du projet</li>
-<li><strong>Ne jamais commiter de secrets</strong> : utilise les variables d'environnement</li>
+<li>**Commits atomiques** : un commit = une modification logique</li>
+<li>**Messages de commit clairs** : décris ce qui a changé, pas comment</li>
+<li>**Braches courtes** : fusionne fréquemment pour éviter les conflits</li>
+<li>**.gitignore** : configure-le dès le début du projet</li>
+<li>**Ne jamais commiter de secrets** : utilise les variables d'environnement</li>
 </ul>
-<h3>Format de message de commit recommandé</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>type: Description courte (max 50 caractères)
-
-Explication plus détaillée si nécessaire.
-Décompose en plusieurs lignes si le contexte est important.
-
-Liens: #12, #15</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Types courants : <code>feat</code>, <code>fix</code>, <code>docs</code>, <code>style</code>, <code>refactor</code>, <code>test</code>, <code>chore</code></p>
-<h3>Exemples de bons messages</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>feat: Ajout de la connexion utilisateur
-fix: Correction du bug de navigation sur mobile
-docs: Mise à jour du README avec installation
-refactor: Simplification de la logique d'authentification</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-</div>
+<h3>Format de message de commit recommandé</code></div></div></h3>
+<p>type: Description courte (max 50 caractères)</p>
+<p>Explication plus détaillée si nécessaire.</p>
+<p>Décompose en plusieurs lignes si le contexte est important.</p>
+<p>Liens: #12, #15</p>
+<p><div class="code-block"><div class="code-line"><code>Types courants : <code>feat</code>, <code>fix</code>, <code>docs</code>, <code>style</code>, <code>refactor</code>, <code>test</code>, <code>chore</code></p>
+<h3>Exemples de bons messages</code></div></div></h3>
+<p>feat: Ajout de la connexion utilisateur</p>
+<p>fix: Correction du bug de navigation sur mobile</p>
+<p>docs: Mise à jour du README avec installation</p>
+<p>refactor: Simplification de la logique d'authentification</p>
+<p>```</p>
 <nav>
-<a href="28-variables-denvironnement.html" style="color:#00d9ff;text-decoration:none;">&larr; 28 - Les variables d'environnement sous Linux</a> | <span style="color:#666;">29</span> | <a href="30-alias-raccourcis.html" style="color:#00d9ff;text-decoration:none;">30 - Alias et raccourcis personnalisés &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="28-variables-denvironnement.html">&larr; 28-variables-denvironnement</a>
+<a href="30-alias-raccourcis.html">30-alias-raccourcis &rarr;</a>
+</nav></div></body></html>

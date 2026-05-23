@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 62 : curl et wget — Télécharger des fichiers depuis le terminal</h1>
+<h3>wget — Téléchargement simple et automatique</h3>
+<p>wget est idéal pour télécharger des fichiers de manière récursive ou en arrière-plan. Il reprend automatiquement un téléchargement interrompu et suit les redirections.</p>
+<p>Le fichier sera téléchargé et sauvegardé sous le même nom fichier.tar.gz.</p>
+<p>L'option -O permet de spécifier le nom du fichier de sortie.</p>
+<p>Si le téléchargement est interrompu, -c reprend là où il s'est arrêté. Très utile pour les gros fichiers !</p>
+<p>L'option -b lance le téléchargement en arrière-plan. Tu peux vérifier l'avancement avec :</p>
+<p>Cette commande télécharge récursivement tout un site web pour consultation hors ligne.</p>
+<h3>curl — Transfert de données多功能</h3>
+<p>curl est plus puissant pour envoyer des données (POST, uploads) et pour visualiser les en-têtes HTTP. Il affiche aussi le résultat dans le terminal par défaut.</p>
+<p>Le contenu HTML s'affiche directement dans le terminal (sans sauvegarder).</p>
+<p>L'option -O (majuscule) sauvegarde le fichier sous son nom original.</p>
+<p>L'option -o (minuscule) permet de choisir le nom de sortie.</p>
+<p>L'option -L suit automatiquement les redirections HTTP.</p>
+<p>L'option -u permet de s'authentifier avec un nom d'utilisateur et mot de passe.</p>
+<p>-X POST指定 la méthode et -d envoie les données.</p>
+<p>L'option -F envoie un formulaire multipart (utile pour les uploads de fichiers).</p>
+<p>L'option -I affiche uniquement les en-têtes de la réponse.</p>
+<p>L'option -H permet d'ajouter des en-têtes personnalisés.</p>
+<h3>Utiliser curl avec une API JSON</h3>
+<p>Pour envoyer ou recevoir des données JSON :</p>
+<h3>Téléchargement avec vitesse limitée</h3>
+<p>Pour ne pas saturer la bande passante :</p>
+<p>La vitesse est limitée à 200 Ko/s dans ces exemples.</p>
+<h3>Vérifier les liens brisés</h3>
+<p>Avec curl et un peu de script, tu peux vérifier si une liste de liens fonctionne :</p>
+<p>Cela affiche le code HTTP de chaque lien dans liens.txt.</p>
+<h3>Résumé des options principales</h3>
+<p>-O fichier : sauvegarder sous un nom différent</p>
+<p>-c : reprendre un téléchargement interrompu</p>
+<p>-b : lancer en arrière-plan</p>
+<p>-q : mode silencieux (sans messages)</p>
+<p>--limit-rate=X : limiter la vitesse de téléchargement</p>
+<p>--mirror : dupliquer un site entier</p>
+<p>-o fichier : sauvegarder sous un nom différent</p>
+<p>-O : sauvegarder sous le nom original</p>
+<p>-L : suivre les redirections</p>
+<p>-I : afficher uniquement les en-têtes</p>
+<p>-X POST : envoyer en méthode POST</p>
+<p>-d "data" : envoyer des données</p>
+<p>-F "fichier=@x" : upload de fichier</p>
+<p>-H "En-tête" : ajouter un en-tête personnalisé</p>
+<p>-u user:mdp : authentification</p>
+<p>--limit-rate X : limiter la vitesse</p>
+<h3>Exercices pratiques</h3>
+<p>Utilise wget pour télécharger un fichier depuis une URL de ton choix.</p>
+<p>Utilise curl pour afficher le contenu HTML d'une page web.</p>
+<p>Télécharge un fichier archive et décompresse-le en une seule ligne avec pipe.</p>
+<p>Utilise curl -I pour voir les en-têtes HTTP d'un site.</p>
+<p>Essaie de télécharger un fichier avec wget -c et interrompt-le avec Ctrl+C, puis reprends-le avec la même commande.</p>
+<nav>
+<a href="61-nc-netcat.html">&larr; 61-nc-netcat</a>
+<a href="63-tr-transformer-texte.html">63-tr-transformer-texte &rarr;</a>
+</nav></div></body></html>

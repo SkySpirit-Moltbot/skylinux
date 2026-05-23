@@ -1,794 +1,319 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 10 : Variables d'environnement et scripts Bash - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/10-variables-d-environnement-et-scripts-bash.html">
-<meta property="og:title" content="Leçon 10 : Variables d'environnement et scripts Bash - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 10 : Variables d'environnement et scripts Bash - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 10  variables denvironnement et scripts bash, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 10 : Variables d'environnement et scripts Bash</h1>
 <p>Dans cette leçon, tu vas maîtriser les variables d'environnement et créer tes premiers scripts Bash pour automatiser des tâches.</p>
-<hr />
+<hr/>
 <h2>1. Variables d'environnement</h2>
 <h3>Qu'est-ce qu'une variable d'environnement ?</h3>
-<p>Une variable d'environnement est une paire <strong>nom=valeur</strong> que le système et les programmes utilisent pour configurer leur comportement. Elles sont héritées par tous les processus enfants.</p>
+<p>Une variable d'environnement est une paire **nom=valeur** que le système et les programmes utilisent pour configurer leur comportement. Elles sont héritées par tous les processus enfants.</p>
 <h3>Commandes de base</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Lister toutes les variables
-env
-printenv
-
-# Voir une variable spécifique
-echo $HOME
-echo $PATH
-echo $USER
-
-# Définir une variable (session actuelle)
-MA_VARIABLE=&quot;Bonjour&quot;
-echo $MA_VARIABLE
-
-# Exporter une variable (pour les sous-processus)
-export MA_VARIABLE
-# ou
-export MA_VARIABLE=&quot;Bonjour&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Lister toutes les variables</p>
+<p>env</p>
+<p>printenv</p>
+<p># Voir une variable spécifique</p>
+<p>echo $HOME</p>
+<p>echo $PATH</p>
+<p>echo $USER</p>
+<p># Définir une variable (session actuelle)</p>
+<p>MA_VARIABLE="Bonjour"</p>
+<p>echo $MA_VARIABLE</p>
+<p># Exporter une variable (pour les sous-processus)</p>
+<p>export MA_VARIABLE</p>
+<p># ou</p>
+<p>export MA_VARIABLE="Bonjour"</code></div></div></p>
 <h3>Portée des variables</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Variable locale (processus courant uniquement)
-MA_VAR=&quot;valeur&quot;
-
-# Variable exportée (héritée par les enfants)
-export MA_VAR=&quot;valeur&quot;
-
-# Variable persistante (à ajouter dans ~/.bashrc ou ~/.profile)
-echo 'export MA_VAR=&quot;valeur&quot;' &gt;&gt; ~/.bashrc
-source ~/.bashrc  # Recharger</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Variable locale (processus courant uniquement)</p>
+<p>MA_VAR="valeur"</p>
+<p># Variable exportée (héritée par les enfants)</p>
+<p>export MA_VAR="valeur"</p>
+<p># Variable persistante (à ajouter dans ~/.bashrc ou ~/.profile)</p>
+<p>echo 'export MA_VAR="valeur"' &gt;&gt; ~/.bashrc</p>
+<p>source ~/.bashrc  # Recharger</code></div></div></p>
+<hr/>
 <h2>2. Variables système importantes</h2>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-<th>Exemple</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$HOME</code></td>
-<td>Répertoire personnel</td>
-<td><code>/home/david</code></td>
-</tr>
-<tr>
-<td><code>$USER</code></td>
-<td>Nom d'utilisateur</td>
-<td><code>david</code></td>
-</tr>
-<tr>
-<td><code>$PATH</code></td>
-<td>Chemins des commandes</td>
-<td><code>/usr/local/bin:/usr/bin</code></td>
-</tr>
-<tr>
-<td><code>$PWD</code></td>
-<td>Répertoire courant</td>
-<td><code>/home/david</code></td>
-</tr>
-<tr>
-<td><code>$SHELL</code></td>
-<td>Shell par défaut</td>
-<td><code>/bin/bash</code></td>
-</tr>
-<tr>
-<td><code>$LANG</code></td>
-<td>Langue</td>
-<td><code>fr_CH.UTF-8</code></td>
-</tr>
-<tr>
-<td><code>$TERM</code></td>
-<td>Type de terminal</td>
-<td><code>xterm-256color</code></td>
-</tr>
-<tr>
-<td><code>$HOSTNAME</code></td>
-<td>Nom de la machine</td>
-<td><code>raspberrypi</code></td>
-</tr>
-<tr>
-<td><code>$DISPLAY</code></td>
-<td>Écran X11</td>
-<td><code>:0</code></td>
-</tr>
-<tr>
-<td><code>$EDITOR</code></td>
-<td>Éditeur par défaut</td>
-<td><code>nano</code></td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>$HOME</code></td><td>Répertoire personnel</td><td><code>/home/david</code></td></tr>
+<tr><td><code>$USER</code></td><td>Nom d'utilisateur</td><td><code>david</code></td></tr>
+<tr><td><code>$PATH</code></td><td>Chemins des commandes</td><td><code>/usr/local/bin:/usr/bin</code></td></tr>
+<tr><td><code>$PWD</code></td><td>Répertoire courant</td><td><code>/home/david</code></td></tr>
+<tr><td><code>$SHELL</code></td><td>Shell par défaut</td><td><code>/bin/bash</code></td></tr>
+<tr><td><code>$LANG</code></td><td>Langue</td><td><code>fr_CH.UTF-8</code></td></tr>
+<tr><td><code>$TERM</code></td><td>Type de terminal</td><td><code>xterm-256color</code></td></tr>
+<tr><td><code>$HOSTNAME</code></td><td>Nom de la machine</td><td><code>raspberrypi</code></td></tr>
+<tr><td><code>$DISPLAY</code></td><td>Écran X11</td><td><code>:0</code></td></tr>
+<tr><td><code>$EDITOR</code></td><td>Éditeur par défaut</td><td><code>nano</code></td></tr>
 </table>
 <h3>Modifier le PATH</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ajouter un répertoire au PATH
-export PATH=$PATH:/nouveau/chemin
-
-# PATH temporaire
-export PATH=&quot;/home/david/scripts:$PATH&quot;
-
-# PATH permanent (ajouter à ~/.bashrc)
-echo 'export PATH=&quot;$PATH:/home/david/scripts&quot;' &gt;&gt; ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Ajouter un répertoire au PATH</p>
+<p>export PATH=$PATH:/nouveau/chemin</p>
+<p># PATH temporaire</p>
+<p>export PATH="/home/david/scripts:$PATH"</p>
+<p># PATH permanent (ajouter à ~/.bashrc)</p>
+<p>echo 'export PATH="$PATH:/home/david/scripts"' &gt;&gt; ~/.bashrc</code></div></div></p>
+<hr/>
 <h2>3. Introduction aux scripts Bash</h2>
 <h3>Créer un script</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano mon_script.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>nano mon_script.sh</code></div></div></p>
 <h3>Structure de base</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-# Commentaire : ce script fait quelque chose
-
-echo &quot;Hello World !&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Commentaire : ce script fait quelque chose</p>
+<p>echo "Hello World !"</code></div></div></p>
 <h3>Rendre exécutable</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>chmod +x mon_script.sh
-./mon_script.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>chmod +x mon_script.sh</p>
+<p>./mon_script.sh</code></div></div></p>
 <blockquote>
-<p>⚠️ <strong>Important</strong> : Le shebang <code>#!/bin/bash</code> indique quel interpréteur utiliser.</p>
+<p>⚠️ **Important** : Le shebang <code>#!/bin/bash</code> indique quel interpréteur utiliser.</p>
 </blockquote>
-<hr />
+<hr/>
 <h2>4. Variables dans les scripts</h2>
 <h3>Variables utilisateur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-NOM=&quot;David&quot;
-echo &quot;Bonjour $NOM !&quot;
-
-# Avec read
-echo -n &quot;Ton prénom: &quot;
-read prenom
-echo &quot;Salut $prenom !&quot;
-
-#read avec prompt
-read -p &quot;Ton âge: &quot; age
-echo &quot;Tu as $age ans&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>NOM="David"</p>
+<p>echo "Bonjour $NOM !"</p>
+<p># Avec read</p>
+<p>echo -n "Ton prénom: "</p>
+<p>read prenom</p>
+<p>echo "Salut $prenom !"</p>
+<p>#read avec prompt</p>
+<p>read -p "Ton âge: " age</p>
+<p>echo "Tu as $age ans"</code></div></div></p>
 <h3>Variables spéciales</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$0</code></td>
-<td>Nom du script</td>
-</tr>
-<tr>
-<td><code>$1</code>, <code>$2</code>, ...</td>
-<td>Arguments positionnels</td>
-</tr>
-<tr>
-<td><code>$#</code></td>
-<td>Nombre d'arguments</td>
-</tr>
-<tr>
-<td><code>$@</code></td>
-<td>Tous les arguments</td>
-</tr>
-<tr>
-<td><code>$?</code></td>
-<td>Code de retour de la dernière commande</td>
-</tr>
-<tr>
-<td><code>$$</code></td>
-<td>PID du script</td>
-</tr>
-<tr>
-<td><code>$!</code></td>
-<td>PID du dernier processus en arrière-plan</td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$0</code></td><td>Nom du script</td></tr>
+<tr><td><code>$1</code>, <code>$2</code>, ...</td><td>Arguments positionnels</td></tr>
+<tr><td><code>$#</code></td><td>Nombre d'arguments</td></tr>
+<tr><td><code>$@</code></td><td>Tous les arguments</td></tr>
+<tr><td><code>$?</code></td><td>Code de retour de la dernière commande</td></tr>
+<tr><td><code>$$</code></td><td>PID du script</td></tr>
+<tr><td><code>$!</code></td><td>PID du dernier processus en arrière-plan</td></tr>
 </table>
 <h3>Exemple avec arguments</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-echo &quot;Script: $0&quot;
-echo &quot;Premier argument: $1&quot;
-echo &quot;Deuxième argument: $2&quot;
-echo &quot;Nombre d'arguments: $#&quot;
-echo &quot;Tous les arguments: $@&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>echo "Script: $0"</p>
+<p>echo "Premier argument: $1"</p>
+<p>echo "Deuxième argument: $2"</p>
+<p>echo "Nombre d'arguments: $#"</p>
+<p>echo "Tous les arguments: $@"</code></div></div></p>
+<hr/>
 <h2>5. Conditions (if/else)</h2>
 <h3>Syntaxe</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>if [ condition ]; then
-    # commandes
-elif [ condition ]; then
-    # commandes
-else
-    # commandes
-fi</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>if [ condition ]; then</p>
+<p>    # commandes</p>
+<p>elif [ condition ]; then</p>
+<p>    # commandes</p>
+<p>else</p>
+<p>    # commandes</p>
+<p>fi</code></div></div></p>
 <h3>Comparaisons de nombres</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>if [ $a -eq $b ]; then    # Égal
-if [ $a -ne $b ]; then    # Différent
-if [ $a -gt $b ]; then    # Plus grand
-if [ $a -ge $b ]; then    # Plus grand ou égal
-if [ $a -lt $b ]; then    # Plus petit
-if [ $a -le $b ]; then    # Plus petit ou égal</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>if [ $a -eq $b ]; then    # Égal</p>
+<p>if [ $a -ne $b ]; then    # Différent</p>
+<p>if [ $a -gt $b ]; then    # Plus grand</p>
+<p>if [ $a -ge $b ]; then    # Plus grand ou égal</p>
+<p>if [ $a -lt $b ]; then    # Plus petit</p>
+<p>if [ $a -le $b ]; then    # Plus petit ou égal</code></div></div></p>
 <h3>Comparaisons de chaînes</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>if [ &quot;$a&quot; = &quot;$b&quot; ]; then    # Égal
-if [ &quot;$a&quot; != &quot;$b&quot; ]; then   # Différent
-if [ -z &quot;$a&quot; ]; then       # Vide
-if [ -n &quot;$a&quot; ]; then       # Non vide</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>if [ "$a" = "$b" ]; then    # Égal</p>
+<p>if [ "$a" != "$b" ]; then   # Différent</p>
+<p>if [ -z "$a" ]; then       # Vide</p>
+<p>if [ -n "$a" ]; then       # Non vide</code></div></div></p>
 <h3>Tests sur fichiers</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>if [ -f &quot;$fichier&quot; ]; then    # Fichier régulier
-if [ -d &quot;$dossier&quot; ]; then   # Répertoire
-if [ -e &quot;$fichier&quot; ]; then   # Existe
-if [ -r &quot;$fichier&quot; ]; then   # Lisible
-if [ -w &quot;$fichier&quot; ]; then   # Écriture
-if [ -x &quot;$fichier&quot; ]; then   # Exécutable
-if [ -s &quot;$fichier&quot; ]; then   # Non vide</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>if [ -f "$fichier" ]; then    # Fichier régulier</p>
+<p>if [ -d "$dossier" ]; then   # Répertoire</p>
+<p>if [ -e "$fichier" ]; then   # Existe</p>
+<p>if [ -r "$fichier" ]; then   # Lisible</p>
+<p>if [ -w "$fichier" ]; then   # Écriture</p>
+<p>if [ -x "$fichier" ]; then   # Exécutable</p>
+<p>if [ -s "$fichier" ]; then   # Non vide</code></div></div></p>
 <h3>Exemple complet</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-if [ $# -eq 0 ]; then
-    echo &quot;Usage: $0 &lt;nom&gt;&quot;
-    exit 1
-fi
-
-NOM=$1
-
-if [ -f &quot;$NOM.txt&quot; ]; then
-    echo &quot;Le fichier $NOM.txt existe&quot;
-else
-    echo &quot;Le fichier $NOM.txt n'existe pas&quot;
-    echo &quot;Je le crée...&quot;
-    touch &quot;$NOM.txt&quot;
-fi</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>if [ $# -eq 0 ]; then</p>
+<p>    echo "Usage: $0 &lt;nom&gt;"</p>
+<p>    exit 1</p>
+<p>fi</p>
+<p>NOM=$1</p>
+<p>if [ -f "$NOM.txt" ]; then</p>
+<p>    echo "Le fichier $NOM.txt existe"</p>
+<p>else</p>
+<p>    echo "Le fichier $NOM.txt n'existe pas"</p>
+<p>    echo "Je le crée..."</p>
+<p>    touch "$NOM.txt"</p>
+<p>fi</code></div></div></p>
+<hr/>
 <h2>6. Boucles</h2>
 <h3>Boucle for classique</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>for i in 1 2 3 4 5; do
-    echo &quot;Compteur: $i&quot;
-done
-
-# Parcourir un dossier
-for fichier in *.txt; do
-    echo &quot;Fichier: $fichier&quot;
-done
-
-# Suite numérique
-for i in {1..10}; do
-    echo $i
-done</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>for i in 1 2 3 4 5; do</p>
+<p>    echo "Compteur: $i"</p>
+<p>done</p>
+<p># Parcourir un dossier</p>
+<p>for fichier in *.txt; do</p>
+<p>    echo "Fichier: $fichier"</p>
+<p>done</p>
+<p># Suite numérique</p>
+<p>for i in {1..10}; do</p>
+<p>    echo $i</p>
+<p>done</code></div></div></p>
 <h3>Boucle for C-style</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>for ((i=0; i&lt;10; i++)); do
-    echo &quot;i = $i&quot;
-done</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>for ((i=0; i&lt;10; i++)); do</p>
+<p>    echo "i = $i"</p>
+<p>done</code></div></div></p>
 <h3>Boucle while</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>compteur=1
-while [ $compteur -le 5 ]; do
-    echo &quot;Compteur: $compteur&quot;
-    compteur=$((compteur + 1))
-done</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>compteur=1</p>
+<p>while [ $compteur -le 5 ]; do</p>
+<p>    echo "Compteur: $compteur"</p>
+<p>    compteur=$((compteur + 1))</p>
+<p>done</code></div></div></p>
 <h3>Boucle until</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>compteur=1
-until [ $compteur -gt 5 ]; do
-    echo &quot;Compteur: $compteur&quot;
-    compteur=$((compteur + 1))
-done</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>compteur=1</p>
+<p>until [ $compteur -gt 5 ]; do</p>
+<p>    echo "Compteur: $compteur"</p>
+<p>    compteur=$((compteur + 1))</p>
+<p>done</code></div></div></p>
+<hr/>
 <h2>7. Case (switch)</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-echo &quot;Choisis une option: &quot;
-read option
-
-case $option in
-    1)
-        echo &quot;Tu as choisi 1&quot;
-        ;;
-    2)
-        echo &quot;Tu as choisi 2&quot;
-        ;;
-    3)
-        echo &quot;Tu as choisi 3&quot;
-        ;;
-    *)
-        echo &quot;Choix invalide&quot;
-        ;;
-esac</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>echo "Choisis une option: "</p>
+<p>read option</p>
+<p>case $option in</p>
+<p>    1)</p>
+<p>        echo "Tu as choisi 1"</p>
+<p>        ;;</p>
+<p>    2)</p>
+<p>        echo "Tu as choisi 2"</p>
+<p>        ;;</p>
+<p>    3)</p>
+<p>        echo "Tu as choisi 3"</p>
+<p>        ;;</p>
+<p>    *)</p>
+<p>        echo "Choix invalide"</p>
+<p>        ;;</p>
+<p>esac</code></div></div></p>
+<hr/>
 <h2>8. Fonctions</h2>
 <h3>Définir une fonction</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Fonction sans paramètre
-dire_bonjour() {
-    echo &quot;Bonjour !&quot;
-}
-
-# Appeler
-dire_bonjour</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Fonction sans paramètre</p>
+<p>dire_bonjour() {</p>
+<p>    echo "Bonjour !"</p>
+<p>}</p>
+<p># Appeler</p>
+<p>dire_bonjour</code></div></div></p>
 <h3>Fonction avec paramètres</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>dire_bonjour_a() {
-    echo &quot;Bonjour $1 !&quot;  # $1 = premier argument
-}
-
-dire_bonjour_a &quot;David&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>dire_bonjour_a() {</p>
+<p>    echo "Bonjour $1 !"  # $1 = premier argument</p>
+<p>}</p>
+<p>dire_bonjour_a "David"</code></div></div></p>
 <h3>Fonction avec retour</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>additionner() {
-    resultat=$(($1 + $2))
-    echo $resultat
-}
-
-somme=$(additionner 5 3)
-echo &quot;5 + 3 = $somme&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>additionner() {</p>
+<p>    resultat=$(($1 + $2))</p>
+<p>    echo $resultat</p>
+<p>}</p>
+<p>somme=$(additionner 5 3)</p>
+<p>echo "5 + 3 = $somme"</code></div></div></p>
+<hr/>
 <h2>9. Tableaux</h2>
 <h3>Déclaration</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Tableau simple
-tableau=(valeur1 valeur2 valeur3)
-
-# Tableau avec indices
-tableau[0]=&quot;premier&quot;
-tableau[1]=&quot;deuxième&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Tableau simple</p>
+<p>tableau=(valeur1 valeur2 valeur3)</p>
+<p># Tableau avec indices</p>
+<p>tableau[0]="premier"</p>
+<p>tableau[1]="deuxième"</code></div></div></p>
 <h3>Accéder aux éléments</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo ${tableau[0]}      # Premier élément
-echo ${tableau[@]}      # Tous les éléments
-echo ${#tableau[@]}     # Nombre d'éléments</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>echo ${tableau[0]}      # Premier élément</p>
+<p>echo ${tableau[@]}      # Tous les éléments</p>
+<p>echo ${#tableau[@]}     # Nombre d'éléments</code></div></div></p>
 <h3>Parcourir un tableau</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>for element in &quot;${tableau[@]}&quot;; do
-    echo $element
-done</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>for element in "${tableau[@]}"; do</p>
+<p>    echo $element</p>
+<p>done</code></div></div></p>
+<hr/>
 <h2>10. Exercices pratiques</h2>
 <h3>Exercice 1 : Script de backup</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-# Backup automatique
-
-DEST=&quot;$HOME/backup_$(date +%Y%m%d)&quot;
-mkdir -p $DEST
-cp -r ~/Documents/* $DEST/
-echo &quot;Backup créé dans $DEST&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Backup automatique</p>
+<p>DEST="$HOME/backup_$(date +%Y%m%d)"</p>
+<p>mkdir -p $DEST</p>
+<p>cp -r ~/Documents/* $DEST/</p>
+<p>echo "Backup créé dans $DEST"</code></div></div></p>
 <h3>Exercice 2 : Vérification système</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-echo &quot;=== État du système ===&quot;
-echo &quot;Uptime: $(uptime)&quot;
-echo &quot;Mémoire: $(free -h | grep Mem)&quot;
-echo &quot;Disque: $(df -h / | tail -1)&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>echo "=== État du système ==="</p>
+<p>echo "Uptime: $(uptime)"</p>
+<p>echo "Mémoire: $(free -h | grep Mem)"</p>
+<p>echo "Disque: $(df -h / | tail -1)"</code></div></div></p>
 <h3>Exercice 3 : Menu interactif</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-echo &quot;1. Afficher la date&quot;
-echo &quot;2. Afficher qui est connecté&quot;
-echo &quot;3. Afficher l'espace disque&quot;
-
-read -p &quot;Choix: &quot; choix
-
-case $choix in
-    1) date ;;
-    2) who ;;
-    3) df -h ;;
-    *) echo &quot;Choix invalide&quot; ;;
-esac</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>echo "1. Afficher la date"</p>
+<p>echo "2. Afficher qui est connecté"</p>
+<p>echo "3. Afficher l'espace disque"</p>
+<p>read -p "Choix: " choix</p>
+<p>case $choix in</p>
+<p>    1) date ;;</p>
+<p>    2) who ;;</p>
+<p>    3) df -h ;;</p>
+<p>    *) echo "Choix invalide" ;;</p>
+<p>esac</code></div></div></p>
+<hr/>
 <h2>11. Trucs et Astuces</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Debug un script
-bash -x script.sh
-
-# Ignorer les erreurs
-commande || true
-
-# Valeur par défaut
-echo ${VAR:-&quot;défaut&quot;}
-
-# Assigner si vide
-echo ${VAR:=&quot;défaut&quot;}
-
-# Opérations mathématiques
-result=$((5 + 3))    # Addition
-result=$((10 / 2))  # Division
-result=$((10 % 3))  # Modulo</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Debug un script</p>
+<p>bash -x script.sh</p>
+<p># Ignorer les erreurs</p>
+<p>commande || true</p>
+<p># Valeur par défaut</p>
+<p>echo ${VAR:-"défaut"}</p>
+<p># Assigner si vide</p>
+<p>echo ${VAR:="défaut"}</p>
+<p># Opérations mathématiques</p>
+<p>result=$((5 + 3))    # Addition</p>
+<p>result=$((10 / 2))  # Division</p>
+<p>result=$((10 % 3))  # Modulo</code></div></div></p>
+<hr/>
 <h2>12. Résumé</h2>
 <table>
-<thead>
-<tr>
-<th>Concept</th>
-<th>Commande/Syntaxe</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Variable</td>
-<td><code>VAR="valeur"</code></td>
-</tr>
-<tr>
-<td>Accéder</td>
-<td><code>$VAR</code></td>
-</tr>
-<tr>
-<td>Exporter</td>
-<td><code>export VAR</code></td>
-</tr>
-<tr>
-<td>Condition</td>
-<td><code>if [ $a -eq $b ]; then ... fi</code></td>
-</tr>
-<tr>
-<td>Boucle for</td>
-<td><code>for i in 1 2 3; do ... done</code></td>
-</tr>
-<tr>
-<td>Boucle while</td>
-<td><code>while [ condition ]; do ... done</code></td>
-</tr>
-<tr>
-<td>Fonction</td>
-<td><code>nom() { ... }</code></td>
-</tr>
-<tr>
-<td>Argument</td>
-<td><code>$1</code>, <code>$2</code>, <code>$@</code></td>
-</tr>
-</tbody>
+<tr><th>Concept</th><th>Commande/Syntaxe</th></tr>
+<tr><td>Variable</td><td><code>VAR="valeur"</code></td></tr>
+<tr><td>Accéder</td><td><code>$VAR</code></td></tr>
+<tr><td>Exporter</td><td><code>export VAR</code></td></tr>
+<tr><td>Condition</td><td><code>if [ $a -eq $b ]; then ... fi</code></td></tr>
+<tr><td>Boucle for</td><td><code>for i in 1 2 3; do ... done</code></td></tr>
+<tr><td>Boucle while</td><td><code>while [ condition ]; do ... done</code></td></tr>
+<tr><td>Fonction</td><td><code>nom() { ... }</code></td></tr>
+<tr><td>Argument</td><td><code>$1</code>, <code>$2</code>, <code>$@</code></td></tr>
 </table>
-<hr />
+<hr/>
 <p>Maîtrise ces bases et tu pourras créer des scripts puissants pour automatiser tes tâches Linux ! 🚀</p>
-</div>
 <nav>
-<a href="09-recherche-fichiers-texte.html" style="color:#00d9ff;text-decoration:none;">&larr; 9 - Recherche de fichiers et texte</a> | <span style="color:#666;">10</span> | <a href="11-supervision-systeme.html" style="color:#00d9ff;text-decoration:none;">11 - Surveillance et supervision système &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="09-recherche-fichiers-texte.html">&larr; 09-recherche-fichiers-texte</a>
+<a href="11-supervision-systeme.html">11-supervision-systeme &rarr;</a>
+</nav></div></body></html>

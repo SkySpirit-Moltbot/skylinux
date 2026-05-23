@@ -162,3 +162,75 @@ Objectif : Analyse ton propre système et identifie une optimisation possible.
 - Désactiver les services inutiles accélère le démarrage
 - Réduire le timeout GRUB élimine un délai fixe au démarrage
 - Toujours vérifier la description d'un service avant de le désactiver
+
+---
+
+## Complément: Targets et runlevels
+
+### 📖 Comprendre les targets
+
+Sous SysVinit, le système démarrait dans l'un des runlevels 0 à 6. Chaque runlevel déclenchait un ensemble de services. Systemd remplace ce mécanisme par des targets, qui sont des groupes d'unités (services, sockets, mounts...) devant être actifs simultanément.
+
+### 🔧 Commandes de base
+
+Affiche la target par défaut vers laquelle le système démarre.
+
+Configure le système pour démarrer en mode texte ou avec interface graphique.
+
+Passe immédiatement dans la target spécifiée, sans redémarrer. Tous les services non requis par la nouvelle target sont arrêtés.
+
+Affiche toutes les targets connues sur le système, avec leur état.
+
+Au démarrage, dans le menu GRUB, ajoutez systemd.unit=multi-user.target au noyau pour démarrer en mode texte.
+
+### 💡 Relations entre targets
+
+Affiche l'arbre complet des unités requises par la target. Très utile pour comprendre pourquoi un service ne démarre pas.
+
+Liste toutes les target-units installées sur le système.
+
+Affiche les targets actuellement actives sur le système.
+
+### 🔍 Targets et emergency/rescue
+
+Passe en mode rescue. Tous les services sont arrêtés sauf ceux essentiels. Équivalent de init 1.
+
+Mode plus minimal encore que rescue. Monte uniquement le root filesystem en lecture seule. Très utile pour diagnostiquer des problèmes de démarrage.
+
+Équivalents de halt et reboot, mais via systemd.
+
+### 📝 Créer une target personnalisée
+
+Exemple minimal :
+
+### 📝 Exercices pratiques
+
+Découvrez quelle est la target par défaut de votre système :
+
+Listez toutes les targets actuellement actives :
+
+Découvrez les services dépendants de la target multi-user.target :
+
+Passez temporairement en mode rescue (avec sudo) pour voir la différence :
+
+Puis revenez avec sudo systemctl isolate graphical.target ou sudo systemctl isolate multi-user.target.
+
+Vérifiez si graphical.target dépend bien de multi-user.target :
+
+### 🔗 Commandes liées
+
+systemctl — Gestion des services et targets (voir Leçon 21)
+
+systemctl daemon-reload — Recharger la configuration (voir Leçon 59)
+
+journalctl — Explorer les logs systemd (voir Leçon 49)
+
+systemd-analyze — Analyser le temps de démarrage (voir Leçon 35)
+
+### 📚 Pour aller plus loin
+
+Les targets systemd offrent une flexibilité bien supérieure aux runlevels SysVinit. Chaque target peut dépendre d'autres targets, créant un graphe de dépendances résolu en parallèle par systemd. Cela réduit considérablement le temps de démarrage par rapport à l'approche séquentielle de SysVinit.
+
+Le fichier /lib/systemd/system/graphical.target est équippé de Wants=multi-user.target, ce qui signifie que graphical.target "veut" que multi-user.target soit actif — mais multi-user peut fonctionner seul, tandis que graphical ne le peut pas.
+
+Pour les machines sans interface graphique (serveurs), privilégiez multi-user.target comme target par défaut. C'est plus léger et plus rapide à démarrer.

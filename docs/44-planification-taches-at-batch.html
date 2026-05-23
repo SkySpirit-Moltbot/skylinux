@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 44 : Planification de tâches avec at et batch</h1>
+<p>Dans cette leçon, tu vas apprendre à planifier des **tâches ponctuelles** avec <code>at</code> et <code>batch</code>. Contrairement à cron qui répète des tâches, <code>at</code> exécute une commande **une seule fois** à un moment précis. <code>batch</code> attend que la charge du système soit assez basse pour lancer ta tâche.</p>
+<hr/>
+<h2>1. Préparer le terrain</h2>
+<h3>Installer at</h3>
+<p><div class="code-block"><div class="code-line"><code>sudo apt update</p>
+<p>sudo apt install at -y</code></div></div></p>
+<h3>Démarrer le service</h3>
+<p><div class="code-block"><div class="code-line"><code>sudo systemctl enable atd</p>
+<p>sudo systemctl start atd</code></div></div></p>
+<h3>Vérifier que ça fonctionne</h3>
+<p><div class="code-block"><div class="code-line"><code>at -V</p>
+<p># at version 3.2.4</code></div></div></p>
+<hr/>
+<h2>2. La commande <code>at</code></h2>
+<p><code>at</code> planifie une commande pour qu'elle s'exécute **une seule fois**, à l'heure que tu indiques.</p>
+<h3>Syntaxe de base</h3>
+<p><div class="code-block"><div class="code-line"><code>at &lt;heure&gt; [jour mois [année]]</code></div></div></p>
+<h3>Formats d'heure courants</h3>
+<table>
+<tr><th>Format</th><th>Exemple</th><th>Signification</th></tr>
+<tr><td><code>HH:MM</code></td><td><code>14:30</code></td><td>Aujourd'hui à 14h30 (ou demain si passé)</td></tr>
+<tr><td><code>now + N minutes</code></td><td><code>now + 5 minutes</code></td><td>Dans 5 minutes</td></tr>
+<tr><td><code>now + N hours</code></td><td><code>now + 2 hours</code></td><td>Dans 2 heures</td></tr>
+<tr><td><code>now + N days</code></td><td><code>now + 3 days</code></td><td>Dans 3 jours</td></tr>
+<tr><td><code>tomorrow</code></td><td><code>tomorrow 10am</code></td><td>Demain à 10h</td></tr>
+<tr><td><code>noon</code></td><td><code>noon</code></td><td>Aujourd'hui à midi</td></tr>
+<tr><td><code>midnight</code></td><td><code>midnight</code></td><td>Aujourd'hui à minuit</td></tr>
+<tr><td><code>teatime</code></td><td><code>teatime 4pm</code></td><td>Aujourd'hui à 16h (heure du thé)</td></tr>
+<tr><td><code>JJ.MM.AAAA</code></td><td><code>25.12.2026 09:00</code></td><td>25 décembre 2026 à 9h</td></tr>
+<tr><td><code>Mois JJ année</code></td><td><code>jan 15 2027 14:00</code></td><td>15 janvier 2027 à 14h</td></tr>
+</table>
+<hr/>
+<h2>3. Utiliser <code>at</code> pas à pas</h2>
+<h3>Exemple 1 : Exécution dans 2 minutes</h3>
+<p><div class="code-block"><div class="code-line"><code>at now + 2 minutes</code></div></div></p>
+<p>Tu verras un prompt <code>at></code> — tape ta commande puis <code>Ctrl+D</code> :</p>
+<p><div class="code-block"><div class="code-line"><code>at&gt; echo "La tâche a exécuté $(date)" &gt;&gt; ~/test_at.log</p>
+<p>at&gt; &lt;EOT&gt;</p>
+<p>job 1 at Mon Apr  6 08:15:00 2026</code></div></div></p>
+<h3>Exemple 2 : À une heure précise</h3>
+<p><div class="code-block"><div class="code-line"><code>at 17:30</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>at&gt; echo "C'est l'heure !" | tee ~/alerte_17h30.txt</p>
+<p>at&gt; &lt;EOT&gt;</p>
+<p>job 2 at Mon Apr  6 17:30:00 2026</code></div></div></p>
+<h3>Exemple 3 : Demain à 9h</h3>
+<p><div class="code-block"><div class="code-line"><code>at 9am tomorrow</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>at&gt; /home/utilisateur/scripts/backup_rapide.sh</p>
+<p>at&gt; &lt;EOT&gt;</p>
+<p>job 3 at Tue Apr  7 09:00:00 2026</code></div></div></p>
+<h3>Exemple 4 : Avec un script complet</h3>
+<p><div class="code-block"><div class="code-line"><code>at 20:00 &lt;&lt;EOF</p>
+<p>tar -czf /backup/home_$(date +%Y%m%d).tar.gz /home/utilisateur/</p>
+<p>echo "Sauvegarde terminée" | mail -s "Backup" utilisateur@email.com</p>
+<p>EOF</code></div></div></p>
+<hr/>
+<h2>4. Syntaxe alternative par tube</h2>
+<p>Planifier sans entrer dans le mode interactif :</p>
+<p><div class="code-block"><div class="code-line"><code># Avec un tube (pipe)</p>
+<p>echo "/home/utilisateur/scripts/rapport.sh" | at 10am tomorrow</p>
+<p># Avec un here-doc via fichier</p>
+<p>cat &lt;&lt; 'CMDS' | at now + 1 hour</p>
+<p>mkdir -p ~/archives/$(date +%Y%m%d)</p>
+<p>cp ~/Documents/*.pdf ~/archives/$(date +%Y%m%d)/</p>
+<p>CMDS</code></div></div></p>
+<hr/>
+<h2>5. <code>batch</code> — exécution quand le système est calme</h2>
+<p><code>batch</code> lance ta commande quand la **charge moyenne** du système descend sous 1.5 (par défaut). C'est idéal pour les tâches lourdes qu'on veut faire tourner aux heures creuses.</p>
+<p><div class="code-block"><div class="code-line"><code>batch</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>at&gt; tar -czf /backup/plein_backup.tar.gz /home/</p>
+<p>at&gt; &lt;EOT&gt;</p>
+<p>job 5 at Mon Apr  6 08:20:00 2026</code></div></div></p>
+<p>La任务 s'exécutera dès que la charge le permet.</p>
+<h3>Changer le seuil de charge</h3>
+<p><div class="code-block"><div class="code-line"><code># Lancer quand la charge est sous 0.8</p>
+<p>echo "script_lourd.sh" | at -q b -b 0.8</code></div></div></p>
+<h3>Files de priorité (queues)</h3>
+<p><code>at</code> utilise des files (queues) обозначенные par une lettre :</p>
+<table>
+<tr><th>Queue</th><th>Nice value</th><th>Usage</th></tr>
+<tr><td><code>a</code> à <code>z</code></td><td>-20 à +19</td><td>File <code>a</code> = très prioritaire, <code>z</code> = très patient</td></tr>
+</table>
+<p><div class="code-block"><div class="code-line"><code># Queue b (normal)</p>
+<p>at -q b 10pm tomorrow</p>
+<p># Queue c (patient)</p>
+<p>at -q c 2am</code></div></div></p>
+<hr/>
+<h2>6. Gérer les tâches planifiées</h2>
+<h3>Lister les tâches en attente</h3>
+<p><div class="code-block"><div class="code-line"><code>atq</p>
+<p># 3   Mon Apr  7 09:00:00 2026 a utilisateur</p>
+<p># 5   Mon Apr  6 08:20:00 2026 a root</code></div></div></p>
+<p>La premièr colonne est le **numéro de job**.</p>
+<h3>Supprimer une tâche</h3>
+<p><div class="code-block"><div class="code-line"><code># Par numéro de job</p>
+<p>atrm 3</p>
+<p># Supprimer plusieurs</p>
+<p>atrm 2 5</code></div></div></p>
+<h3>Alternative avec <code>atq</code> + <code>atrm</code></h3>
+<p><div class="code-block"><div class="code-line"><code># Supprimer le job 7</p>
+<p>atrm 7</code></div></div></p>
+<hr/>
+<h2>7. La commande <code>at</code> avec les permissions</h2>
+<h3>Qui peut utiliser <code>at</code> ?</h3>
+<p>Par défaut, tout le monde. Pour的限制er :</p>
+<p><div class="code-block"><div class="code-line"><code># Lister les fichiers de contrôle</p>
+<p>ls /etc/at*</p>
+<p># Autoriser un utilisateur</p>
+<p>sudo echo "utilisateur" &gt; /etc/at.allow</p>
+<p># Interdire un utilisateur</p>
+<p>sudo echo "utilisateur" &gt;&gt; /etc/at.deny</code></div></div></p>
+<hr/>
+<h2>8. Différences entre <code>at</code> et <code>cron</code></h2>
+<table>
+<tr><th>Critère</th><th><code>at</code></th><th><code>cron</code></th></tr>
+<tr><td>Fréquence</td><td>Une seule fois</td><td>Récurrente</td></tr>
+<tr><td>Persistance</td><td>Job supprimé après exécution</td><td>Reste configuré</td></tr>
+<tr><td>Charge système</td><td><code>batch</code> peut en tenir compte</td><td>Non</td></tr>
+<tr><td>Cas d'usage</td><td>Tâche unique programmée</td><td>Automatisation récurrente</td></tr>
+<tr><td>Dépendances</td><td>Non (utilise <code>at</code> + <code>sleep</code> pour temporiser)</td><td>Oui avec <code>anacron</code> ou scripts</td></tr>
+</table>
+<hr/>
+<h2>9. Exercice pratique</h2>
+<h3>Exercice : Planifier une sauvegarde unique</h3>
+<p>**Objectif :** Créer une sauvegarde de ton répertoire <code>~/Documents</code> à exécuter dans 5 minutes.</p>
+<p><div class="code-block"><div class="code-line"><code># 1. Vérifie que at est installé et le service actif</p>
+<p>sudo systemctl status atd</p>
+<p># 2. Planifie la tâche</p>
+<p>at now + 5 minutes</code></div></div></p>
+<p>Dans le prompt <code>at></code>, tape :</p>
+<p><div class="code-block"><div class="code-line"><code>mkdir -p ~/backup_unique</p>
+<p>tar -czf ~/backup_unique/docs_backup_$(date +%H%M).tar.gz ~/Documents/</p>
+<p>echo "Sauvegarde terminée le $(date)" &gt; ~/backup_unique/rapport.txt</code></div></div></p>
+<p>Puis <code>Ctrl+D</code> pour valider.</p>
+<p><div class="code-block"><div class="code-line"><code># 3. Vérifie que le job est dans la queue</p>
+<p>atq</p>
+<p># 4. Après quelques minutes, vérifie que ça a fonctionné</p>
+<p>ls ~/backup_unique/</p>
+<p>cat ~/backup_unique/rapport.txt</code></div></div></p>
+<p>**Bonus :** Supprime le job avec <code>atrm <numéro></code> AVANT qu'il ne s'exécute, puis reprogramme-le pour demain à 8h avec <code>at 8am tomorrow</code>.</p>
+<hr/>
+<h2>10. Récapitulatif</h2>
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>at <heure></code></td><td>Planifier une tâche pour un moment précis</td></tr>
+<tr><td><code>at now + N minutes</code></td><td>Exécuter dans N minutes</td></tr>
+<tr><td><code>at tomorrow HH:MM</code></td><td>Exécuter demain à l'heure indiquée</td></tr>
+<tr><td><code>batch</code></td><td>Exécuter quand la charge système est basse</td></tr>
+<tr><td><code>atq</code></td><td>Lister les jobs en attente</td></tr>
+<tr><td><code>atrm <job></code></td><td>Supprimer un job</td></tr>
+<tr><td><code>Ctrl+D</code></td><td>Valider et quitter le mode interactif</td></tr>
+</table>
+<p><code>at</code> est parfait pour les tâches uniques : un redémarrage différé, un script qui ne doit tourner qu'une fois, ou une action à faire hors des heures de bureau. <code>batch</code> complète le tableau en s'adaptant à la charge réelle de ta machine. ⏰</p>
+<nav>
+<a href="43-ssh-tunnels-port-forwarding.html">&larr; 43-ssh-tunnels-port-forwarding</a>
+<a href="45-priorite-processus-nice-renice.html">45-priorite-processus-nice-renice &rarr;</a>
+</nav></div></body></html>

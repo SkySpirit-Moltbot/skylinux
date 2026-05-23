@@ -4,7 +4,25 @@ Dans cette leçon, tu vas découvrir Git, l'outil de gestion de version le plus 
 
 ---
 
-## 1. Qu'est-ce que Git ?
+## 1. Pourquoi un outil de gestion de versions ?
+
+Voici ce qui se passe sans Git :
+
+```
+Tu modifies script.sh
+  → Tu ajoutes une fonctionnalité
+  → Ça casse tout
+  → Tu n'as plus la version qui marchait
+  → Panique
+```
+
+**Avec Git**, chaque modification est enregistrée. Tu peux revenir à n'importe quel moment, voir exactement ce qui a changé, et travailler avec d'autres personnes sans écraser leur travail.
+
+---
+
+---
+
+## 14. Qu'est-ce que Git ?
 
 **Git** est un système de gestion de version distribué. Il enregistre les modifications de tes fichiers dans un historique et te permet de :
 - Suivre chaque changement effectué
@@ -20,7 +38,7 @@ Dans cette leçon, tu vas découvrir Git, l'outil de gestion de version le plus 
 
 ---
 
-## 2. Installation et configuration
+## 14. Installation et configuration
 
 ### Installation
 
@@ -60,7 +78,7 @@ git config --global color.ui auto
 
 ---
 
-## 3. Créer un dépôt Git
+## 14. Créer un dépôt Git
 
 ### git init - Initialiser un nouveau dépôt
 
@@ -94,7 +112,7 @@ git clone https://github.com/someuser/some-repo.git mon-dossier
 
 ---
 
-## 4. Les états d'un fichier
+## 14. Les états d'un fichier
 
 Dans Git, chaque fichier peut être dans l'un de ces états :
 
@@ -113,7 +131,7 @@ Dans Git, chaque fichier peut être dans l'un de ces états :
 
 ---
 
-## 5. Les commandes de base
+## 14. Les commandes de base
 
 ### git status - État du dépôt
 
@@ -159,7 +177,7 @@ git commit -am "Correction d'un bug"
 
 ---
 
-## 6. L'historique des commits
+## 14. L'historique des commits
 
 ### git log - Voir l'historique
 
@@ -198,7 +216,7 @@ git log -1 --format="%B" a1b2c3d
 
 ---
 
-## 7. Les branches
+## 14. Les branches
 
 Les branches permettent de travailler sur des fonctionnalités isolées sans perturber le code principal.
 
@@ -250,7 +268,7 @@ git branch -D ma-fonctionnalite
 
 ---
 
-## 8. Annuler des modifications
+## 14. Annuler des modifications
 
 ### git checkout - Annuler les modifications non commitées
 
@@ -301,7 +319,7 @@ git reset --hard HEAD~1
 
 ---
 
-## 9. Travailler avec un remote (GitHub/GitLab)
+## 14. Travailler avec un remote (GitHub/GitLab)
 
 ### git remote - Gérer les dépôts distants
 
@@ -353,7 +371,7 @@ git fetch
 
 ---
 
-## 10. Ignorer des fichiers (.gitignore)
+## 14. Ignorer des fichiers (.gitignore)
 
 Le fichier `.gitignore` indique à Git quels fichiers ne doivent pas être suivis.
 
@@ -417,7 +435,36 @@ build/
 
 ---
 
-## 11. Résumé des commandes
+## 8. Commandes utiles du quotidien
+
+```bash
+# État du dépôt
+git status              # quoi de modifié
+git diff                # détails des changements
+git log --oneline       # historique concis
+
+# Ajouter et valider
+git add fichier.txt     # indexer un fichier précis
+git add .               # indexer TOUS les fichiers modifiés
+git commit -m "Message" # valider avec message
+
+# Branches
+git branch              # lister les branches
+git checkout -b nom     # créer et basculer
+git checkout master     # revenir à master
+git merge branche       # fusionner une branche
+
+# Synchronisation
+git clone url            # télécharger un dépôt
+git push origin master   # envoyer sur le serveur
+git pull origin master   # récupérer du serveur
+```
+
+---
+
+---
+
+## 14. Résumé des commandes
 
 | Commande | Description |
 |----------|-------------|
@@ -442,7 +489,7 @@ build/
 
 ---
 
-## 12. Exercice pratique
+## 14. Exercice pratique
 
 ### Exercice : Ton premier projet Git
 
@@ -521,7 +568,7 @@ git reset --hard HEAD~1
 
 ---
 
-## 13. Bonnes pratiques
+## 15. Bonnes pratiques
 
 - **Commits atomiques** : un commit = une modification logique
 - **Messages de commit clairs** : décris ce qui a changé, pas comment

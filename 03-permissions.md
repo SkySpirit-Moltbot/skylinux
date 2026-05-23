@@ -1,4 +1,4 @@
-# Leçon 3 : Permissions Linux
+# Leçon 03 : Permissions Linux
 
 Dans cette leçon, tu vas maîtriser les permissions Linux, un concept fondamental pour la sécurité et l'administration système.
 
@@ -326,3 +326,40 @@ sudo chmod 2775 /partage
 ---
 
 Maîtrise les permissions pour sécuriser ton système Linux ! 🔐
+---
+
+## Complément: Permissions avancées
+
+### Introduction
+
+Dans la leçon 3, nous avons vu les bases des permissions Linux. Ici, nous allons plus loin : les permissions spéciales (SUID, SGID, Sticky Bit), les ACL (Listes de Contrôle d'Accès), la gestion des fichiers setuid/setgid, et des techniques avancées pour administrer les droits sur un système.
+
+### Rappel : le système de permissions classique
+
+Chaque fichier possède trois triplets de permissions :
+
+### chmod en notation octale avancée
+
+Tu connais sûrement chmod 755 fichier. Mais il existe des combinaisons plus fines :
+
+### Les permissions spéciales
+
+Quand un fichier a le bit SUID, il s'exécute avec les droits de son propriétaire, pas de l'utilisateur qui le lance. Exemple classique : passwd.
+
+Quand tu changes ton mot de passe, tu modifies /etc/shadow — mais tu n'as pas le droit d'écrire dans ce fichier. Le programme passwd a le bit SUID root, donc il s'exécute avec les droits root.
+
+⚠️ Sécurité : Le SUID est dangereux sur les scripts. Un programme SUID root mal sécurisé peut donner un shell root à un attaquant. Utilise-le avec parcimonie.
+
+Sur un fichier : même principe que SUID, mais avec les droits du groupe. Sur un répertoire : tous les fichiers créés héritent du groupe du répertoire.
+
+Sur un répertoire partagé (comme /tmp), le Sticky Bit empêche quiconque de supprimer les fichiers des autres.
+
+Tout le monde peut écrire dans /srv/partage, mais chacun ne peut supprimer que ses propres fichiers.
+
+### Les ACL — Listes de Contrôle d'Accès
+
+Les ACL permettent d'attribuer des permissions à plusieurs utilisateurs ou groupes sur un même fichier, au-delà du schéma classique propriétaire/groupe/autres.
+
+Quand des ACL sont actives, un + apparaît dans ls -l :
+
+Le mask ACL limite les permissions maximales accordées via ACL. Même si tu donnes rwx à alice, le mask peut les réduire.

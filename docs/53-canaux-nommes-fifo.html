@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 53 : Leçon 60 : Canaux nommés (Named Pipes / FIFO)</h1>
+<h3>Qu'est-ce qu'un canal nommé ?</h3>
+<p>Un canal nommé (named pipe ou FIFO) est un fichier spécial de type p. Contrairement à un pipe anonyme (|) qui n'existe que pendant l'exécution d'un processus, le FIFO existe dans le système de fichiers et peut être utilisé par n'importe quel processus, à n'importe quel moment.</p>
+<p>Communication entre processus qui ne sont pas liés par un pipe classique</p>
+<p>Un processus écrit, un autre lit, à des moments différents</p>
+<p>Débogage : rediriger la sortie d'un programme vers un fichier lisible à distance</p>
+<p>Logs en temps réel consultables par plusieurs outils simultanément</p>
+<p>Architecture simple sans réseau ni sockets TCP</p>
+<h3>Créer et utiliser un canal nommé</h3>
+<p>Ouvre deux terminaux. Dans le premier :</p>
+<p>Dans le second :</p>
+<p>Le message apparaît dans le terminal 1. Chaque nouveau message envoyé depuis le terminal 2 sera affiché dans le terminal 1.</p>
+<h3>Comportement de lecture et écriture</h3>
+<p>Les opérations de lecture et d'écriture sur un FIFO sont bloquantes par défaut. Cela signifie :</p>
+<p>Un read bloque jusqu'à ce que des données soient disponibles</p>
+<p>Un write bloque jusqu'à ce que les données soient lues</p>
+<p>C'est ce comportement qui permet de synchroniser deux processus</p>
+<p>Si tu veux qu'un processus lise et écrive sur le même FIFO, ouvre-le dans les deux directions :</p>
+<h3>Bonnes pratiques</h3>
+<p>Toujours supprimer les FIFO quand tu n'en as plus besoin : rm ~/mon-fifo</p>
+<p>Utiliser des noms explicites : /tmp/serveur-cmds, /tmp/logs-app</p>
+<p>Placer les FIFO dans /tmp ou ton dossier personnel (pas dans /dev)</p>
+<p>Penser à la gestion du bloquage : utilise timeout si ton lecteur doit mourir proprement</p>
+<p>En bash, utiliser while IFS= read -r ligne &lt; "$FIFO" pour lire ligne par ligne</p>
+<p>Ne jamais écrire dans un FIFO sans lecteur actif (le write bloquera indéfiniment)</p>
+<p>Utiliser un fichier temporaire classique (file()) pour les gros volumes de données</p>
+<h3>Résumé</h3>
+<p>Les canaux nommés sont un outil puissant pour la communication inter-processus sur Linux. Ils permettent de créer des architectures simples sans réseau ni configuration avancée. Maîtrise-les et tu disposeras d'un outil supplémentaire pour structurer tes scripts et automatisations.</p>
+<nav>
+<a href="52-df-du-espace-disque.html">&larr; 52-df-du-espace-disque</a>
+<a href="54-tar-gzip-bzip2.html">54-tar-gzip-bzip2 &rarr;</a>
+</nav></div></body></html>

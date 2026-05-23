@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 67 — locate, which, whereis et type — Rechercher efficacement</h1>
+<h3>1. locate — Recherche ultra-rapide par base de données</h3>
+<p>locate ne cherche pas directement sur le disque. Il utilise une base de données pré-construite, ce qui le rend extrêmement rapide. La base est mise à jour périodiquement (généralement via un cron).</p>
+<h3>2. which — Trouver la commande exécutée</h3>
+<p>which recherche l'emplacement d'une commande dans les répertoires du PATH. Idéal pour savoir quel exécutable sera utilisé.</p>
+<h3>3. whereis — Trouver binaire, source et manuel</h3>
+<p>whereis va plus loin que which : il localise le binaire, le code source et la page man d'une commande.</p>
+<h3>4. type — Identifier le type de commande</h3>
+<p>type est intégré au shell Bash. Il montre comment une commande sera interprétée : alias, fonction, builtin ou binaire externe.</p>
+<h3>Points clés à retenir</h3>
+<p>locate utilise une base de données → très rapide, mais moins précis qu'un find en temps réel</p>
+<p>which cherche dans le PATH → idéal pour les binaires exécutables</p>
+<p>whereis donne binaire + manuel + sources → utile pour le développement</p>
+<p>type est intégré au shell → révèle les alias, fonctions et builtins</p>
+<p>Mise à jour de la base locate : sudo updatedb (ou via cron automatique)</p>
+<nav>
+<a href="66-wc.html">&larr; 66-wc</a>
+<a href="68-seq.html">68-seq &rarr;</a>
+</nav></div></body></html>

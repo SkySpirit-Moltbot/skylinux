@@ -1,4 +1,4 @@
-# Leçon 6 : Réseaux de base
+# Leçon 06 : Réseaux de base
 
 Dans cette leçon, tu vas maîtriser les fondamentaux du réseau sous Linux : configuration IP, diagnostic, SSH, et transfert de fichiers.
 

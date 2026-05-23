@@ -1,4 +1,4 @@
-# Leçon 7 : Gestion des fichiers et dossiers
+# Leçon 07 : Gestion des fichiers et dossiers
 
 Dans cette leçon, tu vas apprendre à créer, copier, déplacer, supprimer et manipuler des fichiers et dossiers sous Linux de manière professionnelle.
 

@@ -253,3 +253,53 @@ uptime
 | sysctl vm.swappiness | Vérifier/régler l'utilisation de la swap |
 
 ---
+
+---
+
+## Complément: watch - surveillance temps réel
+
+### 1. Pourquoi utiliser watch ?
+
+watch est l'outil parfait quand tu veux :
+
+Surveiller l'espace disque en continu
+
+Voir les connexions réseau actives
+
+Suivre l'état d'un téléchargement ou d'un processus
+
+Observer les changements dans un fichier ou répertoire
+
+Tester l'effet d'une commande à intervalles réguliers
+
+Au lieu de répéter manuellement une commande avec ↑ + Enter, watch le fait pour toi, automatiquement.
+
+### 2. Syntaxe de base
+
+Par défaut, watch rafraîchit l'affichage toutes les 2 secondes.
+
+### 5. Différenciation visuelle avec -d
+
+L'option -d est particulièrement utile pour repérer instantanément ce qui change :
+
+### 8. Mode "Gate" avec -g
+
+Le mode -g quitte automatiquement quand la sortie change :
+
+### 10. Quitter watch
+
+Pour quitter watch, utilise :
+
+Ctrl + C — Arrêt immédiat
+
+Ctrl + Z — Met en pause (puis kill %1 pour tuer)
+
+q — Quitte si activé (variable d'environnement WATCH_INTERVAL)
+
+### 13. Exercice pratique
+
+Objectif : Utiliser watch pour surveiller différents aspects de ton système.
+
+Bonus : Combine plusieurs commandes dans un seul watch pour créer un mini tableau de bord personnalisé avec horodatage.
+
+watch est un outil simple mais incroyablement utile. Il transforme n'importe quelle commande en moniteur temps réel, ce qui en fait un allié précieux pour le dépannage, la surveillance système et l'observation de processus en cours. Combine-le avec tmux (leçon 27) pour avoir plusieurs surveillances en parallèle dans des terminaux split !

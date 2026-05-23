@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 58 : Leçon 69 : file et stat — Inspecter les fichiers</h1>
+<h3>1. La commande file — Déterminer le type de fichier</h3>
+<p>file analyze le contenu d'un fichier (pas juste l'extension) et vous dit ce qu'il contient vraiment.</p>
+<h3>2. La commande stat — Métadonnées détaillées</h3>
+<p>stat affiche des informations complètes sur un fichier : taille, dates, permissions, inode, etc.</p>
+<h3>Exercice pratique</h3>
+<p>Essayez ces commandes sur votre système :</p>
+<p>file /bin/ls — Quel type de fichier est l'exécutable ls ?</p>
+<p>file /etc/hostname — Vérifiez le type du fichier hostname</p>
+<p>stat ~/.bashrc — Quelles sont les permissions de votre fichier bashrc ?</p>
+<p>file -i ~/Documents/* — Listez les types MIME de tous vos documents</p>
+<p>stat -c '%a %n' /etc/passwd — Affichez les permissions en octal du fichier passwd</p>
+<h3>Résumé</h3>
+<p>Ces deux commandes sont vos meilleures alliées pour inspecter n'importe quel fichier sous Linux. file vous dit "ce que contient le fichier", tandis que stat vous dit "tout ce qu'il faut savoir sur ce fichier".</p>
+<nav>
+<a href="57-tee.html">&larr; 57-tee</a>
+<a href="59-nohup.html">59-nohup &rarr;</a>
+</nav></div></body></html>

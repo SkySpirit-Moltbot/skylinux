@@ -1,678 +1,288 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 11 : Surveillance et supervision système - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/11-surveillance-et-supervision-systeme.html">
-<meta property="og:title" content="Leçon 11 : Surveillance et supervision système - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 11 : Surveillance et supervision système - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 11  surveillance et supervision systme, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 11 : Surveillance et supervision système</h1>
 <p>Dans cette leçon, tu vas maîtriser tous les outils de surveillance Linux : CPU, mémoire, disque, processus et services. Indispensable pour diagnostiquer les problèmes.</p>
-<hr />
+<hr/>
 <h2>1. Surveillance CPU</h2>
 <h3>Commande top</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>top                  # Vue en temps réel
-top -u david         # Filtrer par utilisateur
-top -p 1234          # Surveiller un processus spécifique
-top -1               # Rafraîchir chaque seconde</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>top                  # Vue en temps réel</p>
+<p>top -u david         # Filtrer par utilisateur</p>
+<p>top -p 1234          # Surveiller un processus spécifique</p>
+<p>top -1               # Rafraîchir chaque seconde</code></div></div></p>
 <h3>Comprendre la sortie de top</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>top - 10:30:15 up  5:42,  1 user,  load average: 0.52, 0.58, 0.59
-Tasks: 245 total,   1 running, 244 sleeping,   0 stopped,   0 zombie
-%Cpu(s):  5.3 us,  2.1 sy,  0.0 ni, 92.1 id,  0.0 wa,  0.0 hi,  0.6 si,  0.0 st
-MiB Mem :  7938.5 total,  2345.2 free,  4120.0 used,  1473.3 buff/cache
-MiB Swap:  2048.0 total,  1024.0 free,  1024.0 used.  5800.0 avail Mem</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>top - 10:30:15 up  5:42,  1 user,  load average: 0.52, 0.58, 0.59</p>
+<p>Tasks: 245 total,   1 running, 244 sleeping,   0 stopped,   0 zombie</p>
+<p>%Cpu(s):  5.3 us,  2.1 sy,  0.0 ni, 92.1 id,  0.0 wa,  0.0 hi,  0.6 si,  0.0 st</p>
+<p>MiB Mem :  7938.5 total,  2345.2 free,  4120.0 used,  1473.3 buff/cache</p>
+<p>MiB Swap:  2048.0 total,  1024.0 free,  1024.0 used.  5800.0 avail Mem</code></div></div></p>
 <h3>Commandes interactives de top</h3>
 <table>
-<thead>
-<tr>
-<th>Touche</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>q</code></td>
-<td>Quitter</td>
-</tr>
-<tr>
-<td><code>M</code></td>
-<td>Trier par mémoire</td>
-</tr>
-<tr>
-<td><code>P</code></td>
-<td>Trier par CPU</td>
-</tr>
-<tr>
-<td><code>k</code></td>
-<td>Tuer un processus</td>
-</tr>
-<tr>
-<td><code>r</code></td>
-<td>Modifier la priorité (renice)</td>
-</tr>
-<tr>
-<td><code>1</code></td>
-<td>Afficher tous les CPUs</td>
-</tr>
-<tr>
-<td><code>f</code></td>
-<td>Changer les colonnes</td>
-</tr>
-<tr>
-<td><code>x</code></td>
-<td>Surbrillance colonne tri</td>
-</tr>
-</tbody>
+<tr><th>Touche</th><th>Description</th></tr>
+<tr><td><code>q</code></td><td>Quitter</td></tr>
+<tr><td><code>M</code></td><td>Trier par mémoire</td></tr>
+<tr><td><code>P</code></td><td>Trier par CPU</td></tr>
+<tr><td><code>k</code></td><td>Tuer un processus</td></tr>
+<tr><td><code>r</code></td><td>Modifier la priorité (renice)</td></tr>
+<tr><td><code>1</code></td><td>Afficher tous les CPUs</td></tr>
+<tr><td><code>f</code></td><td>Changer les colonnes</td></tr>
+<tr><td><code>x</code></td><td>Surbrillance colonne tri</td></tr>
 </table>
 <h3>Load Average</h3>
-<p>Le <strong>load average</strong> indique la charge système sur 1, 5 et 15 minutes.</p>
+<p>Le **load average** indique la charge système sur 1, 5 et 15 minutes.</p>
 <table>
-<thead>
-<tr>
-<th>Load</th>
-<th>1 cœur</th>
-<th>4 cœurs</th>
-<th>Interprétation</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1.0</td>
-<td>100%</td>
-<td>25%</td>
-<td>1 processus en cours</td>
-</tr>
-<tr>
-<td>4.0</td>
-<td>400%</td>
-<td>100%</td>
-<td>Système à pleine capacité</td>
-</tr>
-<tr>
-<td>8.0</td>
-<td>800%</td>
-<td>200%</td>
-<td>Surcharge (processus en attente)</td>
-</tr>
-</tbody>
+<tr><th>Load</th><th>1 cœur</th><th>4 cœurs</th><th>Interprétation</th></tr>
+<tr><td>1.0</td><td>100%</td><td>25%</td><td>1 processus en cours</td></tr>
+<tr><td>4.0</td><td>400%</td><td>100%</td><td>Système à pleine capacité</td></tr>
+<tr><td>8.0</td><td>800%</td><td>200%</td><td>Surcharge (processus en attente)</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>2. Surveillance mémoire</h2>
 <h3>free - Mémoire vive</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>free                # En octets
-free -h             # Format lisible (Ko, Mo, Go)
-free -m             # En mégaoctets
-free -g             # En gigaoctets
-free -s 1           # Rafraîchir chaque seconde</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>free                # En octets</p>
+<p>free -h             # Format lisible (Ko, Mo, Go)</p>
+<p>free -m             # En mégaoctets</p>
+<p>free -g             # En gigaoctets</p>
+<p>free -s 1           # Rafraîchir chaque seconde</code></div></div></p>
 <h3>Comprendre la sortie</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>total        used        free      shared  buff/cache   available
-Mem:        8.0Gi       4.1Gi       2.3Gi       150Mi       1.5Gi       3.5Gi
-Swap:       2.0Gi       512Mi       1.5Gi</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>total        used        free      shared  buff/cache   available</p>
+<p>Mem:        8.0Gi       4.1Gi       2.3Gi       150Mi       1.5Gi       3.5Gi</p>
+<p>Swap:       2.0Gi       512Mi       1.5Gi</code></div></div></p>
 <table>
-<thead>
-<tr>
-<th>Colonne</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>total</strong></td>
-<td>Mémoire totale</td>
-</tr>
-<tr>
-<td><strong>used</strong></td>
-<td>Mémoire utilisée (vraiment)</td>
-</tr>
-<tr>
-<td><strong>free</strong></td>
-<td>Mémoire totally libre</td>
-</tr>
-<tr>
-<td><strong>buff/cache</strong></td>
-<td>Mémoire pour les buffers/disque</td>
-</tr>
-<tr>
-<td><strong>available</strong></td>
-<td>Mémoire disponible pour les apps</td>
-</tr>
-<tr>
-<td><strong>Swap</strong></td>
-<td>Mémoire virtuelle sur disque</td>
-</tr>
-</tbody>
+<tr><th>Colonne</th><th>Description</th></tr>
+<tr><td>**total**</td><td>Mémoire totale</td></tr>
+<tr><td>**used**</td><td>Mémoire utilisée (vraiment)</td></tr>
+<tr><td>**free**</td><td>Mémoire totally libre</td></tr>
+<tr><td>**buff/cache**</td><td>Mémoire pour les buffers/disque</td></tr>
+<tr><td>**available**</td><td>Mémoire disponible pour les apps</td></tr>
+<tr><td>**Swap**</td><td>Mémoire virtuelle sur disque</td></tr>
 </table>
 <h3>Calcul du pourcentage</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Calculer le pourcentage utilisé
-free | grep Mem | awk '{printf(&quot;%.1f
-&quot;, $3/$2 * 100)}'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Calculer le pourcentage utilisé</p>
+<p>free | grep Mem | awk '{printf("%.1f\n", $3/$2 * 100)}'</code></div></div></p>
+<hr/>
 <h2>3. Surveillance disque</h2>
 <h3>df - Espace disque</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>df                  # En octets
-df -h               # Format lisible
-df -H               # FormatIEC (1000 au lieu de 1024)
-df -T               # Avec type de système de fichiers
-df -i               # Inodes au lieu de blocs</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>df                  # En octets</p>
+<p>df -h               # Format lisible</p>
+<p>df -H               # FormatIEC (1000 au lieu de 1024)</p>
+<p>df -T               # Avec type de système de fichiers</p>
+<p>df -i               # Inodes au lieu de blocs</code></div></div></p>
 <h3>Analyser l'espace</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Partition la plus pleine
-df -h | grep -v tmpfs | sort -k5 -h | tail -5
-
-# Espace par type de filesystem
-df -Th | grep -v tmpfs</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Partition la plus pleine</p>
+<p>df -h | grep -v tmpfs | sort -k5 -h | tail -5</p>
+<p># Espace par type de filesystem</p>
+<p>df -Th | grep -v tmpfs</code></div></div></p>
 <h3>du - Taille des dossiers</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>du -sh dossier/           # Taille totale
-du -h --max-depth=1       # Sous-dossiers (1 niveau)
-du -h --max-depth=2       # Sous-dossiers (2 niveaux)
-du -ah dossier/           # Avec fichiers cachés
-du -d 1 -h               # Profondeur 1
-du -sh */                 # Tous les sous-dossiers</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>du -sh dossier/           # Taille totale</p>
+<p>du -h --max-depth=1       # Sous-dossiers (1 niveau)</p>
+<p>du -h --max-depth=2       # Sous-dossiers (2 niveaux)</p>
+<p>du -ah dossier/           # Avec fichiers cachés</p>
+<p>du -d 1 -h               # Profondeur 1</p>
+<p>du -sh */                 # Tous les sous-dossiers</code></div></div></p>
 <h3>ncdu - Interface interactive</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Installer
-sudo apt install ncdu
-
-# Utiliser
-ncdu                    # Répertoire courant
-ncdu /home             # Dossier spécifique</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Installer</p>
+<p>sudo apt install ncdu</p>
+<p># Utiliser</p>
+<p>ncdu                    # Répertoire courant</p>
+<p>ncdu /home             # Dossier spécifique</code></div></div></p>
+<hr/>
 <h2>4. Surveillance processus</h2>
 <h3>ps - Liste des processus</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ps              # Basique
-ps aux          # Tous les utilisateurs
-ps -ef          # Format étendu
-ps -eo pid,ppid,%mem,%cpu,cmd  # Colonnes personnalisées
-ps --sort=-%cpu | head -10    # Top CPU
-ps --sort=-%mem | head -10    # Top mémoire</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ps              # Basique</p>
+<p>ps aux          # Tous les utilisateurs</p>
+<p>ps -ef          # Format étendu</p>
+<p>ps -eo pid,ppid,%mem,%cpu,cmd  # Colonnes personnalisées</p>
+<p>ps --sort=-%cpu | head -10    # Top CPU</p>
+<p>ps --sort=-%mem | head -10    # Top mémoire</code></div></div></p>
 <h3>Rechercher un processus</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ps aux | grep firefox              # Trouver firefox
-pgrep -a firefox                   # Juste les PIDs
-pidof firefox                      # PID principal
-pstree                             # Vue arborescence</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ps aux | grep firefox              # Trouver firefox</p>
+<p>pgrep -a firefox                   # Juste les PIDs</p>
+<p>pidof firefox                      # PID principal</p>
+<p>pstree                             # Vue arborescence</code></div></div></p>
 <h3>Stat d'un processus</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ressources utilisées
-pidstat -p 1234 1
-
-# Fichiers ouverts
-lsof -p 1234
-
-# Connexions réseau
-ss -tp | grep 1234</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Ressources utilisées</p>
+<p>pidstat -p 1234 1</p>
+<p># Fichiers ouverts</p>
+<p>lsof -p 1234</p>
+<p># Connexions réseau</p>
+<p>ss -tp | grep 1234</code></div></div></p>
+<hr/>
 <h2>5. Tuer et gérer les processus</h2>
 <h3>kill - Envoyer un signal</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>kill 1234                    # SIGTERM (propre)
-kill -15 1234                # Identique
-kill -9 1234                 # SIGKILL (forcement)
-kill -SIGTERM -1234          # Groupe de processus</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<h3>killall et pkill</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>killall firefox              # Par nom
-pkill firefox                 # Par pattern
-pkill -9 -f &quot;python script&quot; # Forcé avec pattern</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>kill 1234                    # SIGTERM (propre)</p>
+<p>kill -15 1234                # Identique</p>
+<p>kill -9 1234                 # SIGKILL (forcement)</p>
+<p>kill -SIGTERM -1234          # Groupe de processus</code></div></div></p>
+<p>###killall et pkill</p>
+<p><div class="code-block"><div class="code-line"><code>killall firefox              # Par nom</p>
+<p>pkill firefox                 # Par pattern</p>
+<p>pkill -9 -f "python script" # Forcé avec pattern</code></div></div></p>
 <h3>Modifier la priorité</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nice -n 10 commande          # Priorité basse
-renice 5 -p 1234            # Changer priorité
-renice -5 -p 1234           # Priorité haute (root)
-renice 0 -u david           # Tous les processus d'un user</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>nice -n 10 commande          # Priorité basse</p>
+<p>renice 5 -p 1234            # Changer priorité</p>
+<p>renice -5 -p 1234           # Priorité haute (root)</p>
+<p>renice 0 -u david           # Tous les processus d'un user</code></div></div></p>
+<hr/>
 <h2>6. Surveillance réseau</h2>
 <h3>Commandes utiles</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Connexions actives
-ss -tuln                    # TCP/UDP en écoute
-ss -tnp                     # Connexions établies
-ss -tp | grep ESTAB         # Connections actives
-
-# Statistiques réseau
-netstat -s                   # Stats complètes
-netstat -i                   # Stats par interface
-
-# Monitoring temps réel
-nload                       # Bande passante
-iftop                       # Connexions par hôte
-bmon                        # Surveillance graphique</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Connexions actives</p>
+<p>ss -tuln                    # TCP/UDP en écoute</p>
+<p>ss -tnp                     # Connexions établies</p>
+<p>ss -tp | grep ESTAB         # Connections actives</p>
+<p># Statistiques réseau</p>
+<p>netstat -s                   # Stats complètes</p>
+<p>netstat -i                   # Stats par interface</p>
+<p># Monitoring temps réel</p>
+<p>nload                       # Bande passante</p>
+<p>iftop                       # Connexions par hôte</p>
+<p>bmon                        # Surveillance graphique</code></div></div></p>
+<hr/>
 <h2>7. Surveillance des services (systemd)</h2>
 <h3>systemctl</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># État d'un service
-systemctl status nginx
-
-# Services actifs
-systemctl list-units --type=service --state=running
-
-# Services échoués
-systemctl --failed
-
-# Logs d'un service
-journalctl -u nginx -n 50
-journalctl -u nginx -f</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># État d'un service</p>
+<p>systemctl status nginx</p>
+<p># Services actifs</p>
+<p>systemctl list-units --type=service --state=running</p>
+<p># Services échoués</p>
+<p>systemctl --failed</p>
+<p># Logs d'un service</p>
+<p>journalctl -u nginx -n 50</p>
+<p>journalctl -u nginx -f</code></div></div></p>
+<hr/>
 <h2>8. Métriques système avancées</h2>
 <h3>vmstat - Statistiques virtuelles</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>vmstat 1                    # Rafraîchir chaque seconde
-vmstat -S M 1               # En Mo
-vmstat 1 5                  # 5 snapshots</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>vmstat 1                    # Rafraîchir chaque seconde</p>
+<p>vmstat -S M 1               # En Mo</p>
+<p>vmstat 1 5                  # 5 snapshots</code></div></div></p>
 <h3>iostat - Statistiques I/O</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Installer
-sudo apt install sysstat
-
-# Utiliser
-iostat -x 1                 # Stats détaillées
-iostat -dxh 1              # Disques en format lisible</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Installer</p>
+<p>sudo apt install sysstat</p>
+<p># Utiliser</p>
+<p>iostat -x 1                 # Stats détaillées</p>
+<p>iostat -dxh 1              # Disques en format lisible</code></div></div></p>
 <h3>sar - System Activity Reporter</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sar -u 1 10                 # CPU chaque seconde, 10 fois
-sar -r 1 10                 # Mémoire
-sar -d 1 10                 # Disque
-sar -n DEV 1 10             # Réseau</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>sar -u 1 10                 # CPU chaque seconde, 10 fois</p>
+<p>sar -r 1 10                 # Mémoire</p>
+<p>sar -d 1 10                 # Disque</p>
+<p>sar -n DEV 1 10             # Réseau</code></div></div></p>
+<hr/>
 <h2>9. Scripts de surveillance</h2>
 <h3>Script d'alerte disque</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-DISK_USAGE=$(df -h / | tail -1 | awk '{print $5}' | sed 's/%//')
-
-if [ $DISK_USAGE -gt 90 ]; then
-    echo &quot;ALERTE: Disque à ${DISK_USAGE}%&quot; | mail -s &quot;Alerte Disque&quot; admin@email.com
-fi</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>DISK_USAGE=$(df -h / | tail -1 | awk '{print $5}' | sed 's/%//')</p>
+<p>if [ $DISK_USAGE -gt 90 ]; then</p>
+<p>    echo "ALERTE: Disque à ${DISK_USAGE}%" | mail -s "Alerte Disque" admin@email.com</p>
+<p>fi</code></div></div></p>
 <h3>Script d'alerte mémoire</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-MEM_USAGE=$(free | grep Mem | awk '{printf(&quot;%.0f&quot;, $3/$2 * 100)}')
-
-if [ $MEM_USAGE -gt 85 ]; then
-    logger &quot;Alerte: Mémoire à ${MEM_USAGE}%&quot;
-fi</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>MEM_USAGE=$(free | grep Mem | awk '{printf("%.0f", $3/$2 * 100)}')</p>
+<p>if [ $MEM_USAGE -gt 85 ]; then</p>
+<p>    logger "Alerte: Mémoire à ${MEM_USAGE}%"</p>
+<p>fi</code></div></div></p>
 <h3>Surveillance continue</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-while true; do
-    clear
-    echo &quot;=== $(date) ===&quot;
-    echo &quot;&quot;
-    echo &quot;--- CPU ---&quot;
-    top -bn1 | head -5
-    echo &quot;&quot;
-    echo &quot;--- Mémoire ---&quot;
-    free -h
-    echo &quot;&quot;
-    echo &quot;--- Disque ---&quot;
-    df -h / | tail -1
-    sleep 5
-done</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>while true; do</p>
+<p>    clear</p>
+<p>    echo "=== $(date) ==="</p>
+<p>    echo ""</p>
+<p>    echo "--- CPU ---"</p>
+<p>    top -bn1 | head -5</p>
+<p>    echo ""</p>
+<p>    echo "--- Mémoire ---"</p>
+<p>    free -h</p>
+<p>    echo ""</p>
+<p>    echo "--- Disque ---"</p>
+<p>    df -h / | tail -1</p>
+<p>    sleep 5</p>
+<p>done</code></div></div></p>
+<hr/>
 <h2>10. Tableau résumé</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>top</code></td>
-<td>Surveillance CPU/mémoire temps réel</td>
-</tr>
-<tr>
-<td><code>htop</code></td>
-<td>top avec interface améliorée</td>
-</tr>
-<tr>
-<td><code>free</code></td>
-<td>Mémoire RAM</td>
-</tr>
-<tr>
-<td><code>df</code></td>
-<td>Espace disque</td>
-</tr>
-<tr>
-<td><code>du</code></td>
-<td>Taille dossiers</td>
-</tr>
-<tr>
-<td><code>ps</code></td>
-<td>Liste processus</td>
-</tr>
-<tr>
-<td><code>kill</code></td>
-<td>Terminer processus</td>
-</tr>
-<tr>
-<td><code>ss</code></td>
-<td>Connexions réseau</td>
-</tr>
-<tr>
-<td><code>systemctl</code></td>
-<td>Gérer services</td>
-</tr>
-<tr>
-<td><code>journalctl</code></td>
-<td>Logs systemd</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>top</code></td><td>Surveillance CPU/mémoire temps réel</td></tr>
+<tr><td><code>htop</code></td><td>top avec interface améliorée</td></tr>
+<tr><td><code>free</code></td><td>Mémoire RAM</td></tr>
+<tr><td><code>df</code></td><td>Espace disque</td></tr>
+<tr><td><code>du</code></td><td>Taille dossiers</td></tr>
+<tr><td><code>ps</code></td><td>Liste processus</td></tr>
+<tr><td><code>kill</code></td><td>Terminer processus</td></tr>
+<tr><td><code>ss</code></td><td>Connexions réseau</td></tr>
+<tr><td><code>systemctl</code></td><td>Gérer services</td></tr>
+<tr><td><code>journalctl</code></td><td>Logs systemd</td></tr>
 </table>
-<hr />
+<hr/>
 <p>Maîtrise ces outils pour devenir un pro de la supervision Linux ! 📊</p>
-</div>
+<hr/>
+<h2>Complément: Signaux et kill</h2>
+<h3>Introduction</h3>
+<p>Sous Linux, les signaux sont le mécanisme fondamental de communication entre processus. Quand vous appuyez sur Ctrl+C pour arrêter un programme ou quand un processus se termine proprement à la réception d'une notification, ce sont des signaux qui agissent en coulisses.</p>
+<p>La commande kill envoie un signal à un processus. Contrairement à ce que son nom suggère, kill ne sert pas uniquement à tuer un processus — il peut lui envoyer de nombreux types de signaux pour le redémarrer, le suspendre, ou lui demander de se reconfigurer.</p>
+<h3>Comprendre les signaux</h3>
+<p>Un signal est un message asynchrone envoyé à un processus. Chaque signal a un numéro et un nom. Les processus peuvent capturer (handler) la plupart des signaux pour réagir de manière personnalisée, sauf SIGKILL et SIGSTOP qui sont invariants.</p>
+<h3>Syntaxe de base</h3>
+<p>kill envoie par défaut le signal SIGTERM (15) au processus identifié par son PID.</p>
+<h3>Utilisation basique</h3>
+<p>SIGTERM est le signal par défaut. Le processus reçoit l'ordre de s'arrêter et peut capturer ce signal pour effectuer un nettoyage (fermer des fichiers, vider des buffers, etc.).</p>
+<p>Attention : SIGKILL ne peut pas être capturé ou ignoré. Le processus est immédiatement terminé sans possibilité de nettoyage. Utilisez-le uniquement en dernier recours.</p>
+<p>Même effet que d'appuyer sur Ctrl+C dans le terminal.</p>
+<h3>Trouver le bon PID</h3>
+<p>pkill fonctionne comme kill mais accepte un nom de processus au lieu d'un PID.</p>
+<h3>Gérer les jobs en arrière-plan</h3>
+<p>Le %1, %2 notation réfère aux jobs du shell actuel.</p>
+<h3>Signaux et scripts bash</h3>
+<p>Quand le script reçoit SIGTERM, il appelle cleanup() avant de se terminer.</p>
+<p>Pendant le sleep de 60 secondes, Ctrl+C n'aura aucun effet sur ce script.</p>
+<h3>Signaux et processus zombie</h3>
+<p>Un processus zombie est un processus terminé dont l'entrée dans la table des processus n'a pas encore été nettoyée par le parent. Vous ne pouvez pas tuer un zombie avec kill -9 — il est déjà mort. La solution est de tuer le processus parent ou d'attendre que le parent récupère le statut du fils.</p>
+<h3>Ordre de priorité des signaux</h3>
+<p>D'abord SIGTERM — laissez une chance au processus de s'arrêter proprement</p>
+<p>Ensuite SIGINT — interruption normale</p>
+<p>En dernier SIGKILL — seulement si les autres ne fonctionnent pas</p>
+<p>Pourquoi ? SIGKILL ne permet pas au processus de nettoyer ses ressources (fermer des fichiers, vider des buffers, supprimer des fichiers temporaires). Un arrêt sale peut laisser deslocks ou des fichiers corrompus.</p>
+<h3>Exercices pratiques</h3>
+<p>Lancez sleep 1000 &amp; en arrière-plan, trouvez son PID, puis arrêtez-le avec kill.</p>
+<p>Utilisez pkill pour envoyer SIGTERM à tous les processus sleep.</p>
+<p>Créez un script qui capture SIGINT et affiche un message avant de se terminer.</p>
+<p>Suspendez un processus avec kill -STOP et reprenez-le avec kill -CONT.</p>
+<p>Envoyez SIGHUP à un processus ssh-agent pour voir comment il réagit.</p>
+<h3>Corrections</h3>
+<p>sleep 1000 &amp; puis pgrep sleep et kill [PID]</p>
+<p>pkill sleep (envoie SIGTERM par défaut)</p>
+<p>Script avec trap 'echo "Interruption"; exit 1' SIGINT</p>
+<p>kill -STOP $(pgrep sleep) puis kill -CONT $(pgrep sleep)</p>
+<p>ssh-agent &amp; puis kill -HUP $(pgrep ssh-agent) — ssh-agent ne supporte généralement pas SIGHUP</p>
 <nav>
-<a href="10-variables-scripts.html" style="color:#00d9ff;text-decoration:none;">&larr; 10 - Variables d'environnement et scripts Bash</a> | <span style="color:#666;">11</span> | <a href="12-ssh-connexion-distante.html" style="color:#00d9ff;text-decoration:none;">12 - SSH et connexion distante &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="10-variables-scripts.html">&larr; 10-variables-scripts</a>
+<a href="12-ssh-connexion-distante.html">12-ssh-connexion-distante &rarr;</a>
+</nav></div></body></html>

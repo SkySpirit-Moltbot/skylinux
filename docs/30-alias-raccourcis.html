@@ -1,686 +1,338 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 30 : Alias et raccourcis personnalisés - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/30-alias-et-raccourcis-personnalises.html">
-<meta property="og:title" content="Leçon 30 : Alias et raccourcis personnalisés - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 30 : Alias et raccourcis personnalisés - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 30  alias et raccourcis personnaliss, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 30 : Alias et raccourcis personnalisés</h1>
 <p>Dans cette leçon, tu vas découvrir comment créer tes propres raccourcis de commandes grâce aux alias. Tu verras comment gagner du temps au quotidien en créant des commandes personnalisées pour tes tâches fréquentes.</p>
-<hr />
+<hr/>
 <h2>1. Qu'est-ce qu'un alias ?</h2>
-<p>Un <strong>alias</strong> est un raccourci qui remplace une commande longue ou complexe par un mot simple. C'est comme créer ta propre commande.</p>
-<p><strong>Exemples concrets :</strong>
-- <code>ll</code> au lieu de <code>ls -la</code> (lister avec détails)
-- <code>gs</code> au lieu de <code>git status</code>
-- <code>update</code> au lieu de <code>sudo apt update &amp;&amp; sudo apt upgrade -y</code></p>
+<p>Un **alias** est un raccourci qui remplace une commande longue ou complexe par un mot simple. C'est comme créer ta propre commande.</p>
+<p>**Exemples concrets :**</p>
+<ul>
+<li><code>ll</code> au lieu de <code>ls -la</code> (lister avec détails)</li>
+<li><code>gs</code> au lieu de <code>git status</code></li>
+<li><code>update</code> au lieu de <code>sudo apt update && sudo apt upgrade -y</code></li>
+</ul>
 <p>Les alias rendent ton terminal plus rapide et plus agréable à utiliser.</p>
-<hr />
+<hr/>
 <h2>2. Créer un alias temporaire</h2>
 <h3>Syntaxe de base</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>alias nom='commande'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>alias nom='commande'</code></div></div></p>
 <p>Le <code>=</code> est sans espaces, et la commande est entre guillemets simples ou doubles.</p>
 <h3>Exemples</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Raccourci pour lister les fichiers
-alias ll='ls -la'
-
-# Raccourci pour mettre à jour le système
-alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'
-
-# Raccourci pour Git status
-alias gs='git status'
-
-# Raccourci avec options
-alias grep='grep --color=auto'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Raccourci pour lister les fichiers</p>
+<p>alias ll='ls -la'</p>
+<p># Raccourci pour mettre à jour le système</p>
+<p>alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'</p>
+<p># Raccourci pour Git status</p>
+<p>alias gs='git status'</p>
+<p># Raccourci avec options</p>
+<p>alias grep='grep --color=auto'</code></div></div></p>
 <h3>Utiliser un alias</h3>
 <p>Après l'avoir créé, utilise-le comme une commande normale :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ll
-# Équivalent à : ls -la</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ll</p>
+<p># Équivalent à : ls -la</code></div></div></p>
 <h3>Vérifier les alias actifs</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir un alias précis
-type ll
-
-# Lister tous les alias actifs
-alias</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Voir un alias précis</p>
+<p>type ll</p>
+<p># Lister tous les alias actifs</p>
+<p>alias</code></div></div></p>
 <p>Résultat de <code>alias</code> :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>alias ll='ls -la'
-alias gs='git status'
-alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>alias ll='ls -la'</p>
+<p>alias gs='git status'</p>
+<p>alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'</code></div></div></p>
+<hr/>
 <h2>3. Alias temporaires vs permanents</h2>
 <h3>Session actuelle seulement</h3>
-<p>Les alias créés avec la commande <code>alias</code> sont <strong>temporaires</strong> : ils disparaissent quand tu fermes le terminal.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créé maintenant, fonctionne dans cette session
-alias ll='ls -la'
-
-# Après fermeture du terminal → disparu</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>Les alias créés avec la commande <code>alias</code> sont **temporaires** : ils disparaissent quand tu fermes le terminal.</p>
+<p><div class="code-block"><div class="code-line"><code># Créé maintenant, fonctionne dans cette session</p>
+<p>alias ll='ls -la'</p>
+<p># Après fermeture du terminal → disparu</code></div></div></p>
 <h3>Rendre un alias permanent</h3>
 <p>Pour qu'un alias survive à la fermeture du terminal, ajoute-le dans un fichier de configuration :</p>
-<p><strong>Pour Bash (le plus courant) :</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Pour Zsh :</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.zshrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>**Pour Bash (le plus courant) :**</p>
+<p><div class="code-block"><div class="code-line"><code>nano ~/.bashrc</code></div></div></p>
+<p>**Pour Zsh :**</p>
+<p><div class="code-block"><div class="code-line"><code>nano ~/.zshrc</code></div></div></p>
 <p>Ajoute tes alias à la fin du fichier :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Mes alias personnalisés
-alias ll='ls -la'
-alias gs='git status'
-alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'
-alias c='clear'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Mes alias personnalisés</p>
+<p>alias ll='ls -la'</p>
+<p>alias gs='git status'</p>
+<p>alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'</p>
+<p>alias c='clear'</code></div></div></p>
 <p>Sauvegarde puis recharge :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Recharger sans redémarrer
-source ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Recharger sans redémarrer</p>
+<p>source ~/.bashrc</code></div></div></p>
+<hr/>
 <h2>4. Alias avec paramètres (fonctions)</h2>
-<p>Les alias simples ne permettent pas de paramètres. Pour ça, utilise les <strong>fonctions</strong> :</p>
+<p>Les alias simples ne permettent pas de paramètres. Pour ça, utilise les **fonctions** :</p>
 <h3>Fonction simple</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une fonction pour chercher un fichier
-rechercher() {
-    find . -name &quot;$1&quot; 2&gt;/dev/null
-}
-
-# Utilisation
-rechercher &quot;*.txt&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer une fonction pour chercher un fichier</p>
+<p>rechercher() {</p>
+<p>    find . -name "$1" 2&gt;/dev/null</p>
+<p>}</p>
+<p># Utilisation</p>
+<p>rechercher "*.txt"</code></div></div></p>
 <h3>Fonction avec plusieurs paramètres</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une fonction pour se connecter en SSH
-connect() {
-    ssh &quot;$1@$2&quot;
-}
-
-# Utilisation
-connect user 192.168.1.10</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer une fonction pour se connecter en SSH</p>
+<p>connect() {</p>
+<p>    ssh "$1@$2"</p>
+<p>}</p>
+<p># Utilisation</p>
+<p>connect user 192.168.1.10</code></div></div></p>
 <h3>Fonction pour archivage rapide</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une archive .tar.gz
-archiver() {
-    tar -czvf &quot;$1.tar.gz&quot; &quot;$1&quot;
-}
-
-# Utilisation
-archiver mon-dossier</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer une archive .tar.gz</p>
+<p>archiver() {</p>
+<p>    tar -czvf "$1.tar.gz" "$1"</p>
+<p>}</p>
+<p># Utilisation</p>
+<p>archiver mon-dossier</code></div></div></p>
 <h3>Fonction pour extraer une archive</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>extraire() {
-    if [ -f &quot;$1&quot; ]; then
-        tar -xzvf &quot;$1&quot;
-    else
-        echo &quot;Fichier non trouvé : $1&quot;
-    fi
-}
-
-# Utilisation
-extraire archive.tar.gz</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>extraire() {</p>
+<p>    if [ -f "$1" ]; then</p>
+<p>        tar -xzvf "$1"</p>
+<p>    else</p>
+<p>        echo "Fichier non trouvé : $1"</p>
+<p>    fi</p>
+<p>}</p>
+<p># Utilisation</p>
+<p>extraire archive.tar.gz</code></div></div></p>
+<hr/>
 <h2>5. Surcharger une commande existante</h2>
 <p>Tu peux créer un alias qui remplace une commande système :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Remplacer rm par rm -i (confirmation avant suppression)
-alias rm='rm -i'
-
-# Remplacer mv par mv -i (confirmation avant écrasement)
-alias mv='mv -i'
-
-# Remplacer cp par cp -i (confirmation avant écrasement)
-alias cp='cp -i'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Remplacer rm par rm -i (confirmation avant suppression)</p>
+<p>alias rm='rm -i'</p>
+<p># Remplacer mv par mv -i (confirmation avant écrasement)</p>
+<p>alias mv='mv -i'</p>
+<p># Remplacer cp par cp -i (confirmation avant écrasement)</p>
+<p>alias cp='cp -i'</code></div></div></p>
 <blockquote>
 <p>⚠️ Utilise ces alias de sécurité avec précaution. Sur un serveur où tu n'as pas l'habitude, <code>rm</code> pourrait ne pas avoir <code>-i</code> et une suppression serait définitive.</p>
 </blockquote>
-<hr />
+<hr/>
 <h2>6. Alias pour l'historique</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Relancer la dernière commande
-alias r='!!'
-
-# Relancer la dernière commande sudo
-alias s='sudo !!'
-
-# Afficher l'historique
-alias h='history'</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Relancer la dernière commande</p>
+<p>alias r='!!'</p>
+<p># Relancer la dernière commande sudo</p>
+<p>alias s='sudo !!'</p>
+<p># Afficher l'historique</p>
+<p>alias h='history'</code></div></div></p>
+<hr/>
 <h2>7. Supprimer un alias</h2>
 <h3>Supprimer temporairement</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Supprimer un alias dans la session actuelle
-unalias ll
-
-# Supprimer tous les alias
-unalias -a</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Supprimer un alias dans la session actuelle</p>
+<p>unalias ll</p>
+<p># Supprimer tous les alias</p>
+<p>unalias -a</code></div></div></p>
 <h3>Cacher une commande (forcer l'original)</h3>
 <p>Si tu as un alias qui masque une commande, utilise <code>\</code>:</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Exécute la commande originale, pas l'alias
-\rm fichier.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Le backslash <code>\</code> devant ignore les alias.</p>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Exécute la commande originale, pas l'alias</p>
+<p>\rm fichier.txt</code></div></div></p>
+<p>Le backslash <code>\ </code> devant ignore les alias.</p>
+<hr/>
 <h2>8. Exemples pratiques complets</h2>
 <h3>Configuration ~/.bashrc</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>nano ~/.bashrc</code></div></div></p>
 <p>Ajoute cette section à la fin :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># ========================
-# Mes alias personnalisés
-# ========================
-
-# Raccourcis système
-alias c='clear'
-alias h='history'
-alias ll='ls -la'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Sécurité - confirmation avant actions irréversibles
-alias rm='rm -i'
-alias mv='mv -i'
-alias cp='cp -i'
-
-# Git
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gl='git log --oneline'
-
-# Système
-alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'
-alias restart='sudo systemctl restart'
-alias status='sudo systemctl status'
-
-# Réseau
-alias ip='ip -c'
-alias ports='sudo netstat -tulpn'
-alias ping='ping -c 5'
-
-# ========================
-# Mes fonctions personnalisées
-# ========================
-
-# Créer un dossier et y entrer
-cdl() {
-    mkdir -p &quot;$1&quot; &amp;&amp; cd &quot;$1&quot;
-}
-
-# Extraire une archive
-extraire() {
-    tar -xzvf &quot;$1&quot;
-}
-
-# Archivage rapide
-archiver() {
-    tar -czvf &quot;$1.tar.gz&quot; &quot;$1&quot;
-}
-
-# Afficher la taille d'un dossier
-taille() {
-    du -sh &quot;$1&quot; 2&gt;/dev/null || du -sh ./*
-}</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># ========================</p>
+<p># Mes alias personnalisés</p>
+<p># ========================</p>
+<p># Raccourcis système</p>
+<p>alias c='clear'</p>
+<p>alias h='history'</p>
+<p>alias ll='ls -la'</p>
+<p>alias la='ls -A'</p>
+<p>alias l='ls -CF'</p>
+<p># Sécurité - confirmation avant actions irréversibles</p>
+<p>alias rm='rm -i'</p>
+<p>alias mv='mv -i'</p>
+<p>alias cp='cp -i'</p>
+<p># Git</p>
+<p>alias gs='git status'</p>
+<p>alias ga='git add'</p>
+<p>alias gc='git commit'</p>
+<p>alias gp='git push'</p>
+<p>alias gl='git log --oneline'</p>
+<p># Système</p>
+<p>alias update='sudo apt update &amp;&amp; sudo apt upgrade -y'</p>
+<p>alias restart='sudo systemctl restart'</p>
+<p>alias status='sudo systemctl status'</p>
+<p># Réseau</p>
+<p>alias ip='ip -c'</p>
+<p>alias ports='sudo netstat -tulpn'</p>
+<p>alias ping='ping -c 5'</p>
+<p># ========================</p>
+<p># Mes fonctions personnalisées</p>
+<p># ========================</p>
+<p># Créer un dossier et y entrer</p>
+<p>cdl() {</p>
+<p>    mkdir -p "$1" &amp;&amp; cd "$1"</p>
+<p>}</p>
+<p># Extraire une archive</p>
+<p>extraire() {</p>
+<p>    tar -xzvf "$1"</p>
+<p>}</p>
+<p># Archivage rapide</p>
+<p>archiver() {</p>
+<p>    tar -czvf "$1.tar.gz" "$1"</p>
+<p>}</p>
+<p># Afficher la taille d'un dossier</p>
+<p>taille() {</p>
+<p>    du -sh "$1" 2&gt;/dev/null || du -sh ./*</p>
+<p>}</code></div></div></p>
 <p>Recharge ta configuration :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>source ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>source ~/.bashrc</code></div></div></p>
+<hr/>
 <h2>9. Hiérarchie des fichiers de configuration Bash</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>/etc/profile          → Config globale pour tous les utilisateurs (lecture seule)
-~/.bash_profile       → Config personnelle (exécuté à la connexion)
-~/.bashrc             → Config personnelle (exécuté à chaque ouverture de terminal)
-~/.bash_logout        → Commandes exécutées à la déconnexion</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>L'ordre de chargement :</strong>
-1. <code>/etc/profile</code>
-2. <code>~/.bash_profile</code> (s'il existe, sinon <code>~/.bash_login</code>, sinon <code>~/.profile</code>)
-3. <code>~/.bashrc</code> (souvent chargé depuis <code>~/.bash_profile</code>)</p>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>/etc/profile          → Config globale pour tous les utilisateurs (lecture seule)</p>
+<p>~/.bash_profile       → Config personnelle (exécuté à la connexion)</p>
+<p>~/.bashrc             → Config personnelle (exécuté à chaque ouverture de terminal)</p>
+<p>~/.bash_logout        → Commandes exécutées à la déconnexion</code></div></div></p>
+<p>**L'ordre de chargement :**</p>
+<p>1. <code>/etc/profile</code></p>
+<p>2. <code>~/.bash_profile</code> (s'il existe, sinon <code>~/.bash_login</code>, sinon <code>~/.profile</code>)</p>
+<p>3. <code>~/.bashrc</code> (souvent chargé depuis <code>~/.bash_profile</code>)</p>
+<hr/>
 <h2>10. Bonnes pratiques</h2>
 <ul>
-<li><strong>Débute par une lettre ou un chiffre</strong>, évite les noms de commandes existantes (<code>ls</code>, <code>cd</code>, etc.)</li>
-<li><strong>Utilise des noms mnémotechniques</strong> : <code>gs</code> pour git status, <code>ll</code> pour ls -la</li>
-<li><strong>Groupe tes alias</strong> dans <code>~/.bashrc</code> avec des commentaires</li>
-<li><strong>Teste avant de rendre permanent</strong> : crée d'abord un alias temporaire</li>
-<li><strong>Sauvegarde ta config</strong> : copie ton <code>~/.bashrc</code> régulièrement</li>
+<li>**Débute par une lettre ou un chiffre**, évite les noms de commandes existantes (<code>ls</code>, <code>cd</code>, etc.)</li>
+<li>**Utilise des noms mnémotechniques** : <code>gs</code> pour git status, <code>ll</code> pour ls -la</li>
+<li>**Groupe tes alias** dans <code>~/.bashrc</code> avec des commentaires</li>
+<li>**Teste avant de rendre permanent** : crée d'abord un alias temporaire</li>
+<li>**Sauvegarde ta config** : copie ton <code>~/.bashrc</code> régulièrement</li>
 </ul>
-<hr />
+<hr/>
 <h2>11. Résumé des commandes</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>alias nom='cmd'</code></td>
-<td>Créer un alias temporaire</td>
-</tr>
-<tr>
-<td><code>alias</code></td>
-<td>Lister tous les alias</td>
-</tr>
-<tr>
-<td><code>unalias nom</code></td>
-<td>Supprimer un alias</td>
-</tr>
-<tr>
-<td><code>unalias -a</code></td>
-<td>Supprimer tous les alias</td>
-</tr>
-<tr>
-<td><code>type alias_name</code></td>
-<td>Voir si c'est un alias et sa définition</td>
-</tr>
-<tr>
-<td><code>\cmd</code></td>
-<td>Exécuter la commande originale (sans alias)</td>
-</tr>
-<tr>
-<td><code>source ~/.bashrc</code></td>
-<td>Recharger la configuration</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>alias nom='cmd'</code></td><td>Créer un alias temporaire</td></tr>
+<tr><td><code>alias</code></td><td>Lister tous les alias</td></tr>
+<tr><td><code>unalias nom</code></td><td>Supprimer un alias</td></tr>
+<tr><td><code>unalias -a</code></td><td>Supprimer tous les alias</td></tr>
+<tr><td><code>type alias_name</code></td><td>Voir si c'est un alias et sa définition</td></tr>
+<tr><td><code>\cmd</code></td><td>Exécuter la commande originale (sans alias)</td></tr>
+<tr><td><code>source ~/.bashrc</code></td><td>Recharger la configuration</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>12. Exercice pratique</h2>
 <h3>Exercice : Crée ta boîte à outils</h3>
-<p><strong>Objectif</strong> : Configure ton terminal avec tes premiers alias personnalisés.</p>
-<p><strong>Étape 1 : Vérifie les alias existants</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>alias</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>**Objectif** : Configure ton terminal avec tes premiers alias personnalisés.</p>
+<p>**Étape 1 : Vérifie les alias existants**</p>
+<p><div class="code-block"><div class="code-line"><code>alias</code></div></div></p>
 <p>Note les alias par défaut de ton système.</p>
-<p><strong>Étape 2 : Crée un alias simple</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>alias ll='ls -la'
-ll</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 3 : Crée un alias avec couleur</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>alias ls='ls --color=auto'
-ls</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 4 : Crée une fonction personnalisée</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>maj() {
-    echo &quot;Mise à jour du système...&quot;
-    sudo apt update
-    sudo apt upgrade -y
-    echo &quot;Terminé !&quot;
-}
-
-# Teste
-maj</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 5 : Rends un alias permanent</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo &quot;alias c='clear'&quot; &gt;&gt; ~/.bashrc
-echo &quot;alias ll='ls -la'&quot; &gt;&gt; ~/.bashrc
-source ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 6 : Vérifie</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ferme et rouvre le terminal, puis teste
-c
-ll</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Étape 7 : Supprime un alias (test)</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>unalias ll
-type ll
-# Devrait afficher &quot;not found&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>**Étape 2 : Crée un alias simple**</p>
+<p><div class="code-block"><div class="code-line"><code>alias ll='ls -la'</p>
+<p>ll</code></div></div></p>
+<p>**Étape 3 : Crée un alias avec couleur**</p>
+<p><div class="code-block"><div class="code-line"><code>alias ls='ls --color=auto'</p>
+<p>ls</code></div></div></p>
+<p>**Étape 4 : Crée une fonction personnalisée**</p>
+<p><div class="code-block"><div class="code-line"><code>maj() {</p>
+<p>    echo "Mise à jour du système..."</p>
+<p>    sudo apt update</p>
+<p>    sudo apt upgrade -y</p>
+<p>    echo "Terminé !"</p>
+<p>}</p>
+<p># Teste</p>
+<p>maj</code></div></div></p>
+<p>**Étape 5 : Rends un alias permanent**</p>
+<p><div class="code-block"><div class="code-line"><code>echo "alias c='clear'" &gt;&gt; ~/.bashrc</p>
+<p>echo "alias ll='ls -la'" &gt;&gt; ~/.bashrc</p>
+<p>source ~/.bashrc</code></div></div></p>
+<p>**Étape 6 : Vérifie**</p>
+<p><div class="code-block"><div class="code-line"><code># Ferme et rouvre le terminal, puis teste</p>
+<p>c</p>
+<p>ll</code></div></div></p>
+<p>**Étape 7 : Supprime un alias (test)**</p>
+<p><div class="code-block"><div class="code-line"><code>unalias ll</p>
+<p>type ll</p>
+<p># Devrait afficher "not found"</code></div></div></p>
 <p>✅ Tu sais maintenant personnaliser ton terminal !</p>
-<hr />
+<hr/>
 <h2>13. Aller plus loin</h2>
 <ul>
-<li><strong>Alias entre machines</strong> : copie ton <code>~/.bashrc</code> sur chaque machine via Git</li>
-<li><strong>Scripts de configuration</strong> : crée un script qui installe ta config sur une nouvelle machine</li>
-<li><strong>Oh My Zsh</strong> : framework pour Zsh avec des centaines d'alias prêts à l'emploi</li>
-<li><strong>Autocomplétion</strong> : configure l'autocomplétion pour tes fonctions personnalisées</li>
+<li>**Alias entre machines** : copie ton <code>~/.bashrc</code> sur chaque machine via Git</li>
+<li>**Scripts de configuration** : crée un script qui installe ta config sur une nouvelle machine</li>
+<li>**Oh My Zsh** : framework pour Zsh avec des centaines d'alias prêts à l'emploi</li>
+<li>**Autocomplétion** : configure l'autocomplétion pour tes fonctions personnalisées</li>
 </ul>
-</div>
+<hr/>
+<h2>Complément: Fonctions bash</h2>
+<h3>Les alias</h3>
+<p>Un alias est un raccourci qui remplace une commande ou une série de commandes. C'est la méthode la plus simple pour personnaliser votre terminal.</p>
+<h3>Créer un alias</h3>
+<p>Maintenant, taper ll équivaut à taper ls -la.</p>
+<p>Crée une commande update qui met à jour le système automatiquement.</p>
+<p>Raccourci pour git status.</p>
+<h3>Lister et supprimer les alias</h3>
+<p>Affiche tous les alias actuellement définis.</p>
+<h3>Alias avec arguments (limites)</h3>
+<p>Les alias ne peuvent pas gérer d'arguments directement. Si vous écrivez :</p>
+<p>Et que vous tapez gp main, le main sera appendu après la commande complète. Cela fonctionne dans ce cas, mais pour des cas plus complexes, mieux vaut utiliser une fonction.</p>
+<h3>Les fonctions Bash</h3>
+<p>Les fonctions sont plus puissantes que les alias. Elles peuvent accepter des paramètres, utiliser des conditions, des boucles, et返回值.</p>
+<h3>Syntaxe des fonctions</h3>
+<p>Ou avec le mot-clé function (optionnel) :</p>
+<h3>Exemples concrets</h3>
+<p>Utilisation : backup monfichier.txt crée une copie备份 avec la date dans le nom.</p>
+<p>Appel : taille_fichier document.pdf</p>
+<h3>Fonctions avec valeur de retour (return)</h3>
+<p>Utilisation :</p>
+<h3>Variables dans les fonctions</h3>
+<p>Le mot-clé local limite la variable à la fonction. Sans cela, la variable serait globale.</p>
+<h3>Exemples pratiques</h3>
+<p>Utilisation : mkcd mon_projet</p>
+<p>Utilisation : hc git cherche les commandes git dans l'historique.</p>
+<h3>Rendre les alias et fonctions permanents</h3>
+<p>Par défaut, les alias et fonctions définis dans le terminal sont temporaires. Pour les rendre permanents, ajoutez-les dans un fichier de configuration.</p>
+<p>Ajoutez vos alias et fonctions à la fin du fichier.</p>
+<p>Ou plus court :</p>
+<p>Sur certaines distributions, on peut créer un fichier séparé :</p>
+<p>Puis créez ~/.bash_aliases avec vos alias et fonctions.</p>
+<h3>Alias système (pour tous les utilisateurs)</h3>
+<p>Pour des alias visibles par tous les utilisateurs du système, ajoutez-les dans :</p>
+<p>Ou dans /etc/profile.d/ pour une organisation plus propre.</p>
+<h3>Debugging des fonctions</h3>
+<p>Pour déboguer une fonction, utilisez set -x :</p>
+<p>Les commandes seront affichées avant leur exécution.</p>
+<h3>Résumé</h3>
+<p>Les alias et fonctions transforment votre terminal en outil personnalisé :</p>
+<p>alias nom='commande' — crée un raccourci simple</p>
+<p>unalias nom — supprime un alias</p>
+<p>nom_fonction() { ... } — crée une fonction complexe</p>
+<p>Utilisez local pour les variables locales</p>
+<p>Placez vos alias/fonctions dans ~/.bashrc pour les rendre permanents</p>
+<p>Séparez dans ~/.bash_aliases pour une meilleure organisation</p>
 <nav>
-<a href="29-git-gestion-version.html" style="color:#00d9ff;text-decoration:none;">&larr; 29 - Git - Gestion de version</a> | <span style="color:#666;">30</span> | <a href="31-gestion-paquets.html" style="color:#00d9ff;text-decoration:none;">31 - Gestion des paquets &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="29-git-gestion-version.html">&larr; 29-git-gestion-version</a>
+<a href="31-gestion-paquets.html">31-gestion-paquets &rarr;</a>
+</nav></div></body></html>

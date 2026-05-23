@@ -1,747 +1,351 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 12 : SSH et connexion distante - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/12-ssh-et-connexion-distante.html">
-<meta property="og:title" content="Leçon 12 : SSH et connexion distante - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 12 : SSH et connexion distante - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 12  ssh et connexion distante, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 12 : SSH et connexion distante</h1>
 <p>SSH (Secure Shell) est le protocole indispensable pour administrer des serveurs Linux à distance. Dans cette leçon, tu vas maîtriser SSH, les clés, le transfert de fichiers et les tunnels.</p>
-<hr />
+<hr/>
 <h2>1. Comprendre SSH</h2>
 <h3>Qu'est-ce que SSH ?</h3>
-<p>SSH est un protocole <strong>crypté</strong> pour se connecter à distance à un serveur Linux. Il a remplacé les anciens protocoles insecure (telnet, rsh).</p>
+<p>SSH est un protocole **crypté** pour se connecter à distance à un serveur Linux. Il a remplacé les anciens protocoles insecure (telnet, rsh).</p>
 <h3>Caractéristiques</h3>
 <ul>
-<li><strong>Chiffrement</strong> : Toutes les données sont chiffrées</li>
-<li><strong>Authentification</strong> : Mot de passe ou clés RSA/ED25519</li>
-<li><strong>Tunnel</strong> : Créer des tunnels sécurisés</li>
-<li><strong>Transfert</strong> : Fichiers via SCP/SFTP</li>
+<li>**Chiffrement** : Toutes les données sont chiffrées</li>
+<li>**Authentification** : Mot de passe ou clés RSA/ED25519</li>
+<li>**Tunnel** : Créer des tunnels sécurisés</li>
+<li>**Transfert** : Fichiers via SCP/SFTP</li>
 </ul>
 <h3>Concepts clés</h3>
 <table>
-<thead>
-<tr>
-<th>Terme</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>SSH</strong></td>
-<td>Protocole</td>
-</tr>
-<tr>
-<td><strong>ssh</strong></td>
-<td>Client (commande)</td>
-</tr>
-<tr>
-<td><strong>sshd</strong></td>
-<td>Serveur (daemon)</td>
-</tr>
-<tr>
-<td><strong>~/.ssh/</strong></td>
-<td>Répertoire de config et clés</td>
-</tr>
-</tbody>
+<tr><th>Terme</th><th>Description</th></tr>
+<tr><td>**SSH**</td><td>Protocole</td></tr>
+<tr><td>**ssh**</td><td>Client (commande)</td></tr>
+<tr><td>**sshd**</td><td>Serveur (daemon)</td></tr>
+<tr><td>**~/.ssh/**</td><td>Répertoire de config et clés</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>2. Installation du serveur SSH</h2>
 <h3>Installer OpenSSH Server</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Debian/Ubuntu
-sudo apt install openssh-server
-
-# Démarrer le service
-sudo systemctl start ssh
-
-# Activer au boot
-sudo systemctl enable ssh
-
-# Voir le statut
-sudo systemctl status ssh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Debian/Ubuntu</p>
+<p>sudo apt install openssh-server</p>
+<p># Démarrer le service</p>
+<p>sudo systemctl start ssh</p>
+<p># Activer au boot</p>
+<p>sudo systemctl enable ssh</p>
+<p># Voir le statut</p>
+<p>sudo systemctl status ssh</code></div></div></p>
 <h3>Configuration</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Fichier de configuration
-sudo nano /etc/ssh/sshd_config
-
-# Options importantes
-Port 22                    # Changer le port
-PermitRootLogin no         # Interdire root
-PasswordAuthentication yes # Auth par mot de passe
-PubkeyAuthentication yes  # Auth par clé</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Fichier de configuration</p>
+<p>sudo nano /etc/ssh/sshd_config</p>
+<p># Options importantes</p>
+<p>Port 22                    # Changer le port</p>
+<p>PermitRootLogin no         # Interdire root</p>
+<p>PasswordAuthentication yes # Auth par mot de passe</p>
+<p>PubkeyAuthentication yes  # Auth par clé</code></div></div></p>
 <h3>Redémarrer après modification</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sudo systemctl restart ssh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>sudo systemctl restart ssh</code></div></div></p>
+<hr/>
 <h2>3. Connexion SSH de base</h2>
 <h3>Syntaxe simple</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ssh utilisateur@adresse_ip
-ssh user@192.168.1.100
-ssh user@mondomaine.com</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ssh utilisateur@adresse_ip</p>
+<p>ssh user@192.168.1.100</p>
+<p>ssh user@mondomaine.com</code></div></div></p>
 <h3>Options courantes</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Port personnalisé
-ssh -p 2222 user@serveur
-
-# Avec clé spécifique
-ssh -i ~/.ssh/ma_cle user@serveur
-
-# Mode verbeux (debug)
-ssh -v user@serveur
-
-# Forward agent SSH
-ssh -A user@serveur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Port personnalisé</p>
+<p>ssh -p 2222 user@serveur</p>
+<p># Avec clé spécifique</p>
+<p>ssh -i ~/.ssh/ma_cle user@serveur</p>
+<p># Mode verbeux (debug)</p>
+<p>ssh -v user@serveur</p>
+<p># Forward agent SSH</p>
+<p>ssh -A user@serveur</code></div></div></p>
 <h3>Premier accès</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Accepter la clé hôte (première connexion)
-ssh user@serveur
-
-# Réponses aux questions :
-# &quot;Are you sure you want to continue connecting (yes/no)?&quot;
-# Taper &quot;yes&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Accepter la clé hôte (première connexion)</p>
+<p>ssh user@serveur</p>
+<p># Réponses aux questions :</p>
+<p># "Are you sure you want to continue connecting (yes/no)?"</p>
+<p># Taper "yes"</code></div></div></p>
+<hr/>
 <h2>4. Clés SSH - Configuration sécurisée</h2>
 <h3>Pourquoi utiliser des clés ?</h3>
 <table>
-<thead>
-<tr>
-<th>Mot de passe</th>
-<th>Clé SSH</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Vulnérable aux attaques brute force</td>
-<td>Impossibles à pirater</td>
-</tr>
-<tr>
-<td>À retenir</td>
-<td>Stockée localement</td>
-</tr>
-<tr>
-<td>Transmission sur le réseau</td>
-<td>Jamais transmise</td>
-</tr>
-</tbody>
+<tr><th>Mot de passe</th><th>Clé SSH</th></tr>
+<tr><td>Vulnérable aux attaques brute force</td><td>Impossibles à pirater</td></tr>
+<tr><td>À retenir</td><td>Stockée localement</td></tr>
+<tr><td>Transmission sur le réseau</td><td>Jamais transmise</td></tr>
 </table>
 <h3>Générer une clé SSH</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Clé ED25519 (recommandée - moderne et sécurisée)
-ssh-keygen -t ed25519 -C &quot;mon@email.com&quot;
-
-# Clé RSA (legacy)
-ssh-keygen -t rsa -b 4096 -C &quot;mon@email.com&quot;
-
-# Avec commentaire personnalisé
-ssh-keygen -t ed25519 -C &quot;serveur-maison&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Clé ED25519 (recommandée - moderne et sécurisée)</p>
+<p>ssh-keygen -t ed25519 -C "mon@email.com"</p>
+<p># Clé RSA (legacy)</p>
+<p>ssh-keygen -t rsa -b 4096 -C "mon@email.com"</p>
+<p># Avec commentaire personnalisé</p>
+<p>ssh-keygen -t ed25519 -C "serveur-maison"</code></div></div></p>
 <h3>Questions lors de la génération</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>Generating public/private ed25519 key pair.
-Enter file in which to save the key (/home/user/.ssh/id_ed25519): 
-Enter passphrase (empty for no passphrase):      # Mot de passe pour protéger la clé
-Enter same passphrase again:</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>Generating public/private ed25519 key pair.</p>
+<p>Enter file in which to save the key (/home/user/.ssh/id_ed25519): </p>
+<p>Enter passphrase (empty for no passphrase):      # Mot de passe pour protéger la clé</p>
+<p>Enter same passphrase again:</code></div></div></p>
 <blockquote>
-<p>⚠️ <strong>Conseil</strong> : Utilise une passphrase pour sécuriser ta clé !</p>
+<p>⚠️ **Conseil** : Utilise une passphrase pour sécuriser ta clé !</p>
 </blockquote>
 <h3>Copier la clé sur le serveur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Méthode automatique (recommandée)
-ssh-copy-id user@serveur
-
-# Methode manuelle
-cat ~/.ssh/id_ed25519.pub | ssh user@serveur &quot;mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys&quot;
-
-# Ou avec ssh-id
-ssh-copy-id -i ~/.ssh/id_ed25519.pub user@serveur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Méthode automatique (recommandée)</p>
+<p>ssh-copy-id user@serveur</p>
+<p># Methode manuelle</p>
+<p>cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys"</p>
+<p># Ou avec ssh-id</p>
+<p>ssh-copy-id -i ~/.ssh/id_ed25519.pub user@serveur</code></div></div></p>
 <h3>Connexion avec clé</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ssh user@serveur
-# Plus de mot de passe demandé !</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ssh user@serveur</p>
+<p># Plus de mot de passe demandé !</code></div></div></p>
 <h3>Agent SSH</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Démarrer l'agent
-eval &quot;$(ssh-agent -s)&quot;
-
-# Ajouter la clé
-ssh-add ~/.ssh/id_ed25519
-
-# Ajouter avec passphrase
-ssh-add
-
-# Lister les clés chargées
-ssh-add -l
-
-# Supprimer toutes les clés
-ssh-add -D</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Démarrer l'agent</p>
+<p>eval "$(ssh-agent -s)"</p>
+<p># Ajouter la clé</p>
+<p>ssh-add ~/.ssh/id_ed25519</p>
+<p># Ajouter avec passphrase</p>
+<p>ssh-add</p>
+<p># Lister les clés chargées</p>
+<p>ssh-add -l</p>
+<p># Supprimer toutes les clés</p>
+<p>ssh-add -D</code></div></div></p>
+<hr/>
 <h2>5. Fichiers de configuration SSH</h2>
 <h3>~/.ssh/config</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.ssh/config</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>nano ~/.ssh/config</code></div></div></p>
 <p>Contenu :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Serveur personnel
-Host maison
-    HostName 192.168.1.100
-    User pi
-    Port 22
-    IdentityFile ~/.ssh/id_ed25519
-
-# Serveur cloud
-Host cloud
-    HostName mondomaine.com
-    User admin
-    Port 2222
-    IdentityFile ~/.ssh/cloud_key
-
-# GitHub
-Host github.com
-    HostName github.com
-    User git
-    IdentityFile ~/.ssh/github_ed25519</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Serveur personnel</p>
+<p>Host maison</p>
+<p>    HostName 192.168.1.100</p>
+<p>    User pi</p>
+<p>    Port 22</p>
+<p>    IdentityFile ~/.ssh/id_ed25519</p>
+<p># Serveur cloud</p>
+<p>Host cloud</p>
+<p>    HostName mondomaine.com</p>
+<p>    User admin</p>
+<p>    Port 2222</p>
+<p>    IdentityFile ~/.ssh/cloud_key</p>
+<p># GitHub</p>
+<p>Host github.com</p>
+<p>    HostName github.com</p>
+<p>    User git</p>
+<p>    IdentityFile ~/.ssh/github_ed25519</code></div></div></p>
 <h3>Utiliser les alias</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ssh maison        # Au lieu de ssh pi@192.168.1.100
-scp fichier maison:/home/pi/</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ssh maison        # Au lieu de ssh pi@192.168.1.100</p>
+<p>scp fichier maison:/home/pi/</code></div></div></p>
 <h3>Permissions</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>chmod 700 ~/.ssh
-chmod 600 ~/.ssh/config
-chmod 600 ~/.ssh/id_ed25519
-chmod 644 ~/.ssh/id_ed25519.pub</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>chmod 700 ~/.ssh</p>
+<p>chmod 600 ~/.ssh/config</p>
+<p>chmod 600 ~/.ssh/id_ed25519</p>
+<p>chmod 644 ~/.ssh/id_ed25519.pub</code></div></div></p>
+<hr/>
 <h2>6. Transfert de fichiers</h2>
 <h3>SCP - Copy</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Copier vers le serveur
-scp fichier.txt user@serveur:/home/user/
-scp -r dossier/ user@serveur:/home/user/
-
-# Copier depuis le serveur
-scp user@serveur:/home/user/fichier.txt ./
-scp -r user@serveur:/home/user/dossier/ ./
-
-# Options utiles
-scp -P 2222 fichier.txt user@serveur:/dossier/  # Port
-scp -C fichier.txt user@serveur:/dossier/      # Compression
-scp -v fichier.txt user@serveur:/dossier/      # Verbeux
-scp -p fichier.txt user@serveur:/dossier/      # Préserver dates</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Copier vers le serveur</p>
+<p>scp fichier.txt user@serveur:/home/user/</p>
+<p>scp -r dossier/ user@serveur:/home/user/</p>
+<p># Copier depuis le serveur</p>
+<p>scp user@serveur:/home/user/fichier.txt ./</p>
+<p>scp -r user@serveur:/home/user/dossier/ ./</p>
+<p># Options utiles</p>
+<p>scp -P 2222 fichier.txt user@serveur:/dossier/  # Port</p>
+<p>scp -C fichier.txt user@serveur:/dossier/      # Compression</p>
+<p>scp -v fichier.txt user@serveur:/dossier/      # Verbeux</p>
+<p>scp -p fichier.txt user@serveur:/dossier/      # Préserver dates</code></div></div></p>
 <h3>SFTP - Transfert interactif</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sftp user@serveur
-
-# Commandes SFTP
-ls              # Lister
-cd dossier      # Changer dossier
-pwd             # Dossier actuel
-put fichier.txt # Envoyer
-get fichier.txt # Télécharger
-get -r dossier/ # Télécharger dossier
-rm fichier      # Supprimer
-mkdir dossier   # Créer dossier
-exit            # Quitter</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>sftp user@serveur</p>
+<p># Commandes SFTP</p>
+<p>ls              # Lister</p>
+<p>cd dossier      # Changer dossier</p>
+<p>pwd             # Dossier actuel</p>
+<p>put fichier.txt # Envoyer</p>
+<p>get fichier.txt # Télécharger</p>
+<p>get -r dossier/ # Télécharger dossier</p>
+<p>rm fichier      # Supprimer</p>
+<p>mkdir dossier   # Créer dossier</p>
+<p>exit            # Quitter</code></div></div></p>
 <h3>RSYNC - Synchronisation</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Synchroniser local vers distant
-rsync -avz dossier/ user@serveur:/home/user/backup/
-
-# Synchroniser avec suppression
-rsync -avz --delete dossier/ user@serveur:/backup/
-
-# Exclure des fichiers
-rsync -avz --exclude='*.log' dossier/ user@serveur:/backup/
-
-#dry-run (simulation)
-rsync -avzn dossier/ user@serveur:/backup/</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Synchroniser local vers distant</p>
+<p>rsync -avz dossier/ user@serveur:/home/user/backup/</p>
+<p># Synchroniser avec suppression</p>
+<p>rsync -avz --delete dossier/ user@serveur:/backup/</p>
+<p># Exclure des fichiers</p>
+<p>rsync -avz --exclude='*.log' dossier/ user@serveur:/backup/</p>
+<p>#dry-run (simulation)</p>
+<p>rsync -avzn dossier/ user@serveur:/backup/</code></div></div></p>
+<hr/>
 <h2>7. Port Forwarding (Tunnel SSH)</h2>
 <h3>Local Port Forwarding</h3>
 <p>Accéder à un service du serveur comme si localement.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ssh -L [port_local]:[destination]:[port_destination] user@serveur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ssh -L [port_local]:[destination]:[port_destination] user@serveur</code></div></div></p>
 <h3>Exemples pratiques</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Accéder au serveur web du serveur (port 80)
-ssh -L 8080:localhost:80 user@serveur
-# → http://localhost:8080 sur ta machine
-
-# Accéder à MySQL sur le serveur
-ssh -L 3306:localhost:3306 user@serveur
-
-# Accéder à un service sur un autre serveur
-ssh -L 9000:autre-serveur:80 user@serveur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Accéder au serveur web du serveur (port 80)</p>
+<p>ssh -L 8080:localhost:80 user@serveur</p>
+<p># → http://localhost:8080 sur ta machine</p>
+<p># Accéder à MySQL sur le serveur</p>
+<p>ssh -L 3306:localhost:3306 user@serveur</p>
+<p># Accéder à un service sur un autre serveur</p>
+<p>ssh -L 9000:autre-serveur:80 user@serveur</code></div></div></p>
 <h3>Remote Port Forwarding</h3>
 <p>Exposer un service local vers internet via le serveur.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ssh -R 8080:localhost:80 user@serveur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ssh -R 8080:localhost:80 user@serveur</code></div></div></p>
 <h3>Dynamic Port Forwarding (SOCKS Proxy)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un proxy SOCKS
-ssh -D 1080 user@serveur
-
-# Configurer le navigateur
-# SOCKS Proxy: localhost:1080</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Créer un proxy SOCKS</p>
+<p>ssh -D 1080 user@serveur</p>
+<p># Configurer le navigateur</p>
+<p># SOCKS Proxy: localhost:1080</code></div></div></p>
+<hr/>
 <h2>8. SSH Bastion (Jump Host)</h2>
 <h3>Se connecter via un serveur bastion</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Direct via le bastion
-ssh -J user@bastion.com user@serveur-distant
-
-# Avec clé spécifique
-ssh -J -i ~/.ssh/bastion_key user@bastion.com user@serveur-interne
-
-# Configuration dans ~/.ssh/config
-Host serveur-distant
-    HostName 192.168.1.50
-    User admin
-    ProxyJump user@bastion.com</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Direct via le bastion</p>
+<p>ssh -J user@bastion.com user@serveur-distant</p>
+<p># Avec clé spécifique</p>
+<p>ssh -J -i ~/.ssh/bastion_key user@bastion.com user@serveur-interne</p>
+<p># Configuration dans ~/.ssh/config</p>
+<p>Host serveur-distant</p>
+<p>    HostName 192.168.1.50</p>
+<p>    User admin</p>
+<p>    ProxyJump user@bastion.com</code></div></div></p>
+<hr/>
 <h2>9. Sécurité SSH</h2>
 <h3>Meilleures pratiques</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Désactiver root login
-# Dans /etc/ssh/sshd_config:
-PermitRootLogin no
-
-# 2. Changer le port par défaut
-Port 2222
-
-# 3. Utiliser only key authentication
-PasswordAuthentication no
-
-# 4. Limiter les utilisateurs
-AllowUsers user1 user2
-
-# 5. Fail2ban (anti-bruteforce)
-sudo apt install fail2ban</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># 1. Désactiver root login</p>
+<p># Dans /etc/ssh/sshd_config:</p>
+<p>PermitRootLogin no</p>
+<p># 2. Changer le port par défaut</p>
+<p>Port 2222</p>
+<p># 3. Utiliser only key authentication</p>
+<p>PasswordAuthentication no</p>
+<p># 4. Limiter les utilisateurs</p>
+<p>AllowUsers user1 user2</p>
+<p># 5. Fail2ban (anti-bruteforce)</p>
+<p>sudo apt install fail2ban</code></div></div></p>
 <h3>Authentification à deux facteurs</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Installer Google Authenticator
-sudo apt install libpam-google-authenticator
-
-# Configurer /etc/pam.d/sshd
-# Ajouter: auth required pam_google_authenticator.so
-
-# Activer dans /etc/ssh/sshd_config
-ChallengeResponseAuthentication yes
-AuthenticationMethods password,publickey</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Installer Google Authenticator</p>
+<p>sudo apt install libpam-google-authenticator</p>
+<p># Configurer /etc/pam.d/sshd</p>
+<p># Ajouter: auth required pam_google_authenticator.so</p>
+<p># Activer dans /etc/ssh/sshd_config</p>
+<p>ChallengeResponseAuthentication yes</p>
+<p>AuthenticationMethods password,publickey</code></div></div></p>
+<hr/>
 <h2>10. Exercices pratiques</h2>
 <h3>Exercice 1 : Configurer clé SSH</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Générer une clé
-ssh-keygen -t ed25519 -C &quot;mon-serveur&quot;
-
-# Copier sur le serveur
-ssh-copy-id user@serveur
-
-# Se connecter sans mot de passe
-ssh user@serveur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Générer une clé</p>
+<p>ssh-keygen -t ed25519 -C "mon-serveur"</p>
+<p># Copier sur le serveur</p>
+<p>ssh-copy-id user@serveur</p>
+<p># Se connecter sans mot de passe</p>
+<p>ssh user@serveur</code></div></div></p>
 <h3>Exercice 2 : Tunnel vers MySQL</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer le tunnel
-ssh -L 3306:localhost:3306 user@serveur
-
-# Se connecter localement
-mysql -h localhost -u root -p</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer le tunnel</p>
+<p>ssh -L 3306:localhost:3306 user@serveur</p>
+<p># Se connecter localement</p>
+<p>mysql -h localhost -u root -p</code></div></div></p>
 <h3>Exercice 3 : Transfert de backup</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une archive
-tar -czf backup.tar.gz ~/Documents/
-
-# Transférer vers le serveur
-scp backup.tar.gz user@serveur:/backup/
-
-# Nettoyer local
-rm backup.tar.gz</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Créer une archive</p>
+<p>tar -czf backup.tar.gz ~/Documents/</p>
+<p># Transférer vers le serveur</p>
+<p>scp backup.tar.gz user@serveur:/backup/</p>
+<p># Nettoyer local</p>
+<p>rm backup.tar.gz</code></div></div></p>
+<hr/>
 <h2>11. Tableau résumé</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>ssh user@serveur</code></td>
-<td>Connexion basique</td>
-</tr>
-<tr>
-<td><code>ssh-keygen</code></td>
-<td>Générer clé</td>
-</tr>
-<tr>
-<td><code>ssh-copy-id</code></td>
-<td>Copier clé</td>
-</tr>
-<tr>
-<td><code>scp</code></td>
-<td>Copier fichiers</td>
-</tr>
-<tr>
-<td><code>sftp</code></td>
-<td>Transfert interactif</td>
-</tr>
-<tr>
-<td><code>rsync</code></td>
-<td>Synchronisation</td>
-</tr>
-<tr>
-<td><code>ssh -L</code></td>
-<td>Port forwarding local</td>
-</tr>
-<tr>
-<td><code>ssh -R</code></td>
-<td>Port forwarding remote</td>
-</tr>
-<tr>
-<td><code>ssh -J</code></td>
-<td>Jump host</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>ssh user@serveur</code></td><td>Connexion basique</td></tr>
+<tr><td><code>ssh-keygen</code></td><td>Générer clé</td></tr>
+<tr><td><code>ssh-copy-id</code></td><td>Copier clé</td></tr>
+<tr><td><code>scp</code></td><td>Copier fichiers</td></tr>
+<tr><td><code>sftp</code></td><td>Transfert interactif</td></tr>
+<tr><td><code>rsync</code></td><td>Synchronisation</td></tr>
+<tr><td><code>ssh -L</code></td><td>Port forwarding local</td></tr>
+<tr><td><code>ssh -R</code></td><td>Port forwarding remote</td></tr>
+<tr><td><code>ssh -J</code></td><td>Jump host</td></tr>
 </table>
-<hr />
+<hr/>
 <p>Maîtrise SSH pour administrer tes serveurs comme un pro ! 🔐</p>
-</div>
+<hr/>
+<h2>Complément: OpenSSL et clés SSH</h2>
+<h3>Introduction</h3>
+<p>Quand on travaille avec Linux, la sécurité des communications et des données est un sujet central. openssl est la boîte à outils reine pour la cryptographie sous Linux : générér des clés, créer des certificats, calculer des hashs, chiffrer des fichiers. ssh-keygen est son pendant spécialisé pour les clés SSH. Dans cette leçon, vous apprendrez à utiliser ces deux outils pour sécuriser vos échanges.</p>
+<h3>Générer des clés SSH avec ssh-keygen</h3>
+<p>ssh-keygen crée les paires de clés (publique/privée) utilisées pour l'authentification SSH sans mot de passe. Le principe : vous gardez la clé privée au chaud, et vous partagez la clé publique avec les serveurs distants.</p>
+<p>Questions posées lors de la génération :</p>
+<p>Emplacement : valider le chemin par défaut (~/.ssh/id_ed25519) ou en indiquer un autre</p>
+<p>Passphrase : fortement recommandée — elle chiffre la clé privée sur le disque</p>
+<h3>La passphrase — protection de la clé privée</h3>
+<p>Sans passphrase, quiconque accède à votre clé privée peut l'utiliser. Avec une passphrase, elle est chiffrée sur le disque :</p>
+<h3>Le fichier known_hosts</h3>
+<p>Lors de la première connexion SSH à un serveur, son fingerprint est enregistré dans ~/.ssh/known_hosts :</p>
+<h3>Clés SSH pour多个 connexions</h3>
+<p>On peut créer des clés dédiées pour différents environnements :</p>
+<p>Contenu du fichier ~/.ssh/config :</p>
+<h3>Calculer des hashs avec openssl</h3>
+<p>openssl dgst calcule l'empreinte (hash) d'un fichier — utile pour vérifier l'intégrité d'un téléchargement :</p>
+<h3>Vérifier l'intégrité avec shasum</h3>
+<p>En complément de openssl, sha256sum / sha512sum sont souvent préinstallées :</p>
+<h3>Générer des données aléatoires</h3>
+<p>openssl rand génère des octets pseudo-aléatoires — utile pour des mots de passe ou des clés de session :</p>
+<h3>Chiffrer et déchiffrer des fichiers avec openssl</h3>
+<p>openssl enc permet de chiffrer un fichier avec un mot de passe (AES-256-CBC par défaut) :</p>
+<h3>Créer un certificat SSL auto-signé</h3>
+<p>Pour tester un serveur web en HTTPS sans passer par une autorité de certification :</p>
+<h3>Vérifier un certificat SSL distant</h3>
+<p>Pour inspecter le certificat d'un site web depuis le terminal :</p>
+<h3>Conversions de format</h3>
+<p>openssl peut convertir des clés et certificats entre différents formats :</p>
+<h3>Générer un CSR (Certificate Signing Request)</h3>
+<p>Pour obtenir un certificat signé par une autorité (Let's Encrypt, DigiCert…), il faut d'abord créer un CSR :</p>
+<h3>Agent SSH — ne taper sa passphrase qu'une fois</h3>
+<p>ssh-agent garde les clés déchiffrées en mémoire pour la session :</p>
+<h3>SSHFP — fingerprint DNS pour SSH</h3>
+<p>SSHFP est un enregistrement DNS qui permet à SSH de vérifier automatiquement l'authenticité du serveur :</p>
+<h3>Résumé</h3>
+<p>ssh-keygen -t ed25519 = clé SSH moderne recommandée</p>
+<p>ssh-copy-id user@serveur = copier la clé publique sur un serveur</p>
+<p>~/.ssh/config = définir des alias et clés par serveur</p>
+<p>ssh-agent = retenir la passphrase pour la session</p>
+<p>ssh-keygen -R serveur = retirer un serveur du known_hosts</p>
+<p>openssl dgst -sha256 fichier = calculer un hash SHA-256</p>
+<p>sha256sum -c hashes.txt = vérifier l'intégrité de fichiers</p>
+<p>openssl rand -base64 32 = générer des données aléatoires</p>
+<p>openssl enc -aes-256-cbc -salt -in f.txt -out f.enc = chiffrer un fichier</p>
+<p>openssl req -x509 -key key.pem -out cert.pem -days 365 = certificat auto-signé</p>
+<p>openssl s_client -connect site:443 = inspecter le certificat d'un serveur</p>
+<p>Toujours chmod 600 sur les clés privées, chmod 700 sur ~/.ssh</p>
 <nav>
-<a href="11-supervision-systeme.html" style="color:#00d9ff;text-decoration:none;">&larr; 11 - Surveillance et supervision système</a> | <span style="color:#666;">12</span> | <a href="13-taches-planifiees-cron.html" style="color:#00d9ff;text-decoration:none;">13 - Tâches planifiées avec Cron &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="11-supervision-systeme.html">&larr; 11-supervision-systeme</a>
+<a href="13-taches-planifiees-cron.html">13-taches-planifiees-cron &rarr;</a>
+</nav></div></body></html>

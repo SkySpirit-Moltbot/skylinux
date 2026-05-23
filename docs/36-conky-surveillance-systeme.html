@@ -1,877 +1,351 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conky — Surveillance Système sur le Bureau - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/36-conky-surveillance-systeme-sur-le-bureau.html">
-<meta property="og:title" content="Conky — Surveillance Système sur le Bureau - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Conky — Surveillance Système sur le Bureau - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, conky  surveillance systme sur le bureau, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
-<h1>Conky — Surveillance Système sur le Bureau</h1>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 36 : Conky — Surveillance Système sur le Bureau</h1>
 <h2>Qu'est-ce que Conky ?</h2>
-<p><strong>Conky</strong> est un outil de surveillance système léger et ultra-configurable qui affiche des informations en temps réel directement sur le bureau. Contrairement aux widgets lourds, Conky tourne avec un impact minimal sur les ressources.</p>
-<p><strong>Utilisations courantes :</strong>
-- CPU, RAM, Swap utilisés
-- Espace disque
-- Températures (CPU, GPU, disques)
-- Réseau (débit upload/download)
-- Batterie (sur portable)
-- Processus les plus gourmands
-- Date, heure, météo
-- et bien plus encore...</p>
-<hr />
+<p>**Conky** est un outil de surveillance système léger et ultra-configurable qui affiche des informations en temps réel directement sur le bureau. Contrairement aux widgets lourds, Conky tourne avec un impact minimal sur les ressources.</p>
+<p>**Utilisations courantes :**</p>
+<ul>
+<li>CPU, RAM, Swap utilisés</li>
+<li>Espace disque</li>
+<li>Températures (CPU, GPU, disques)</li>
+<li>Réseau (débit upload/download)</li>
+<li>Batterie (sur portable)</li>
+<li>Processus les plus gourmands</li>
+<li>Date, heure, météo</li>
+<li>et bien plus encore...</li>
+</ul>
+<hr/>
 <h2>1. Installation</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Debian / Ubuntu / Linux Mint
-sudo apt install conky
-
-# Vérifier la version
-conky --version</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Debian / Ubuntu / Linux Mint</p>
+<p>sudo apt install conky</p>
+<p># Vérifier la version</p>
+<p>conky --version</code></div></div></p>
+<hr/>
 <h2>2. Lancement et Arrêt Rapide</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Lancer Conky (premier lancement)
-conky
-
-# Lancer avec un fichier de config précis
-conky -c ~/.config/conky/ma-config.conf
-
-# Arrêter tous les Conky
-killall conky</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Lancer Conky (premier lancement)</p>
+<p>conky</p>
+<p># Lancer avec un fichier de config précis</p>
+<p>conky -c ~/.config/conky/ma-config.conf</p>
+<p># Arrêter tous les Conky</p>
+<p>killall conky</code></div></div></p>
 <p>Par défaut, Conky utilise le fichier <code>~/.conkyrc</code> (ou <code>/etc/conky/conky.conf</code>).</p>
-<hr />
+<hr/>
 <h2>3. Structure d'un Fichier de Config</h2>
-<p>Un fichier Conky a <strong>deux sections</strong> principales :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># ======== SECTION 1 : PARAMÈTRES GÉNÉRAUX ========
-# Position, taille, transparence, couleurs...
-
-# ======== SECTION 2 : CONTENU (TEXT/GRAPHICS) ========
-# Ce qui s'affiche à l'écran</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p><strong>Exemple minimaliste complet :</strong></p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>conky.config = {
-    update_interval = 1,
-    double_buffer = true,
-    no_buffers = true,
-    use_xft = true,
-    font = 'DejaVu Sans:size=10',
-    alignment = 'top_right',
-    gap_x = 10,
-    gap_y = 10,
-    own_window = true,
-    own_window_class = 'Conky',
-    own_window_argb_visual = true,
-    own_window_argb_value = 150,
-    own_window_type = 'desktop',
-   own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
-};
-
-conky.text = [[
-${color grey}Hostname:${color} $nodename
-${color grey}Kernel:${color} $kernel
-${color grey}Uptime:${color} $uptime
-${color grey}CPU:${color} $cpu%
-${color grey}RAM:${color} $mem / $memmax
-${color grey}Swap:${color} $swap / $swapmax
-${color grey}Disk (root):${color} $fs_used / $fs_size
-${color grey}Download:${color} $downspeed
-${color grey}Upload:${color} $upspeed
-]]</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p>Un fichier Conky a **deux sections** principales :</p>
+<p><div class="code-block"><div class="code-line"><code># ======== SECTION 1 : PARAMÈTRES GÉNÉRAUX ========</p>
+<p># Position, taille, transparence, couleurs...</p>
+<p># ======== SECTION 2 : CONTENU (TEXT/GRAPHICS) ========</p>
+<p># Ce qui s'affiche à l'écran</code></div></div></p>
+<p>**Exemple minimaliste complet :**</p>
+<p><div class="code-block"><div class="code-line"><code>conky.config = {</p>
+<p>    update_interval = 1,</p>
+<p>    double_buffer = true,</p>
+<p>    no_buffers = true,</p>
+<p>    use_xft = true,</p>
+<p>    font = 'DejaVu Sans:size=10',</p>
+<p>    alignment = 'top_right',</p>
+<p>    gap_x = 10,</p>
+<p>    gap_y = 10,</p>
+<p>    own_window = true,</p>
+<p>    own_window_class = 'Conky',</p>
+<p>    own_window_argb_visual = true,</p>
+<p>    own_window_argb_value = 150,</p>
+<p>    own_window_type = 'desktop',</p>
+<p>   own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',</p>
+<p>};</p>
+<p>conky.text = [[</p>
+<p>${color grey}Hostname:${color} $nodename</p>
+<p>${color grey}Kernel:${color} $kernel</p>
+<p>${color grey}Uptime:${color} $uptime</p>
+<p>${color grey}CPU:${color} $cpu%</p>
+<p>${color grey}RAM:${color} $mem / $memmax</p>
+<p>${color grey}Swap:${color} $swap / $swapmax</p>
+<p>${color grey}Disk (root):${color} $fs_used / $fs_size</p>
+<p>${color grey}Download:${color} $downspeed</p>
+<p>${color grey}Upload:${color} $upspeed</p>
+<p>]]</code></div></div></p>
+<hr/>
 <h2>4. Les Paramètres Essentiels</h2>
 <h3>Position et Apparence</h3>
 <table>
-<thead>
-<tr>
-<th>Paramètre</th>
-<th>Rôle</th>
-<th>Exemple</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>alignment</code></td>
-<td>Position sur l'écran</td>
-<td><code>top_right</code>, <code>bottom_left</code>, <code>middle_middle</code></td>
-</tr>
-<tr>
-<td><code>gap_x / gap_y</code></td>
-<td>Marge depuis le bord</td>
-<td><code>gap_x = 10</code>, <code>gap_y = 50</code></td>
-</tr>
-<tr>
-<td><code>own_window = true</code></td>
-<td>Fenêtre propre (pas un vrai cadre)</td>
-<td>—</td>
-</tr>
-<tr>
-<td><code>own_window_argb_visual = true</code></td>
-<td>Transparence ARGB</td>
-<td>—</td>
-</tr>
-<tr>
-<td><code>own_window_argb_value</code></td>
-<td>Niveau de transparence (0-255)</td>
-<td><code>150</code> = semi-transparent</td>
-</tr>
-<tr>
-<td><code>own_window_type</code></td>
-<td>Type de fenêtre</td>
-<td><code>desktop</code>, <code>dock</code>, <code>normal</code></td>
-</tr>
-<tr>
-<td><code>double_buffer = true</code></td>
-<td>Évite le clignotement (important !)</td>
-<td>—</td>
-</tr>
-<tr>
-<td><code>use_xft = true</code></td>
-<td>Police anti-aliasée</td>
-<td>—</td>
-</tr>
-<tr>
-<td><code>font</code></td>
-<td>Police par défaut</td>
-<td><code>'DejaVu Sans:size=10'</code></td>
-</tr>
-<tr>
-<td><code>update_interval</code></td>
-<td>Rafraîchissement (secondes)</td>
-<td><code>1</code> = chaque seconde</td>
-</tr>
-</tbody>
+<tr><th>Paramètre</th><th>Rôle</th><th>Exemple</th></tr>
+<tr><td><code>alignment</code></td><td>Position sur l'écran</td><td><code>top_right</code>, <code>bottom_left</code>, <code>middle_middle</code></td></tr>
+<tr><td><code>gap_x / gap_y</code></td><td>Marge depuis le bord</td><td><code>gap_x = 10</code>, <code>gap_y = 50</code></td></tr>
+<tr><td><code>own_window = true</code></td><td>Fenêtre propre (pas un vrai cadre)</td><td>—</td></tr>
+<tr><td><code>own_window_argb_visual = true</code></td><td>Transparence ARGB</td><td>—</td></tr>
+<tr><td><code>own_window_argb_value</code></td><td>Niveau de transparence (0-255)</td><td><code>150</code> = semi-transparent</td></tr>
+<tr><td><code>own_window_type</code></td><td>Type de fenêtre</td><td><code>desktop</code>, <code>dock</code>, <code>normal</code></td></tr>
+<tr><td><code>double_buffer = true</code></td><td>Évite le clignotement (important !)</td><td>—</td></tr>
+<tr><td><code>use_xft = true</code></td><td>Police anti-aliasée</td><td>—</td></tr>
+<tr><td><code>font</code></td><td>Police par défaut</td><td><code>'DejaVu Sans:size=10'</code></td></tr>
+<tr><td><code>update_interval</code></td><td>Rafraîchissement (secondes)</td><td><code>1</code> = chaque seconde</td></tr>
 </table>
 <h3>Couleurs Prédéfinies</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${color grey}    → gris
-${color red}     → rouge
-${color green}   → vert
-${color blue}    → bleu
-${color yellow}  → jaune
-${color cyan}    → cyan
-${color orange}  → orange
-${color white}   → blanc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>${color grey}    → gris</p>
+<p>${color red}     → rouge</p>
+<p>${color green}   → vert</p>
+<p>${color blue}    → bleu</p>
+<p>${color yellow}  → jaune</p>
+<p>${color cyan}    → cyan</p>
+<p>${color orange}  → orange</p>
+<p>${color white}   → blanc</code></div></div></p>
 <p>Définir une couleur personnalisée :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${color #FF6600}</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>${color #FF6600}</code></div></div></p>
+<hr/>
 <h2>5. Variables Systèmes (les Plus Utilisées)</h2>
 <h3>Système</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$nodename</code></td>
-<td>Nom de la machine</td>
-</tr>
-<tr>
-<td><code>$kernel</code></td>
-<td>Version du noyau</td>
-</tr>
-<tr>
-<td><code>$uptime</code></td>
-<td>Temps depuis le dernier démarrage</td>
-</tr>
-<tr>
-<td><code>$uptime_short</code></td>
-<td>Uptime condensé (plus court)</td>
-</tr>
-<tr>
-<td><code>$time</code></td>
-<td>Heure locale</td>
-</tr>
-<tr>
-<td><code>$utc_time</code></td>
-<td>Heure UTC</td>
-</tr>
-<tr>
-<td><code>$date</code></td>
-<td>Date courante</td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$nodename</code></td><td>Nom de la machine</td></tr>
+<tr><td><code>$kernel</code></td><td>Version du noyau</td></tr>
+<tr><td><code>$uptime</code></td><td>Temps depuis le dernier démarrage</td></tr>
+<tr><td><code>$uptime_short</code></td><td>Uptime condensé (plus court)</td></tr>
+<tr><td><code>$time</code></td><td>Heure locale</td></tr>
+<tr><td><code>$utc_time</code></td><td>Heure UTC</td></tr>
+<tr><td><code>$date</code></td><td>Date courante</td></tr>
 </table>
 <h3>CPU</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$cpu</code></td>
-<td>Utilisation CPU totale (%)</td>
-</tr>
-<tr>
-<td><code>$cpu cpu0</code></td>
-<td>Utilisation cœur 0</td>
-</tr>
-<tr>
-<td><code>$cpubar</code></td>
-<td>Bargraphique CPU</td>
-</tr>
-<tr>
-<td><code>$freq</code></td>
-<td>Fréquence CPU actuelle (GHz)</td>
-</tr>
-<tr>
-<td><code>$freq_g</code></td>
-<td>Fréquence CPU en GHz</td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$cpu</code></td><td>Utilisation CPU totale (%)</td></tr>
+<tr><td><code>$cpu cpu0</code></td><td>Utilisation cœur 0</td></tr>
+<tr><td><code>$cpubar</code></td><td>Bargraphique CPU</td></tr>
+<tr><td><code>$freq</code></td><td>Fréquence CPU actuelle (GHz)</td></tr>
+<tr><td><code>$freq_g</code></td><td>Fréquence CPU en GHz</td></tr>
 </table>
 <h3>Mémoire</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$mem</code></td>
-<td>RAM utilisée</td>
-</tr>
-<tr>
-<td><code>$memmax</code></td>
-<td>RAM totale</td>
-</tr>
-<tr>
-<td><code>$memperc</code></td>
-<td>Pourcentage RAM utilisée</td>
-</tr>
-<tr>
-<td><code>$membar</code></td>
-<td>Bargraphique RAM</td>
-</tr>
-<tr>
-<td><code>$swap</code></td>
-<td>Swap utilisée</td>
-</tr>
-<tr>
-<td><code>$swapmax</code></td>
-<td>Swap totale</td>
-</tr>
-<tr>
-<td><code>$swapperc</code></td>
-<td>Pourcentage Swap</td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$mem</code></td><td>RAM utilisée</td></tr>
+<tr><td><code>$memmax</code></td><td>RAM totale</td></tr>
+<tr><td><code>$memperc</code></td><td>Pourcentage RAM utilisée</td></tr>
+<tr><td><code>$membar</code></td><td>Bargraphique RAM</td></tr>
+<tr><td><code>$swap</code></td><td>Swap utilisée</td></tr>
+<tr><td><code>$swapmax</code></td><td>Swap totale</td></tr>
+<tr><td><code>$swapperc</code></td><td>Pourcentage Swap</td></tr>
 </table>
 <h3>Disques</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$fs_used / $fs_size</code></td>
-<td>Espace utilisé / total d'un point de montage</td>
-</tr>
-<tr>
-<td><code>$fs_used_perc</code></td>
-<td>Pourcentage utilisé</td>
-</tr>
-<tr>
-<td><code>$fs_bar</code></td>
-<td>Bargraphique</td>
-</tr>
-<tr>
-<td><code>$diskio_read</code></td>
-<td>Débit lecture disque</td>
-</tr>
-<tr>
-<td><code>$diskio_write</code></td>
-<td>Débit écriture disque</td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$fs_used / $fs_size</code></td><td>Espace utilisé / total d'un point de montage</td></tr>
+<tr><td><code>$fs_used_perc</code></td><td>Pourcentage utilisé</td></tr>
+<tr><td><code>$fs_bar</code></td><td>Bargraphique</td></tr>
+<tr><td><code>$diskio_read</code></td><td>Débit lecture disque</td></tr>
+<tr><td><code>$diskio_write</code></td><td>Débit écriture disque</td></tr>
 </table>
 <h3>Réseau</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$upspeed</code></td>
-<td>Vitesse upload actuelle</td>
-</tr>
-<tr>
-<td><code>$upspeedf</code></td>
-<td>Vitesse upload (flottant)</td>
-</tr>
-<tr>
-<td><code>$downspeed</code></td>
-<td>Vitesse download actuelle</td>
-</tr>
-<tr>
-<td><code>$downspeedf</code></td>
-<td>Vitesse download (flottant)</td>
-</tr>
-<tr>
-<td><code>$totaldown</code></td>
-<td>Total téléchargé</td>
-</tr>
-<tr>
-<td><code>$totalup</code></td>
-<td>Total uploadé</td>
-</tr>
-<tr>
-<td><code>$net</code></td>
-<td>Adresse IP</td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$upspeed</code></td><td>Vitesse upload actuelle</td></tr>
+<tr><td><code>$upspeedf</code></td><td>Vitesse upload (flottant)</td></tr>
+<tr><td><code>$downspeed</code></td><td>Vitesse download actuelle</td></tr>
+<tr><td><code>$downspeedf</code></td><td>Vitesse download (flottant)</td></tr>
+<tr><td><code>$totaldown</code></td><td>Total téléchargé</td></tr>
+<tr><td><code>$totalup</code></td><td>Total uploadé</td></tr>
+<tr><td><code>$net</code></td><td>Adresse IP</td></tr>
 </table>
-<p><strong>Attention :</strong> L'interface réseau change selon ta distro. Vérifie avec <code>ip a</code>. Remplace <code>eth0</code> par la tienne (ex: <code>enp3s0</code>, <code>wlan0</code>).</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${upspeed eth0}
-${downspeed eth0}</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>**Attention :** L'interface réseau change selon ta distro. Vérifie avec <code>ip a</code>. Remplace <code>eth0</code> par la tienne (ex: <code>enp3s0</code>, <code>wlan0</code>).</p>
+<p><div class="code-block"><div class="code-line"><code>${upspeed eth0}</p>
+<p>${downspeed eth0}</code></div></div></p>
 <h3>Processus</h3>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$processes</code></td>
-<td>Nombre total de processus</td>
-</tr>
-<tr>
-<td><code>$running_processes</code></td>
-<td>Processus actifs</td>
-</tr>
-<tr>
-<td><code>$top name 1</code></td>
-<td>Processus le plus CPU (nom)</td>
-</tr>
-<tr>
-<td><code>$top cpu 1</code></td>
-<td>% CPU du premier processus</td>
-</tr>
-<tr>
-<td><code>$top mem 1</code></td>
-<td>% RAM du premier processus</td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>$processes</code></td><td>Nombre total de processus</td></tr>
+<tr><td><code>$running_processes</code></td><td>Processus actifs</td></tr>
+<tr><td><code>$top name 1</code></td><td>Processus le plus CPU (nom)</td></tr>
+<tr><td><code>$top cpu 1</code></td><td>% CPU du premier processus</td></tr>
+<tr><td><code>$top mem 1</code></td><td>% RAM du premier processus</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>6. Formatage et Alignement</h2>
 <h3>Bargraphiques</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${membar 5, 150}    → barre RAM, 5 pixels de haut, 150px de large
-${cpubar 5, 100}    → barre CPU
-${fs_bar 5, /}      → barre espace disque /</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>${membar 5, 150}    → barre RAM, 5 pixels de haut, 150px de large</p>
+<p>${cpubar 5, 100}    → barre CPU</p>
+<p>${fs_bar 5, /}      → barre espace disque /</code></div></div></p>
 <h3>Texte aligné (tableaux dans Conky)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${alignc} Centré
-${alignr} Aligné à droite
-${alignl} Aligné à gauche</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>${alignc} Centré</p>
+<p>${alignr} Aligné à droite</p>
+<p>${alignl} Aligné à gauche</code></div></div></p>
 <h3>Sauts de ligne</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${goto X}           → Se positionner à X pixels du bord gauche
-${voffset Y}        → Décaler verticalement de Y pixels
-${offset X}         → Décaler horizontalement de X pixels</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>${goto X}           → Se positionner à X pixels du bord gauche</p>
+<p>${voffset Y}        → Décaler verticalement de Y pixels</p>
+<p>${offset X}         → Décaler horizontalement de X pixels</code></div></div></p>
 <h3>Exemple de tableau formaté :</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${color grey}CPU${goto 50}${color}${goto 90}${alignr}${color grey}RAM${color}
-${color grey}$cpu%${goto 50}${membar 5, 90}${goto 150}${color grey}$memperc%${color}</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>${color grey}CPU${goto 50}${color}${goto 90}${alignr}${color grey}RAM${color}</p>
+<p>${color grey}$cpu%${goto 50}${membar 5, 90}${goto 150}${color grey}$memperc%${color}</code></div></div></p>
+<hr/>
 <h2>7. Exemple Complet : Bureau Complet</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>conky.config = {
-    update_interval = 2,
-    double_buffer = true,
-    no_buffers = true,
-    use_xft = true,
-    font = 'DejaVu Sans:size=9',
-    alignment = 'top_right',
-    gap_x = 10,
-    gap_y = 10,
-    own_window = true,
-    own_window_class = 'Conky',
-    own_window_argb_visual = true,
-    own_window_argb_value = 180,
-    own_window_type = 'desktop',
-    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
-    default_color = 'e0e0e0',
-    color1 = '00d9ff',   -- cyan
-    color2 = 'a855f7',   -- violet
-};
-
-conky.text = [[
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}SYSTÈME${color1}         ║${color}
-${color grey}Hostname : ${color}$nodename
-${color grey}Kernel   : ${color}$kernel
-${color grey}Uptime   : ${color}$uptime
-
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}CPU${color1}              ║${color}
-${color grey}Usage     : ${color}$cpu%
-${color grey}$cpubar
-${color grey}Fréquence : ${color}$freq_g GHz
-
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}MÉMOIRE${color1}           ║${color}
-${color grey}RAM       : ${color}$mem / $memmax
-${color grey}$membar
-${color grey}Swap      : ${color}$swap / $swapmax
-
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}DISQUES${color1}           ║${color}
-${color grey}/ (root)  : ${color}$fs_used / $fs_size
-${color grey}$fs_bar
-
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}RÉSEAU${color1}            ║${color}
-${color grey}Download  : ${color}$downspeed
-${color grey}Upload    : ${color}$upspeed
-${color grey}Total Dn  : ${color}$totaldown
-${color grey}Total Up  : ${color}$totalup
-
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}TOP 3 CPU${color1}         ║${color}
-${color grey}1. ${color}$top name 1 ${color}$top cpu 1%
-${color grey}2. ${color}$top name 2 ${color}$top cpu 2%
-${color grey}3. ${color}$top name 3 ${color}$top cpu 3%
-
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}TOP 3 RAM${color1}         ║${color}
-${color grey}1. ${color}$top_mem name 1 ${color}$top_mem mem 1%
-${color grey}2. ${color}$top_mem name 2 ${color}$top_mem mem 2%
-${color grey}3. ${color}$top_mem name 3 ${color}$top_mem mem 3%
-
-${color1}╔══════════════════╗${color}
-${color1}║  ${color2}DATE &amp; HEURE${color1}     ║${color}
-${color grey}$date
-${color grey}$time
-]]</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>conky.config = {</p>
+<p>    update_interval = 2,</p>
+<p>    double_buffer = true,</p>
+<p>    no_buffers = true,</p>
+<p>    use_xft = true,</p>
+<p>    font = 'DejaVu Sans:size=9',</p>
+<p>    alignment = 'top_right',</p>
+<p>    gap_x = 10,</p>
+<p>    gap_y = 10,</p>
+<p>    own_window = true,</p>
+<p>    own_window_class = 'Conky',</p>
+<p>    own_window_argb_visual = true,</p>
+<p>    own_window_argb_value = 180,</p>
+<p>    own_window_type = 'desktop',</p>
+<p>    own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',</p>
+<p>    default_color = 'e0e0e0',</p>
+<p>    color1 = '00d9ff',   -- cyan</p>
+<p>    color2 = 'a855f7',   -- violet</p>
+<p>};</p>
+<p>conky.text = [[</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}SYSTÈME${color1}         ║${color}</p>
+<p>${color grey}Hostname : ${color}$nodename</p>
+<p>${color grey}Kernel   : ${color}$kernel</p>
+<p>${color grey}Uptime   : ${color}$uptime</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}CPU${color1}              ║${color}</p>
+<p>${color grey}Usage     : ${color}$cpu%</p>
+<p>${color grey}$cpubar</p>
+<p>${color grey}Fréquence : ${color}$freq_g GHz</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}MÉMOIRE${color1}           ║${color}</p>
+<p>${color grey}RAM       : ${color}$mem / $memmax</p>
+<p>${color grey}$membar</p>
+<p>${color grey}Swap      : ${color}$swap / $swapmax</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}DISQUES${color1}           ║${color}</p>
+<p>${color grey}/ (root)  : ${color}$fs_used / $fs_size</p>
+<p>${color grey}$fs_bar</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}RÉSEAU${color1}            ║${color}</p>
+<p>${color grey}Download  : ${color}$downspeed</p>
+<p>${color grey}Upload    : ${color}$upspeed</p>
+<p>${color grey}Total Dn  : ${color}$totaldown</p>
+<p>${color grey}Total Up  : ${color}$totalup</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}TOP 3 CPU${color1}         ║${color}</p>
+<p>${color grey}1. ${color}$top name 1 ${color}$top cpu 1%</p>
+<p>${color grey}2. ${color}$top name 2 ${color}$top cpu 2%</p>
+<p>${color grey}3. ${color}$top name 3 ${color}$top cpu 3%</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}TOP 3 RAM${color1}         ║${color}</p>
+<p>${color grey}1. ${color}$top_mem name 1 ${color}$top_mem mem 1%</p>
+<p>${color grey}2. ${color}$top_mem name 2 ${color}$top_mem mem 2%</p>
+<p>${color grey}3. ${color}$top_mem name 3 ${color}$top_mem mem 3%</p>
+<p>${color1}╔══════════════════╗${color}</p>
+<p>${color1}║  ${color2}DATE &amp; HEURE${color1}     ║${color}</p>
+<p>${color grey}$date</p>
+<p>${color grey}$time</p>
+<p>]]</code></div></div></p>
+<hr/>
 <h2>8. Lancer Conky au Démarrage</h2>
 <h3>Méthode automatique (Debian/Ubuntu)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer le dossier de config
-mkdir -p ~/.config/conky
-
-# Copier ou créer ta config
-cp ma-config.conf ~/.config/conky/default.conf
-
-# Créer un lanceur automatique
-cat &gt; ~/.config/autostart/conky.desktop &lt;&lt; 'EOF'
-[Desktop Entry]
-Type=Application
-Name=Conky
-Exec=conky -c ~/.config/conky/default.conf
-X-GNOME-Autostart-enabled=true
-EOF</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer le dossier de config</p>
+<p>mkdir -p ~/.config/conky</p>
+<p># Copier ou créer ta config</p>
+<p>cp ma-config.conf ~/.config/conky/default.conf</p>
+<p># Créer un lanceur automatique</p>
+<p>cat &gt; ~/.config/autostart/conky.desktop &lt;&lt; 'EOF'</p>
+<p>[Desktop Entry]</p>
+<p>Type=Application</p>
+<p>Name=Conky</p>
+<p>Exec=conky -c ~/.config/conky/default.conf</p>
+<p>X-GNOME-Autostart-enabled=true</p>
+<p>EOF</code></div></div></p>
 <h3>Méthode alternative (systemd user)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>mkdir -p ~/.config/systemd/user
-cat &gt; ~/.config/systemd/user/conky.service &lt;&lt; 'EOF'
-[Unit]
-Description=Conky System Monitor
-
-[Service]
-ExecStart=/usr/bin/conky -c ~/.config/conky/default.conf
-Restart=on-failure
-
-[Install]
-WantedBy=default.target
-EOF
-
-systemctl --user daemon-reload
-systemctl --user enable --now conky</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>mkdir -p ~/.config/systemd/user</p>
+<p>cat &gt; ~/.config/systemd/user/conky.service &lt;&lt; 'EOF'</p>
+<p>[Unit]</p>
+<p>Description=Conky System Monitor</p>
+<p>[Service]</p>
+<p>ExecStart=/usr/bin/conky -c ~/.config/conky/default.conf</p>
+<p>Restart=on-failure</p>
+<p>[Install]</p>
+<p>WantedBy=default.target</p>
+<p>EOF</p>
+<p>systemctl --user daemon-reload</p>
+<p>systemctl --user enable --now conky</code></div></div></p>
+<hr/>
 <h2>9. Diagnostic et Erreurs Courantes</h2>
 <h3>Conky clignote</h3>
 <p>→ Ajouter <code>double_buffer = true</code> dans la section config.</p>
 <h3>Conky apparaît par-dessus les fenêtres</h3>
 <p>→ Modifier <code>own_window_type</code> :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>own_window_type = 'desktop'   # le plus stable
-# ou
-own_window_type = 'dock'      # alternative</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>own_window_type = 'desktop'   # le plus stable</p>
+<p># ou</p>
+<p>own_window_type = 'dock'      # alternative</code></div></div></p>
 <h3>Transparence ne fonctionne pas</h3>
-<p>→ Assure-toi d'avoir <code>own_window_argb_visual = true</code> ET <code>own_window_argb_value</code> avec une valeur &lt; 255.</p>
+<p>→ Assure-toi d'avoir <code>own_window_argb_visual = true</code> ET <code>own_window_argb_value</code> avec une valeur < 255.</p>
 <h3>Informations réseau absentes</h3>
 <p>→ Vérifie le nom de ton interface :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ip a</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>ip a</code></div></div></p>
 <p>Puis remplace <code>eth0</code> par le bon nom dans ta config.</p>
 <h3>Conky ne se lance pas</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Mode verbose pour voir les erreurs
-conky -c ~/.config/conky/default.conf -v</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Mode verbose pour voir les erreurs</p>
+<p>conky -c ~/.config/conky/default.conf -v</code></div></div></p>
 <h3>Impossible de fermer un Conky</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>killall conky</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>killall conky</code></div></div></p>
+<hr/>
 <h2>10. Astuces Avancées</h2>
 <h3>Plusieurs instances (multi-monitor)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Monitor 1 (gauche)
-conky -c ~/.config/conky/gauche.conf &amp;
-
-# Monitor 2 (droite)
-conky -c ~/.config/conky/droite.conf &amp;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Monitor 1 (gauche)</p>
+<p>conky -c ~/.config/conky/gauche.conf &amp;</p>
+<p># Monitor 2 (droite)</p>
+<p>conky -c ~/.config/conky/droite.conf &amp;</code></div></div></p>
 <h3>Intégrer la météo</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${execi 300 curl -s &quot;wttr.in/Tavannes?format=3&quot;}</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>${execi 300 curl -s "wttr.in/Tavannes?format=3"}</code></div></div></p>
 <p>L'option <code>execi 300</code> exécute la commande toutes les 300 secondes (5 min).</p>
 <h3>Coloration conditionnelle</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>${if_match ${cpu}&gt;80}${color red}${cpu}%${color}${else}${color grey}${cpu}%${endif}</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>${if_match ${cpu}&gt;80}${color red}${cpu}%${color}${else}${color grey}${cpu}%${endif}</code></div></div></p>
 <p>Affiche le % CPU en rouge s'il dépasse 80%.</p>
 <h3>Inclure un script Lua (graphiques)</h3>
 <p>Conky supporte les scripts Lua pour dessiner des graphiques circulaires, jauges, etc. (avancé).</p>
-<hr />
+<hr/>
 <h2>Résumé</h2>
 <table>
-<thead>
-<tr>
-<th>Concept</th>
-<th>Commande / Valeur</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Installer</td>
-<td><code>sudo apt install conky</code></td>
-</tr>
-<tr>
-<td>Lancer</td>
-<td><code>conky</code> ou <code>conky -c &lt;fichier&gt;</code></td>
-</tr>
-<tr>
-<td>Stopper</td>
-<td><code>killall conky</code></td>
-</tr>
-<tr>
-<td>Config par défaut</td>
-<td><code>~/.conkyrc</code></td>
-</tr>
-<tr>
-<td>Transparence</td>
-<td><code>own_window_argb_value = 150</code></td>
-</tr>
-<tr>
-<td>Position</td>
-<td><code>alignment = 'top_right'</code></td>
-</tr>
-<tr>
-<td>Rafraîchissement</td>
-<td><code>update_interval = 2</code></td>
-</tr>
-<tr>
-<td>Template couleurs</td>
-<td><code>grey</code>, <code>red</code>, <code>green</code>, <code>cyan</code>...</td>
-</tr>
-</tbody>
+<tr><th>Concept</th><th>Commande / Valeur</th></tr>
+<tr><td>Installer</td><td><code>sudo apt install conky</code></td></tr>
+<tr><td>Lancer</td><td><code>conky</code> ou <code>conky -c <fichier></code></td></tr>
+<tr><td>Stopper</td><td><code>killall conky</code></td></tr>
+<tr><td>Config par défaut</td><td><code>~/.conkyrc</code></td></tr>
+<tr><td>Transparence</td><td><code>own_window_argb_value = 150</code></td></tr>
+<tr><td>Position</td><td><code>alignment = 'top_right'</code></td></tr>
+<tr><td>Rafraîchissement</td><td><code>update_interval = 2</code></td></tr>
+<tr><td>Template couleurs</td><td><code>grey</code>, <code>red</code>, <code>green</code>, <code>cyan</code>...</td></tr>
 </table>
-<hr />
+<hr/>
 <p>Conky est un outil puissant mais qui peut sembler intimidant au début. Le secret : commence simple, puis ajoute les variables une par une. Un bon fichier de config bien commenté vaut mieux qu'un fichier complexe et mystérieux.</p>
-<p><em>Leçon créée avec ❤️ pour SkyLinux</em></p>
-</div>
+<p>*Leçon créée avec ❤️ pour SkyLinux*</p>
 <nav>
-<a href="35-demarrage-systemd.html" style="color:#00d9ff;text-decoration:none;">&larr; 35 - Optimisation du démarrage avec systemd-analyze</a> | <span style="color:#666;">36</span> | <a href="37-ufw-pare-feu.html" style="color:#00d9ff;text-decoration:none;">37 - Sécuriser Linux avec UFW (Pare-feu) &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="35-demarrage-systemd.html">&larr; 35-demarrage-systemd</a>
+<a href="37-ufw-pare-feu.html">37-ufw-pare-feu &rarr;</a>
+</nav></div></body></html>

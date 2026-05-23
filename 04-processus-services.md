@@ -1,4 +1,4 @@
-# Leçon 4 : Processus et Services
+# Leçon 04 : Processus et Services
 
 Un processus est un programme en cours d'exécution. Dans cette leçon, tu vas maîtriser la gestion des processus sous Linux : voir, surveiller, gérer les priorités et contrôler les services.
 
@@ -377,3 +377,92 @@ sudo systemctl stop nginx
 ---
 
 Maîtrise ces commandes pour devenir un pro de l'administration Linux ! 💪
+---
+
+## Complément: Jobs et arrière-plan
+
+### Introduction
+
+Quand vous lancez une commande dans le terminal, elle s'exécute au premier plan (foreground) par défaut. Mais Linux vous permet de gérer plusieurs tâches simultanément : envoyer un processus en arrière-plan, le ramener au premier plan, ou encore l'arrêter proprement. C'est ce que nous allons voir dans cette leçon.
+
+### Comprendre les jobs (tâches)
+
+Un job est une commande qui s'exécute dans votre terminal. shell maintient une liste des jobs actifs. Chaque job a un numéro (job ID) que vous pouvez utiliser pour le manipuler.
+
+### Les signaux de base
+
+Avant de parler des commandes, voici les signaux les plus importants que vous pouvez envoyer aux processus :
+
+### Ctrl+C — Interrompre un processus
+
+Pour envoyer un signal d'interruption à un processus en cours d'exécution au premier plan :
+
+### Ctrl+Z — Suspendre un processus
+
+Pour suspendre un processus et le mettre en arrière-plan suspendu :
+
+### jobs — Lister les jobs actifs
+
+La commande jobs affiche tous les jobs du terminal actuel :
+
+### fg — Remettre un job au premier plan
+
+fg (foreground) ramène un job suspendu ou en arrière-plan au premier plan :
+
+### bg — Reprendre un job en arrière-plan
+
+bg (background) reprend un job suspendu et le fait tourner en arrière-plan :
+
+### kill — Envoyer des signaux aux processus
+
+kill envoie un signal à un processus. Par défaut, il envoie SIGTERM (demande d'arrêt) :
+
+Pour tuer tous les processus d'une commande spécifique :
+
+### killall — Tuer par nom de commande
+
+killall tue tous les processus correspondant à un nom :
+
+### wait — Attendre la fin d'un job
+
+La commande wait attend qu'un job spécifique se termine :
+
+### nohup — Protéger contre la déconnexion
+
+nohup permet à une commande de continuer après déconnexion du terminal :
+
+### disown — Détacher un job du shell
+
+disown retire un job de la table des jobs, le protégeant contre les effets de la déconnexion :
+
+### trap — Intercepter les signaux dans les scripts
+
+trap permet de définir des actions à exécuter quand un signal est reçu (très utile dans les scripts) :
+
+Pour nettoyer avant de quitter :
+
+### Exemple pratique : gestionnaire de tâches
+
+Voici un script qui gère plusieurs tâches en arrière-plan :
+
+### Résumé
+
+Ctrl+C interrompt un processus au premier plan
+
+Ctrl+Z suspend un processus et le met en pause
+
+jobs liste les jobs actifs du terminal
+
+fg ramène un job au premier plan
+
+bg reprend un job suspendu en arrière-plan
+
+kill envoie un signal à un processus (par PID)
+
+killall tue tous les processus d'une commande
+
+nohup protège contre la déconnexion
+
+disown détache un job du shell
+
+trap intercepte les signaux dans les scripts

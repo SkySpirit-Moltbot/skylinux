@@ -1,4 +1,4 @@
-# Leçon 8 : Archivage et compression
+# Leçon 08 : Archivage et compression
 
 Dans cette leçon, nous allons apprendre à **archiver** et **compresser** des fichiers sous Linux. Ces compétences sont essentielles pour :
 - Sauvegarder des données

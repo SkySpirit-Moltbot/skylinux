@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 42 : Configuration DNS et /etc/hosts</h1>
+<p>Dans cette leçon, tu vas découvrir comment Linux traduit les noms de domaine en adresses IP. Nous verrons le fichier <code>/etc/hosts</code>, la résolution DNS, et les outils pour diagnostiquer les problèmes de réseau liés aux noms.</p>
+<hr/>
+<h2>1. Qu'est-ce que le DNS ?</h2>
+<p>Le **DNS** (Domain Name System) est l'annuaire d'Internet. Quand tu tapes <code>google.com</code>, le DNS traduit ce nom en adresse IP (<code>142.250.185.46</code>). Sans DNS, tu devrais mémoriser toutes les adresses IP des sites que tu visites.</p>
+<p>**Le flux de résolution DNS :**</p>
+<p><div class="code-block"><div class="code-line"><code>Ton ordinateur → Serveur DNS (FAI ou Google) → Serveur racine → Serveur autoritaire</code></div></div></p>
+<p>Sous Linux, la résolution DNS passe par :</p>
+<ul>
+<li>Le fichier <code>/etc/hosts</code></li>
+<li>Le fichier <code>/etc/resolv.conf</code></li>
+<li>Le service <code>systemd-resolved</code> (sur les systèmes modernes)</li>
+</ul>
+<hr/>
+<h2>2. Le fichier /etc/hosts</h2>
+<p>Le fichier <code>/etc/hosts</code> est le moyen le plus simple pour faire correspondre un nom de domaine à une adresse IP. Il est consulté en **premier**, avant même d'interroger les serveurs DNS.</p>
+<h3>Voir le contenu par défaut</h3>
+<p><div class="code-block"><div class="code-line"><code>cat /etc/hosts</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>127.0.0.1   localhost</p>
+<p>127.0.1.1   mon-ordinateur</p>
+<p># Les lignes suivantes sont nécessaires pour IPv6</p>
+<p>::1         localhost ip6-localhost ip6-loopback</p>
+<p>ff02::1     ip6-allnodes</p>
+<p>ff02::2     ip6-allrouters</code></div></div></p>
+<h3>Ajouter une entrée personnalisée</h3>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/hosts</code></div></div></p>
+<p>Ajoute une ligne :</p>
+<p><div class="code-block"><div class="code-line"><code>192.168.1.100   mon-serveur.local</p>
+<p>10.0.0.5        base-de-donnees.local</code></div></div></p>
+<p>**Après modification**, applique les changements :</p>
+<p><div class="code-block"><div class="code-line"><code># Pas besoin de redémarrer — le fichier est lu à chaque requête DNS</p>
+<p># Mais pour être sûr, vide le cache DNS :</p>
+<p>sudo systemd-resolve --flush-caches</p>
+<p># ou sur certaines distributions :</p>
+<p>sudo resolvectl flush-caches</code></div></div></p>
+<h3>Cas d'usage courants</h3>
+<table>
+<tr><th>Situation</th><th>Exemple</th></tr>
+<tr><td>Serveur local sans DNS</td><td><code>192.168.1.10   nas.local</code></td></tr>
+<tr><td>Bloquer un site publicitaire</td><td><code>0.0.0.0   pub.example.com</code></td></tr>
+<tr><td>Rediriger un domaine vers une IP</td><td><code>203.0.113.50   monsite.dev</code></td></tr>
+<tr><td>Tester un site avant mise en production</td><td><code>203.0.113.50   www.monsite.com</code></td></tr>
+</table>
+<blockquote>
+<p>**Astuce** : Sur certaines distributions (Ubuntu Server 18+), <code>/etc/hosts</code> est **stateless** et géré par <code>systemd-resolved</code>. Ajoute <code>--static</code> dans <code>/etc/systemd/resolved.conf</code> si tu veux forcer son utilisation prioritaire.</p>
+</blockquote>
+<hr/>
+<h2>3. Le fichier /etc/resolv.conf</h2>
+<p>Ce fichier contient la liste des **serveurs DNS** que ton système interroge.</p>
+<p><div class="code-block"><div class="code-line"><code>cat /etc/resolv.conf</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>nameserver 8.8.8.8</p>
+<p>nameserver 8.8.4.4</p>
+<p>nameserver 1.1.1.1</code></div></div></p>
+<p>**Serveurs DNS publics courants :**</p>
+<table>
+<tr><th>Fournisseur</th><th>Serveur primaire</th><th>Serveur secondaire</th></tr>
+<tr><td>Google</td><td><code>8.8.8.8</code></td><td><code>8.8.4.4</code></td></tr>
+<tr><td>Cloudflare</td><td><code>1.1.1.1</code></td><td><code>1.0.0.1</code></td></tr>
+<tr><td>Quad9</td><td><code>9.9.9.9</code></td><td><code>149.112.112.112</code></td></tr>
+</table>
+<h3>Modifier les serveurs DNS</h3>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/resolv.conf</code></div></div></p>
+<p>Ajoute ou remplace les lignes <code>nameserver</code> :</p>
+<p><div class="code-block"><div class="code-line"><code>nameserver 1.1.1.1</p>
+<p>nameserver 8.8.8.8</code></div></div></p>
+<blockquote>
+<p>**Note** : Sur les systèmes avec <code>systemd-resolved</code>, ce fichier est souvent un **lien symbolique**. Modifie plutôt <code>/etc/systemd/resolved.conf</code> :</p>
+</blockquote>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/systemd/resolved.conf</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>[Resolve]</p>
+<p>DNS=1.1.1.1 8.8.8.8</p>
+<p>DNSOverTLS=no</p>
+<p>Cache=yes</code></div></div></p>
+<p>Puis redémarre le service :</p>
+<p><div class="code-block"><div class="code-line"><code>sudo systemctl restart systemd-resolved</code></div></div></p>
+<hr/>
+<h2>4. Ordre de résolution : /etc/nsswitch.conf</h2>
+<p>Le fichier <code>/etc/nsswitch.conf</code> détermine **l'ordre** dans lequel les sources de résolution sont consultées.</p>
+<p><div class="code-block"><div class="code-line"><code>grep "^hosts:" /etc/nsswitch.conf</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>hosts:          files dns</code></div></div></p>
+<p>Cela signifie :</p>
+<p>1. D'abord **<code>files</code>** → <code>/etc/hosts</code></p>
+<p>2. Ensuite **<code>dns</code>** → serveurs DNS de <code>/etc/resolv.conf</code></p>
+<p>Tu peux modifier cet ordre. Par exemple, pour ignorer le DNS :</p>
+<p><div class="code-block"><div class="code-line"><code>hosts:          files</code></div></div></p>
+<p>Ou pour ajouter un annuaire LDAP :</p>
+<p><div class="code-block"><div class="code-line"><code>hosts:          files dns ldap</code></div></div></p>
+<hr/>
+<h2>5. Outils de diagnostic DNS</h2>
+<h3>Vérifier la résolution avec <code>dig</code></h3>
+<p><div class="code-block"><div class="code-line"><code># Résolution simple</p>
+<p>dig google.com</p>
+<p># Avec un serveur DNS spécifique</p>
+<p>dig @1.1.1.1 github.com</p>
+<p># Voir seulement la réponse</p>
+<p>dig github.com +short</code></div></div></p>
+<p>Résultat de <code>dig google.com</code> :</p>
+<p><div class="code-block"><div class="code-line"><code>; &lt;&lt;&gt;&gt; DiG 9.18.1 &lt;&lt;&gt;&gt; google.com</p>
+<p>;; ANSWER SECTION:</p>
+<p>google.com.     299     IN      A       142.250.185.46</code></div></div></p>
+<h3>Vérifier avec <code>nslookup</code></h3>
+<p><div class="code-block"><div class="code-line"><code>nslookup google.com</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>Server:         8.8.8.8</p>
+<p>Address:        8.8.8.8#53</p>
+<p>Non-authoritative answer:</p>
+<p>Name:   google.com</p>
+<p>Address: 142.250.185.46</code></div></div></p>
+<h3>Vérifier avec <code>host</code></h3>
+<p><div class="code-block"><div class="code-line"><code>host google.com</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>google.com has address 142.250.185.46</p>
+<p>google.com has IPv6 address 2a00:1450:4007:812::200e</code></div></div></p>
+<h3>Tester la propagation DNS</h3>
+<p><div class="code-block"><div class="code-line"><code># Voir depuis quel serveur DNS vient la réponse</p>
+<p>dig +trace monsite.com</code></div></div></p>
+<h3>Vider le cache DNS</h3>
+<p><div class="code-block"><div class="code-line"><code># systemd-resolved</p>
+<p>sudo resolvectl flush-caches</p>
+<p># ou via systemd :</p>
+<p>sudo systemd-resolve --flush-caches</p>
+<p># dnsmasq</p>
+<p>sudo systemctl restart dnsmasq</code></div></div></p>
+<hr/>
+<h2>6. /etc/hosts vs DNS : lequel choisir ?</h2>
+<table>
+<tr><th>Critère</th><th><code>/etc/hosts</code></th><th>DNS</th></tr>
+<tr><td>Portée</td><td>Locale (machine)</td><td>Globale (réseau)</td></tr>
+<tr><td>Vitesse</td><td>Instantané (fichier local)</td><td>Dépend du réseau</td></tr>
+<tr><td>Maintenance</td><td>Manuelle</td><td>Automatique</td></tr>
+<tr><td>Idéal pour</td><td>Serveurs locaux, tests</td><td>Production, sites publics</td></tr>
+</table>
+<p>**Règle simple** :</p>
+<ul>
+<li>Utilise <code>/etc/hosts</code> pour tes machines locales et tes tests.</li>
+<li>Utilise DNS pour les noms de domaine publics.</li>
+</ul>
+<hr/>
+<h2>7. Bloquer les publicités avec /etc/hosts</h2>
+<p>Une utilisation pratique de <code>/etc/hosts</code> est de bloquer les publicités et trackers.</p>
+<p><div class="code-block"><div class="code-line"><code># Exemple : bloquer un domaine publicitaire</p>
+<p>sudo nano /etc/hosts</code></div></div></p>
+<p>Ajoute :</p>
+<p><div class="code-block"><div class="code-line"><code>0.0.0.0   ads.google.com</p>
+<p>0.0.0.0   tracking.analytics.com</p>
+<p>0.0.0.0   pub.cdn.example.com</code></div></div></p>
+<blockquote>
+<p>**0.0.0.0** est préféré à <code>127.0.0.1</code> car <code>127.0.0.1</code> peut charger un serveur web local et ralentir la connexion.</p>
+</blockquote>
+<p>Tu peux aussi utiliser des listes préconstruites :</p>
+<p><div class="code-block"><div class="code-line"><code># Installer une liste de blocage</p>
+<p>sudo curl -o /etc/hosts https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts</code></div></div></p>
+<hr/>
+<h2>8. Exercices pratiques</h2>
+<h3>Exercice 1 : Ajouter une entrée dans /etc/hosts</h3>
+<p>1. Ouvre le fichier <code>/etc/hosts</code> avec <code>nano</code></p>
+<p>2. Ajoute une entrée <code>127.0.0.1   mon-test.local</code></p>
+<p>3. Teste avec <code>ping mon-test.local</code> — tu dois recevoir des réponses de <code>127.0.0.1</code></p>
+<p>4. Supprime la ligne que tu as ajoutée</p>
+<h3>Exercice 2 : Changer de serveur DNS</h3>
+<p>1. Vérifie ton serveur DNS actuel : <code>cat /etc/resolv.conf | grep nameserver</code></p>
+<p>2. Changes le pour Cloudflare (<code>1.1.1.1</code>) dans <code>/etc/resolv.conf</code></p>
+<p>3. Teste la résolution : <code>dig github.com +short</code></p>
+<p>4. Restore le serveur DNS original</p>
+<h3>Exercice 3 : Diagnostic DNS</h3>
+<p>1. Utilise <code>dig</code> pour résoudre <code>ubuntu.com</code></p>
+<p>2. Utilise <code>dig @1.1.1.1 ubuntu.com</code> avec Cloudflare</p>
+<p>3. Compare les temps de réponse (<code>Query time:</code>)</p>
+<p>4. Utilise <code>host</code> pour obtenir les enregistrements IPv6</p>
+<hr/>
+<h2>Résumé</h2>
+<table>
+<tr><th>Concept</th><th>Commande / Fichier</th></tr>
+<tr><td>Fichier hosts local</td><td><code>/etc/hosts</code></td></tr>
+<tr><td>Serveurs DNS</td><td><code>/etc/resolv.conf</code></td></tr>
+<tr><td>Ordre de résolution</td><td><code>/etc/nsswitch.conf</code></td></tr>
+<tr><td>Diagnostic DNS</td><td><code>dig</code>, <code>nslookup</code>, <code>host</code></td></tr>
+<tr><td>Vider le cache DNS</td><td><code>sudo resolvectl flush-caches</code></td></tr>
+<tr><td>Configurer systemd-resolved</td><td><code>/etc/systemd/resolved.conf</code></td></tr>
+</table>
+<p>Le DNS est un pilier d'Internet. Comprendre <code>/etc/hosts</code> et les outils de diagnostic te permettra de résoudre rapidement les problèmes de réseau et de configurer tes propres serveurs.</p>
+<nav>
+<a href="41-partage-nfs.html">&larr; 41-partage-nfs</a>
+<a href="43-ssh-tunnels-port-forwarding.html">43-ssh-tunnels-port-forwarding &rarr;</a>
+</nav></div></body></html>

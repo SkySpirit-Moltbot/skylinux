@@ -1,1068 +1,388 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 28 : Les variables d'environnement sous Linux - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/28-les-variables-d-environnement-sous-linux.html">
-<meta property="og:title" content="Leçon 28 : Les variables d'environnement sous Linux - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 28 : Les variables d'environnement sous Linux - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 28  les variables denvironnement sous linux, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 28 : Les variables d'environnement sous Linux</h1>
 <p>Dans cette leçon, tu vas découvrir les variables d'environnement sous Linux. Ce sont des valeurs dynamiques qui influencent le comportement du système et des applications. Les comprendre te permettra de configurer ton environnement, débugger des problèmes et écrire des scripts plus robustes.</p>
-<hr />
+<hr/>
 <h2>1. Qu'est-ce qu'une variable d'environnement ?</h2>
-<p>Une <strong>variable d'environnement</strong> est une valeur clé/valeur qui influence le comportement des processus sur le système. Elles sont définies au niveau du système ou de l'utilisateur et sont accessibles par tous les programmes.</p>
-<p>Quand tu ouvres un terminal, celui-ci inherits un ensemble de variables d'environnement qui définissent :
-- Ton nom d'utilisateur (<code>USER</code>)
-- Ton dossier personnel (<code>HOME</code>)
-- Le chemin des exécutables (<code>PATH</code>)
-- La langue du système (<code>LANG</code>)
-- Et des centaines d'autres paramètres</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir toutes les variables d'environnement
-printenv</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>Une **variable d'environnement** est une valeur clé/valeur qui influence le comportement des processus sur le système. Elles sont définies au niveau du système ou de l'utilisateur et sont accessibles par tous les programmes.</p>
+<p>Quand tu ouvres un terminal, celui-ci inherits un ensemble de variables d'environnement qui définissent :</p>
+<ul>
+<li>Ton nom d'utilisateur (<code>USER</code>)</li>
+<li>Ton dossier personnel (<code>HOME</code>)</li>
+<li>Le chemin des exécutables (<code>PATH</code>)</li>
+<li>La langue du système (<code>LANG</code>)</li>
+<li>Et des centaines d'autres paramètres</li>
+</ul>
+<p><div class="code-block"><div class="code-line"><code># Voir toutes les variables d'environnement</p>
+<p>printenv</code></div></div></p>
 <p>Ce résultat peut être très long — il y a des dizaines de variables définies sur un système standard.</p>
-<hr />
+<hr/>
 <h2>2. Afficher les variables</h2>
 <h3>printenv - Lister toutes les variables</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>printenv</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>printenv</code></div></div></p>
 <p>Affiche la liste complète des variables d'environnement avec leurs valeurs.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>HOME=/home/david
-USER=david
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-LANG=fr_CH.UTF-8
-SHELL=/bin/bash
-TERM=xterm-256color</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>HOME=/home/david</p>
+<p>USER=david</p>
+<p>PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</p>
+<p>LANG=fr_CH.UTF-8</p>
+<p>SHELL=/bin/bash</p>
+<p>TERM=xterm-256color</code></div></div></p>
 <h3>echo - Afficher une variable précise</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Afficher le dossier personnel de l'utilisateur
-echo $HOME
-
-# Afficher le nom d'utilisateur
-echo $USER
-
-# Afficher le chemin des exécutables
-echo $PATH
-
-# Afficher le type de terminal
-echo $TERM
-
-# Afficher le shell par défaut
-echo $SHELL</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Afficher le dossier personnel de l'utilisateur</p>
+<p>echo $HOME</p>
+<p># Afficher le nom d'utilisateur</p>
+<p>echo $USER</p>
+<p># Afficher le chemin des exécutables</p>
+<p>echo $PATH</p>
+<p># Afficher le type de terminal</p>
+<p>echo $TERM</p>
+<p># Afficher le shell par défaut</p>
+<p>echo $SHELL</code></div></div></p>
 <blockquote>
 <p>💡 Le signe <code>$</code> devant le nom de la variable indique à Bash qu'il faut lire la valeur de cette variable.</p>
 </blockquote>
 <h3>env - Afficher et modifier l'environnement</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Afficher toutes les variables (identique à printenv)
-env
-
-# Lancer une commande avec un environnement vide
-env -i /bin/bash
-# Ici, aucune variable n'est héritée — environnement vide</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Afficher toutes les variables (identique à printenv)</p>
+<p>env</p>
+<p># Lancer une commande avec un environnement vide</p>
+<p>env -i /bin/bash</p>
+<p># Ici, aucune variable n'est héritée — environnement vide</code></div></div></p>
+<hr/>
 <h2>3. Créer une variable temporaire</h2>
 <h3>Syntaxe de base</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une variable (valable seulement dans le terminal actuel)
-MA_VARIABLE=&quot;Bonjour le monde&quot;
-
-# L'afficher
-echo $MA_VARIABLE
-# Résultat : Bonjour le monde</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer une variable (valable seulement dans le terminal actuel)</p>
+<p>MA_VARIABLE="Bonjour le monde"</p>
+<p># L'afficher</p>
+<p>echo $MA_VARIABLE</p>
+<p># Résultat : Bonjour le monde</code></div></div></p>
 <blockquote>
-<p>⚠️ Par défaut, une variable créée ainsi est <strong>temporaire</strong>. Elle n'existe que dans le terminal où tu l'as créée. Ferme ce terminal et la variable disparaît.</p>
+<p>⚠️ Par défaut, une variable créée ainsi est **temporaire**. Elle n'existe que dans le terminal où tu l'as créée. Ferme ce terminal et la variable disparaît.</p>
 </blockquote>
 <h3>Règles de nommage</h3>
 <ul>
 <li>Le nom ne peut contenir que des lettres, des chiffres et le tiret bas <code>_</code></li>
 <li>Le nom ne peut pas commencer par un chiffre</li>
-<li>Les noms sont <strong>sensibles à la casse</strong> : <code>MA_VARIABLE</code> et <code>ma_variable</code> sont deux variables différentes</li>
+<li>Les noms sont **sensibles à la casse** : <code>MA_VARIABLE</code> et <code>ma_variable</code> sont deux variables différentes</li>
 </ul>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Noms valides
-MON_PROJET=&quot;Linux&quot;
-ma_variable=123
-VAR_2=&quot;test&quot;
-
-# Noms invalides (donneraient une erreur)
-# 2VARIABLE=&quot;test&quot;     → ne peut pas commencer par un chiffre
-# ma-variable=&quot;test&quot;   → le tiret n'est pas autorisé</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Noms valides</p>
+<p>MON_PROJET="Linux"</p>
+<p>ma_variable=123</p>
+<p>VAR_2="test"</p>
+<p># Noms invalides (donneraient une erreur)</p>
+<p># 2VARIABLE="test"     → ne peut pas commencer par un chiffre</p>
+<p># ma-variable="test"   → le tiret n'est pas autorisé</code></div></div></p>
 <h3>export - Rendre une variable accessible aux sous-processus</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer une variable
-MESSAGE=&quot;Configuration terminée&quot;
-
-# L'afficher dans le terminal actuel
-echo $MESSAGE
-
-# Lancer un script qui essaie d'afficher cette variable
-bash -c 'echo $MESSAGE'
-# → affiche &quot;Configuration terminée&quot; si la variable a été exportée</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<p>Par défaut, une variable n'est <strong>pas transmise</strong> aux programmes que tu lances. Pour ça, il faut l'exporter.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Sans export — le sous-shell ne voit pas la variable
-MA_VAR=&quot;secret&quot;
-bash -c 'echo $MA_VAR'
-# → n'affiche rien
-
-# Avec export — le sous-shell voit la variable
-export MA_VAR=&quot;secret&quot;
-bash -c 'echo $MA_VAR'
-# → affiche &quot;secret&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Créer une variable</p>
+<p>MESSAGE="Configuration terminée"</p>
+<p># L'afficher dans le terminal actuel</p>
+<p>echo $MESSAGE</p>
+<p># Lancer un script qui essaie d'afficher cette variable</p>
+<p>bash -c 'echo $MESSAGE'</p>
+<p># → affiche "Configuration terminée" si la variable a été exportée</code></div></div></p>
+<p>Par défaut, une variable n'est **pas transmise** aux programmes que tu lances. Pour ça, il faut l'exporter.</p>
+<p><div class="code-block"><div class="code-line"><code># Sans export — le sous-shell ne voit pas la variable</p>
+<p>MA_VAR="secret"</p>
+<p>bash -c 'echo $MA_VAR'</p>
+<p># → n'affiche rien</p>
+<p># Avec export — le sous-shell voit la variable</p>
+<p>export MA_VAR="secret"</p>
+<p>bash -c 'echo $MA_VAR'</p>
+<p># → affiche "secret"</code></div></div></p>
+<hr/>
 <h2>4. Créer une variable permanente</h2>
 <p>Les variables temporaires disparaissent quand tu fermes le terminal. Pour les rendre permanentes, tu dois les enregistrer dans un fichier de configuration.</p>
 <h3>~/.bashrc - Configuration par utilisateur</h3>
 <p>Le fichier <code>~/.bashrc</code> est exécuté chaque fois que tu ouvres un nouveau terminal Bash. C'est l'endroit idéal pour définir tes variables personnelles.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Éditer le fichier ~/.bashrc
-nano ~/.bashrc
-
-# Ajouter cette ligne à la fin du fichier
-export MON_PROJET=&quot;/home/david/projets/linux&quot;
-export NOTES_DIR=&quot;$HOME/Notes&quot;
-export EDITOR=&quot;nano&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Éditer le fichier ~/.bashrc</p>
+<p>nano ~/.bashrc</p>
+<p># Ajouter cette ligne à la fin du fichier</p>
+<p>export MON_PROJET="/home/david/projets/linux"</p>
+<p>export NOTES_DIR="$HOME/Notes"</p>
+<p>export EDITOR="nano"</code></div></div></p>
 <p>Après avoir ajouté ces lignes, recharge la configuration :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Recharger ~/.bashrc sans fermer le terminal
-source ~/.bashrc
-
-# Ou utiliser la commande alternative
-. ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Recharger ~/.bashrc sans fermer le terminal</p>
+<p>source ~/.bashrc</p>
+<p># Ou utiliser la commande alternative</p>
+<p>. ~/.bashrc</code></div></div></p>
 <p>Vérifie que les variables sont bien définies :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo $MON_PROJET
-# → /home/david/projets/linux
-
-echo $NOTES_DIR
-# → /home/david/Notes
-
-echo $EDITOR
-# → nano</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>echo $MON_PROJET</p>
+<p># → /home/david/projets/linux</p>
+<p>echo $NOTES_DIR</p>
+<p># → /home/david/Notes</p>
+<p>echo $EDITOR</p>
+<p># → nano</code></div></div></p>
 <h3>/etc/environment - Variables système globales</h3>
-<p>Pour définir une variable accessible à <strong>tous les utilisateurs</strong> du système, utilise <code>/etc/environment</code>.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sudo nano /etc/environment</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>Pour définir une variable accessible à **tous les utilisateurs** du système, utilise <code>/etc/environment</code>.</p>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/environment</code></div></div></p>
 <p>Ce fichier contient une variable par ligne, sans syntaxe shell :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>PATH=&quot;/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;
-HTTPS_PROXY=&quot;http://proxy.example.com:8080&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"</p>
+<p>HTTPS_PROXY="http://proxy.example.com:8080"</code></div></div></p>
 <blockquote>
 <p>⚠️ Modifie ce fichier avec précaution. Une erreur peut perturber tout le système.</p>
 </blockquote>
 <h3>/etc/profile.d/ - Scripts de démarrage système</h3>
 <p>Le dossier <code>/etc/profile.d/</code> contient des scripts qui sont exécutés lors de la connexion de chaque utilisateur. C'est une méthode propre pour ajouter des variables système.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un script pour ta variable
-sudo nano /etc/profile.d/mes_variables.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-# Variables d'environnement personnalisées pour tous les utilisateurs
-
-export MON_PROJET=&quot;/opt/mes-projets&quot;
-export DATA_DIR=&quot;/srv/data&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Rendre le script exécutable
-sudo chmod +x /etc/profile.d/mes_variables.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Créer un script pour ta variable</p>
+<p>sudo nano /etc/profile.d/mes_variables.sh</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Variables d'environnement personnalisées pour tous les utilisateurs</p>
+<p>export MON_PROJET="/opt/mes-projets"</p>
+<p>export DATA_DIR="/srv/data"</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code># Rendre le script exécutable</p>
+<p>sudo chmod +x /etc/profile.d/mes_variables.sh</code></div></div></p>
+<hr/>
 <h2>5. La variable PATH</h2>
 <p>La variable <code>PATH</code> est l'une des plus importantes. Elle indique à Linux où chercher les programmes quand tu tapes une commande.</p>
 <h3>Comprendre le PATH</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo $PATH
-# → /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>echo $PATH</p>
+<p># → /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</code></div></div></p>
 <p>Chaque répertoire est séparé par deux-points <code>:</code>. Quand tu tapes <code>ls</code>, le système cherche <code>ls</code> dans chacun de ces répertoires, dans l'ordre.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Où se trouve la commande ls ?
-which ls
-# → /usr/bin/ls
-
-# Où se trouve la commande python ?
-which python3
-# → /usr/bin/python3</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Où se trouve la commande ls ?</p>
+<p>which ls</p>
+<p># → /usr/bin/ls</p>
+<p># Où se trouve la commande python ?</p>
+<p>which python3</p>
+<p># → /usr/bin/python3</code></div></div></p>
 <h3>Ajouter un répertoire au PATH</h3>
 <p>Si tu installes un programme dans un dossier personnalisé, tu peux l'ajouter au PATH :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ajouter un dossier personnel au PATH (temporaire)
-export PATH=&quot;$PATH:/home/david/mes-scripts&quot;
-
-# Vérifier
-echo $PATH
-# → /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/david/mes-scripts</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Ajouter un dossier personnel au PATH (temporaire)</p>
+<p>export PATH="$PATH:/home/david/mes-scripts"</p>
+<p># Vérifier</p>
+<p>echo $PATH</p>
+<p># → /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/david/mes-scripts</code></div></div></p>
 <p>Pour rendre cette modification permanente, ajoute la ligne dans <code>~/.bashrc</code> :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># À ajouter dans ~/.bashrc
-export PATH=&quot;$PATH:/home/david/mes-scripts&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># À ajouter dans ~/.bashrc</p>
+<p>export PATH="$PATH:/home/david/mes-scripts"</code></div></div></p>
 <h3>PATH et sécurité</h3>
 <blockquote>
-<p>⚠️ <strong>Attention</strong> : ne mets jamais le répertoire courant <code>.</code> dans ton PATH de façon permanente. Quelqu'un pourrait créer un programme malveillant nommé <code>ls</code> dans ce répertoire et tu l'exécuterais involontairement.</p>
+<p>⚠️ **Attention** : ne mets jamais le répertoire courant <code>.</code> dans ton PATH de façon permanente. Quelqu'un pourrait créer un programme malveillant nommé <code>ls</code> dans ce répertoire et tu l'exécuterais involontairement.</p>
 </blockquote>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># DANGEREUX — ne fais pas ça
-export PATH=&quot;.:$PATH&quot;
-
-# Instead, lance les programmes du répertoire courant explicitement
-./mon_script.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># DANGEREUX — ne fais pas ça</p>
+<p>export PATH=".:$PATH"</p>
+<p># Instead, lance les programmes du répertoire courant explicitement</p>
+<p>./mon_script.sh</code></div></div></p>
+<hr/>
 <h2>6. Les variables spéciales les plus utiles</h2>
 <table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
-<th>Exemple</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>$HOME</code></td>
-<td>Dossier personnel de l'utilisateur</td>
-<td><code>/home/david</code></td>
-</tr>
-<tr>
-<td><code>$USER</code></td>
-<td>Nom de l'utilisateur</td>
-<td><code>david</code></td>
-</tr>
-<tr>
-<td><code>$PATH</code></td>
-<td>Chemins des exécutables</td>
-<td><code>/usr/bin:/bin</code></td>
-</tr>
-<tr>
-<td><code>$SHELL</code></td>
-<td>Shell par défaut</td>
-<td><code>/bin/bash</code></td>
-</tr>
-<tr>
-<td><code>$LANG</code></td>
-<td>Langue et encodage</td>
-<td><code>fr_CH.UTF-8</code></td>
-</tr>
-<tr>
-<td><code>$PWD</code></td>
-<td>Répertoire courant</td>
-<td><code>/home/david/Documents</code></td>
-</tr>
-<tr>
-<td><code>$HOSTNAME</code></td>
-<td>Nom de la machine</td>
-<td><code>moltbot</code></td>
-</tr>
-<tr>
-<td><code>$TERM</code></td>
-<td>Type de terminal</td>
-<td><code>xterm-256color</code></td>
-</tr>
-<tr>
-<td><code>$?</code></td>
-<td>Code de retour de la dernière commande</td>
-<td><code>0</code> (succès)</td>
-</tr>
-<tr>
-<td><code>$$</code></td>
-<td>PID du processus courant</td>
-<td><code>12345</code></td>
-</tr>
-<tr>
-<td><code>$!</code></td>
-<td>PID du dernier processus lancé en arrière-plan</td>
-<td><code>12346</code></td>
-</tr>
-<tr>
-<td><code>$RANDOM</code></td>
-<td>Nombre aléatoire</td>
-<td><code>4823</code></td>
-</tr>
-</tbody>
+<tr><th>Variable</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>$HOME</code></td><td>Dossier personnel de l'utilisateur</td><td><code>/home/david</code></td></tr>
+<tr><td><code>$USER</code></td><td>Nom de l'utilisateur</td><td><code>david</code></td></tr>
+<tr><td><code>$PATH</code></td><td>Chemins des exécutables</td><td><code>/usr/bin:/bin</code></td></tr>
+<tr><td><code>$SHELL</code></td><td>Shell par défaut</td><td><code>/bin/bash</code></td></tr>
+<tr><td><code>$LANG</code></td><td>Langue et encodage</td><td><code>fr_CH.UTF-8</code></td></tr>
+<tr><td><code>$PWD</code></td><td>Répertoire courant</td><td><code>/home/david/Documents</code></td></tr>
+<tr><td><code>$HOSTNAME</code></td><td>Nom de la machine</td><td><code>moltbot</code></td></tr>
+<tr><td><code>$TERM</code></td><td>Type de terminal</td><td><code>xterm-256color</code></td></tr>
+<tr><td><code>$?</code></td><td>Code de retour de la dernière commande</td><td><code>0</code> (succès)</td></tr>
+<tr><td><code>$$</code></td><td>PID du processus courant</td><td><code>12345</code></td></tr>
+<tr><td><code>$!</code></td><td>PID du dernier processus lancé en arrière-plan</td><td><code>12346</code></td></tr>
+<tr><td><code>$RANDOM</code></td><td>Nombre aléatoire</td><td><code>4823</code></td></tr>
 </table>
 <h3>Exemples pratiques</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Afficher le dossier personnel
-echo &quot;Bienvenue, $USER !&quot;
-# → Bienvenue, david !
-
-# Connaître le code de retour de la dernière commande
-ls /etc
-echo &quot;Code de retour : $?&quot;
-# → Code de retour : 0 (tout va bien)
-
-ls /etc/fichier-inexistant
-echo &quot;Code de retour : $?&quot;
-# → Code de retour : 2 (erreur — fichier non trouvé)
-
-# Afficher un nombre aléatoire
-echo $RANDOM
-
-# Connaître son PID
-echo &quot;Mon PID est : $$&quot;
-
-# Construire un chemin
-echo &quot;Ton dossier personnel est : $HOME/Documents&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Afficher le dossier personnel</p>
+<p>echo "Bienvenue, $USER !"</p>
+<p># → Bienvenue, david !</p>
+<p># Connaître le code de retour de la dernière commande</p>
+<p>ls /etc</p>
+<p>echo "Code de retour : $?"</p>
+<p># → Code de retour : 0 (tout va bien)</p>
+<p>ls /etc/fichier-inexistant</p>
+<p>echo "Code de retour : $?"</p>
+<p># → Code de retour : 2 (erreur — fichier non trouvé)</p>
+<p># Afficher un nombre aléatoire</p>
+<p>echo $RANDOM</p>
+<p># Connaître son PID</p>
+<p>echo "Mon PID est : $$"</p>
+<p># Construire un chemin</p>
+<p>echo "Ton dossier personnel est : $HOME/Documents"</code></div></div></p>
+<hr/>
 <h2>7. Modifier une variable existante</h2>
 <h3>Ajouter un élément à une variable</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ajouter un chemin à PATH
-export PATH=&quot;$PATH:/nouveau/chemin&quot;
-
-# Ajouter un élément à une variable PATH déjà existante
-export PATH=&quot;/home/david/scripts:$PATH&quot;
-# → le nouveau chemin est vérifié en premier
-
-# Ajouter à la fin
-export PATH=&quot;$PATH:/home/david/scripts&quot;
-# → le nouveau chemin est vérifié en dernier</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Ajouter un chemin à PATH</p>
+<p>export PATH="$PATH:/nouveau/chemin"</p>
+<p># Ajouter un élément à une variable PATH déjà existante</p>
+<p>export PATH="/home/david/scripts:$PATH"</p>
+<p># → le nouveau chemin est vérifié en premier</p>
+<p># Ajouter à la fin</p>
+<p>export PATH="$PATH:/home/david/scripts"</p>
+<p># → le nouveau chemin est vérifié en dernier</code></div></div></p>
 <h3>Supprimer une variable</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Supprimer une variable (unexport)
-unset MA_VARIABLE
-
-# Vérifier qu'elle n'existe plus
-echo $MA_VARIABLE
-# → n'affiche rien</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Supprimer une variable (unexport)</p>
+<p>unset MA_VARIABLE</p>
+<p># Vérifier qu'elle n'existe plus</p>
+<p>echo $MA_VARIABLE</p>
+<p># → n'affiche rien</code></div></div></p>
+<hr/>
 <h2>8. Scripts et variables d'environnement</h2>
 <p>Quand tu écris un script Bash, les variables d'environnement jouent un rôle essentiel.</p>
 <h3>Hériter de l'environnement parent</h3>
 <p>Par défaut, un script Bash hérite des variables exportées du terminal qui le lance.</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Script : mon_script.sh
-#!/bin/bash
-echo &quot;L'utilisateur est : $USER&quot;
-echo &quot;Le HOME est : $HOME&quot;
-echo &quot;Le PATH est : $PATH&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>chmod +x mon_script.sh
-./mon_script.sh
-# → affiche les valeurs des variables héritées</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Script : mon_script.sh</p>
+<p>#!/bin/bash</p>
+<p>echo "L'utilisateur est : $USER"</p>
+<p>echo "Le HOME est : $HOME"</p>
+<p>echo "Le PATH est : $PATH"</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>chmod +x mon_script.sh</p>
+<p>./mon_script.sh</p>
+<p># → affiche les valeurs des variables héritées</code></div></div></p>
 <h3>Isoler l'environnement dans un script</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Lancer un script dans un environnement propre
-env -i ./mon_script.sh
-# → aucune variable n'est héritée</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Lancer un script dans un environnement propre</p>
+<p>env -i ./mon_script.sh</p>
+<p># → aucune variable n'est héritée</code></div></div></p>
 <h3>Exporter une variable depuis un script</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-# Ce script définit une variable accessible après son exécution
-
-export MA_CONFIG=&quot;valeur_configurée&quot;
-echo &quot;Configuration chargée&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>./script_config.sh
-echo $MA_CONFIG
-# → affiche &quot;valeur_configurée&quot; (accessible après l'exécution)</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Ce script définit une variable accessible après son exécution</p>
+<p>export MA_CONFIG="valeur_configurée"</p>
+<p>echo "Configuration chargée"</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>./script_config.sh</p>
+<p>echo $MA_CONFIG</p>
+<p># → affiche "valeur_configurée" (accessible après l'exécution)</code></div></div></p>
+<hr/>
 <h2>9. Variables d'environnement et sécurité</h2>
 <p>Les variables d'environnement peuvent contenir des informations sensibles. Voici les points importants à connaître.</p>
 <h3>Variables potentiellement sensibles</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ne jamais afficher ces variables sur un système partagé
-echo $SSH_CONNECTION    # IP et ports de connexion SSH
-env | grep -i pass      # Rechercher des mots de passe en mémoire
-env | grep -i key       # Rechercher des clés API</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Ne jamais afficher ces variables sur un système partagé</p>
+<p>echo $SSH_CONNECTION    # IP et ports de connexion SSH</p>
+<p>env | grep -i pass      # Rechercher des mots de passe en mémoire</p>
+<p>env | grep -i key       # Rechercher des clés API</code></div></div></p>
 <h3>Variables et sudo</h3>
 <blockquote>
 <p>⚠️ Par défaut, <code>sudo</code> ne transmet pas les variables d'environnement pour des raisons de sécurité. Si tu as besoin d'une variable avec sudo, utilise l'option <code>-E</code>.</p>
 </blockquote>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Définir une variable
-export MA_VAR=&quot;test&quot;
-
-# Avec sudo — la variable n'est pas transmise
-sudo env | grep MA_VAR
-# → n'affiche rien
-
-# Avec sudo -E — la variable est transmise
-sudo -E env | grep MA_VAR
-# → affiche MA_VAR=test</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Définir une variable</p>
+<p>export MA_VAR="test"</p>
+<p># Avec sudo — la variable n'est pas transmise</p>
+<p>sudo env | grep MA_VAR</p>
+<p># → n'affiche rien</p>
+<p># Avec sudo -E — la variable est transmise</p>
+<p>sudo -E env | grep MA_VAR</p>
+<p># → affiche MA_VAR=test</code></div></div></p>
 <h3>Fichier .bash_history et sécurité</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># L'historique des commandes contient souvent des variables sensibles
-# Configure ton shell pour ne pas enregistrer certaines commandes
-
-# Dans ~/.bashrc, ajoute :
-export HISTIGNORE=&quot;export *:set *&quot;
-# → les commandes &quot;export ...&quot; et &quot;set ...&quot; ne seront pas enregistrées dans l'historique</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># L'historique des commandes contient souvent des variables sensibles</p>
+<p># Configure ton shell pour ne pas enregistrer certaines commandes</p>
+<p># Dans ~/.bashrc, ajoute :</p>
+<p>export HISTIGNORE="export *:set *"</p>
+<p># → les commandes "export ..." et "set ..." ne seront pas enregistrées dans l'historique</code></div></div></p>
+<hr/>
 <h2>10. Exercices pratiques</h2>
 <h3>Exercice 1 : Découvrir ton environnement</h3>
-<ol>
-<li>Affiche toutes tes variables d'environnement :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>printenv | less</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Recherche ta variable HOME :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>printenv HOME</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Trouve où se trouve la commande <code>grep</code> :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>which grep</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Affiche ton type de terminal et ton shell :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo &quot;Terminal : $TERM | Shell : $SHELL&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>1. Affiche toutes tes variables d'environnement :</p>
+<p><div class="code-block"><div class="code-line"><code>printenv | less</code></div></div></p>
+<p>2. Recherche ta variable HOME :</p>
+<p><div class="code-block"><div class="code-line"><code>printenv HOME</code></div></div></p>
+<p>3. Trouve où se trouve la commande <code>grep</code> :</p>
+<p><div class="code-block"><div class="code-line"><code>which grep</code></div></div></p>
+<p>4. Affiche ton type de terminal et ton shell :</p>
+<p><div class="code-block"><div class="code-line"><code>echo "Terminal : $TERM | Shell : $SHELL"</code></div></div></p>
 <p>✅ Tu connais maintenant ton environnement de base.</p>
-<hr />
+<hr/>
 <h3>Exercice 2 : Créer et exporter une variable</h3>
-<ol>
-<li>Crée une variable sans l'exporter :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>MON_SECRET=&quot;mot_de_passe_123&quot;
-echo $MON_SECRET</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Lance un sous-shell et vérifie si la variable est visible :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>bash -c 'echo $MON_SECRET'
-# → ne devrait rien afficher</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Exporte la variable et refais le test :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>export MON_SECRET=&quot;mot_de_passe_123&quot;
-bash -c 'echo $MON_SECRET'
-# → cette fois, affiche &quot;mot_de_passe_123&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Supprime la variable :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>unset MON_SECRET
-echo $MON_SECRET
-# → n'affiche rien</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>1. Crée une variable sans l'exporter :</p>
+<p><div class="code-block"><div class="code-line"><code>MON_SECRET="mot_de_passe_123"</p>
+<p>echo $MON_SECRET</code></div></div></p>
+<p>2. Lance un sous-shell et vérifie si la variable est visible :</p>
+<p><div class="code-block"><div class="code-line"><code>bash -c 'echo $MON_SECRET'</p>
+<p># → ne devrait rien afficher</code></div></div></p>
+<p>3. Exporte la variable et refais le test :</p>
+<p><div class="code-block"><div class="code-line"><code>export MON_SECRET="mot_de_passe_123"</p>
+<p>bash -c 'echo $MON_SECRET'</p>
+<p># → cette fois, affiche "mot_de_passe_123"</code></div></div></p>
+<p>4. Supprime la variable :</p>
+<p><div class="code-block"><div class="code-line"><code>unset MON_SECRET</p>
+<p>echo $MON_SECRET</p>
+<p># → n'affiche rien</code></div></div></p>
 <p>✅ Tu sais créer, exporter et supprimer des variables.</p>
-<hr />
+<hr/>
 <h3>Exercice 3 : Variable permanente</h3>
-<ol>
-<li>Ouvre ton fichier <code>~/.bashrc</code> :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>nano ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Ajoute ces lignes à la fin :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Mes variables personnelles
-export PROJET_DIR=&quot;$HOME/projets&quot;
-export SCRIPTS_DIR=&quot;$HOME/scripts&quot;
-export EDITOR=&quot;nano&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>
-<p>Sauvegarde et ferme le fichier.</p>
-</li>
-<li>
-<p>Recharge la configuration :</p>
-</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>source ~/.bashrc</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Vérifie que les variables existent :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo &quot;Projet : $PROJET_DIR&quot;
-echo &quot;Scripts : $SCRIPTS_DIR&quot;
-echo &quot;Éditeur : $EDITOR&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>1. Ouvre ton fichier <code>~/.bashrc</code> :</p>
+<p><div class="code-block"><div class="code-line"><code>nano ~/.bashrc</code></div></div></p>
+<p>2. Ajoute ces lignes à la fin :</p>
+<p><div class="code-block"><div class="code-line"><code># Mes variables personnelles</p>
+<p>export PROJET_DIR="$HOME/projets"</p>
+<p>export SCRIPTS_DIR="$HOME/scripts"</p>
+<p>export EDITOR="nano"</code></div></div></p>
+<p>3. Sauvegarde et ferme le fichier.</p>
+<p>4. Recharge la configuration :</p>
+<p><div class="code-block"><div class="code-line"><code>source ~/.bashrc</code></div></div></p>
+<p>5. Vérifie que les variables existent :</p>
+<p><div class="code-block"><div class="code-line"><code>echo "Projet : $PROJET_DIR"</p>
+<p>echo "Scripts : $SCRIPTS_DIR"</p>
+<p>echo "Éditeur : $EDITOR"</code></div></div></p>
 <p>✅ Tes variables sont maintenant permanentes.</p>
-<hr />
+<hr/>
 <h3>Exercice 4 : Modifier le PATH</h3>
-<ol>
-<li>Affiche ton PATH actuel :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo $PATH</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Crée un dossier pour tes scripts personnels :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>mkdir -p ~/mes-scripts</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Crée un script de test dans ce dossier :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>echo '#!/bin/bash' &gt; ~/mes-scripts/salut.sh
-echo 'echo &quot;Salut depuis ~/mes-scripts !&quot;' &gt;&gt; ~/mes-scripts/salut.sh
-chmod +x ~/mes-scripts/salut.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Tente de lancer le script sans modifier le PATH :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>salut.sh
-# → commande non trouvée (normal — le dossier n'est pas dans PATH)</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Ajoute le dossier au PATH :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>export PATH=&quot;$PATH:$HOME/mes-scripts&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Lance le script :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>salut.sh
-# → affiche &quot;Salut depuis ~/mes-scripts !&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Rends cette modification permanente (ajoute <code>export PATH=...</code> dans <code>~/.bashrc</code>).</li>
-</ol>
+<p>1. Affiche ton PATH actuel :</p>
+<p><div class="code-block"><div class="code-line"><code>echo $PATH</code></div></div></p>
+<p>2. Crée un dossier pour tes scripts personnels :</p>
+<p><div class="code-block"><div class="code-line"><code>mkdir -p ~/mes-scripts</code></div></div></p>
+<p>3. Crée un script de test dans ce dossier :</p>
+<p><div class="code-block"><div class="code-line"><code>echo '#!/bin/bash' &gt; ~/mes-scripts/salut.sh</p>
+<p>echo 'echo "Salut depuis ~/mes-scripts !"' &gt;&gt; ~/mes-scripts/salut.sh</p>
+<p>chmod +x ~/mes-scripts/salut.sh</code></div></div></p>
+<p>4. Tente de lancer le script sans modifier le PATH :</p>
+<p><div class="code-block"><div class="code-line"><code>salut.sh</p>
+<p># → commande non trouvée (normal — le dossier n'est pas dans PATH)</code></div></div></p>
+<p>5. Ajoute le dossier au PATH :</p>
+<p><div class="code-block"><div class="code-line"><code>export PATH="$PATH:$HOME/mes-scripts"</code></div></div></p>
+<p>6. Lance le script :</p>
+<p><div class="code-block"><div class="code-line"><code>salut.sh</p>
+<p># → affiche "Salut depuis ~/mes-scripts !"</code></div></div></p>
+<p>7. Rends cette modification permanente (ajoute <code>export PATH=...</code> dans <code>~/.bashrc</code>).</p>
 <p>✅ Tu peux maintenant exécuter tes propres scripts depuis n'importe où.</p>
-<hr />
+<hr/>
 <h2>11. Résumé</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>printenv</code></td>
-<td>Lister toutes les variables d'environnement</td>
-</tr>
-<tr>
-<td><code>printenv VAR</code></td>
-<td>Afficher la valeur d'une variable précise</td>
-</tr>
-<tr>
-<td><code>env</code></td>
-<td>Afficher l'environnement (identique à printenv)</td>
-</tr>
-<tr>
-<td><code>echo $VAR</code></td>
-<td>Afficher la valeur d'une variable</td>
-</tr>
-<tr>
-<td><code>export VAR=valeur</code></td>
-<td>Créer et exporter une variable</td>
-</tr>
-<tr>
-<td><code>export VAR="$VAR:ajout"</code></td>
-<td>Ajouter un élément à une variable existante</td>
-</tr>
-<tr>
-<td><code>unset VAR</code></td>
-<td>Supprimer une variable</td>
-</tr>
-<tr>
-<td><code>source ~/.bashrc</code></td>
-<td>Recharger la configuration Bash</td>
-</tr>
-<tr>
-<td><code>env -i bash</code></td>
-<td>Lancer un shell avec environnement vide</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>printenv</code></td><td>Lister toutes les variables d'environnement</td></tr>
+<tr><td><code>printenv VAR</code></td><td>Afficher la valeur d'une variable précise</td></tr>
+<tr><td><code>env</code></td><td>Afficher l'environnement (identique à printenv)</td></tr>
+<tr><td><code>echo $VAR</code></td><td>Afficher la valeur d'une variable</td></tr>
+<tr><td><code>export VAR=valeur</code></td><td>Créer et exporter une variable</td></tr>
+<tr><td><code>export VAR="$VAR:ajout"</code></td><td>Ajouter un élément à une variable existante</td></tr>
+<tr><td><code>unset VAR</code></td><td>Supprimer une variable</td></tr>
+<tr><td><code>source ~/.bashrc</code></td><td>Recharger la configuration Bash</td></tr>
+<tr><td><code>env -i bash</code></td><td>Lancer un shell avec environnement vide</td></tr>
 </table>
 <ul>
-<li>Une variable <strong>sans export</strong> n'est visible que dans le terminal actuel</li>
-<li>Une variable <strong>exportée</strong> est transmise aux sous-processus</li>
-<li><code>~/.bashrc</code> → configuration <strong>par utilisateur</strong> (permanent)</li>
-<li><code>/etc/profile.d/</code> → configuration <strong>système</strong> (tous les utilisateurs)</li>
+<li>Une variable **sans export** n'est visible que dans le terminal actuel</li>
+<li>Une variable **exportée** est transmise aux sous-processus</li>
+<li><code>~/.bashrc</code> → configuration **par utilisateur** (permanent)</li>
+<li><code>/etc/profile.d/</code> → configuration **système** (tous les utilisateurs)</li>
 <li><code>PATH</code> → indique où le système cherche les programmes</li>
 <li><code>$HOME</code>, <code>$USER</code>, <code>$PATH</code>, <code>$SHELL</code> → variables spéciales les plus utilisées</li>
 </ul>
-</div>
 <nav>
-<a href="27-tmux-multiplexeur-terminal.html" style="color:#00d9ff;text-decoration:none;">&larr; 27 - tmux - Multiplexeur de Terminal</a> | <span style="color:#666;">28</span> | <a href="29-git-gestion-version.html" style="color:#00d9ff;text-decoration:none;">29 - Git - Gestion de version &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="27-tmux-multiplexeur-terminal.html">&larr; 27-tmux-multiplexeur-terminal</a>
+<a href="29-git-gestion-version.html">29-git-gestion-version &rarr;</a>
+</nav></div></body></html>

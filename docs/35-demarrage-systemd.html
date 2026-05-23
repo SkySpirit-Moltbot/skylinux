@@ -1,302 +1,121 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 35 : Optimisation du démarrage avec systemd-analyze - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/35-optimisation-du-demarrage-avec-systemd-analyze.html">
-<meta property="og:title" content="Leçon 35 : Optimisation du démarrage avec systemd-analyze - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 35 : Optimisation du démarrage avec systemd-analyze - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 35  optimisation du dmarrage avec systemdanalyze, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 35 : Optimisation du démarrage avec systemd-analyze</h1>
 <p>Dans cette leçon, tu vas découvrir comment analyser et optimiser le temps de démarrage de ton système Linux grâce à systemd-analyze. Un démarrage lent peut cacher des services inutiles ou des configurations problématiques.</p>
-<hr />
+<hr/>
 <h2>1. Qu'est-ce que systemd-analyze ?</h2>
 <p>systemd-analyze est un outil fourni avec systemd qui permet de mesurer et diagnostiquer le temps nécessaire au démarrage du système. Il montre exactement combien de temps chaque étape prend, du firmware BIOS/UEFI jusqu'à l'écran de connexion.</p>
-<p>Ce qu'on peut analyser :
-- Temps total du démarrage
-- Durée du firmware (BIOS/UEFI)
-- Durée du chargeur d'amorçage (GRUB)
-- Durée du-userspace (services systemd)
-- Durée du gestionnaire de connexion (GDM, LightDM...)</p>
-<hr />
+<p>Ce qu'on peut analyser :</p>
+<ul>
+<li>Temps total du démarrage</li>
+<li>Durée du firmware (BIOS/UEFI)</li>
+<li>Durée du chargeur d'amorçage (GRUB)</li>
+<li>Durée du-userspace (services systemd)</li>
+<li>Durée du gestionnaire de connexion (GDM, LightDM...)</li>
+</ul>
+<hr/>
 <h2>2. Analyse basique du démarrage</h2>
 <h3>Voir le temps total</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>systemd-analyze</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>systemd-analyze</code></div></div></p>
 <p>Exemple de sortie :</p>
-<p>Lecture :
-- kernel → Temps de chargement du noyau Linux
-- userspace → Temps nécessaire pour démarrer tous les services
-- graphical.target → Moment où l'interface graphique apparaît</p>
+<p>Lecture :</p>
+<ul>
+<li>kernel → Temps de chargement du noyau Linux</li>
+<li>userspace → Temps nécessaire pour démarrer tous les services</li>
+<li>graphical.target → Moment où l'interface graphique apparaît</li>
+</ul>
 <h3>Voir le détail par service</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>systemd-analyze blame</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>systemd-analyze blame</code></div></div></p>
 <p>Cette commande liste tous les services dans l'ordre décroissant de leur temps de démarrage :</p>
 <p>Les services en haut de la liste sont les plus longs — c'est là qu'il faut chercher des optimisations.</p>
-<hr />
+<hr/>
 <h2>3. Visualisation graphique</h2>
 <h3>Générer un SVG du démarrage</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>systemd-analyze plot &gt; demarrage.svg</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>systemd-analyze plot &gt; demarrage.svg</code></div></div></p>
 <p>Puis ouvre le fichier avec un navigateur :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>xdg-open demarrage.svg</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>xdg-open demarrage.svg</code></div></div></p>
 <p>Tu obtiens une timeline visuelle montrant chaque service sur une barre temporelle. C'est idéal pour identifier en un coup d'œil où le temps est perdu.</p>
 <h3>Voir les services critiques</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>systemd-analyze critical-chain</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>systemd-analyze critical-chain</code></div></div></p>
 <p>Affiche la chaîne critique — le chemin le plus long de services dépendants qui détermine la durée totale du démarrage :</p>
-<hr />
+<hr/>
 <h2>4. Optimiser le démarrage</h2>
 <h3>Identifier et désactiver les services inutiles</h3>
 <p>Si un service inconnu prend beaucoup de temps, vérifie son utilité :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir la description d'un service
-systemctl status mon-service.service</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Voir la description d'un service</p>
+<p>systemctl status mon-service.service</code></div></div></p>
 <p>Pour désactiver un service inutile (exemple avec bluetooth si tu n'en as pas besoin) :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Désactiver un service au démarrage
-sudo systemctl disable bluetooth.service
-
-# Masquer complètement (ne peut plus être démarré)
-sudo systemctl mask bluetooth.service</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Désactiver un service au démarrage</p>
+<p>sudo systemctl disable bluetooth.service</p>
+<p># Masquer complètement (ne peut plus être démarré)</p>
+<p>sudo systemctl mask bluetooth.service</code></div></div></p>
 <h3>Réduire le timeout de GRUB</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Éditer la config GRUB
-sudo nano /etc/default/grub</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Éditer la config GRUB</p>
+<p>sudo nano /etc/default/grub</code></div></div></p>
 <p>Modifie ces lignes :</p>
 <p>Puis applique :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sudo update-grub</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>sudo update-grub</code></div></div></p>
 <h3>Activer les services en parallèle</h3>
 <p>Systemd parallélise automatiquement les services, mais tu peux vérifier qu'un service n'attend pas inutilement :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Voir pourquoi un service tarde
-systemctl show nginx.service | grep After</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Voir pourquoi un service tarde</p>
+<p>systemctl show nginx.service | grep After</code></div></div></p>
+<hr/>
 <h2>5. systemd-analyze verify</h2>
 <p>Vérifie la validité de tes fichiers d'unités systemd :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>systemd-analyze verify /chemin/vers/mon-service.service</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>systemd-analyze verify /chemin/vers/mon-service.service</code></div></div></p>
 <p>Cela détecte les erreurs de syntaxe ou les options inconnues.</p>
-<hr />
+<hr/>
 <h2>6. Autres commandes utiles</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>systemd-analyze time</td>
-<td>Affiche les temps de démarrage</td>
-</tr>
-<tr>
-<td>systemd-analyze blame</td>
-<td>Liste les services par temps</td>
-</tr>
-<tr>
-<td>systemd-analyze plot</td>
-<td>Génère un SVG de la timeline</td>
-</tr>
-<tr>
-<td>systemd-analyze critical-chain</td>
-<td>Affiche la chaîne critique</td>
-</tr>
-<tr>
-<td>systemd-analyze dot</td>
-<td>Génère un graphe des dépendances</td>
-</tr>
-<tr>
-<td>systemd-analyze dump</td>
-<td>Affiche l'état complet des services</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td>systemd-analyze time</td><td>Affiche les temps de démarrage</td></tr>
+<tr><td>systemd-analyze blame</td><td>Liste les services par temps</td></tr>
+<tr><td>systemd-analyze plot</td><td>Génère un SVG de la timeline</td></tr>
+<tr><td>systemd-analyze critical-chain</td><td>Affiche la chaîne critique</td></tr>
+<tr><td>systemd-analyze dot</td><td>Génère un graphe des dépendances</td></tr>
+<tr><td>systemd-analyze dump</td><td>Affiche l'état complet des services</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>Exercice pratique</h2>
 <p>Objectif : Analyse ton propre système et identifie une optimisation possible.</p>
-<p>Étapes :
-1. Ouvre un terminal et exécute systemd-analyze pour voir ton temps de démarrage total.
-2. Exécute systemd-analyze blame pour identifier les 5 services les plus lents.
-3. Génère un SVG avec systemd-analyze plot &gt; ~/demarrage.svg et ouvre-le.
-4. Choisis un service non essentiel et désactive-le avec sudo systemctl disable nom.service.
-5. Redémarre et compare le temps avec systemd-analyze.</p>
-<hr />
+<p>Étapes :</p>
+<p>1. Ouvre un terminal et exécute systemd-analyze pour voir ton temps de démarrage total.</p>
+<p>2. Exécute systemd-analyze blame pour identifier les 5 services les plus lents.</p>
+<p>3. Génère un SVG avec systemd-analyze plot > ~/demarrage.svg et ouvre-le.</p>
+<p>4. Choisis un service non essentiel et désactive-le avec sudo systemctl disable nom.service.</p>
+<p>5. Redémarre et compare le temps avec systemd-analyze.</p>
+<hr/>
 <h2>Résumé</h2>
 <ul>
 <li>systemd-analyze mesure le temps de démarrage du système</li>
@@ -307,48 +126,43 @@ systemctl show nginx.service | grep After</code>
 <li>Réduire le timeout GRUB élimine un délai fixe au démarrage</li>
 <li>Toujours vérifier la description d'un service avant de le désactiver</li>
 </ul>
-</div>
+<hr/>
+<h2>Complément: Targets et runlevels</h2>
+<h3>📖 Comprendre les targets</h3>
+<p>Sous SysVinit, le système démarrait dans l'un des runlevels 0 à 6. Chaque runlevel déclenchait un ensemble de services. Systemd remplace ce mécanisme par des targets, qui sont des groupes d'unités (services, sockets, mounts...) devant être actifs simultanément.</p>
+<h3>🔧 Commandes de base</h3>
+<p>Affiche la target par défaut vers laquelle le système démarre.</p>
+<p>Configure le système pour démarrer en mode texte ou avec interface graphique.</p>
+<p>Passe immédiatement dans la target spécifiée, sans redémarrer. Tous les services non requis par la nouvelle target sont arrêtés.</p>
+<p>Affiche toutes les targets connues sur le système, avec leur état.</p>
+<p>Au démarrage, dans le menu GRUB, ajoutez systemd.unit=multi-user.target au noyau pour démarrer en mode texte.</p>
+<h3>💡 Relations entre targets</h3>
+<p>Affiche l'arbre complet des unités requises par la target. Très utile pour comprendre pourquoi un service ne démarre pas.</p>
+<p>Liste toutes les target-units installées sur le système.</p>
+<p>Affiche les targets actuellement actives sur le système.</p>
+<h3>🔍 Targets et emergency/rescue</h3>
+<p>Passe en mode rescue. Tous les services sont arrêtés sauf ceux essentiels. Équivalent de init 1.</p>
+<p>Mode plus minimal encore que rescue. Monte uniquement le root filesystem en lecture seule. Très utile pour diagnostiquer des problèmes de démarrage.</p>
+<p>Équivalents de halt et reboot, mais via systemd.</p>
+<h3>📝 Créer une target personnalisée</h3>
+<p>Exemple minimal :</p>
+<h3>📝 Exercices pratiques</h3>
+<p>Découvrez quelle est la target par défaut de votre système :</p>
+<p>Listez toutes les targets actuellement actives :</p>
+<p>Découvrez les services dépendants de la target multi-user.target :</p>
+<p>Passez temporairement en mode rescue (avec sudo) pour voir la différence :</p>
+<p>Puis revenez avec sudo systemctl isolate graphical.target ou sudo systemctl isolate multi-user.target.</p>
+<p>Vérifiez si graphical.target dépend bien de multi-user.target :</p>
+<h3>🔗 Commandes liées</h3>
+<p>systemctl — Gestion des services et targets (voir Leçon 21)</p>
+<p>systemctl daemon-reload — Recharger la configuration (voir Leçon 59)</p>
+<p>journalctl — Explorer les logs systemd (voir Leçon 49)</p>
+<p>systemd-analyze — Analyser le temps de démarrage (voir Leçon 35)</p>
+<h3>📚 Pour aller plus loin</h3>
+<p>Les targets systemd offrent une flexibilité bien supérieure aux runlevels SysVinit. Chaque target peut dépendre d'autres targets, créant un graphe de dépendances résolu en parallèle par systemd. Cela réduit considérablement le temps de démarrage par rapport à l'approche séquentielle de SysVinit.</p>
+<p>Le fichier /lib/systemd/system/graphical.target est équippé de Wants=multi-user.target, ce qui signifie que graphical.target "veut" que multi-user.target soit actif — mais multi-user peut fonctionner seul, tandis que graphical ne le peut pas.</p>
+<p>Pour les machines sans interface graphique (serveurs), privilégiez multi-user.target comme target par défaut. C'est plus léger et plus rapide à démarrer.</p>
 <nav>
-<a href="34-surveillance-optimisation-performances.html" style="color:#00d9ff;text-decoration:none;">&larr; 34 - Surveillance et optimisation des performances système</a> | <span style="color:#666;">35</span> | <a href="36-conky-surveillance-systeme.html" style="color:#00d9ff;text-decoration:none;">36 - Conky — Surveillance Système sur le Bureau &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="34-surveillance-optimisation-performances.html">&larr; 34-surveillance-optimisation-performances</a>
+<a href="36-conky-surveillance-systeme.html">36-conky-surveillance-systeme &rarr;</a>
+</nav></div></body></html>

@@ -342,3 +342,75 @@ chmod +x start-work.sh
 - Personnalise avec `~/.tmux.conf`
 
 
+
+---
+
+## Complément: Screen (alternative à tmux)
+
+### Introduction
+
+Vous avez découvert tmux dans la leçon 27. screen est le multiplexeur de terminal historique, présent sur почти tous les systèmes Unix bien avant tmux. Si tmux n'est pas installé ou si vous devez travailler sur une machine distante ancienne, screen sera votre allié. Il offre les mêmes fonctions essentielles : maintenir des sessions persistantes, diviser l'écran, et reprendre votre travail après une déconnexion.
+
+### Concepts fondamentaux
+
+screen introduit la notion de session — un processus qui tourne en arrière-plan et qui peut abriter plusieurs fenêtres (window). Chaque fenêtre est un pseudo-terminal (pty). Vous pouvez vous détacher (detach) de la session et la retrouver plus tard, même après vous être déconnecté.
+
+### La logique detach/attach
+
+Le principe central de screen : vous vous attachez (attach) à une session. Vous pouvez vous détacher (detach) pour libérer le terminal. La session continue de tourner en arrière-plan. Plus tard, vous vous rattachez.
+
+### Commandes internes de screen
+
+screen s'utilise avec des combinaisons de touches commençant par Ctrl+A (prefix). Par défaut, Ctrl+A suivi de la commande. tmux utilise Ctrl+B comme préfixe — screen utilise Ctrl+A pour ne pas interférer avec le comportement natif du terminal.
+
+### Mode copie et navigation dans l'historique
+
+Le mode copie permet de naviguer dans le scrollback (l'historique visible de la fenêtre) et de copier du texte :
+
+### Personnaliser avec .screenrc
+
+Le fichier ~/.screenrc configure le comportement par défaut de screen. Voici un exemple complet :
+
+### Surveillance d'activité
+
+Screen peut vous alerter quand une fenêtre affiche quelque chose pendant que vous êtes dans une autre fenêtre — très utile pour les scripts longs ou les téléchargements :
+
+### Loguer une session
+
+Screen peut enregistrer tout ce qui passe dans une fenêtre dans un fichier :
+
+### Envoyer des commandes à une session screen
+
+screen -S session -X commande envoie une commande à une session sans s'attacher :
+
+### Définir un titre de fenêtre dynamiquement
+
+Quand vous lancez un script ou un serveur, un titre explicite aide à s'y retrouver :
+
+### Utilisation avancée : multi-attach
+
+Screen permet à plusieurs terminaux de se rattacher à la même session simultanément (multi-attach) — pratique pour collaborer à distance :
+
+### Résumé
+
+screen -S nom = créer une session nommée
+
+Ctrl+A D = se détacher sans fermer les fenêtres
+
+screen -r = se rattacher à une session
+
+Ctrl+A C = nouvelle fenêtre dans la session
+
+Ctrl+A " = lister et choisir une fenêtre
+
+Ctrl+A S et Ctrl+A | = diviser l'écran
+
+Ctrl+A TAB = naviguer entre les splits
+
+Ctrl+A [ puis Esc = mode copie pour naviguer dans l'historique
+
+Ctrl+A H = activer le logging d'une fenêtre
+
+~/.screenrc = fichier de configuration personnel
+
+screen -dmS nom "cmd" = créer une session détachée qui exécute une commande

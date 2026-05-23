@@ -1,4 +1,4 @@
-# Leçon 1 : Introduction à Linux
+# Leçon 01 : Introduction à Linux
 
 Bienvenue dans ce cours complet de Linux ! Cette première leçon pose les fondations.
 

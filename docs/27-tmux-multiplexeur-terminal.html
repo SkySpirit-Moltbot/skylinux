@@ -1,672 +1,289 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 27 : tmux - Multiplexeur de Terminal - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/27-tmux-multiplexeur-de-terminal.html">
-<meta property="og:title" content="Leçon 27 : tmux - Multiplexeur de Terminal - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 27 : tmux - Multiplexeur de Terminal - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 27  tmux  multiplexeur de terminal, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 27 : tmux - Multiplexeur de Terminal</h1>
 <p>Dans cette leçon, tu vas maîtriser tmux, un multiplexeur de terminal qui te permet de gérer plusieurs terminaux dans une seule fenêtre, de détacher et rattacher des sessions à distance, et de conserver ton travail même si ta connexion coupe.</p>
-<hr />
+<hr/>
 <h2>1. Qu'est-ce qu'un multiplexeur de terminal ?</h2>
-<p>Un <strong>multiplexeur de terminal</strong> comme <strong>tmux</strong> te permet de :</p>
+<p>Un **multiplexeur de terminal** comme **tmux** te permet de :</p>
 <ul>
-<li><strong>Gérer plusieurs terminaux</strong> dans une seule fenêtre</li>
-<li><strong>Détacher et rattacher</strong> des sessions à distance</li>
-<li><strong>Partager des sessions</strong> entre utilisateurs</li>
-<li><strong>Conserver tes sessions</strong> même si ta connexion coupe</li>
+<li>**Gérer plusieurs terminaux** dans une seule fenêtre</li>
+<li>**Détacher et rattacher** des sessions à distance</li>
+<li>**Partager des sessions** entre utilisateurs</li>
+<li>**Conserver tes sessions** même si ta connexion coupe</li>
 </ul>
-<p>Sans tmux : si ta connexion SSH coupe, ton travail est perdu.
-Avec tmux : tu te rattaches et tout est intact !</p>
+<p>Sans tmux : si ta connexion SSH coupe, ton travail est perdu.</p>
+<p>Avec tmux : tu te rattaches et tout est intact !</p>
 <blockquote>
-<p><strong>Note :</strong> Si tu utilises <strong>screen</strong> à la place de tmux, le principe est le même. tmux est juste plus moderne et mieux maintenu.</p>
+<p>**Note :** Si tu utilises **screen** à la place de tmux, le principe est le même. tmux est juste plus moderne et mieux maintenu.</p>
 </blockquote>
-<hr />
+<hr/>
 <h2>2. Concepts de base</h2>
 <table>
-<thead>
-<tr>
-<th>Concept</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Session</strong></td>
-<td>Une session tmux est un environnement complet de terminaux</td>
-</tr>
-<tr>
-<td><strong>Fenêtre (Window)</strong></td>
-<td>Un onglet dans la session (comme les onglets d'un navigateur)</td>
-</tr>
-<tr>
-<td><strong>Panneau (Pane)</strong></td>
-<td>Une subdivision de la fenêtre (splits horizontaux ou verticaux)</td>
-</tr>
-</tbody>
+<tr><th>Concept</th><th>Description</th></tr>
+<tr><td>**Session**</td><td>Une session tmux est un environnement complet de terminaux</td></tr>
+<tr><td>**Fenêtre (Window)**</td><td>Un onglet dans la session (comme les onglets d'un navigateur)</td></tr>
+<tr><td>**Panneau (Pane)**</td><td>Une subdivision de la fenêtre (splits horizontaux ou verticaux)</td></tr>
 </table>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>Session tmux
-├── Fenêtre 1 (terminal)
-│   ├── Panneau gauche
-│   └── Panneau droit
-├── Fenêtre 2 (logs)
-└── Fenêtre 3 (editor)</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>Session tmux</p>
+<p>├── Fenêtre 1 (terminal)</p>
+<p>│   ├── Panneau gauche</p>
+<p>│   └── Panneau droit</p>
+<p>├── Fenêtre 2 (logs)</p>
+<p>└── Fenêtre 3 (editor)</code></div></div></p>
+<hr/>
 <h2>3. Commandes de base</h2>
 <h3>tmux - Démarrer tmux</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Lancer une nouvelle session (nommee)
-tmux new -s ma_session
-
-# Lancer rapidement
-tmux</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Lancer une nouvelle session (nommee)</p>
+<p>tmux new -s ma_session</p>
+<p># Lancer rapidement</p>
+<p>tmux</code></div></div></p>
 <h3>Commandes via Ctrl+b</h3>
-<p>Le préfixe par défaut est <strong>Ctrl+b</strong>. Ensuite tu tapes la commande :</p>
+<p>Le préfixe par défaut est **Ctrl+b**. Ensuite tu tapes la commande :</p>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>Ctrl+b d</code></td>
-<td>Détacher la session (laisser tourner en arrière-plan)</td>
-</tr>
-<tr>
-<td><code>Ctrl+b c</code></td>
-<td>Créer une nouvelle fenêtre</td>
-</tr>
-<tr>
-<td><code>Ctrl+b ,</code></td>
-<td>Renommer la fenêtre actuelle</td>
-</tr>
-<tr>
-<td><code>Ctrl+b %</code></td>
-<td>Split vertical (gauche/droite)</td>
-</tr>
-<tr>
-<td><code>Ctrl+b "</code></td>
-<td>Split horizontal (haut/bas)</td>
-</tr>
-<tr>
-<td><code>Ctrl+b o</code></td>
-<td>Passer au panneau suivant</td>
-</tr>
-<tr>
-<td><code>Ctrl+b x</code></td>
-<td>Fermer le panneau actuel</td>
-</tr>
-<tr>
-<td><code>Ctrl+b w</code></td>
-<td>Lister les fenêtres</td>
-</tr>
-<tr>
-<td><code>Ctrl+b n</code></td>
-<td>Fenêtre suivante</td>
-</tr>
-<tr>
-<td><code>Ctrl+b p</code></td>
-<td>Fenêtre précédente</td>
-</tr>
-<tr>
-<td><code>Ctrl+b 0-9</code></td>
-<td>Aller à la fenêtre numéro X</td>
-</tr>
-<tr>
-<td><code>Ctrl+b ?</code></td>
-<td>Afficher toutes les touches</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Action</th></tr>
+<tr><td><code>Ctrl+b d</code></td><td>Détacher la session (laisser tourner en arrière-plan)</td></tr>
+<tr><td><code>Ctrl+b c</code></td><td>Créer une nouvelle fenêtre</td></tr>
+<tr><td><code>Ctrl+b ,</code></td><td>Renommer la fenêtre actuelle</td></tr>
+<tr><td><code>Ctrl+b %</code></td><td>Split vertical (gauche/droite)</td></tr>
+<tr><td><code>Ctrl+b "</code></td><td>Split horizontal (haut/bas)</td></tr>
+<tr><td><code>Ctrl+b o</code></td><td>Passer au panneau suivant</td></tr>
+<tr><td><code>Ctrl+b x</code></td><td>Fermer le panneau actuel</td></tr>
+<tr><td><code>Ctrl+b w</code></td><td>Lister les fenêtres</td></tr>
+<tr><td><code>Ctrl+b n</code></td><td>Fenêtre suivante</td></tr>
+<tr><td><code>Ctrl+b p</code></td><td>Fenêtre précédente</td></tr>
+<tr><td><code>Ctrl+b 0-9</code></td><td>Aller à la fenêtre numéro X</td></tr>
+<tr><td><code>Ctrl+b ?</code></td><td>Afficher toutes les touches</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>4. Se détacher et se rattacher</h2>
 <h3>tmux ls - Lister les sessions actives</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Se detacher : Ctrl+b d
-# La session continue en arriere-plan !
-
-# Lister les sessions actives
-tmux ls</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Se detacher : Ctrl+b d</p>
+<p># La session continue en arriere-plan !</p>
+<p># Lister les sessions actives</p>
+<p>tmux ls</code></div></div></p>
 <h3>tmux attach - Se rattacher à une session</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Se rattacher a une session
-tmux attach -t ma_session
-
-# Rattacher ou créer si elle n'existe pas
-tmux new -A -s ma_session</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Se rattacher a une session</p>
+<p>tmux attach -t ma_session</p>
+<p># Rattacher ou créer si elle n'existe pas</p>
+<p>tmux new -A -s ma_session</code></div></div></p>
+<hr/>
 <h2>5. Navigation entre panneaux</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Passer au panneau suivant
-Ctrl+b o
-
-# Aller a un panneau précis
-Ctrl+b ;
-
-# Resize du panneau actif
-Ctrl+b Alt+flèche   # Redimensionner
-Ctrl+b : resize-pane -D  # Agrandir vers le bas
-Ctrl+b : resize-pane -U  # Agrandir vers le haut
-Ctrl+b : resize-pane -L  # Agrandir vers la gauche
-Ctrl+b : resize-pane -R  # Agrandir vers la droite</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Passer au panneau suivant</p>
+<p>Ctrl+b o</p>
+<p># Aller a un panneau précis</p>
+<p>Ctrl+b ;</p>
+<p># Resize du panneau actif</p>
+<p>Ctrl+b Alt+flèche   # Redimensionner</p>
+<p>Ctrl+b : resize-pane -D  # Agrandir vers le bas</p>
+<p>Ctrl+b : resize-pane -U  # Agrandir vers le haut</p>
+<p>Ctrl+b : resize-pane -L  # Agrandir vers la gauche</p>
+<p>Ctrl+b : resize-pane -R  # Agrandir vers la droite</code></div></div></p>
+<hr/>
 <h2>6. Gestion des fenêtres</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Renommer la fenêtre actuelle
-Ctrl+b ,
-
-# Lister les fenêtres
-Ctrl+b w
-
-# Aller a la fenêtre 1
-Ctrl+b 1
-
-# Déplacer la fenêtre vers la gauche ou la droite
-Ctrl+b : swap-window -t -1   # Échanger avec précédente
-Ctrl+b : swap-window -t +1   # Échanger avec suivante</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Renommer la fenêtre actuelle</p>
+<p>Ctrl+b ,</p>
+<p># Lister les fenêtres</p>
+<p>Ctrl+b w</p>
+<p># Aller a la fenêtre 1</p>
+<p>Ctrl+b 1</p>
+<p># Déplacer la fenêtre vers la gauche ou la droite</p>
+<p>Ctrl+b : swap-window -t -1   # Échanger avec précédente</p>
+<p>Ctrl+b : swap-window -t +1   # Échanger avec suivante</code></div></div></p>
+<hr/>
 <h2>7. Commandes utiles</h2>
 <h3>Depuis le shell (hors tmux)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>tmux new-session -d -s nom_session 'commande'  # Créer avec commande auto
-tmux send-keys -t nom_session 'ls' Enter       # Envoyer une commande
-tmux kill-session -t nom_session               # Tuer une session
-tmux kill-server                               # Tuer tmux complètement</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>tmux new-session -d -s nom_session 'commande'  # Créer avec commande auto</p>
+<p>tmux send-keys -t nom_session 'ls' Enter       # Envoyer une commande</p>
+<p>tmux kill-session -t nom_session               # Tuer une session</p>
+<p>tmux kill-server                               # Tuer tmux complètement</code></div></div></p>
 <h3>Depuis l'intérieur de tmux (: pour mode commande)</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>:kill-session     # Tuer la session actuelle
-:kill-server      # Tuer toutes les sessions</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>:kill-session     # Tuer la session actuelle</p>
+<p>:kill-server      # Tuer toutes les sessions</code></div></div></p>
+<hr/>
 <h2>8. Personnalisation avec ~/.tmux.conf</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Exemple de configuration ~/.tmux.conf
-# Activer la souris
-set -g mouse on
-
-# Activer le scroll
-set -g history-limit 50000
-
-# Commande plus courte (juste Ctrl+a)
-set -g prefix C-a
-unbind C-b
-bind C-a send-prefix
-
-# Numérotation commence a 1 (plus intuitif)
-set -g base-index 1
-setw -g pane-base-index 1
-
-# Coller depuis le presse-papier systeme
-set -g default-command &quot;reattach-to-user-namespace -l bash&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Exemple de configuration ~/.tmux.conf</p>
+<p># Activer la souris</p>
+<p>set -g mouse on</p>
+<p># Activer le scroll</p>
+<p>set -g history-limit 50000</p>
+<p># Commande plus courte (juste Ctrl+a)</p>
+<p>set -g prefix C-a</p>
+<p>unbind C-b</p>
+<p>bind C-a send-prefix</p>
+<p># Numérotation commence a 1 (plus intuitif)</p>
+<p>set -g base-index 1</p>
+<p>setw -g pane-base-index 1</p>
+<p># Coller depuis le presse-papier systeme</p>
+<p>set -g default-command "reattach-to-user-namespace -l bash"</code></div></div></p>
 <p>Après modification :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>tmux source-file ~/.tmux.conf</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>tmux source-file ~/.tmux.conf</code></div></div></p>
+<hr/>
 <h2>9. Scrolling et copie de texte</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Mode copie (scrollback)
-Ctrl+b [
-
-# Naviguer avec flèches / PgUp/PgDown
-# Chercher avec / (comme dans less)
-# Quitter avec q</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Mode copie (scrollback)</p>
+<p>Ctrl+b [</p>
+<p># Naviguer avec flèches / PgUp/PgDown</p>
+<p># Chercher avec / (comme dans less)</p>
+<p># Quitter avec q</code></div></div></p>
 <p>Pour copier :</p>
-<ol>
-<li><code>Ctrl+b [</code> pour entrer en mode copie</li>
-<li><code>Space</code> pour commencer la sélection</li>
-<li>Déplacer avec les flèches</li>
-<li><code>Enter</code> pour copier</li>
-<li><code>Ctrl+b ]</code> pour coller</li>
-</ol>
-<hr />
+<p>1. <code>Ctrl+b [</code> pour entrer en mode copie</p>
+<p>2. <code>Space</code> pour commencer la sélection</p>
+<p>3. Déplacer avec les flèches</p>
+<p>4. <code>Enter</code> pour copier</p>
+<p>5. <code>Ctrl+b ]</code> pour coller</p>
+<hr/>
 <h2>10. Scripts et automatisation</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-# Script pour creer un environnement de travail
-
-session=&quot;dev_work&quot;
-
-# Creer session avec 3 fenêtres
-tmux new-session -d -s $session
-tmux rename-window -t $session:1 'code'
-tmux send-keys -t $session:1 'cd ~/projets &amp;&amp; code .' Enter
-
-tmux new-window -t $session -n 'server'
-tmux send-keys -t $session:server 'cd ~/projets &amp;&amp; npm run dev' Enter
-
-tmux new-window -t $session -n 'logs'
-tmux send-keys -t $session:logs 'tail -f ~/projets/logs/app.log' Enter
-
-# Se rattacher
-tmux attach -t $session</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Script pour creer un environnement de travail</p>
+<p>session="dev_work"</p>
+<p># Creer session avec 3 fenêtres</p>
+<p>tmux new-session -d -s $session</p>
+<p>tmux rename-window -t $session:1 'code'</p>
+<p>tmux send-keys -t $session:1 'cd ~/projets &amp;&amp; code .' Enter</p>
+<p>tmux new-window -t $session -n 'server'</p>
+<p>tmux send-keys -t $session:server 'cd ~/projets &amp;&amp; npm run dev' Enter</p>
+<p>tmux new-window -t $session -n 'logs'</p>
+<p>tmux send-keys -t $session:logs 'tail -f ~/projets/logs/app.log' Enter</p>
+<p># Se rattacher</p>
+<p>tmux attach -t $session</code></div></div></p>
+<hr/>
 <h2>11. Exercices pratiques</h2>
 <h3>Exercice 1 : Premier usage de tmux</h3>
-<ol>
-<li>Ouvre un terminal et lance tmux :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>tmux new -s demo</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Tape une commande (ex: <code>ls</code>)</li>
-<li>Détache avec <code>Ctrl+b d</code></li>
-<li>Vérifie que la session existe toujours :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>tmux ls</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Rattache-toi :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>tmux attach -t demo</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p>1. Ouvre un terminal et lance tmux :</p>
+<p><div class="code-block"><div class="code-line"><code>tmux new -s demo</code></div></div></p>
+<p>2. Tape une commande (ex: <code>ls</code>)</p>
+<p>3. Détache avec <code>Ctrl+b d</code></p>
+<p>4. Vérifie que la session existe toujours :</p>
+<p><div class="code-block"><div class="code-line"><code>tmux ls</code></div></div></p>
+<p>5. Rattache-toi :</p>
+<p><div class="code-block"><div class="code-line"><code>tmux attach -t demo</code></div></div></p>
 <p>✅ Tu devrais voir le résultat de <code>ls</code> - la session a survécu !</p>
 <h3>Exercice 2 : Panneaux et fenêtres</h3>
-<ol>
-<li>Crée une nouvelle session :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>tmux new -s exo2</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Sépare en deux verticalement : <code>Ctrl+b %</code></li>
-<li>Passe au panneau de droite : <code>Ctrl+b o</code></li>
-<li>Sépare en deux horizontalement : <code>Ctrl+b "</code></li>
-<li>Ferme un panneau : <code>Ctrl+b x</code></li>
-<li>Ajoute une fenêtre : <code>Ctrl+b c</code></li>
-<li>Bascule entre fenêtres : <code>Ctrl+b n</code> puis <code>Ctrl+b p</code></li>
-<li>Détache : <code>Ctrl+b d</code></li>
-</ol>
+<p>1. Crée une nouvelle session :</p>
+<p><div class="code-block"><div class="code-line"><code>tmux new -s exo2</code></div></div></p>
+<p>2. Sépare en deux verticalement : <code>Ctrl+b %</code></p>
+<p>3. Passe au panneau de droite : <code>Ctrl+b o</code></p>
+<p>4. Sépare en deux horizontalement : <code>Ctrl+b "</code></p>
+<p>5. Ferme un panneau : <code>Ctrl+b x</code></p>
+<p>6. Ajoute une fenêtre : <code>Ctrl+b c</code></p>
+<p>7. Bascule entre fenêtres : <code>Ctrl+b n</code> puis <code>Ctrl+b p</code></p>
+<p>8. Détache : <code>Ctrl+b d</code></p>
 <h3>Exercice 3 : Configuration tmux</h3>
-<ol>
-<li>Vérifie si le fichier existe :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>ls ~/.tmux.conf</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Crée-le avec cette configuration minimale :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>cat &gt; ~/.tmux.conf &lt;&lt; 'EOF'
-# Raccourci prefix: Ctrl+a au lieu de Ctrl+b
-set -g prefix C-a
-unbind C-b
-bind C-a send-prefix
-
-# Numérotation a partir de 1
-set -g base-index 1
-
-# Souris activee
-set -g mouse on
-EOF</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Recharge la config :</li>
-</ol>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>tmux source-file ~/.tmux.conf</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<ol>
-<li>Teste : <code>Ctrl+a d</code> pour détacher</li>
-</ol>
+<p>1. Vérifie si le fichier existe :</p>
+<p><div class="code-block"><div class="code-line"><code>ls ~/.tmux.conf</code></div></div></p>
+<p>2. Crée-le avec cette configuration minimale :</p>
+<p><div class="code-block"><div class="code-line"><code>cat &gt; ~/.tmux.conf &lt;&lt; 'EOF'</p>
+<p># Raccourci prefix: Ctrl+a au lieu de Ctrl+b</p>
+<p>set -g prefix C-a</p>
+<p>unbind C-b</p>
+<p>bind C-a send-prefix</p>
+<p># Numérotation a partir de 1</p>
+<p>set -g base-index 1</p>
+<p># Souris activee</p>
+<p>set -g mouse on</p>
+<p>EOF</code></div></div></p>
+<p>3. Recharge la config :</p>
+<p><div class="code-block"><div class="code-line"><code>tmux source-file ~/.tmux.conf</code></div></div></p>
+<p>4. Teste : <code>Ctrl+a d</code> pour détacher</p>
 <h3>Exercice 4 : Script de session de travail</h3>
 <p>Crée un script <code>start-work.sh</code> :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-tmux new-session -d -s travail
-tmux rename-window -t travail:1 'Terminal'
-tmux new-window -t travail -n 'Web' 'cd ~/Sites &amp;&amp; python3 -m http.server 8000'
-tmux attach -t travail</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>tmux new-session -d -s travail</p>
+<p>tmux rename-window -t travail:1 'Terminal'</p>
+<p>tmux new-window -t travail -n 'Web' 'cd ~/Sites &amp;&amp; python3 -m http.server 8000'</p>
+<p>tmux attach -t travail</code></div></div></p>
 <p>Teste-le :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>chmod +x start-work.sh
-./start-work.sh</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>chmod +x start-work.sh</p>
+<p>./start-work.sh</code></div></div></p>
+<hr/>
 <h2>12. Résumé</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>tmux new -s nom</code></td>
-<td>Créer une session</td>
-</tr>
-<tr>
-<td><code>tmux ls</code></td>
-<td>Lister les sessions</td>
-</tr>
-<tr>
-<td><code>tmux attach -t nom</code></td>
-<td>Se rattacher</td>
-</tr>
-<tr>
-<td><code>Ctrl+b d</code></td>
-<td>Détacher</td>
-</tr>
-<tr>
-<td><code>Ctrl+b c</code></td>
-<td>Nouvelle fenêtre</td>
-</tr>
-<tr>
-<td><code>Ctrl+b %</code></td>
-<td>Split vertical</td>
-</tr>
-<tr>
-<td><code>Ctrl+b "</code></td>
-<td>Split horizontal</td>
-</tr>
-<tr>
-<td><code>Ctrl+b w</code></td>
-<td>Lister fenêtres</td>
-</tr>
-<tr>
-<td><code>Ctrl+b [</code></td>
-<td>Mode scroll/copie</td>
-</tr>
-<tr>
-<td><code>tmux kill-session -t nom</code></td>
-<td>Supprimer session</td>
-</tr>
-<tr>
-<td><code>tmux source-file ~/.tmux.conf</code></td>
-<td>Recharger config</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>tmux new -s nom</code></td><td>Créer une session</td></tr>
+<tr><td><code>tmux ls</code></td><td>Lister les sessions</td></tr>
+<tr><td><code>tmux attach -t nom</code></td><td>Se rattacher</td></tr>
+<tr><td><code>Ctrl+b d</code></td><td>Détacher</td></tr>
+<tr><td><code>Ctrl+b c</code></td><td>Nouvelle fenêtre</td></tr>
+<tr><td><code>Ctrl+b %</code></td><td>Split vertical</td></tr>
+<tr><td><code>Ctrl+b "</code></td><td>Split horizontal</td></tr>
+<tr><td><code>Ctrl+b w</code></td><td>Lister fenêtres</td></tr>
+<tr><td><code>Ctrl+b [</code></td><td>Mode scroll/copie</td></tr>
+<tr><td><code>tmux kill-session -t nom</code></td><td>Supprimer session</td></tr>
+<tr><td><code>tmux source-file ~/.tmux.conf</code></td><td>Recharger config</td></tr>
 </table>
 <ul>
-<li><strong>tmux</strong> conserve tes sessions même si ta connexion coupe</li>
+<li>**tmux** conserve tes sessions même si ta connexion coupe</li>
 <li>Utilise <code>Ctrl+b</code> comme préfixe, puis la commande</li>
-<li>Crée plusieurs <strong>fenêtres</strong> (onglets) et <strong>panneaux</strong> (splits)</li>
+<li>Crée plusieurs **fenêtres** (onglets) et **panneaux** (splits)</li>
 <li>Personnalise avec <code>~/.tmux.conf</code></li>
 </ul>
-</div>
+<hr/>
+<h2>Complément: Screen (alternative à tmux)</h2>
+<h3>Introduction</h3>
+<p>Vous avez découvert tmux dans la leçon 27. screen est le multiplexeur de terminal historique, présent sur почти tous les systèmes Unix bien avant tmux. Si tmux n'est pas installé ou si vous devez travailler sur une machine distante ancienne, screen sera votre allié. Il offre les mêmes fonctions essentielles : maintenir des sessions persistantes, diviser l'écran, et reprendre votre travail après une déconnexion.</p>
+<h3>Concepts fondamentaux</h3>
+<p>screen introduit la notion de session — un processus qui tourne en arrière-plan et qui peut abriter plusieurs fenêtres (window). Chaque fenêtre est un pseudo-terminal (pty). Vous pouvez vous détacher (detach) de la session et la retrouver plus tard, même après vous être déconnecté.</p>
+<h3>La logique detach/attach</h3>
+<p>Le principe central de screen : vous vous attachez (attach) à une session. Vous pouvez vous détacher (detach) pour libérer le terminal. La session continue de tourner en arrière-plan. Plus tard, vous vous rattachez.</p>
+<h3>Commandes internes de screen</h3>
+<p>screen s'utilise avec des combinaisons de touches commençant par Ctrl+A (prefix). Par défaut, Ctrl+A suivi de la commande. tmux utilise Ctrl+B comme préfixe — screen utilise Ctrl+A pour ne pas interférer avec le comportement natif du terminal.</p>
+<h3>Mode copie et navigation dans l'historique</h3>
+<p>Le mode copie permet de naviguer dans le scrollback (l'historique visible de la fenêtre) et de copier du texte :</p>
+<h3>Personnaliser avec .screenrc</h3>
+<p>Le fichier ~/.screenrc configure le comportement par défaut de screen. Voici un exemple complet :</p>
+<h3>Surveillance d'activité</h3>
+<p>Screen peut vous alerter quand une fenêtre affiche quelque chose pendant que vous êtes dans une autre fenêtre — très utile pour les scripts longs ou les téléchargements :</p>
+<h3>Loguer une session</h3>
+<p>Screen peut enregistrer tout ce qui passe dans une fenêtre dans un fichier :</p>
+<h3>Envoyer des commandes à une session screen</h3>
+<p>screen -S session -X commande envoie une commande à une session sans s'attacher :</p>
+<h3>Définir un titre de fenêtre dynamiquement</h3>
+<p>Quand vous lancez un script ou un serveur, un titre explicite aide à s'y retrouver :</p>
+<h3>Utilisation avancée : multi-attach</h3>
+<p>Screen permet à plusieurs terminaux de se rattacher à la même session simultanément (multi-attach) — pratique pour collaborer à distance :</p>
+<h3>Résumé</h3>
+<p>screen -S nom = créer une session nommée</p>
+<p>Ctrl+A D = se détacher sans fermer les fenêtres</p>
+<p>screen -r = se rattacher à une session</p>
+<p>Ctrl+A C = nouvelle fenêtre dans la session</p>
+<p>Ctrl+A " = lister et choisir une fenêtre</p>
+<p>Ctrl+A S et Ctrl+A | = diviser l'écran</p>
+<p>Ctrl+A TAB = naviguer entre les splits</p>
+<p>Ctrl+A [ puis Esc = mode copie pour naviguer dans l'historique</p>
+<p>Ctrl+A H = activer le logging d'une fenêtre</p>
+<p>~/.screenrc = fichier de configuration personnel</p>
+<p>screen -dmS nom "cmd" = créer une session détachée qui exécute une commande</p>
 <nav>
-<a href="26-liens-symboliques-durs.html" style="color:#00d9ff;text-decoration:none;">&larr; 26 - Liens symboliques et liens durs</a> | <span style="color:#666;">27</span> | <a href="28-variables-denvironnement.html" style="color:#00d9ff;text-decoration:none;">28 - Les variables d'environnement sous Linux &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="26-liens-symboliques-durs.html">&larr; 26-liens-symboliques-durs</a>
+<a href="28-variables-denvironnement.html">28-variables-denvironnement &rarr;</a>
+</nav></div></body></html>

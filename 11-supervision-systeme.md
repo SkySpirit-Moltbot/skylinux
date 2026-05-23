@@ -343,3 +343,80 @@ done
 ---
 
 Maîtrise ces outils pour devenir un pro de la supervision Linux ! 📊
+---
+
+## Complément: Signaux et kill
+
+### Introduction
+
+Sous Linux, les signaux sont le mécanisme fondamental de communication entre processus. Quand vous appuyez sur Ctrl+C pour arrêter un programme ou quand un processus se termine proprement à la réception d'une notification, ce sont des signaux qui agissent en coulisses.
+
+La commande kill envoie un signal à un processus. Contrairement à ce que son nom suggère, kill ne sert pas uniquement à tuer un processus — il peut lui envoyer de nombreux types de signaux pour le redémarrer, le suspendre, ou lui demander de se reconfigurer.
+
+### Comprendre les signaux
+
+Un signal est un message asynchrone envoyé à un processus. Chaque signal a un numéro et un nom. Les processus peuvent capturer (handler) la plupart des signaux pour réagir de manière personnalisée, sauf SIGKILL et SIGSTOP qui sont invariants.
+
+### Syntaxe de base
+
+kill envoie par défaut le signal SIGTERM (15) au processus identifié par son PID.
+
+### Utilisation basique
+
+SIGTERM est le signal par défaut. Le processus reçoit l'ordre de s'arrêter et peut capturer ce signal pour effectuer un nettoyage (fermer des fichiers, vider des buffers, etc.).
+
+Attention : SIGKILL ne peut pas être capturé ou ignoré. Le processus est immédiatement terminé sans possibilité de nettoyage. Utilisez-le uniquement en dernier recours.
+
+Même effet que d'appuyer sur Ctrl+C dans le terminal.
+
+### Trouver le bon PID
+
+pkill fonctionne comme kill mais accepte un nom de processus au lieu d'un PID.
+
+### Gérer les jobs en arrière-plan
+
+Le %1, %2 notation réfère aux jobs du shell actuel.
+
+### Signaux et scripts bash
+
+Quand le script reçoit SIGTERM, il appelle cleanup() avant de se terminer.
+
+Pendant le sleep de 60 secondes, Ctrl+C n'aura aucun effet sur ce script.
+
+### Signaux et processus zombie
+
+Un processus zombie est un processus terminé dont l'entrée dans la table des processus n'a pas encore été nettoyée par le parent. Vous ne pouvez pas tuer un zombie avec kill -9 — il est déjà mort. La solution est de tuer le processus parent ou d'attendre que le parent récupère le statut du fils.
+
+### Ordre de priorité des signaux
+
+D'abord SIGTERM — laissez une chance au processus de s'arrêter proprement
+
+Ensuite SIGINT — interruption normale
+
+En dernier SIGKILL — seulement si les autres ne fonctionnent pas
+
+Pourquoi ? SIGKILL ne permet pas au processus de nettoyer ses ressources (fermer des fichiers, vider des buffers, supprimer des fichiers temporaires). Un arrêt sale peut laisser deslocks ou des fichiers corrompus.
+
+### Exercices pratiques
+
+Lancez sleep 1000 &amp; en arrière-plan, trouvez son PID, puis arrêtez-le avec kill.
+
+Utilisez pkill pour envoyer SIGTERM à tous les processus sleep.
+
+Créez un script qui capture SIGINT et affiche un message avant de se terminer.
+
+Suspendez un processus avec kill -STOP et reprenez-le avec kill -CONT.
+
+Envoyez SIGHUP à un processus ssh-agent pour voir comment il réagit.
+
+### Corrections
+
+sleep 1000 &amp; puis pgrep sleep et kill [PID]
+
+pkill sleep (envoie SIGTERM par défaut)
+
+Script avec trap 'echo "Interruption"; exit 1' SIGINT
+
+kill -STOP $(pgrep sleep) puis kill -CONT $(pgrep sleep)
+
+ssh-agent &amp; puis kill -HUP $(pgrep ssh-agent) — ssh-agent ne supporte généralement pas SIGHUP

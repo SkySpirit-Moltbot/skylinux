@@ -1,112 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 32 : Expressions Régulières (Regex) - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/32-expressions-regulieres-regex.html">
-<meta property="og:title" content="Leçon 32 : Expressions Régulières (Regex) - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 32 : Expressions Régulières (Regex) - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 32  expressions rgulires regex, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 32 : Expressions Régulières (Regex)</h1>
 <p>Dans cette leçon, tu vas découvrir les expressions régulières (Regex), un outil puissant pour rechercher et manipuler du texte. Utilisées avec <code>grep</code>, <code>sed</code>, <code>awk</code> et bien d'autres commandes, les Regex te permettront de trouver exactement ce que tu cherches, même dans des fichiers complexes.</p>
-<hr />
+<hr/>
 <h2>1. Qu'est-ce qu'une expression régulière ?</h2>
-<p>Une <strong>expression régulière</strong> (Regex) est un motif (pattern) qui décrit un ensemble de chaînes de caractères. C'est un langage de recherche avancées qui permet de :</p>
+<p>Une **expression régulière** (Regex) est un motif (pattern) qui décrit un ensemble de chaînes de caractères. C'est un langage de recherche avancées qui permet de :</p>
 <ul>
 <li>Rechercher un texte dans un fichier</li>
 <li>Valider un format (email, numéro de téléphone, etc.)</li>
@@ -114,602 +43,221 @@ p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 
 <li>Remplacer du texte automatiquement</li>
 </ul>
 <p>Les Regex sont omniprésentes sur Linux : dans <code>grep</code>, <code>sed</code>, <code>awk</code>, <code>find</code>, <code>perl</code>, et même dans de nombreux éditeurs de texte et langages de programmation.</p>
-<hr />
+<hr/>
 <h2>2. Les métacaractères de base</h2>
 <p>Les métacaractères sont les symboles spéciaux qui donnent tout leur pouvoir aux Regex.</p>
 <table>
-<thead>
-<tr>
-<th>Métacaractère</th>
-<th>Signification</th>
-<th>Exemple</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>.</code></td>
-<td>N'importe quel caractère (sauf saut de ligne)</td>
-<td><code>a.c</code> → "aac", "abc", "a1c"</td>
-</tr>
-<tr>
-<td><code>^</code></td>
-<td>Début de ligne</td>
-<td><code>^Bonjour</code> → lignes commençant par "Bonjour"</td>
-</tr>
-<tr>
-<td><code>$</code></td>
-<td>Fin de ligne</td>
-<td><code>soir$</code> → lignes finissant par "soir"</td>
-</tr>
-<tr>
-<td><code>*</code></td>
-<td>0 ou plus du caractère précédent</td>
-<td><code>ab*c</code> → "ac", "abc", "abbc"</td>
-</tr>
-<tr>
-<td><code>+</code></td>
-<td>1 ou plus du caractère précédent</td>
-<td><code>ab+c</code> → "abc", "abbc" (pas "ac")</td>
-</tr>
-<tr>
-<td><code>?</code></td>
-<td>0 ou 1 du caractère précédent</td>
-<td><code>ab?c</code> → "ac", "abc"</td>
-</tr>
-<tr>
-<td><code>[ ]</code></td>
-<td>Classe de caractères</td>
-<td><code>[aeiou]</code> → n'importe quelle voyelle</td>
-</tr>
-<tr>
-<td><code>[^ ]</code></td>
-<td>Négation d'une classe</td>
-<td><code>[^0-9]</code> → tout sauf un chiffre</td>
-</tr>
-<tr>
-<td><code>\</code></td>
-<td>Échappement</td>
-<td><code>\.</code> → le caractère point literal</td>
-</tr>
-<tr>
-<td><code>|</code></td>
-<td>OU logique</td>
-<td><code>cat\|dog</code> → "cat" ou "dog"</td>
-</tr>
-<tr>
-<td><code>( )</code></td>
-<td>Groupement</td>
-<td><code>(ab)+</code> → "ab", "abab", "ababab"</td>
-</tr>
-<tr>
-<td><code>{n}</code></td>
-<td>Exactement n fois</td>
-<td><code>a{3}</code> → "aaa"</td>
-</tr>
-<tr>
-<td><code>{n,m}</code></td>
-<td>Entre n et m fois</td>
-<td><code>a{2,4}</code> → "aa", "aaa", "aaaa"</td>
-</tr>
-</tbody>
+<tr><th>Métacaractère</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>.</code></td><td>N'importe quel caractère (sauf saut de ligne)</td><td><code>a.c</code> → "aac", "abc", "a1c"</td></tr>
+<tr><td><code>^</code></td><td>Début de ligne</td><td><code>^Bonjour</code> → lignes commençant par "Bonjour"</td></tr>
+<tr><td><code>$</code></td><td>Fin de ligne</td><td><code>soir$</code> → lignes finissant par "soir"</td></tr>
+<tr><td><code>*</code></td><td>0 ou plus du caractère précédent</td><td><code>ab*c</code> → "ac", "abc", "abbc"</td></tr>
+<tr><td><code>+</code></td><td>1 ou plus du caractère précédent</td><td><code>ab+c</code> → "abc", "abbc" (pas "ac")</td></tr>
+<tr><td><code>?</code></td><td>0 ou 1 du caractère précédent</td><td><code>ab?c</code> → "ac", "abc"</td></tr>
+<tr><td><code>[ ]</code></td><td>Classe de caractères</td><td><code>[aeiou]</code> → n'importe quelle voyelle</td></tr>
+<tr><td><code>[^ ]</code></td><td>Négation d'une classe</td><td><code>[^0-9]</code> → tout sauf un chiffre</td></tr>
+<tr><td><code>\</code></td><td>Échappement</td><td><code>\.</code> → le caractère point literal</td></tr>
+<tr><td><code></td><td></code></td><td>OU logique</td><td><code>cat\</td><td>dog</code> → "cat" ou "dog"</td></tr>
+<tr><td><code>( )</code></td><td>Groupement</td><td><code>(ab)+</code> → "ab", "abab", "ababab"</td></tr>
+<tr><td><code>{n}</code></td><td>Exactement n fois</td><td><code>a{3}</code> → "aaa"</td></tr>
+<tr><td><code>{n,m}</code></td><td>Entre n et m fois</td><td><code>a{2,4}</code> → "aa", "aaa", "aaaa"</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>3. Les classes de caractères abrégées</h2>
 <table>
-<thead>
-<tr>
-<th>Classe</th>
-<th>Équivalent</th>
-<th>Signification</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>\d</code></td>
-<td><code>[0-9]</code></td>
-<td>Un chiffre</td>
-</tr>
-<tr>
-<td><code>\D</code></td>
-<td><code>[^0-9]</code></td>
-<td>Tout sauf un chiffre</td>
-</tr>
-<tr>
-<td><code>\w</code></td>
-<td><code>[a-zA-Z0-9_]</code></td>
-<td>Un caractère alphanumérique</td>
-</tr>
-<tr>
-<td><code>\W</code></td>
-<td><code>[^a-zA-Z0-9_]</code></td>
-<td>Tout sauf un caractère alphanumérique</td>
-</tr>
-<tr>
-<td><code>\s</code></td>
-<td><code>[ \t\n\r\f]</code></td>
-<td>Un espace blanc</td>
-</tr>
-<tr>
-<td><code>\S</code></td>
-<td><code>[^ \t\n\r\f]</code></td>
-<td>Tout sauf un espace blanc</td>
-</tr>
-</tbody>
+<tr><th>Classe</th><th>Équivalent</th><th>Signification</th></tr>
+<tr><td><code>\d</code></td><td><code>[0-9]</code></td><td>Un chiffre</td></tr>
+<tr><td><code>\D</code></td><td><code>[^0-9]</code></td><td>Tout sauf un chiffre</td></tr>
+<tr><td><code>\w</code></td><td><code>[a-zA-Z0-9_]</code></td><td>Un caractère alphanumérique</td></tr>
+<tr><td><code>\W</code></td><td><code>[^a-zA-Z0-9_]</code></td><td>Tout sauf un caractère alphanumérique</td></tr>
+<tr><td><code>\s</code></td><td><code>[ \t\n\r\f]</code></td><td>Un espace blanc</td></tr>
+<tr><td><code>\S</code></td><td><code>[^ \t\n\r\f]</code></td><td>Tout sauf un espace blanc</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>4. grep — Recherche dans les fichiers</h2>
 <p><code>grep</code> est la commande la plus utilisée pour rechercher du texte avec des Regex.</p>
 <h3>Syntaxe de base</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>grep &quot;motif&quot; fichier</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>grep "motif" fichier</code></div></div></p>
 <h3>Recherche basique</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Rechercher une ligne contenant &quot;error&quot;
-grep &quot;error&quot; /var/log/syslog
-
-# Rechercher sans tenir compte de la casse
-grep -i &quot;error&quot; /var/log/syslog
-
-# Rechercher récursivement dans un dossier
-grep -r &quot;error&quot; /var/log/
-
-# Afficher les numéros de ligne
-grep -n &quot;error&quot; fichier.log</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Rechercher une ligne contenant "error"</p>
+<p>grep "error" /var/log/syslog</p>
+<p># Rechercher sans tenir compte de la casse</p>
+<p>grep -i "error" /var/log/syslog</p>
+<p># Rechercher récursivement dans un dossier</p>
+<p>grep -r "error" /var/log/</p>
+<p># Afficher les numéros de ligne</p>
+<p>grep -n "error" fichier.log</code></div></div></p>
 <h3>Utiliser les Regex avec grep</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Activer les Regex étendues (plus de métacaractères)
-grep -E &quot;expression&quot; fichier
-
-# Ou utiliser egrep (équivalent)
-egrep &quot;erreur|warning&quot; /var/log/syslog</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Activer les Regex étendues (plus de métacaractères)</p>
+<p>grep -E "expression" fichier</p>
+<p># Ou utiliser egrep (équivalent)</p>
+<p>egrep "erreur|warning" /var/log/syslog</code></div></div></p>
 <h3>Exemples concrets</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Lignes commençant par &quot;Error&quot;
-grep -E &quot;^Error&quot; log.txt
-
-# Lignes finissant par &quot;.log&quot;
-grep -E &quot;\.log$&quot; fichier.txt
-
-# Lignes contenant &quot;a&quot; puis n'importe quoi puis &quot;b&quot;
-grep -E &quot;a.*b&quot; fichier.txt
-
-# Lignes contenant un chiffre
-grep -E &quot;[0-9]&quot; fichier.txt
-
-# Lignes contenant un mot de 3 lettres
-grep -E &quot;\b[a-z]{3}\b&quot; fichier.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Lignes commençant par "Error"</p>
+<p>grep -E "^Error" log.txt</p>
+<p># Lignes finissant par ".log"</p>
+<p>grep -E "\.log$" fichier.txt</p>
+<p># Lignes contenant "a" puis n'importe quoi puis "b"</p>
+<p>grep -E "a.*b" fichier.txt</p>
+<p># Lignes contenant un chiffre</p>
+<p>grep -E "[0-9]" fichier.txt</p>
+<p># Lignes contenant un mot de 3 lettres</p>
+<p>grep -E "\b[a-z]{3}\b" fichier.txt</code></div></div></p>
+<hr/>
 <h2>5. sed — Recherche et remplacement</h2>
 <p><code>sed</code> permet de rechercher ET remplacer du texte avec des Regex.</p>
 <h3>Syntaxe de base</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sed 's/ancien/nouveau/' fichier</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>sed 's/ancien/nouveau/' fichier</code></div></div></p>
 <p>Le <code>s</code> veut dire "substitute" (remplacer).</p>
 <h3>Remplacement simple</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Remplacer la première occurrence de &quot;foo&quot; par &quot;bar&quot; sur chaque ligne
-sed 's/foo/bar/' fichier.txt
-
-# Remplacer TOUTES les occurrences (flag g = global)
-sed 's/foo/bar/g' fichier.txt
-
-# Remplacer sur plusieurs fichiers
-sed -i 's/foo/bar/g' fichier1.txt fichier2.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Remplacer la première occurrence de "foo" par "bar" sur chaque ligne</p>
+<p>sed 's/foo/bar/' fichier.txt</p>
+<p># Remplacer TOUTES les occurrences (flag g = global)</p>
+<p>sed 's/foo/bar/g' fichier.txt</p>
+<p># Remplacer sur plusieurs fichiers</p>
+<p>sed -i 's/foo/bar/g' fichier1.txt fichier2.txt</code></div></div></p>
 <h3>Avec les Regex</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Remplacer tout chiffre par un X
-sed -E 's/[0-9]/X/g' fichier.txt
-
-# Remplacer un format IP (ex: 192.168.1.1) par &quot;REDACTED&quot;
-sed -E 's/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/REDACTED/g' fichier.txt
-
-# Supprimer les lignes vides
-sed '/^$/d' fichier.txt
-
-# Supprimer les lignes commençant par #
-sed '/^#/d' fichier.txt
-
-# Ajouter du texte avant chaque ligne
-sed -E 's/^/PREFIXE: /' fichier.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Remplacer tout chiffre par un X</p>
+<p>sed -E 's/[0-9]/X/g' fichier.txt</p>
+<p># Remplacer un format IP (ex: 192.168.1.1) par "REDACTED"</p>
+<p>sed -E 's/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/REDACTED/g' fichier.txt</p>
+<p># Supprimer les lignes vides</p>
+<p>sed '/^$/d' fichier.txt</p>
+<p># Supprimer les lignes commençant par #</p>
+<p>sed '/^#/d' fichier.txt</p>
+<p># Ajouter du texte avant chaque ligne</p>
+<p>sed -E 's/^/PREFIXE: /' fichier.txt</code></div></div></p>
 <h3>Capturer des groupes</h3>
 <p>Les parenthèses <code>()</code> créent des groupes, et <code>\1</code>, <code>\2</code> font référence à ces groupes :</p>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Inverser deux mots séparés par un tiret (a-b → b-a)
-sed -E 's/([a-z]+)-([a-z]+)/\2-\1/g' fichier.txt
-
-# Extraire le domaine d'un email
-echo &quot;utilisateur@exemple.com&quot; | sed -E 's/.*@([^.]+)\..*/\1/'
-# Résultat : exemple</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Inverser deux mots séparés par un tiret (a-b → b-a)</p>
+<p>sed -E 's/([a-z]+)-([a-z]+)/\2-\1/g' fichier.txt</p>
+<p># Extraire le domaine d'un email</p>
+<p>echo "utilisateur@exemple.com" | sed -E 's/.*@([^.]+)\..*/\1/'</p>
+<p># Résultat : exemple</code></div></div></p>
+<hr/>
 <h2>6. awk — Manipulation de texte avancée</h2>
 <p><code>awk</code> est extrêmement puissant pour traiter du texte structuré (comme des tableaux ou des logs).</p>
 <h3>Syntaxe de base</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>awk '/motif/ { action }' fichier</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>awk '/motif/ { action }' fichier</code></div></div></p>
 <h3>Exemples concrets</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Afficher la première colonne (par défaut, séparateur = espace)
-awk '{ print $1 }' fichier.txt
-
-# Afficher la première et la troisième colonne
-awk '{ print $1, $3 }' fichier.txt
-
-# Spécifier un séparateur de champ (ex: deux-points)
-awk -F: '{ print $1, $7 }' /etc/passwd
-
-# Rechercher et afficher certaines colonnes
-awk -F: '/^root/ { print $1, $7 }' /etc/passwd
-
-# Afficher les lignes avec plus de 80 caractères
-awk 'length &gt; 80' fichier.txt
-
-# Additionner une colonne numérique
-awk '{ sum += $1 } END { print sum }' fichier.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Afficher la première colonne (par défaut, séparateur = espace)</p>
+<p>awk '{ print $1 }' fichier.txt</p>
+<p># Afficher la première et la troisième colonne</p>
+<p>awk '{ print $1, $3 }' fichier.txt</p>
+<p># Spécifier un séparateur de champ (ex: deux-points)</p>
+<p>awk -F: '{ print $1, $7 }' /etc/passwd</p>
+<p># Rechercher et afficher certaines colonnes</p>
+<p>awk -F: '/^root/ { print $1, $7 }' /etc/passwd</p>
+<p># Afficher les lignes avec plus de 80 caractères</p>
+<p>awk 'length &gt; 80' fichier.txt</p>
+<p># Additionner une colonne numérique</p>
+<p>awk '{ sum += $1 } END { print sum }' fichier.txt</code></div></div></p>
 <h3>Avec les Regex dans awk</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Lignes contenant un email
-awk '/[a-z]+@[a-z]+\.[a-z]+/' fichier.txt
-
-# Lignes où la 3ème colonne est un nombre &gt; 100
-awk '$3 &gt; 100' fichier.txt
-
-# Afficher les lignes où le champ 2 contient &quot;ERREUR&quot;
-awk -F, '$2 ~ /ERREUR/ { print $1, $2 }' logs.csv</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Lignes contenant un email</p>
+<p>awk '/[a-z]+@[a-z]+\.[a-z]+/' fichier.txt</p>
+<p># Lignes où la 3ème colonne est un nombre &gt; 100</p>
+<p>awk '$3 &gt; 100' fichier.txt</p>
+<p># Afficher les lignes où le champ 2 contient "ERREUR"</p>
+<p>awk -F, '$2 ~ /ERREUR/ { print $1, $2 }' logs.csv</code></div></div></p>
+<hr/>
 <h2>7. find — Rechercher des fichiers par nom</h2>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Rechercher des fichiers se terminant par .log
-find . -name &quot;*.log&quot;
-
-# Rechercher des fichiers dont le nom contient &quot;error&quot;
-find . -name &quot;*error*&quot;
-
-# Rechercher des fichiers de plus de 100 Mo
-find . -size +100M
-
-# Rechercher des fichiers modifiés dans les 7 derniers jours
-find . -mtime -7
-
-# Combiner avec grep (chercher dans le contenu)
-find . -name &quot;*.txt&quot; -exec grep -l &quot;motif&quot; {} \;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Rechercher des fichiers se terminant par .log</p>
+<p>find . -name "*.log"</p>
+<p># Rechercher des fichiers dont le nom contient "error"</p>
+<p>find . -name "*error*"</p>
+<p># Rechercher des fichiers de plus de 100 Mo</p>
+<p>find . -size +100M</p>
+<p># Rechercher des fichiers modifiés dans les 7 derniers jours</p>
+<p>find . -mtime -7</p>
+<p># Combiner avec grep (chercher dans le contenu)</p>
+<p>find . -name "*.txt" -exec grep -l "motif" {} \;</code></div></div></p>
+<hr/>
 <h2>8. Exercices pratiques</h2>
 <h3>Exercice 1 : Débogage avec grep</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Lis les logs système
-cat /var/log/syslog | head -20
-
-# 2. Cherche les lignes contenant &quot;error&quot; (insensible à la casse)
-grep -i error /var/log/syslog | head -10
-
-# 3. Cherche les lignes contenant &quot;error&quot; OU &quot;warning&quot;
-grep -iE &quot;error|warning&quot; /var/log/syslog | head -10
-
-# 4. Affiche les 2 lignes après chaque correspondance
-grep -iA 2 &quot;error&quot; /var/log/syslog | head -20</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># 1. Lis les logs système</p>
+<p>cat /var/log/syslog | head -20</p>
+<p># 2. Cherche les lignes contenant "error" (insensible à la casse)</p>
+<p>grep -i error /var/log/syslog | head -10</p>
+<p># 3. Cherche les lignes contenant "error" OU "warning"</p>
+<p>grep -iE "error|warning" /var/log/syslog | head -10</p>
+<p># 4. Affiche les 2 lignes après chaque correspondance</p>
+<p>grep -iA 2 "error" /var/log/syslog | head -20</code></div></div></p>
 <h3>Exercice 2 : Nettoyage de texte avec sed</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Crée un fichier test
-echo &quot;Serveur1: 192.168.1.1 - OK&quot; &gt; test.txt
-echo &quot;Serveur2: 10.0.0.5 - ERREUR&quot; &gt;&gt; test.txt
-echo &quot;Serveur3: 172.16.0.1 - OK&quot; &gt;&gt; test.txt
-
-# 2. Remplace &quot;ERREUR&quot; par &quot;FAILED&quot;
-sed -i 's/ERREUR/FAILED/g' test.txt
-
-# 3. Remplace les adresses IP par &quot;XXX.XXX.XXX.XXX&quot;
-sed -iE 's/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/XXX.XXX.XXX.XXX/g' test.txt
-
-# 4. Affiche le résultat
-cat test.txt</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># 1. Crée un fichier test</p>
+<p>echo "Serveur1: 192.168.1.1 - OK" &gt; test.txt</p>
+<p>echo "Serveur2: 10.0.0.5 - ERREUR" &gt;&gt; test.txt</p>
+<p>echo "Serveur3: 172.16.0.1 - OK" &gt;&gt; test.txt</p>
+<p># 2. Remplace "ERREUR" par "FAILED"</p>
+<p>sed -i 's/ERREUR/FAILED/g' test.txt</p>
+<p># 3. Remplace les adresses IP par "XXX.XXX.XXX.XXX"</p>
+<p>sed -iE 's/[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/XXX.XXX.XXX.XXX/g' test.txt</p>
+<p># 4. Affiche le résultat</p>
+<p>cat test.txt</code></div></div></p>
 <h3>Exercice 3 : Extraction de données avec awk</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># 1. Crée un fichier CSV test
-echo &quot;Prenom,Nom,Age,Ville&quot; &gt; personnes.csv
-echo &quot;Jean,Dupont,28,Paris&quot; &gt;&gt; personnes.csv
-echo &quot;Marie,Martin,34,Lyon&quot; &gt;&gt; personnes.csv
-echo &quot;Pierre,Durand,45,Bruxelles&quot; &gt;&gt; personnes.csv
-
-# 2. Affiche seulement les noms
-awk -F, '{ print $2 }' personnes.csv
-
-# 3. Affiche les personnes de plus de 30 ans
-awk -F, '$3 &gt; 30 { print $1, $2, $3 }' personnes.csv
-
-# 4. Ajoute une colonne calculée
-awk -F, '{ print $1, $2, $3*12 &quot; mois&quot; }' personnes.csv</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># 1. Crée un fichier CSV test</p>
+<p>echo "Prenom,Nom,Age,Ville" &gt; personnes.csv</p>
+<p>echo "Jean,Dupont,28,Paris" &gt;&gt; personnes.csv</p>
+<p>echo "Marie,Martin,34,Lyon" &gt;&gt; personnes.csv</p>
+<p>echo "Pierre,Durand,45,Bruxelles" &gt;&gt; personnes.csv</p>
+<p># 2. Affiche seulement les noms</p>
+<p>awk -F, '{ print $2 }' personnes.csv</p>
+<p># 3. Affiche les personnes de plus de 30 ans</p>
+<p>awk -F, '$3 &gt; 30 { print $1, $2, $3 }' personnes.csv</p>
+<p># 4. Ajoute une colonne calculée</p>
+<p>awk -F, '{ print $1, $2, $3*12 " mois" }' personnes.csv</code></div></div></p>
 <h3>Exercice 4 : Validation de format</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Vérifier si une variable correspond à un format
-email=&quot;utilisateur@exemple.com&quot;
-
-# Avec grep et regex
-if echo &quot;$email&quot; | grep -qE &quot;^[a-z]+@[a-z]+\.[a-z]{2,}$&quot;; then
-    echo &quot;Email valide&quot;
-else
-    echo &quot;Email invalide&quot;
-fi
-
-# Vérifier un numéro de téléphone suisse
-tel=&quot;079 456 96 45&quot;
-if echo &quot;$tel&quot; | grep -qE &quot;^[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}$&quot;; then
-    echo &quot;Numéro suisse valide&quot;
-fi</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Vérifier si une variable correspond à un format</p>
+<p>email="utilisateur@exemple.com"</p>
+<p># Avec grep et regex</p>
+<p>if echo "$email" | grep -qE "^[a-z]+@[a-z]+\.[a-z]{2,}$"; then</p>
+<p>    echo "Email valide"</p>
+<p>else</p>
+<p>    echo "Email invalide"</p>
+<p>fi</p>
+<p># Vérifier un numéro de téléphone suisse</p>
+<p>tel="079 456 96 45"</p>
+<p>if echo "$tel" | grep -qE "^[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}$"; then</p>
+<p>    echo "Numéro suisse valide"</p>
+<p>fi</code></div></div></p>
+<hr/>
 <h2>9. Patterns courants à retenir</h2>
 <table>
-<thead>
-<tr>
-<th>Besoin</th>
-<th>Pattern</th>
-<th>Exemple</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Email simple</td>
-<td><code>[a-z]+@[a-z]+\.[a-z]{2,}</code></td>
-<td><code>test@exemple.com</code></td>
-</tr>
-<tr>
-<td>Numéro suisse</td>
-<td><code>[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}</code></td>
-<td><code>079 456 96 45</code></td>
-</tr>
-<tr>
-<td>Adresse IP v4</td>
-<td><code>[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}</code></td>
-<td><code>192.168.1.1</code></td>
-</tr>
-<tr>
-<td>Date JJ/MM/AAAA</td>
-<td><code>[0-9]{2}/[0-9]{2}/[0-9]{4}</code></td>
-<td><code>24/03/2026</code></td>
-</tr>
-<tr>
-<td>URL</td>
-<td><code>https?://[a-z.]+\.[a-z]{2,}</code></td>
-<td><code>https://exemple.com</code></td>
-</tr>
-<tr>
-<td>Mot de 3 à 10 lettres</td>
-<td><code>\b[a-zA-Z]{3,10}\b</code></td>
-<td>bonjour</td>
-</tr>
-<tr>
-<td>Ligne commençant par #</td>
-<td><code>^#</code></td>
-<td>commentaires</td>
-</tr>
-<tr>
-<td>Ligne vide</td>
-<td><code>^$</code></td>
-<td>ligne vide</td>
-</tr>
-</tbody>
+<tr><th>Besoin</th><th>Pattern</th><th>Exemple</th></tr>
+<tr><td>Email simple</td><td><code>[a-z]+@[a-z]+\.[a-z]{2,}</code></td><td><code>test@exemple.com</code></td></tr>
+<tr><td>Numéro suisse</td><td><code>[0-9]{3} [0-9]{3} [0-9]{2} [0-9]{2}</code></td><td><code>079 456 96 45</code></td></tr>
+<tr><td>Adresse IP v4</td><td><code>[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}</code></td><td><code>192.168.1.1</code></td></tr>
+<tr><td>Date JJ/MM/AAAA</td><td><code>[0-9]{2}/[0-9]{2}/[0-9]{4}</code></td><td><code>24/03/2026</code></td></tr>
+<tr><td>URL</td><td><code>https?://[a-z.]+\.[a-z]{2,}</code></td><td><code>https://exemple.com</code></td></tr>
+<tr><td>Mot de 3 à 10 lettres</td><td><code>\b[a-zA-Z]{3,10}\b</code></td><td>bonjour</td></tr>
+<tr><td>Ligne commençant par #</td><td><code>^#</code></td><td>commentaires</td></tr>
+<tr><td>Ligne vide</td><td><code>^$</code></td><td>ligne vide</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>10. Résumé des commandes</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>grep "motif" fichier</code></td>
-<td>Rechercher un motif dans un fichier</td>
-</tr>
-<tr>
-<td><code>grep -E "regex" fichier</code></td>
-<td>Utiliser les Regex étendues</td>
-</tr>
-<tr>
-<td><code>grep -i "motif" fichier</code></td>
-<td>Recherche insensible à la casse</td>
-</tr>
-<tr>
-<td><code>grep -n "motif" fichier</code></td>
-<td>Afficher les numéros de ligne</td>
-</tr>
-<tr>
-<td><code>grep -r "motif" dossier/</code></td>
-<td>Recherche récursive</td>
-</tr>
-<tr>
-<td><code>sed 's/a/b/g' fichier</code></td>
-<td>Remplacer a par b (global)</td>
-</tr>
-<tr>
-<td><code>sed -E 's/regex/remp/g'</code></td>
-<td>Remplacement avec Regex</td>
-</tr>
-<tr>
-<td><code>sed -i 's/a/b/' fichier</code></td>
-<td>Remplacement sur fichier directement</td>
-</tr>
-<tr>
-<td><code>awk '{ print $1 }' fichier</code></td>
-<td>Afficher la première colonne</td>
-</tr>
-<tr>
-<td><code>awk -F: '{ print $1 }'</code></td>
-<td>Spécifier le séparateur (ici <code>:</code>)</td>
-</tr>
-<tr>
-<td><code>find . -name "*.txt"</code></td>
-<td>Rechercher des fichiers par nom</td>
-</tr>
-<tr>
-<td><code>find . -regex ".*\.log"</code></td>
-<td>Rechercher par Regex</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>grep "motif" fichier</code></td><td>Rechercher un motif dans un fichier</td></tr>
+<tr><td><code>grep -E "regex" fichier</code></td><td>Utiliser les Regex étendues</td></tr>
+<tr><td><code>grep -i "motif" fichier</code></td><td>Recherche insensible à la casse</td></tr>
+<tr><td><code>grep -n "motif" fichier</code></td><td>Afficher les numéros de ligne</td></tr>
+<tr><td><code>grep -r "motif" dossier/</code></td><td>Recherche récursive</td></tr>
+<tr><td><code>sed 's/a/b/g' fichier</code></td><td>Remplacer a par b (global)</td></tr>
+<tr><td><code>sed -E 's/regex/remp/g'</code></td><td>Remplacement avec Regex</td></tr>
+<tr><td><code>sed -i 's/a/b/' fichier</code></td><td>Remplacement sur fichier directement</td></tr>
+<tr><td><code>awk '{ print $1 }' fichier</code></td><td>Afficher la première colonne</td></tr>
+<tr><td><code>awk -F: '{ print $1 }'</code></td><td>Spécifier le séparateur (ici <code>:</code>)</td></tr>
+<tr><td><code>find . -name "*.txt"</code></td><td>Rechercher des fichiers par nom</td></tr>
+<tr><td><code>find . -regex ".*\.log"</code></td><td>Rechercher par Regex</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>11. Aller plus loin</h2>
 <ul>
-<li><strong>Perl/PCRE</strong> : Les Regex de Perl sont encore plus puissantes (supportées par <code>grep -P</code>)</li>
-<li><strong>Langages de programmation</strong> : Python, JavaScript, PHP supportent tous les Regex</li>
-<li><strong>Outils en ligne</strong> : regex101.com pour tester tes Regex visuellement</li>
-<li><strong>sed et awk avancés</strong> : utiliser <code>sed -i</code> pour modification in-place, <code>awk</code> pour du parsing CSV/JSON léger</li>
+<li>**Perl/PCRE** : Les Regex de Perl sont encore plus puissantes (supportées par <code>grep -P</code>)</li>
+<li>**Langages de programmation** : Python, JavaScript, PHP supportent tous les Regex</li>
+<li>**Outils en ligne** : regex101.com pour tester tes Regex visuellement</li>
+<li>**sed et awk avancés** : utiliser <code>sed -i</code> pour modification in-place, <code>awk</code> pour du parsing CSV/JSON léger</li>
 </ul>
-</div>
 <nav>
-<a href="31-gestion-paquets.html" style="color:#00d9ff;text-decoration:none;">&larr; 31 - Gestion des paquets</a> | <span style="color:#666;">32</span> | <a href="33-compilation-developpement.html" style="color:#00d9ff;text-decoration:none;">33 - Compilation et Développement (gcc / make) &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="31-gestion-paquets.html">&larr; 31-gestion-paquets</a>
+<a href="33-compilation-developpement.html">33-compilation-developpement &rarr;</a>
+</nav></div></body></html>

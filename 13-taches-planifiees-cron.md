@@ -244,3 +244,76 @@ crontab -e
 ---
 
 Cron est ton meilleur ami pour l'automatisation ! Utilise-le sagesse. ⏰
+---
+
+## Complément: Automatisation avancée avec cron
+
+### Introduction
+
+Cron est le gestionnaire de tâches planifiées le plus utilisé sous Linux. Il permet d'automatiser l'exécution de commandes ou de scripts à des intervalles réguliers : chaque jour à minuit, chaque lundi à 8h, tous les 15 minutes… C'est un outil indispensable pour tout administrateur système ou utilisateur Linux avancé.
+
+### Le service cron
+
+Sur les systèmes utilisant systemd, le service cron s'appelle généralement cron ou crond. Il tourne en arrière-plan et vérifie toutes les minutes s'il doit exécuter une tâche.
+
+### Le format cron (les 5 champs)
+
+Chaque ligne d'une crontab suit ce format :
+
+### Gestion de la crontab
+
+crontab -e ouvre l'éditeur pour modifier la crontab de l'utilisateur actuel :
+
+### Éditeurs et sélection
+
+La première utilisation de crontab -e demande de choisir un éditeur. nano est recommandé pour les débutants :
+
+### Écrire une crontab complète
+
+Exemple de crontab avec commentaires et variables d'environnement :
+
+### Redirections et logs
+
+Par défaut, cron envoie la sortie par e-mail à l'utilisateur. Pour éviter cela ou rediriger ailleurs :
+
+### Crontab système
+
+Il existe aussi des crontabs système dans /etc/cron.d/ et /etc/cron.daily/, /etc/cron.hourly/, etc. :
+
+### Restriction d'accès (cron.allow / cron.deny)
+
+On peut autoriser ou interdire l'usage de cron par utilisateur :
+
+### Vérifier le fonctionnement
+
+Quelques tricks pour vérifier que cron fonctionne correctement :
+
+### Anacron — Pour les machines non allumées en permanence
+
+cron ne lance pas une tâche manquée si la machine était éteinte. anacron comble ce manque en exécutant les tâches en retard au prochain démarrage :
+
+### Exemple de script pour cron
+
+Un bon script lancé par cron doit être autonome (chemins absolus, gestion des erreurs) :
+
+### Résumé
+
+Cron = planificateur de tâches basé sur le temps, vérifié chaque minute
+
+Format : minute heure jour_du_mois mois jour_de_la_semaine
+
+* = toute valeur, /n = toutes les n unités, - = plage
+
+crontab -e = éditer la crontab de l'utilisateur courant
+
+crontab -l = voir sa crontab, crontab -r = supprimer
+
+SHELL, PATH et MAILTO peuvent être définis en haut de crontab
+
+Rediriger stdout et stderr vers un log : > fichier 2>&1
+
+/etc/cron.d/ = crontabs système, /etc/cron.hourly/ = scripts horaires
+
+anacron = exécution des tâches manquées au prochain boot
+
+Un bon script cron utilise des chemins absolus et journalise ses actions

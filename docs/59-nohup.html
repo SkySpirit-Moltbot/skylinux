@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 59 : Leçon 70 : nohup — Exécuter des commandes persistantes</h1>
+<h3>1. Le problème : les signaux et la déconnexion</h3>
+<p>Sous Linux, quand un terminal se ferme, il envoie un signal SIGHUP (Signal Hang UP) à tous les processus enfants. Ce signal cause normalement l'arrêt du processus. C'est un mécanisme historiqueherited du temps où les terminaux étaient des machines physiques.</p>
+<h3>2. La solution : nohup</h3>
+<p>nohup protège un processus contre le signal SIGHUP. Le processus continuera à tourner même si le terminal est fermé.</p>
+<h3>3. Où va la sortie ?</h3>
+<p>Par défaut, nohup redirige la sortie standard vers nohup.out. Vous pouvez changer ce comportement :</p>
+<h3>5. nohup vs disown vs screen</h3>
+<p>Il existe plusieurs ways de détacher un processus :</p>
+<h3>Résumé</h3>
+<p>nohup commande & — Lance une commande immune au signal SIGHUP</p>
+<p>Par défaut, la sortie va dans nohup.out</p>
+<p>Redirigez la sortie vers un fichier ou /dev/null selon vos besoins</p>
+<p>Vérifiez avec ps aux | grep que le processus tourne toujours</p>
+<p>Pour un contrôle plus avancé, utilisez screen ou tmux (voir leçons 27 et 41)</p>
+<nav>
+<a href="58-file-stat-inspecter-fichiers.html">&larr; 58-file-stat-inspecter-fichiers</a>
+<a href="60-split-fichiers.html">60-split-fichiers &rarr;</a>
+</nav></div></body></html>

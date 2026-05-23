@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 43 : SSH - Tunnels et Port Forwarding</h1>
+<p>Dans cette leçon, tu vas découvrir comment créer des **tunnels SSH** pour sécuriser tes connexions réseau. Le port forwarding te permet d'accéder à des services distants comme si ils tournaient en local — un outil indispensable pour administrer des serveurs et accéder à des services protégés.</p>
+<hr/>
+<h2>1. Pourquoi créer un tunnel SSH ?</h2>
+<p>Par défaut, beaucoup de services (bases de données, interfaces web) écoute uniquement en **localhost** pour des raisons de sécurité. SSH te permet de créer un tunnel chiffré pour y accéder à distance.</p>
+<h3>Cas d'usage courants</h3>
+<ul>
+<li>Accéder à une interface web d'un serveur qui n'écoute que localement</li>
+<li>Se connecter à une base de données MySQL/PostgreSQL distante</li>
+<li>Contourner un pare-feu restrictif</li>
+<li>Sécuriser une connexion non chiffrée (VNC, HTTP)</li>
+</ul>
+<hr/>
+<h2>2. Les trois types de tunnels</h2>
+<h3>2.1. Tunnel local (-L) : accéder à un service distant depuis ta machine</h3>
+<p>C'est le plus courant. Tu rediriges un port de **ta machine locale** vers un service sur la **machine distante**.</p>
+<p><div class="code-block"><div class="code-line"><code># Syntaxe</p>
+<p>ssh -L [port_local]:localhost:[port_distant] user@serveur</p>
+<p># Exemple : accéder à une interface web distante sur le port 80</p>
+<p>ssh -L 8080:localhost:80 user@serveur-distant</p>
+<p># Maintenant, ouvre http://localhost:8080 sur ta machine</code></div></div></p>
+<p>Dans cet exemple :</p>
+<ul>
+<li><code>8080</code> = le port sur **ta machine locale** (choisis un port libre)</li>
+<li><code>localhost</code> = le serveur distant vu de lui-même</li>
+<li><code>80</code> = le port du service sur le serveur distant</li>
+</ul>
+<h3>2.2. Tunnel inverse (-R) : exposer un service local vers l'extérieur</h3>
+<p>Tu rends un port de **ta machine** accessible depuis le **serveur distant**. Pratique pour accéder à ton réseau local depuis l'extérieur.</p>
+<p><div class="code-block"><div class="code-line"><code># Syntaxe</p>
+<p>ssh -R [port_distant]:localhost:[port_local] user@serveur</p>
+<p># Exemple : exposer ton serveur web local (port 3000) sur le port 8080 du serveur distant</p>
+<p>ssh -R 8080:localhost:3000 user@serveur-distant</p>
+<p># Depuis le serveur distant : curl http://localhost:8080</code></div></div></p>
+<h3>2.3. Tunnel dynamique (-D) : proxy SOCKS</h3>
+<p>Tu crées un **proxy SOCKS** qui fait passer tout ton trafic par le serveur SSH. C'est comme un VPN simple.</p>
+<p><div class="code-block"><div class="code-line"><code># Syntaxe</p>
+<p>ssh -D [port_local] user@serveur</p>
+<p># Exemple : créer un proxy SOCKS sur le port 1080</p>
+<p>ssh -D 1080 user@serveur-distant</p>
+<p># Configurer ton navigateur pour utiliser le proxy SOCKS localhost:1080</code></div></div></p>
+<hr/>
+<h2>3. Options utiles pour les tunnels</h2>
+<h3>Garder le tunnel ouvert</h3>
+<p>Par défaut, SSH peut se déconnecter après un temps d'inactivité. Ajoute ces options :</p>
+<p><div class="code-block"><div class="code-line"><code># -N : n'exécute pas de commande distante (juste le tunnel)</p>
+<p># -f : passe en arrière-plan</p>
+<p># -o ServerAliveInterval=60 : envoie un ping toutes les 60s</p>
+<p>ssh -L 8080:localhost:80 -N -f -o ServerAliveInterval=60 user@serveur</code></div></div></p>
+<h3>Tunnel permanent avec autossh</h3>
+<p>Pour redémarrer automatiquement le tunnel si la connexion coupe :</p>
+<p><div class="code-block"><div class="code-line"><code># Installer autossh</p>
+<p>sudo apt install autossh</p>
+<p># Créer un tunnel permanent</p>
+<p>autossh -M 10984 -L 8080:localhost:80 -N -f user@serveur-distant</code></div></div></p>
+<p><code>-M 10984</code> = port de monitoring pour vérifier que le tunnel est vivant.</p>
+<h3>Spécifier une clé SSH</h3>
+<p><div class="code-block"><div class="code-line"><code>ssh -L 8080:localhost:80 -i ~/.ssh/ma_cle_rsa user@serveur-distant</code></div></div></p>
+<hr/>
+<h2>4. Exemples pratiques</h2>
+<h3>4.1. Accéder à phpMyAdmin distant</h3>
+<p><div class="code-block"><div class="code-line"><code># Le serveur distant a phpMyAdmin sur le port 80, accessible seulement en localhost</p>
+<p>ssh -L 8888:localhost:80 user@serveur-distant</p>
+<p># Dans ton navigateur : http://localhost:8888/phpmyadmin</code></div></div></p>
+<h3>4.2. Se connecter à MySQL distant</h3>
+<p><div class="code-block"><div class="code-line"><code># MySQL écoute sur localhost:3306 du serveur distant</p>
+<p>ssh -L 3307:localhost:3306 user@serveur-distant</p>
+<p># Maintenant connecte-toi avec ton client MySQL local :</p>
+<p>mysql -h 127.0.0.1 -P 3307 -u root -p</code></div></div></p>
+<h3>4.3. Tunnel vers un serveur Git privé</h3>
+<p><div class="code-block"><div class="code-line"><code># Accéder à un serveur Git qui n'est accessible que via SSH sur un port non standard</p>
+<p>ssh -L 7999:serveur-git:22 -p 2222 user@gateway.com</p>
+<p># Clone via le tunnel</p>
+<p>git clone ssh://localhost:7999/repo.git</code></div></div></p>
+<h3>4.4. Tunnel inverse pour debug</h3>
+<p><div class="code-block"><div class="code-line"><code># Depuis chez toi, expose ton service local pour qu'un collègue y accède via le serveur</p>
+<p>ssh -R 8080:localhost:3000 user@serveur-distant</p>
+<p># Ton collègue peut maintenant accéder à ton app via http://serveur-distant:8080</code></div></div></p>
+<hr/>
+<h2>5. Configurer des tunnels persistent dans ~/.ssh/config</h2>
+<p>Au lieu de retaper les options à chaque fois, ajoute-les à ton fichier de config SSH :</p>
+<p><div class="code-block"><div class="code-line"><code>nano ~/.ssh/config</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code># Tunnel vers le serveur de prod</p>
+<p>Host prod-tunnel</p>
+<p>    HostName serveur-production.com</p>
+<p>    User admin</p>
+<p>    LocalForward 3307 localhost:3306</p>
+<p>    LocalForward 8080 localhost:80</p>
+<p>    ServerAliveInterval 60</p>
+<p>    IdentityFile ~/.ssh/cle_production</p>
+<p># Proxy SOCKS vers le serveur de backup</p>
+<p>Host backup-proxy</p>
+<p>    HostName backup.example.com</p>
+<p>    User deploy</p>
+<p>    DynamicForward 1080</p>
+<p>    ServerAliveInterval 60</code></div></div></p>
+<p>Maintenant, un simple <code>ssh prod-tunnel</code> crée tous les tunnels définis !</p>
+<hr/>
+<h2>6. Créer un service systemd pour un tunnel permanent</h2>
+<p>Pour qu'un tunnel survive aux redémarrages, crée un service systemd :</p>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/systemd/system/ssh-tunnel.service</code></div></div></p>
+<p>```ini</p>
+<p>[Unit]</p>
+<p>Description=SSH Tunnel vers serveur-prod</p>
+<p>After=network.target</p>
+<p>[Service]</p>
+<p>ExecStart=/usr/bin/ssh -N -L 3307:localhost:3306 -L 8080:localhost:80 -o ServerAliveInterval=60 -i /home/user/.ssh/cle_production user@serveur-production.com</p>
+<p>Restart=always</p>
+<p>RestartSec=10</p>
+<p>User=user</p>
+<p>[Install]</p>
+<p>WantedBy=multi-user.target</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<p># Activer et démarrer le service</p>
+<p>sudo systemctl daemon-reload</p>
+<p>sudo systemctl enable ssh-tunnel</p>
+<p>sudo systemctl start ssh-tunnel</p>
+<p># Vérifier le statut</p>
+<p>sudo systemctl status ssh-tunnel</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>7. Sécurité et bonnes pratiques</h2>
+<h3>⚠️ Attention aux tunnels inverses</h3>
+<p>Les tunnels inverses exposent ton réseau à l'extérieur. Utilise ces protections :</code></div></div>bash</p>
+<p># Limiter le tunnel inverse à localhost uniquement sur le serveur</p>
+<p>ssh -R 8080:localhost:3000 -o GatewayPorts=no user@serveur</p>
+<p># Ou autoriser uniquement certaines IP sur le serveur distant</p>
+<p># Dans /etc/ssh/sshd_config du serveur :</p>
+<p>GatewayPorts clientspecified</p>
+<p><div class="code-block"><div class="code-line"><code>### 🔑 Utiliser des clés SSH (jamais de mots de passe)</code></div></div>bash</p>
+<p># Générer une clé</p>
+<p>ssh-keygen -t ed25519 -f ~/.ssh/tunnel_cle</p>
+<p># La copier sur le serveur</p>
+<p>ssh-copy-id -i ~/.ssh/tunnel_cle user@serveur</p>
+<p><div class="code-block"><div class="code-line"><code>### 🕵️ Limiter les permissions du fichier de clé</code></div></div>bash</p>
+<p>chmod 600 ~/.ssh/tunnel_cle</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>8. Exercice pratique</h2>
+<h3>Objectif</h3>
+<p>Crée un tunnel SSH pour accéder à une base de données PostgreSQL qui tourne sur un serveur distant et n'accepte que les connexions locales.</p>
+<h3>Étapes</h3>
+<p>1. **Vérifie que PostgreSQL écoute localement sur le serveur distant :**</code></div></div>bash</p>
+<p>   ssh user@serveur-distant</p>
+<p>   sudo ss -tlnp | grep 5432</p>
+<p>   <div class="code-block"><div class="code-line"><code>2. **Crée le tunnel SSH (depuis ta machine locale) :**</code></div></div>bash</p>
+<p>   ssh -L 5433:localhost:5432 -N -f -o ServerAliveInterval=60 user@serveur-distant</p>
+<p>   <div class="code-block"><div class="code-line"><code>3. **Vérifie que le tunnel est actif :**</code></div></div>bash</p>
+<p>   ss -tlnp | grep 5433</p>
+<p>   # Tu dois voir LISTEN sur 127.0.0.1:5433</p>
+<p>   <div class="code-block"><div class="code-line"><code>4. **Installe un client PostgreSQL et connecte-toi :**</code></div></div>bash</p>
+<p>   sudo apt install postgresql-client</p>
+<p>   psql -h 127.0.0.1 -p 5433 -U postgres -d ma_base</p>
+<p>   <div class="code-block"><div class="code-line"><code>5. **Fais une requête simple :**</code></div></div>sql</p>
+<p>   SELECT version();</p>
+<p>   \q</p>
+<p>   <div class="code-block"><div class="code-line"><code>6. **Configure le tunnel dans ~/.ssh/config pour le réutiliser facilement :**</code></div></div>bash</p>
+<p>   nano ~/.ssh/config</p>
+<p>   # Ajoute un bloc "Host pg-tunnel" avec LocalForward 5433:localhost:5432</p>
+<p>   <div class="code-block"><div class="code-line"><code>7. **Nettoie :**</code></div></div>bash</p>
+<p>   # Trouve et tue le tunnel</p>
+<p>   ps aux | grep "ssh -L"</p>
+<p>   kill [PID]</p>
+<p>   ```</p>
+<h3>Vérification</h3>
+<p>Tu peux te connecter à la base de données distante **uniquement** quand le tunnel SSH est actif. Sans SSH, la connexion est refusée — c'est la sécurité par conception.</p>
+<hr/>
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>ssh -L port:host:port_dist user@srv</code></td><td>Tunnel local : accède à un service du serveur</td></tr>
+<tr><td><code>ssh -R port:host:port_local user@srv</code></td><td>Tunnel inverse : expose un service local vers le serveur</td></tr>
+<tr><td><code>ssh -D port user@srv</code></td><td>Proxy SOCKS : tout le trafic passe par SSH</td></tr>
+<tr><td><code>-N</code></td><td>N'exécute pas de commande distante</td></tr>
+<tr><td><code>-f</code></td><td>Passe en arrière-plan</td></tr>
+<tr><td><code>autossh -M port ...</code></td><td>Tunnel automatique qui redémarre si coupé</td></tr>
+<tr><td><code>~/.ssh/config</code></td><td>Configurer des tunnels persistants</td></tr>
+</table>
+<p>Les tunnels SSH sont un outil puissant pour accéder en sécurité à des services qui ne sont pas exposés directement sur le réseau. Comprends bien les trois types (local, inverse, dynamique) et utilise toujours des clés SSH plutôt que des mots de passe.</p>
+<nav>
+<a href="42-configuration-dns.html">&larr; 42-configuration-dns</a>
+<a href="44-planification-taches-at-batch.html">44-planification-taches-at-batch &rarr;</a>
+</nav></div></body></html>

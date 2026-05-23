@@ -1,4 +1,4 @@
-# Leçon 5 : Installation de logiciels
+# Leçon 05 : Installation de logiciels
 
 Dans cette leçon, tu vas maîtriser l'installation, la mise à jour et la suppression de logiciels sur Linux avec différents gestionnaires de paquets.
 

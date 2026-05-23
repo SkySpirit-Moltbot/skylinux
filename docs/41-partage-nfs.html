@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 41 : Partage de fichiers avec NFS</h1>
+<p>Dans cette leçon, tu vas découvrir comment partager des fichiers entre machines Linux sur un réseau local grâce à **NFS (Network File System)**. C'est l'équivalent Linux du partage Windows SMB, mais bien plus simple et efficace entre systèmes Unix.</p>
+<hr/>
+<h2>1. Qu'est-ce que NFS ?</h2>
+<p>NFS est un protocole de partage de fichiers en réseau. Il permet à une machine (le **serveur**) d'exporter un dossier, et à d'autres machines (**clients**) de le monter localement comme s'il était sur leur propre disque.</p>
+<p>**Cas d'usage courants :**</p>
+<ul>
+<li>Partager des fichiers entre serveurs dans un cluster</li>
+<li>Centraliser les données (photos, documents) sur un NAS Linux</li>
+<li>Partager du code et environnement de développement</li>
+<li>Stockage partagé pour machines sans disque (diskless)</li>
+</ul>
+<blockquote>
+<p>**Note :** NFS est conçu pour les réseaux locaux (LAN). Pour un accès depuis Internet, utilise VPN + NFS ou préfère un protocole sécurisé comme SSHFS/SFTP.</p>
+</blockquote>
+<hr/>
+<h2>2. Côté serveur : exporter un dossier</h2>
+<h3>Étape 1 : Installer le serveur NFS</h3>
+<p><div class="code-block"><div class="code-line"><code># Ubuntu / Debian</p>
+<p>sudo apt update &amp;&amp; sudo apt install nfs-kernel-server</p>
+<p># Fedora / CentOS / RHEL</p>
+<p>sudo dnf install nfs-utils</code></div></div></p>
+<h3>Étape 2 : Créer le dossier à partager</h3>
+<p><div class="code-block"><div class="code-line"><code>sudo mkdir -p /srv/nfs/partage</p>
+<p>sudo chown nobody:nogroup /srv/nfs/partage</p>
+<p>sudo chmod 755 /srv/nfs/partage</code></div></div></p>
+<h3>Étape 3 : Configurer les exports</h3>
+<p>Le fichier <code>/etc/exports</code> définit quels dossiers sont partagés et à qui :</p>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/exports</code></div></div></p>
+<p>Ajouter une ligne par partage :</p>
+<p><div class="code-block"><div class="code-line"><code># Format : dossier_client  IP_client(options)</p>
+<p># Exemple : partage accessible en lecture/écriture pour 192.168.1.0/24</p>
+<p>/srv/nfs/partage   192.168.1.0/24(rw,sync,no_subtree_check)</code></div></div></p>
+<p>**Options principales :**</p>
+<ul>
+<li><code>rw</code> — lecture et écriture (par défaut : read-only)</li>
+<li><code>ro</code> — lecture seule uniquement</li>
+<li><code>sync</code> — écrit sur le disque avant de confirmer (plus sûr)</li>
+<li><code>no_subtree_check</code> — évite des vérifications qui peuvent causer des lenteurs</li>
+<li><code>no_root_squash</code> — root du client a les droits root sur le partage (⚠️ sécurité)</li>
+</ul>
+<blockquote>
+<p>**⚠️ Sécurité :** Par défaut, <code>root_squash</code> est activé : l'utilisateur root du client est converti en <code>nobody</code>. C'est bien pour la sécurité. N'utilise <code>no_root_squash</code> que dans un réseau de confiance.</p>
+</blockquote>
+<h3>Étape 4 : Redémarrer le service</h3>
+<p><div class="code-block"><div class="code-line"><code># Exporter les partages et redémarrer le service</p>
+<p>sudo exportfs -a</p>
+<p>sudo systemctl restart nfs-kernel-server</code></div></div></p>
+<h3>Vérifier les exports actifs</h3>
+<p><div class="code-block"><div class="code-line"><code>sudo exportfs -v</code></div></div></p>
+<hr/>
+<h2>3. Côté client : monter le partage NFS</h2>
+<h3>Étape 1 : Installer le client NFS</h3>
+<p><div class="code-block"><div class="code-line"><code># Ubuntu / Debian</p>
+<p>sudo apt update &amp;&amp; sudo apt install nfs-common</p>
+<p># Fedora / CentOS / RHEL</p>
+<p>sudo dnf install nfs-utils</code></div></div></p>
+<h3>Étape 2 : Monter le partage manuellement</h3>
+<p><div class="code-block"><div class="code-line"><code># Créer le point de montage local</p>
+<p>sudo mkdir -p /mnt/nfs/partage</p>
+<p># Monter le partage NFS</p>
+<p>sudo mount 192.168.1.100:/srv/nfs/partage /mnt/nfs/partage</code></div></div></p>
+<p>Remplace <code>192.168.1.100</code> par l'adresse IP réelle de ton serveur NFS.</p>
+<h3>Vérifier le montage</h3>
+<p><div class="code-block"><div class="code-line"><code>df -h | grep nfs</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code># Tester l'accès</p>
+<p>ls -la /mnt/nfs/partage/</code></div></div></p>
+<h3>Étape 3 : Montage automatique au boot (fstab)</h3>
+<p>Pour monter automatiquement au démarrage, ajoute une ligne dans <code>/etc/fstab</code> :</p>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/fstab</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code># Ajouter cette ligne :</p>
+<p>192.168.1.100:/srv/nfs/partage   /mnt/nfs/partage   nfs   defaults,_netdev   0   0</code></div></div></p>
+<p><code>_netdev</code> = attend que le réseau soit prêt avant de monter (important pour NFS).</p>
+<hr/>
+<h2>4. Démonter un partage NFS</h2>
+<p><div class="code-block"><div class="code-line"><code># Démonter le partage</p>
+<p>sudo umount /mnt/nfs/partage</p>
+<p># Forcer si occupé (si des fichiers sont ouverts)</p>
+<p>sudo umount -f /mnt/nfs/partage</p>
+<p># Lazy unmount (détache immédiatement, processus continuent)</p>
+<p>sudo umount -l /mnt/nfs/partage</code></div></div></p>
+<hr/>
+<h2>5. Commandes utiles</h2>
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>showmount -e localhost</code></td><td>Lister les exports sur le serveur</td></tr>
+<tr><td><code>showmount -e 192.168.1.100</code></td><td>Voir les partages NFS d'un serveur distant</td></tr>
+<tr><td><code>mount</td><td>grep nfs</code></td><td>Voir tous les montages NFS actifs</td></tr>
+<tr><td><code>sudo exportfs -v</code></td><td>Détails des exports actifs (serveur)</td></tr>
+<tr><td><code>sudo exportfs -ra</code></td><td>Réappliquer tous les exports après modification</td></tr>
+</table>
+<hr/>
+<h2>6. Exercice pratique</h2>
+<p>**Objectif :** Partager un dossier entre deux machines sur ton réseau local.</p>
+<p>**Sur la machine SERVEUR :**</p>
+<p>1. Installe <code>nfs-kernel-server</code></p>
+<p>2. Crée le dossier <code>/srv/nfs/public</code></p>
+<p>3. Ajoute dans <code>/etc/exports</code> :</p>
+<p>   <code>/srv/nfs/public   192.168.1.0/24(ro,sync,no_subtree_check)</code></p>
+<p>4. Redémarre le service : <code>sudo systemctl restart nfs-kernel-server</code></p>
+<p>5. Créer un fichier test : <code>echo "Salut depuis le serveur NFS" | sudo tee /srv/nfs/public/test.txt</code></p>
+<p>**Sur la machine CLIENT :**</p>
+<p>1. Installe <code>nfs-common</code></p>
+<p>2. Monte le partage : <code>sudo mount 192.168.1.XX:/srv/nfs/public /mnt/nfs/public</code></p>
+<p>3. Vérifie : <code>cat /mnt/nfs/public/test.txt</code></p>
+<p>4. Ajoute-le au fstab pour un montage automatique</p>
+<p>5. Nettoie : <code>sudo umount /mnt/nfs/public</code></p>
+<hr/>
+<h2>7. Résumé</h2>
+<table>
+<tr><th>Concept</th><th>Récapitulatif</th></tr>
+<tr><td>NFS</td><td>Network File System — partage de fichiers via réseau local</td></tr>
+<tr><td>Paquet serveur</td><td><code>nfs-kernel-server</code></td></tr>
+<tr><td>Paquet client</td><td><code>nfs-common</code></td></tr>
+<tr><td>Config serveur</td><td><code>/etc/exports</code></td></tr>
+<tr><td>Montage manuel</td><td><code>mount IPserveur:/dossier /point/montage</code></td></tr>
+<tr><td>Montage auto</td><td>Ligne dans <code>/etc/fstab</code> avec <code>_netdev</code></td></tr>
+<tr><td>Options courantes</td><td><code>rw/ro</code>, <code>sync</code>, <code>no_subtree_check</code></td></tr>
+</table>
+<p>NFS est un outil essentiel pour tout environnement Linux multi-machines. Simple, rapide et bien intégré — il remplace avantageusement les clés USB pour partager des fichiers entre serveurs !</p>
+<hr/>
+<p>*Dans la prochaine leçon, nous continuerons à explorer les outils système essentiels pour aller plus loin avec Linux.*</p>
+<nav>
+<a href="40-minuteurs-systemd.html">&larr; 40-minuteurs-systemd</a>
+<a href="42-configuration-dns.html">42-configuration-dns &rarr;</a>
+</nav></div></body></html>

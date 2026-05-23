@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 46 : Signaux, erreurs et gestion d'interruption dans les scripts Bash</h1>
+<p>Dans cette leçon, tu vas apprendre à rendre tes scripts Bash robustes : intercepter les signaux (Ctrl+C), gérer les erreurs, quitter proprement et nettoyer les fichiers temporaires. Quand un script est interrompu ou échoue, c'est souvent parce qu'il n'a pas été conçu pour gérer ces situations.</p>
+<hr/>
+<h2>1. Qu'est-ce qu'un signal ?</h2>
+<p>Un **signal** est un message envoyé par le système ou par un utilisateur à un processus en cours d'exécution. C'est une forme de communication entre processus — et entre toi et tes scripts.</p>
+<h3>Les signaux les plus courants</h3>
+<table>
+<tr><th>Signal</th><th>Numéro</th><th>Signification</th><th>Action par défaut</th></tr>
+<tr><td><code>SIGINT</code> (Ctrl+C)</td><td>2</td><td>Interruption par l'utilisateur</td><td>Termine le processus</td></tr>
+<tr><td><code>SIGTERM</code></td><td>15</td><td>Demande d'arrêt propre</td><td>Termine le processus</td></tr>
+<tr><td><code>SIGKILL</code></td><td>9</td><td>Arrêt forcé</td><td>Termine immédiatement (impossible à intercepter)</td></tr>
+<tr><td><code>SIGHUP</code></td><td>1</td><td>Le terminal a été fermé</td><td>Le processus se termine ou se reconfigure</td></tr>
+<tr><td><code>SIGEXIT</code></td><td>0</td><td>Sortie normale du script</td><td>—</td></tr>
+</table>
+<p>Quand tu tapes <code>Ctrl+C</code> dans un terminal, tu envoies un <code>SIGINT</code> au processus en avant-plan. Par défaut, cela termine le programme. Mais avec <code>trap</code>, tu peux décider ce qui se passe à la place.</p>
+<hr/>
+<h2>2. La commande <code>trap</code> — intercepter les signaux</h2>
+<p><code>trap</code> te permet d'exécuter une commande (ou une fonction) quand un signal précis est reçu. C'est indispensable pour nettoyer proprement.</p>
+<h3>Syntaxe de base</h3>
+<p><div class="code-block"><div class="code-line"><code>trap 'commande' SIGNAL</p>
+<p>trap 'fonction' SIGNAL1 SIGNAL2</code></div></div></p>
+<h3>Exemple fondamental : nettoyer à la sortie</h3>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Fonction de nettoyage</p>
+<p>nettoyer() {</p>
+<p>    echo "Nettoyage en cours..."</p>
+<p>    rm -f /tmp/mon-script.lock</p>
+<p>    rm -f /tmp/mon-script.tmp</p>
+<p>    echo "Programme terminé proprement."</p>
+<p>}</p>
+<p># Intercepter Ctrl+C (SIGINT) et sortie normale (EXIT)</p>
+<p>trap nettoyer EXIT INT TERM</p>
+<p>echo "Mon script tourne... (Ctrl+C pour arrêter)"</p>
+<p>sleep 30</code></div></div></p>
+<p>**Ce qui se passe :**</p>
+<ul>
+<li>Le script démarre et enregistre la fonction <code>nettoyer</code></li>
+<li>Quand tu fais <code>Ctrl+C</code> → <code>SIGINT</code> → <code>nettoyer</code> s'exécute → le lockfile est supprimé</li>
+<li>Quand le script finit normalement → <code>EXIT</code> → <code>nettoyer</code> s'exécute aussi</li>
+</ul>
+<blockquote>
+<p>**💡 Bonnes pratiques :** Utilise toujours <code>trap</code> pour supprimer les fichiers temporaires et libérer les ressources (locks, sockets, connexions).</p>
+</blockquote>
+<hr/>
+<h2>3. Gérer les erreurs avec <code>set -e</code> et <code>set -u</code></h2>
+<h3>Quitter dès qu'une commande échoue : <code>set -e</code></h3>
+<p>Par défaut, Bash continue l'exécution même si une commande échoue. <code>set -e</code> change ce comportement.</p>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>set -e  # Quitte immédiatement si une commande échoue</p>
+<p>echo "Création du dossier..."</p>
+<p>mkdir /tmp/mon-projet</p>
+<p>cd /tmp/mon-projet</p>
+<p>echo "Projet créé."</code></div></div></p>
+<p>Si <code>mkdir</code> échoue (droits insuffisants, disque plein), le script s'arrête là.</p>
+<h3>Quitter sur variable non définie : <code>set -u</code></h3>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>set -u</p>
+<p>echo "Salutation pour $NOM"  # Si $NOM n'existe pas → erreur</code></div></div></p>
+<p>Sans <code>set -u</code>, Bash remplace <code>$NOM</code> par une chaîne vide sans protester. Avec <code>set -u</code>, le script s'arrête.</p>
+<h3>Combinaison recommandée</h3>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>set -euo pipefail</code></div></div></p>
+<table>
+<tr><th>Option</th><th>Rôle</th></tr>
+<tr><td><code>-e</code></td><td>Quitte sur erreur</td></tr>
+<tr><td><code>-u</code></td><td>Quitte sur variable non définie</td></tr>
+<tr><td><code>-o pipefail</code></td><td>Quitte si une commande dans un pipe échoue (pas seulement la dernière)</td></tr>
+</table>
+<hr/>
+<h2>4. Vérifier les codes de retour</h2>
+<p>Chaque commande retourne un **code de sortie** : <code>0</code> = succès, <code>!= 0</code> = erreur.</p>
+<p><div class="code-block"><div class="code-line"><code># Lancer une commande et tester son résultat</p>
+<p>mkdir /backup || { echo "Échec de la création du dossier"; exit 1; }</p>
+<p># Ou avec if</p>
+<p>if grep -q "error" /var/log/syslog; then</p>
+<p>    echo "Des erreurs ont été trouvées !"</p>
+<p>fi</p>
+<p># Capturer le code de sortie dans une variable</p>
+<p>ls /etc/passwd</p>
+<p>resultat=$?</p>
+<p>echo "Code de sortie de ls : $resultat"  # 0 si succès</code></div></div></p>
+<hr/>
+<h2>5. Exemple complet : script robuste de sauvegarde</h2>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>#</p>
+<p># sauvegarde-robuste.sh — Exemple de script avec gestion de signaux et d'erreurs</p>
+<p>#</p>
+<p>set -euo pipefail</p>
+<p># Répertoires</p>
+<p>SOURCE="/home/david/documents"</p>
+<p>DEST="/tmp/backup-$(date +%Y%m%d).tar.gz"</p>
+<p>LOCKFILE="/tmp/sauvegarde.lock"</p>
+<p># Fonction de nettoyage</p>
+<p>cleanup() {</p>
+<p>    local exit_code=$?</p>
+<p>    rm -f "$LOCKFILE"</p>
+<p>    if [ $exit_code -ne 0 ]; then</p>
+<p>        echo "Sauvegarde échouée (code: $exit_code)" &gt;&amp;2</p>
+<p>    fi</p>
+<p>    exit $exit_code</p>
+<p>}</p>
+<p># Intercepter les signaux</p>
+<p>trap cleanup EXIT INT TERM</p>
+<p># Vérifier qu'une seule instance tourne</p>
+<p>if [ -f "$LOCKFILE" ]; then</p>
+<p>    echo "Une sauvegarde est déjà en cours. Quittez l'autre instance."</p>
+<p>    exit 1</p>
+<p>fi</p>
+<p># Créer le lockfile</p>
+<p>echo $$ &gt; "$LOCKFILE"</p>
+<p># Corps du script</p>
+<p>echo "Sauvegarde de $SOURCE vers $DEST..."</p>
+<p>tar -czf "$DEST" "$SOURCE" &amp;&amp; echo "Sauvegarde terminée : $DEST"</p>
+<p># Supprimer le lockfile avant de quitter (cleanup le fait, mais explicite)</p>
+<p>rm -f "$LOCKFILE"</code></div></div></p>
+<p>**Points clés de ce script :**</p>
+<ul>
+<li><code>set -euo pipefail</code> → arrêt sur erreur, variable manquante ou pipe cassé</li>
+<li><code>trap cleanup EXIT INT TERM</code> → nettoyage systématique (lock + message)</li>
+<li>Lockfile → empêche deux sauvegardes simultanées</li>
+<li>Code de sortie explicite avec <code>local exit_code=$?</code></li>
+</ul>
+<hr/>
+<h2>6. Les signaux dans la pratique</h2>
+<h3>Envoyer un signal manuellement</h3>
+<p><div class="code-block"><div class="code-line"><code># Voir les signaux disponibles</p>
+<p>kill -l</p>
+<p># Envoyer SIGTERM à un processus (demande polie)</p>
+<p>kill -15 1234</p>
+<p># Envoyer SIGKILL (forcé)</p>
+<p>kill -9 1234</p>
+<p># Envoyer un signal à tous les processus d'un nom</p>
+<p>pkill -f "mon-script.sh"</code></div></div></p>
+<h3>Tester un signal dans un script</h3>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>trap 'echo "Signal reçu !"' INT</p>
+<p>echo "En attente... (Ctrl+C pour tester)"</p>
+<p>while true; do</p>
+<p>    sleep 1</p>
+<p>done</code></div></div></p>
+<hr/>
+<h2>7. Récapitulatif des options de <code>set</code></h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>set -e</code></td><td>Quitte si une commande échoue</td></tr>
+<tr><td><code>set -u</code></td><td>Quitte si une variable est indéfinie</td></tr>
+<tr><td><code>set -o pipefail</code></td><td>Quitte si une commande dans un pipe échoue</td></tr>
+<tr><td><code>set -x</code></td><td>Affiche chaque commande avant de l'exécuter (debug)</td></tr>
+<tr><td><code>set -n</code></td><td>Lit le script sans exécuter (syntax check only)</td></tr>
+</table>
+<p>Pour le debug, tu peux aussi utiliser <code>bash -x mon-script.sh</code>.</p>
+<hr/>
+<h2>8. Exercice pratique</h2>
+<p>**Objectif :** Créer un script <code>monitoring.sh</code> qui surveille l'espace disque et qui :</p>
+<p>1. Quitte proprement sur Ctrl+C (affiche un message d'au revoir)</p>
+<p>2. Supprime son fichier lock à la sortie</p>
+<p>3. Utilise <code>set -euo pipefail</code></p>
+<p>4. Vérifie l'espace disque et affiche une alerte si > 80%</p>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Objectif : créer ce script</p>
+<p># 1. Ajouter set -euo pipefail</p>
+<p># 2. Créer un lockfile /tmp/monitoring.lock</p>
+<p># 3. Écrire une fonction cleanup() qui supprime le lock</p>
+<p># 4. Intercepter EXIT, INT, TERM</p>
+<p># 5. Vérifier l'espace disque : df / | grep -v Filesystem | awk '{print $5}' | tr -d '%'</p>
+<p># 6. Si &gt; 80%, afficher "Alerte : espace disque faible !"</p>
+<p># 7. Boucle infinie avec sleep 10</code></div></div></p>
+<p>**Solution indicative :**</p>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>set -euo pipefail</p>
+<p>LOCKFILE="/tmp/monitoring.lock"</p>
+<p>cleanup() {</p>
+<p>    rm -f "$LOCKFILE"</p>
+<p>    echo "Script arrêté. Au revoir !"</p>
+<p>}</p>
+<p>trap cleanup EXIT INT TERM</p>
+<p>if [ -f "$LOCKFILE" ]; then</p>
+<p>    echo "Le script tourne déjà."</p>
+<p>    exit 1</p>
+<p>fi</p>
+<p>echo $$ &gt; "$LOCKFILE"</p>
+<p>echo " Surveillance disque... (Ctrl+C pour arrêter)"</p>
+<p>while true; do</p>
+<p>    usage=$(df / | tail -1 | awk '{print $5}' | tr -d '%')</p>
+<p>    if [ "$usage" -gt 80 ]; then</p>
+<p>        echo " Alerte : espace disque à ${usage}% !"</p>
+<p>    fi</p>
+<p>    sleep 10</p>
+<p>done</code></div></div></p>
+<hr/>
+<h2>Résumé</h2>
+<table>
+<tr><th>Concept</th><th>Commande / Outil</th><th>À retenir</th></tr>
+<tr><td>Intercepter les signaux</td><td><code>trap 'fonction' SIG</code></td><td>Nettoyer les ressources à la sortie</td></tr>
+<tr><td>Quitter sur erreur</td><td><code>set -e</code></td><td>Utile pour les scripts critiques</td></tr>
+<tr><td>Quitter sur variable manquante</td><td><code>set -u</code></td><td>Évite les bugs silencieux</td></tr>
+<tr><td>Pipe échecs</td><td><code>set -o pipefail</code></td><td>Détecte les erreurs dans les pipes</td></tr>
+<tr><td>Code de sortie</td><td><code>$?</code></td><td>0 = succès, != 0 = erreur</td></tr>
+<tr><td>Debug</td><td><code>bash -x script.sh</code></td><td>Affiche chaque commande</td></tr>
+</table>
+<p>Un script qui gère ses signaux et ses erreurs, c'est un script **professionnel**. Même si ton serveur coupe, ton script aura le temps de nettoyer ses fichiers temporaires et de préserver ses données.</p>
+<nav>
+<a href="45-priorite-processus-nice-renice.html">&larr; 45-priorite-processus-nice-renice</a>
+<a href="47-awk-manipuler-texte.html">47-awk-manipuler-texte &rarr;</a>
+</nav></div></body></html>

@@ -327,3 +327,26 @@ fi
 ---
 
 Maîtrise la gestion des utilisateurs pour administrer Linux correctement ! 👤
+---
+
+## Complément: Commandes useradd/usermod
+
+### 1. Anatomie d'un compte utilisateur
+
+Chaque utilisateur sur Linux est défini par plusieurs informations stockées dans deux fichiers clés :
+
+/etc/passwd — informations du compte (login, UID, GID principal, shell, etc.)
+
+/etc/shadow — mot de passe chiffré (accessible uniquement à root)
+
+/etc/group — liste des groupes et de leurs membres
+
+/etc/gshadow — mots de passe des groupes (rarement utilisé)
+
+### 3. passwd — Définir le mot de passe
+
+Après useradd, il faut attribuer un mot de passe :
+
+### Résumé
+
+La gestion des utilisateurs est une compétence fondamentale pour tout administrateur Linux. Ces commandes te permettent de créer, configurer, protéger et supprimer des comptes en toute sécurité.

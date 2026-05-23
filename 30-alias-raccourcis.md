@@ -426,3 +426,97 @@ type ll
 - **Scripts de configuration** : crée un script qui installe ta config sur une nouvelle machine
 - **Oh My Zsh** : framework pour Zsh avec des centaines d'alias prêts à l'emploi
 - **Autocomplétion** : configure l'autocomplétion pour tes fonctions personnalisées
+
+---
+
+## Complément: Fonctions bash
+
+### Les alias
+
+Un alias est un raccourci qui remplace une commande ou une série de commandes. C'est la méthode la plus simple pour personnaliser votre terminal.
+
+### Créer un alias
+
+Maintenant, taper ll équivaut à taper ls -la.
+
+Crée une commande update qui met à jour le système automatiquement.
+
+Raccourci pour git status.
+
+### Lister et supprimer les alias
+
+Affiche tous les alias actuellement définis.
+
+### Alias avec arguments (limites)
+
+Les alias ne peuvent pas gérer d'arguments directement. Si vous écrivez :
+
+Et que vous tapez gp main, le main sera appendu après la commande complète. Cela fonctionne dans ce cas, mais pour des cas plus complexes, mieux vaut utiliser une fonction.
+
+### Les fonctions Bash
+
+Les fonctions sont plus puissantes que les alias. Elles peuvent accepter des paramètres, utiliser des conditions, des boucles, et返回值.
+
+### Syntaxe des fonctions
+
+Ou avec le mot-clé function (optionnel) :
+
+### Exemples concrets
+
+Utilisation : backup monfichier.txt crée une copie备份 avec la date dans le nom.
+
+Appel : taille_fichier document.pdf
+
+### Fonctions avec valeur de retour (return)
+
+Utilisation :
+
+### Variables dans les fonctions
+
+Le mot-clé local limite la variable à la fonction. Sans cela, la variable serait globale.
+
+### Exemples pratiques
+
+Utilisation : mkcd mon_projet
+
+Utilisation : hc git cherche les commandes git dans l'historique.
+
+### Rendre les alias et fonctions permanents
+
+Par défaut, les alias et fonctions définis dans le terminal sont temporaires. Pour les rendre permanents, ajoutez-les dans un fichier de configuration.
+
+Ajoutez vos alias et fonctions à la fin du fichier.
+
+Ou plus court :
+
+Sur certaines distributions, on peut créer un fichier séparé :
+
+Puis créez ~/.bash_aliases avec vos alias et fonctions.
+
+### Alias système (pour tous les utilisateurs)
+
+Pour des alias visibles par tous les utilisateurs du système, ajoutez-les dans :
+
+Ou dans /etc/profile.d/ pour une organisation plus propre.
+
+### Debugging des fonctions
+
+Pour déboguer une fonction, utilisez set -x :
+
+Les commandes seront affichées avant leur exécution.
+
+### Résumé
+
+Les alias et fonctions transforment votre terminal en outil personnalisé :
+
+alias nom='commande' — crée un raccourci simple
+
+unalias nom — supprime un alias
+
+nom_fonction() { ... } — crée une fonction complexe
+
+Utilisez local pour les variables locales
+
+Placez vos alias/fonctions dans ~/.bashrc pour les rendre permanents
+
+Séparez dans ~/.bash_aliases pour une meilleure organisation

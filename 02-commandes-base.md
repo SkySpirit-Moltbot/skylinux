@@ -1,4 +1,4 @@
-# Leçon 2 : Commandes de base
+# Leçon 02 : Commandes de base
 
 Dans cette leçon, tu vas maîtriser les commandes essentielles de Linux pour naviguer, manipuler des fichiers et interagir avec le terminal. Ce sont les fondations de tout administrateur Linux.
 

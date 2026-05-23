@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 40 : Les minuteurs systemd (timers)</h1>
+<p>Dans cette leçon, tu vas découvrir les **minuteurs systemd** (systemd timers), une alternative moderne et puissante à cron pour planifier des tâches. Intégrés à systemd, ils offrent plus de fonctionnalités : suivi dans journalctl, activation à chaud, support des événements système, et bien plus.</p>
+<hr/>
+<h2>1. Pourquoi passer aux minuteurs systemd ?</h2>
+<p>**cron** fait le job depuis des décennies. Mais il a ses limites :</p>
+<ul>
+<li>Pas de log natif (tout va dans <code>cron</code> ou <code>syslog</code>)</li>
+<li>Pas de dépendances entre tâches</li>
+<li>Pas de reprise automatique après veille/hibernation</li>
+<li>Difficile à déboguer</li>
+</ul>
+<p>**systemd timers** résolvent tout ça :</p>
+<ul>
+<li>✅ Logs centralisés dans <code>journalctl</code></li>
+<li>✅ Démon au repos jusqu'au déclenchement (moins de ressources)</li>
+<li>✅ Reprennent après une veille/hibernation</li>
+<li>✅ Contrôle fin : max retries, randomised delay, etc.</li>
+</ul>
+<hr/>
+<h2>2. Le principe : deux fichiers unit</h2>
+<p>Un minuteur systemd fonctionne toujours par **paire** :</p>
+<p><div class="code-block"><div class="code-line"><code>tache.service   → Le script/la commande à exécuter</p>
+<p>tache.timer     → Le déclencheur (quand et comment)</code></div></div></p>
+<p><div class="code-block"><div class="code-line"><code>┌──────────────────────────────────────────────┐</p>
+<p>│  tache.timer (minuteur)                     │</p>
+<p>│    └─ active → déclenche → tache.service    │</p>
+<p>│                                              │</p>
+<p>│  tache.service (service)                    │</p>
+<p>│    └─ exécute → ta commande/script          │</p>
+<p>└──────────────────────────────────────────────┘</code></div></div></p>
+<hr/>
+<h2>3. Créer un minuteur simple</h2>
+<h3>Étape 1 : Créer le service</h3>
+<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/systemd/system/ma-tache.service</code></div></div></p>
+<p>```ini</p>
+<p>[Unit]</p>
+<p>Description=Ma première tâche planifiée</p>
+<p>[Service]</p>
+<p>Type=oneshot</p>
+<p>ExecStart=/home/user/scripts/backup.sh</p>
+<p><div class="code-block"><div class="code-line"><code><code>Type=oneshot</code> = le service s'exécute une fois et se termine.</p>
+<h3>Étape 2 : Créer le minuteur</code></div></div>bash</h3>
+<p>sudo nano /etc/systemd/system/ma-tache.timer</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<p>[Unit]</p>
+<p>Description=Mon minuteur quotidien</p>
+<p>[Timer]</p>
+<p>OnCalendar=daily</p>
+<p>Persistent=true</p>
+<p>[Install]</p>
+<p>WantedBy=timers.target</p>
+<p><div class="code-block"><div class="code-line"><code>**Explications des options :**</p>
+<ul>
+<li><code>OnCalendar=daily</code> → s'exécute une fois par jour (à minuit)</li>
+<li><code>Persistent=true</code> → rattrape les exécutions manquées si le PC était éteint</li>
+</ul>
+<h3>Étape 3 : Activer et démarrer</code></div></div>bash</h3>
+<p># Recharger systemd pour voir les nouvelles unités</p>
+<p>sudo systemctl daemon-reload</p>
+<p># Activer le minuteur (démarre au boot)</p>
+<p>sudo systemctl enable ma-tache.timer</p>
+<p># Démarrer immédiatement</p>
+<p>sudo systemctl start ma-tache.timer</p>
+<p># Vérifier que le minuteur est actif</p>
+<p>sudo systemctl status ma-tache.timer</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>4. Les calendriers disponibles</h2>
+<h3>Formats courants</code></div></div>ini</h3>
+<p>OnCalendar=daily        # Une fois par jour à minuit</p>
+<p>OnCalendar=hourly      # Toutes les heures</p>
+<p>OnCalendar=minutely    # Chaque minute</p>
+<p>OnCalendar=weekly      # Une fois par semaine</p>
+<p>OnCalendar=*-*-* 04:00:00     # Chaque jour à 4h du matin</p>
+<p>OnCalendar=*-*-01 00:00:00   # Premier du mois à minuit</p>
+<p>OnCalendar=Mon *-*-* 09:00:00 # Chaque lundi à 9h</p>
+<p>OnCalendar=*-*-25 12:00:00    # Le 25 du mois à midi</p>
+<p>OnCalendar=Sat,Sun *-*-* 10:00:00  # Weekends à 10h</p>
+<p><div class="code-block"><div class="code-line"><code>### Syntaxe étendue</code></div></div>ini</p>
+<p>OnCalendar=*-*-* *:00:00           # Toutes les heures pile</p>
+<p>OnCalendar=*-*-* *:00/15:00        # Toutes les 15 minutes</p>
+<p>OnCalendar=*-*-03..09 18:00:00     # Du 3 au 9 du mois à 18h</p>
+<p>OnCalendar=hourly::00               # Toutes les heures</p>
+<p>OnCalendar=*:0/5                   # Toutes les 5 minutes</p>
+<p><div class="code-block"><div class="code-line"><code>### Vérifier les calendriers</code></div></div>bash</p>
+<p># Voir quand un calendrier sera déclenché</p>
+<p>systemd-analyze calendar "daily"</p>
+<p>systemd-analyze calendar "Mon *-*-* 09:00:00"</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>5. Minuteur avec intervalle (au lieu de calendrier)</code></div></div>ini</h2>
+<p>[Timer]</p>
+<p># Exécute 1h après le démarrage, puis toutes les 24h</p>
+<p>OnBootSec=1h</p>
+<p>OnUnitActiveSec=24h</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div></p>
+<p>OnBootSec=1h      → 1h après le démarrage</p>
+<p>OnUnitActiveSec=24h  → puis toutes les 24h après la dernière exécution</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<p>[Timer]</p>
+<p># Exécute 5 minutes après le démarrage</p>
+<p>OnBootSec=5min</p>
+<p># Puis toutes les 12 heures</p>
+<p>OnUnitActiveSec=12h</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>6. Débogage et surveillance</h2>
+<h3>Voir les minuteurs actifs</code></div></div>bash</h3>
+<p># Lister tous les minuteurs</p>
+<p>systemctl list-timers --all</p>
+<p># Résultat :</p>
+<p>NEXT                         LEFT          LAST                         PASSED       UNIT                    ACTIVATES</p>
+<p>lun. 2026-03-30 09:00:00 CET  42min gauche  dim. 2026-03-29 09:00:00 CET  23h ago   mon-backup.timer        mon-backup.service</p>
+<p><div class="code-block"><div class="code-line"><code>### Voir les logs d'un service</code></div></div>bash</p>
+<p># Logs du service</p>
+<p>sudo journalctl -u ma-tache.service</p>
+<p># Logs du minuteur</p>
+<p>sudo journalctl -u ma-tache.timer</p>
+<p># Suivre en temps réel</p>
+<p>sudo journalctl -f -u ma-tache.service</p>
+<p><div class="code-block"><div class="code-line"><code>### Exécuter manuellement</code></div></div>bash</p>
+<p># Lancer le service maintenant (sans attendre le minuteur)</p>
+<p>sudo systemctl start ma-tache.service</p>
+<p># Forcer le minuteur à s'exécuter maintenant</p>
+<p>sudo systemctl start ma-tache.timer</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>7. Exemple complet : backup automatique</h2>
+<h3>Script de backup</code></div></div>bash</h3>
+<p>mkdir -p ~/scripts</p>
+<p>nano ~/scripts/backup.sh</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<p>#!/bin/bash</p>
+<p># backup.sh - Backup quotidien du home</p>
+<p>DATE=$(date +%Y-%m-%d)</p>
+<p>BACKUP_DIR=/home/user/backups</p>
+<p>SOURCE=/home/user/documents</p>
+<p>mkdir -p "$BACKUP_DIR"</p>
+<p>tar -czf "$BACKUP_DIR/backup-$DATE.tar.gz" "$SOURCE"</p>
+<p># Garder que les 7 derniers backups</p>
+<p>ls -t "$BACKUP_DIR"/backup-*.tar.gz | tail -n +8 | xargs rm -f 2>/dev/null</p>
+<p>echo "$(date) : Backup effectué avec succès" >> /var/log/backup.log</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<p>chmod +x ~/scripts/backup.sh</p>
+<p><div class="code-block"><div class="code-line"><code>### Service</code></div></div>bash</p>
+<p>sudo nano /etc/systemd/system/backup.service</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<p>[Unit]</p>
+<p>Description=Backup quotidien du répertoire documents</p>
+<p>After=network.target</p>
+<p>[Service]</p>
+<p>Type=oneshot</p>
+<p>ExecStart=/home/user/scripts/backup.sh</p>
+<p>User=user</p>
+<p>StandardOutput=journal</p>
+<p>StandardError=journal</p>
+<p>[Install]</p>
+<p>WantedBy=multi-user.target</p>
+<p><div class="code-block"><div class="code-line"><code>### Minuteur (quotidien à 3h du matin)</code></div></div>bash</p>
+<p>sudo nano /etc/systemd/system/backup.timer</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<p>[Unit]</p>
+<p>Description=Minuteur de backup quotidien</p>
+<p>[Timer]</p>
+<p>OnCalendar=*-*-* 03:00:00</p>
+<p>Persistent=true</p>
+<p>RandomizedDelaySec=30min</p>
+<p>[Install]</p>
+<p>WantedBy=timers.target</p>
+<p><div class="code-block"><div class="code-line"><code><code>RandomizedDelaySec=30min</code> = ajoute un délai aléatoire jusqu'à 30 min pour éviter que tous les minuteurs s'exécutent en même temps.</code></div></div>bash</p>
+<p>sudo systemctl daemon-reload</p>
+<p>sudo systemctl enable --now backup.timer</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>8. Gestion avancée : avec état (persistant)</h2>
+<h3>Service de type "notify" (plus complexe)</h3>
+<p>Pour un script qui surveille un processus :</code></div></div>ini</p>
+<p>[Unit]</p>
+<p>Description=Monitor de surveillance</p>
+<p>[Service]</p>
+<p>Type=notify</p>
+<p>ExecStart=/home/user/scripts/monitor.sh</p>
+<p>Restart=always</p>
+<p>RestartSec=10</p>
+<p>[Install]</p>
+<p>WantedBy=multi-user.target</p>
+<p><div class="code-block"><div class="code-line"><code>### Minuteur avec contraintes</code></div></div>ini</p>
+<p>[Unit]</p>
+<p>Description=Mission critique</p>
+<p>[Timer]</p>
+<p># S'exécute toutes les 6h</p>
+<p>OnUnitActiveSec=6h</p>
+<p># Ne s'exécute PAS si sur batterie (laptop)</p>
+<p>ConditionACPower=true</p>
+<p># Décalage aléatoire max 5 min pour éviter les conflits</p>
+<p>RandomizedDelaySec=5min</p>
+<p>[Install]</p>
+<p>WantedBy=timers.target</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>9. Comparatif cron vs systemd timers</h2>
+<table>
+<tr><th>Fonctionnalité</th><th>cron</th><th>systemd timers</th></tr>
+<tr><td>Configuration</td><td><code>crontab -e</code></td><td>Fichiers <code>.service</code> + <code>.timer</code> dans <code>/etc/systemd/system/</code></td></tr>
+<tr><td>Logs</td><td>Fichier externe (cron, syslog)</td><td><code>journalctl -u unit</code></td></tr>
+<tr><td>Reprise après veille</td><td>❌</td><td>✅ (avec <code>Persistent=true</code>)</td></tr>
+<tr><td>Décalage aléatoire</td><td>❌</td><td>✅ (<code>RandomizedDelaySec</code>)</td></tr>
+<tr><td>Débogage</td><td>Difficile</td><td>Facile (<code>systemctl status</code>)</td></tr>
+<tr><td>Dépendances</td><td>Manuelles (dans le script)</td><td>Via <code>[Unit]</code> directives</td></tr>
+<tr><td>Activation par événement</td><td>❌</td><td>✅ (via <code>OnCalendar</code> + <code>OnBootSec</code>)</td></tr>
+</table>
+<hr/>
+<h2>10. Commandes de référence</code></div></div>bash</h2>
+<p># Recharger après modification</p>
+<p>sudo systemctl daemon-reload</p>
+<p># Activer (au démarrage)</p>
+<p>sudo systemctl enable unit.timer</p>
+<p># Démarrer maintenant</p>
+<p>sudo systemctl start unit.timer</p>
+<p># Arrêter</p>
+<p>sudo systemctl stop unit.timer</p>
+<p># Désactiver</p>
+<p>sudo systemctl disable unit.timer</p>
+<p># Voir le statut</p>
+<p>systemctl status unit.timer</p>
+<p># Lister les minuteurs actifs</p>
+<p>systemctl list-timers --all</p>
+<p># Voir les prochaines exécutions</p>
+<p>systemctl list-timers --all --no-pager</p>
+<p># Logs</p>
+<p>journalctl -u unit.service</p>
+<p>journalctl -u unit.timer -f</p>
+<p># Tester le service seul</p>
+<p>sudo systemctl start unit.service</p>
+<p># Vérifier la validité d'un calendrier</p>
+<p>systemd-analyze calendar "*-*-* 03:00:00"</p>
+<p><div class="code-block"><div class="code-line"><code>---</p>
+<h2>11. Exercice pratique</h2>
+<p>**Objectif :** Créer un minuteur qui affiche un message dans les logs toutes les 5 minutes.</p>
+<p>**Étape 1 : Crée le script**</code></div></div>bash</p>
+<p>mkdir -p ~/scripts</p>
+<p>nano ~/scripts/log-message.sh</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<p>#!/bin/bash</p>
+<p>echo "$(date) : Le minuteur fonctionne ! ID du système : $(hostname)"</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<p>chmod +x ~/scripts/log-message.sh</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 2 : Crée le service**</code></div></div>bash</p>
+<p>sudo nano /etc/systemd/system/log-message.service</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<p>[Unit]</p>
+<p>Description=Message de test pour minuteur systemd</p>
+<p>[Service]</p>
+<p>Type=oneshot</p>
+<p>ExecStart=/home/user/scripts/log-message.sh</p>
+<p>StandardOutput=journal</p>
+<p>StandardError=journal</p>
+<p>[Install]</p>
+<p>WantedBy=multi-user.target</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 3 : Crée le minuteur (toutes les 5 minutes)**</code></div></div>bash</p>
+<p>sudo nano /etc/systemd/system/log-message.timer</p>
+<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<p>[Unit]</p>
+<p>Description=Minuteur de test - toutes les 5 minutes</p>
+<p>[Timer]</p>
+<p>OnCalendar=*:0/5</p>
+<p>Persistent=true</p>
+<p>[Install]</p>
+<p>WantedBy=timers.target</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 4 : Active et vérifie**</code></div></div>bash</p>
+<p>sudo systemctl daemon-reload</p>
+<p>sudo systemctl enable --now log-message.timer</p>
+<p>sudo systemctl status log-message.timer</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 5 : Vérifie les logs**</code></div></div>bash</p>
+<p>journalctl -u log-message.service -f</p>
+<p># (attends 5 minutes ou force l'exécution)</p>
+<p>sudo systemctl start log-message.service</p>
+<p>journalctl -u log-message.service --no-pager</p>
+<p><div class="code-block"><div class="code-line"><code>**Étape 6 : Nettoie (une fois l'exercice terminé)**</code></div></div>bash</p>
+<p>sudo systemctl stop log-message.timer</p>
+<p>sudo systemctl disable log-message.timer</p>
+<p>sudo rm /etc/systemd/system/log-message.timer</p>
+<p>sudo rm /etc/systemd/system/log-message.service</p>
+<p>sudo systemctl daemon-reload</p>
+<p>```</p>
+<p>✅ Tu sais maintenant créer et gérer des minuteurs systemd !</p>
+<hr/>
+<h2>Résumé</h2>
+<table>
+<tr><th>Concept</th><th>Description</th></tr>
+<tr><td><code>.service</code></td><td>Définit la commande à exécuter (<code>ExecStart</code>)</td></tr>
+<tr><td><code>.timer</code></td><td>Définit QUAND exécuter (<code>OnCalendar</code>, <code>OnBootSec</code>)</td></tr>
+<tr><td><code>OnCalendar</code></td><td>Planification par calendrier (daily, hourly, date précise)</td></tr>
+<tr><td><code>OnBootSec</code> / <code>OnUnitActiveSec</code></td><td>Planification par intervalle depuis boot/dernière exécution</td></tr>
+<tr><td><code>Persistent=true</code></td><td>Rattrape les exécutions manquées</td></tr>
+<tr><td><code>RandomizedDelaySec</code></td><td>Décalage aléatoire pour espacer les tâches</td></tr>
+<tr><td><code>systemctl list-timers</code></td><td>Voir tous les minuteurs et prochaines exécutions</td></tr>
+<tr><td><code>journalctl -u unit</code></td><td>Voir les logs d'un service</td></tr>
+</table>
+<p>**La règle d'or :** Si tu utilises déjà cron, les minuteurs systemd valent le détour pour les tâches critiques ou sur laptop (veille/hibernation). Pour les tâches simples, cron reste très bien.</p>
+<hr/>
+<p>*Dans la prochaine leçon, nous continuerons à explorer les outils système essentiels pour aller plus loin avec Linux.*</p>
+<nav>
+<a href="39-gestion-volumes-lvm.html">&larr; 39-gestion-volumes-lvm</a>
+<a href="41-partage-nfs.html">41-partage-nfs &rarr;</a>
+</nav></div></body></html>

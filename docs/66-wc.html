@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 66 : wc — Compter lignes, mots et caractères</h1>
+<h3>📖 Utilisation de base</h3>
+<p>La syntaxe de base de wc est simple :</p>
+<p>L'option -l (lines) affiche le nombre de lignes. C'est l'utilisation la plus courante de wc.</p>
+<p>L'option -w (words) compte le nombre de mots dans le fichier.</p>
+<p>L'option -c (characters) affiche le nombre d'octets (caractères) dans le fichier.</p>
+<p>Sans option, wc affiche les trois informations : lignes, mots et caractères, dans cet ordre, séparés par des espaces.</p>
+<h3>💡 Combinaisons utiles</h3>
+<p>wc peut traiter plusieurs fichiers. Il affichera les statistiques pour chaque fichier, plus un total.</p>
+<p>Vous pouvez utiliser wc avec d'autres commandes via un pipe pour compter le résultat.</p>
+<p>Une utilisation classique : compter le nombre de fichiers ou répertoires dans le répertoire courant. L'option -1 de ls affiche un fichier par ligne.</p>
+<p>Compter le nombre de processus en cours. Le résultat inclut la ligne d'en-tête de ps, donc retirez 1 pour avoir le nombre exact de processus.</p>
+<p>Permet de savoir combien d'utilisateurs sont connectés au système.</p>
+<p>Utile pour évaluer la taille d'un script ou comparer deux versions.</p>
+<h3>🎯 Cas d'utilisation courants</h3>
+<p>Permet de connaître le nombre d'entrées dans un fichier de log.</p>
+<p>Combinez grep et wc pour compter les lignes contenant un motif spécifique.</p>
+<p>Sur Debian/Ubuntu ou Red Hat/CentOS, comptez facilement le nombre de packages installés.</p>
+<p>Listez le contenu d'une archive et comptez le nombre de fichiers qu'elle contient.</p>
+<p>Pour les développeurs, comptez rapidement le nombre de lignes de code par langage.</p>
+<p>L'option -L affiche la longueur de la ligne la plus longue. Très utile pour formater du texte ou détecter des lignes problématique.</p>
+<h3>📝 Exercices pratiques</h3>
+<p>Comptez le nombre de lignes du fichier /etc/passwd pour voir combien d'utilisateurs sont définis sur le système.</p>
+<p>Combien de mots contient votre fichier .bashrc ou .bash_history ?</p>
+<p>Trouvez le nombre de fichiers dans votre répertoire personnel :</p>
+<p>Comptez le nombre de lignes contenant le mot "root" dans /etc/passwd :</p>
+<p>Utilisez wc pour vérifier la longueur de la ligne la plus longue dans un fichier texte :</p>
+<h3>🔗 Commandes liées</h3>
+<p>cat — Afficher le contenu d'un fichier (voir Leçon 2)</p>
+<p>head et tail — Afficher le début ou la fin d'un fichier (voir Leçon 83)</p>
+<p>sort — Trier les lignes (voir Leçon 51)</p>
+<p>grep — Rechercher du texte (voir Leçon 50)</p>
+<h3>📚 Pour aller plus loin</h3>
+<p>La commande wc est souvent utilisée dans les scripts bash pour prendre des décisions basées sur le nombre de lignes ou de mots. Par exemple, vous pouvez vérifier qu'un fichier n'est pas vide avant de le traiter, ou compter le nombre de résultats d'une recherche avant de lancer une opération.</p>
+<p>Remember: wc compte réellement les séparateurs de mots pour déterminer le nombre de mots. Un mot est défini comme une séquence de caractères séparée par des espaces, tabulations ou sauts de ligne.</p>
+<nav>
+<a href="65-head-tail.html">&larr; 65-head-tail</a>
+<a href="67-locate-which-whereis-type.html">67-locate-which-whereis-type &rarr;</a>
+</nav></div></body></html>

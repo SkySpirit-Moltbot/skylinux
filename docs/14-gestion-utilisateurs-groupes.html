@@ -1,606 +1,249 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leçon 14 : Gestion des utilisateurs et groupes - SkyLinux</title>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="canonical" href="https://skyspirit-moltbot.github.io/skylinux/14-gestion-des-utilisateurs-et-groupes.html">
-<meta property="og:title" content="Leçon 14 : Gestion des utilisateurs et groupes - SkyLinux">
-<meta property="og:description" content="Apprenez Linux facilement avec SkyLinux">
-<meta name="description" content="Leçon 14 : Gestion des utilisateurs et groupes - Apprenez Linux facilement avec SkyLinux - Le guide pour tous.">
-<meta name="keywords" content="linux, cours, leon 14  gestion des utilisateurs et groupes, debutant, ubuntu">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-h2 { color: #00d9ff; margin: 20px 0 10px; }
-p { line-height: 1.7; margin: 10px 0; color: #bbb; }
-code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-th, td { border: 1px solid #333; padding: 8px; }
-th { background: rgba(0,217,255,0.1); }
-blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
-blockquote p { color: #ddd; margin: 5px 0; }
-li { line-height: 1.8; color: #bbb; margin-left: 20px; }
-li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
-a { color: #00d9ff; text-decoration: none; }
-a:hover { text-decoration: underline; }
-hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
-
-/* === Code Block avec copie + progression === */
-.code-block {
-  background: #111118;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 15px 0;
-  border: 1px solid #30363d;
-}
-.code-block progress {
-  width: 100%;
-  height: 3px;
-  appearance: none;
-  border: none;
-  display: block;
-}
-.code-block progress::-webkit-progress-bar { background: #238636; }
-.code-block progress::-moz-progress-bar { background: #238636; }
-.code-block progress.loaded { background: #30363d; }
-
-.code-line {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.15s;
-}
-.code-line:hover { background: rgba(255,255,255,0.04); }
-.code-line code {
-  background: none;
-  color: #e6edf3;
-  padding: 0;
-  font-family: 'Courier New', monospace;
-  font-size: 13.5px;
-  line-height: 1.5;
-  white-space: pre;
-  flex: 1;
-  overflow-x: auto;
-}
-.copy-btn {
-  margin-left: 12px;
-  background: none;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 4px 8px;
-  opacity: 0.5;
-  transition: opacity 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-.copy-btn:hover { opacity: 1; border-color: #58a6ff; }
-.copy-btn.copied { border-color: #238636; opacity: 1; }
-.copy-btn svg {
-  width: 14px;
-  height: 14px;
-  fill: #8b949e;
-  display: block;
-}
-.copy-btn.copied svg { fill: #238636; }
-
-/* Inline code */
-p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-</style>
-</head>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
 <body>
-<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
-<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
-<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
-</div>
-<div class="container">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
 <h1>Leçon 14 : Gestion des utilisateurs et groupes</h1>
 <p>Dans cette leçon, tu vas maîtriser la gestion des utilisateurs et groupes sous Linux, essentiel pour l'administration système.</p>
-<hr />
+<hr/>
 <h2>1. Concepts de base</h2>
 <h3>Utilisateur</h3>
-<p>Un utilisateur Linux possède :
-- <strong>UID</strong> : Identifiant unique
-- <strong>GID</strong> : Groupe principal
-- <strong>Répertoire personnel</strong> : /home/username
-- <strong>Shell</strong> : Interpréteur par défaut
-- <strong>Mot de passe</strong> : Stocké dans /etc/shadow</p>
+<p>Un utilisateur Linux possède :</p>
+<ul>
+<li>**UID** : Identifiant unique</li>
+<li>**GID** : Groupe principal</li>
+<li>**Répertoire personnel** : /home/username</li>
+<li>**Shell** : Interpréteur par défaut</li>
+<li>**Mot de passe** : Stocké dans /etc/shadow</li>
+</ul>
 <h3>Groupe</h3>
-<p>Un groupe permet de :
-- Partager des fichiers entre utilisateurs
-- Gérer des permissions collectivement</p>
+<p>Un groupe permet de :</p>
+<ul>
+<li>Partager des fichiers entre utilisateurs</li>
+<li>Gérer des permissions collectivement</li>
+</ul>
 <h3>Fichiers système importants</h3>
 <table>
-<thead>
-<tr>
-<th>Fichier</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>/etc/passwd</code></td>
-<td>Infos utilisateurs</td>
-</tr>
-<tr>
-<td><code>/etc/shadow</code></td>
-<td>Mots de passe chiffrés</td>
-</tr>
-<tr>
-<td><code>/etc/group</code></td>
-<td>Infos groupes</td>
-</tr>
-<tr>
-<td><code>/etc/skel/</code></td>
-<td>Modèle pour nouveaux utilisateurs</td>
-</tr>
-</tbody>
+<tr><th>Fichier</th><th>Description</th></tr>
+<tr><td><code>/etc/passwd</code></td><td>Infos utilisateurs</td></tr>
+<tr><td><code>/etc/shadow</code></td><td>Mots de passe chiffrés</td></tr>
+<tr><td><code>/etc/group</code></td><td>Infos groupes</td></tr>
+<tr><td><code>/etc/skel/</code></td><td>Modèle pour nouveaux utilisateurs</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>2. Commandes utilisateur</h2>
 <h3>Ajouter un utilisateur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Créer un utilisateur
-sudo useradd -m nom_utilisateur
-
-# Avec options
-sudo useradd -m -s /bin/bash -c &quot;Description&quot; -G groupe1,groupe2 nom
-
-#交互式
-sudo adduser nom_utilisateur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Créer un utilisateur</p>
+<p>sudo useradd -m nom_utilisateur</p>
+<p># Avec options</p>
+<p>sudo useradd -m -s /bin/bash -c "Description" -G groupe1,groupe2 nom</p>
+<p>#交互式</p>
+<p>sudo adduser nom_utilisateur</code></div></div></p>
 <h3>Modifier un utilisateur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Changer le shell
-sudo usermod -s /bin/zsh nom
-
-# Ajouter à un groupe
-sudo usermod -aG groupe nom
-
-# Changer le répertoire home
-sudo usermod -d /nouveau/chemin -m nom
-
-# Verrouiller/déverrouiller un compte
-sudo usermod -L nom           # Verrouiller
-sudo usermod -U nom           # Déverrouiller</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Changer le shell</p>
+<p>sudo usermod -s /bin/zsh nom</p>
+<p># Ajouter à un groupe</p>
+<p>sudo usermod -aG groupe nom</p>
+<p># Changer le répertoire home</p>
+<p>sudo usermod -d /nouveau/chemin -m nom</p>
+<p># Verrouiller/déverrouiller un compte</p>
+<p>sudo usermod -L nom           # Verrouiller</p>
+<p>sudo usermod -U nom           # Déverrouiller</code></div></div></p>
 <h3>Supprimer un utilisateur</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Supprimer (garde les fichiers)
-sudo userdel nom
-
-# Supprimer avec fichiers
-sudo userdel -r nom
-
-# Supprimer avec confirmation
-sudo userdel -r -f nom</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Supprimer (garde les fichiers)</p>
+<p>sudo userdel nom</p>
+<p># Supprimer avec fichiers</p>
+<p>sudo userdel -r nom</p>
+<p># Supprimer avec confirmation</p>
+<p>sudo userdel -r -f nom</code></div></div></p>
 <h3>Changer le mot de passe</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Changer son mot de passe
-passwd
-
-# Changer mot de passe d'un autre utilisateur (root)
-sudo passwd nom_utilisateur
-
-# Vider le mot de passe
-sudo passwd -d nom_utilisateur
-
-# Expirer le mot de passe
-sudo passwd -e nom_utilisateur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Changer son mot de passe</p>
+<p>passwd</p>
+<p># Changer mot de passe d'un autre utilisateur (root)</p>
+<p>sudo passwd nom_utilisateur</p>
+<p># Vider le mot de passe</p>
+<p>sudo passwd -d nom_utilisateur</p>
+<p># Expirer le mot de passe</p>
+<p>sudo passwd -e nom_utilisateur</code></div></div></p>
+<hr/>
 <h2>3. Commandes groupe</h2>
 <h3>Créer un groupe</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sudo groupadd nom_groupe
-sudo groupadd -g 1005 nom_groupe   # Avec GID spécifique</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>sudo groupadd nom_groupe</p>
+<p>sudo groupadd -g 1005 nom_groupe   # Avec GID spécifique</code></div></div></p>
 <h3>Modifier un groupe</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Renommer un groupe
-sudo groupmod -n nouveau_nom ancien_nom
-
-# Changer le GID
-sudo groupmod -g 1006 nom_groupe</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Renommer un groupe</p>
+<p>sudo groupmod -n nouveau_nom ancien_nom</p>
+<p># Changer le GID</p>
+<p>sudo groupmod -g 1006 nom_groupe</code></div></div></p>
 <h3>Supprimer un groupe</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>sudo groupdel nom_groupe</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>sudo groupdel nom_groupe</code></div></div></p>
 <h3>Gérer les membres</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Ajouter un utilisateur à un groupe
-sudo usermod -aG groupe utilisateur
-
-# Retirer d'un groupe
-sudo gpasswd -d utilisateur groupe
-
-# Voir les membres d'un groupe
-getent group groupe</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Ajouter un utilisateur à un groupe</p>
+<p>sudo usermod -aG groupe utilisateur</p>
+<p># Retirer d'un groupe</p>
+<p>sudo gpasswd -d utilisateur groupe</p>
+<p># Voir les membres d'un groupe</p>
+<p>getent group groupe</code></div></div></p>
+<hr/>
 <h2>4. Informations et listing</h2>
 <h3>Voir les utilisateurs</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Liste des utilisateurs
-cat /etc/passwd
-# ou
-getent passwd
-
-# Filtrer
-getent passwd | cut -d: -f1
-
-# Derniers utilisateurs créés
-lastlog</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Liste des utilisateurs</p>
+<p>cat /etc/passwd</p>
+<p># ou</p>
+<p>getent passwd</p>
+<p># Filtrer</p>
+<p>getent passwd | cut -d: -f1</p>
+<p># Derniers utilisateurs créés</p>
+<p>lastlog</code></div></div></p>
 <h3>Voir les groupes</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Liste des groupes
-cat /etc/group
-# ou
-getent group
-
-# groupes d'un utilisateur
-groups nom_utilisateur
-id nom_utilisateur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Liste des groupes</p>
+<p>cat /etc/group</p>
+<p># ou</p>
+<p>getent group</p>
+<p># groupes d'un utilisateur</p>
+<p>groups nom_utilisateur</p>
+<p>id nom_utilisateur</code></div></div></p>
 <h3>Voir l'UID et GID</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>id                       # Ses propres IDs
-id nom_utilisateur       # IDs d'un utilisateur</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>id                       # Ses propres IDs</p>
+<p>id nom_utilisateur       # IDs d'un utilisateur</code></div></div></p>
+<hr/>
 <h2>5. Commandes avancées</h2>
 <h3>sudoers - Permissions sudo</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Éditer le fichier sudoers (TOUJOURS avec visudo!)
-sudo visudo
-
-# Ajouter un utilisateur au groupe sudo
-sudo usermod -aG sudo nom
-
-# Voir qui a sudo
-getent group sudo</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Éditer le fichier sudoers (TOUJOURS avec visudo!)</p>
+<p>sudo visudo</p>
+<p># Ajouter un utilisateur au groupe sudo</p>
+<p>sudo usermod -aG sudo nom</p>
+<p># Voir qui a sudo</p>
+<p>getent group sudo</code></div></div></p>
 <h3>Expiration de compte</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Définir une date d'expiration
-sudo usermod -e 2024-12-31 nom
-
-# Voir la date d'expiration
-sudo chage -l nom
-
-#Forcer changement mot de passe
-sudo chage -d 0 nom</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Définir une date d'expiration</p>
+<p>sudo usermod -e 2024-12-31 nom</p>
+<p># Voir la date d'expiration</p>
+<p>sudo chage -l nom</p>
+<p>#Forcer changement mot de passe</p>
+<p>sudo chage -d 0 nom</code></div></div></p>
 <h3>Verrouillage de compte</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Verrouiller
-sudo passwd -l nom
-
-# Déverrouiller
-sudo passwd -u nom
-
-# Voir le statut
-sudo passwd -S nom</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Verrouiller</p>
+<p>sudo passwd -l nom</p>
+<p># Déverrouiller</p>
+<p>sudo passwd -u nom</p>
+<p># Voir le statut</p>
+<p>sudo passwd -S nom</code></div></div></p>
+<hr/>
 <h2>6. Gestion des mots de passe</h2>
 <h3>Politiques de mot de passe</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Installer libpam-pwquality
-sudo apt install libpam-pwquality
-
-# Configurer (/etc/security/pwquality.conf)
-sudo nano /etc/security/pwquality.conf</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code># Installer libpam-pwquality</p>
+<p>sudo apt install libpam-pwquality</p>
+<p># Configurer (/etc/security/pwquality.conf)</p>
+<p>sudo nano /etc/security/pwquality.conf</code></div></div></p>
 <h3>Exigences communes</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>minlen = 12
-dcredit = -1          # Au moins 1 chiffre
-ucredit = -1          # Au moins 1 majuscule
-lcredit = -1          # Au moins 1 minuscule
-ocredit = -1          # Au moins 1 caractère spécial</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>minlen = 12</p>
+<p>dcredit = -1          # Au moins 1 chiffre</p>
+<p>ucredit = -1          # Au moins 1 majuscule</p>
+<p>lcredit = -1          # Au moins 1 minuscule</p>
+<p>ocredit = -1          # Au moins 1 caractère spécial</code></div></div></p>
 <h3>Historique et expiration</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code># Configuration dans /etc/login.defs
-# ou avec chage
-sudo chage -m 7 nom       # Minimum 7 jours
-sudo chage -M 90 nom      # Maximum 90 jours
-sudo chage -W 7 nom       # Avertissement 7 jours avant expiration
-sudo chage -I 30 nom      # Verrouillage 30 jours après expiration</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code># Configuration dans /etc/login.defs</p>
+<p># ou avec chage</p>
+<p>sudo chage -m 7 nom       # Minimum 7 jours</p>
+<p>sudo chage -M 90 nom      # Maximum 90 jours</p>
+<p>sudo chage -W 7 nom       # Avertissement 7 jours avant expiration</p>
+<p>sudo chage -I 30 nom      # Verrouillage 30 jours après expiration</code></div></div></p>
+<hr/>
 <h2>7. Scripts pratiques</h2>
 <h3>Créer un nouvel utilisateur avec tout</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-# Variables
-USERNAME=&quot;nouvelutilisateur&quot;
-FULLNAME=&quot;Nouvel Utilisateur&quot;
-SHELL=&quot;/bin/bash&quot;
-GROUPES=&quot;sudo,users&quot;
-
-# Créer le groupe principal s'il n'existe pas
-sudo groupadd $USERNAME 2&gt;/dev/null
-
-# Créer l'utilisateur
-sudo useradd -m -s $SHELL -c &quot;$FULLNAME&quot; -G $GROUPES $USERNAME
-
-# Définir le mot de passe
-sudo passwd $USERNAME
-
-echo &quot;Utilisateur $USERNAME créé avec succès!&quot;</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p># Variables</p>
+<p>USERNAME="nouvelutilisateur"</p>
+<p>FULLNAME="Nouvel Utilisateur"</p>
+<p>SHELL="/bin/bash"</p>
+<p>GROUPES="sudo,users"</p>
+<p># Créer le groupe principal s'il n'existe pas</p>
+<p>sudo groupadd $USERNAME 2&gt;/dev/null</p>
+<p># Créer l'utilisateur</p>
+<p>sudo useradd -m -s $SHELL -c "$FULLNAME" -G $GROUPES $USERNAME</p>
+<p># Définir le mot de passe</p>
+<p>sudo passwd $USERNAME</p>
+<p>echo "Utilisateur $USERNAME créé avec succès!"</code></div></div></p>
 <h3>Script de suppression</h3>
-<div class="code-block">
-  <progress value="0" max="100"></progress>
-  <div class="code-line" onclick="copyCode(this)">
-    <code>#!/bin/bash
-
-USERNAME=&quot;utilisateur_a_supprimer&quot;
-
-# Demander confirmation
-read -p &quot;Supprimer l'utilisateur $USERNAME? (o/n): &quot; confirm
-
-if [ &quot;$confirm&quot; = &quot;o&quot; ]; then
-    sudo userdel -r $USERNAME
-    echo &quot;Utilisateur supprimé.&quot;
-else
-    echo &quot;Annulé.&quot;
-fi</code>
-    <button class="copy-btn" aria-label="Copier">
-      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-    </button>
-  </div>
-</div>
-<hr />
+<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
+<p>USERNAME="utilisateur_a_supprimer"</p>
+<p># Demander confirmation</p>
+<p>read -p "Supprimer l'utilisateur $USERNAME? (o/n): " confirm</p>
+<p>if [ "$confirm" = "o" ]; then</p>
+<p>    sudo userdel -r $USERNAME</p>
+<p>    echo "Utilisateur supprimé."</p>
+<p>else</p>
+<p>    echo "Annulé."</p>
+<p>fi</code></div></div></p>
+<hr/>
 <h2>8. Bonnes pratiques</h2>
 <table>
-<thead>
-<tr>
-<th>Pratique</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Utiliser sudo</td>
-<td>Pas de connection root directe</td>
-</tr>
-<tr>
-<td>Mots de passe forts</td>
-<td>Minimum 12 caractères, mélange</td>
-</tr>
-<tr>
-<td>Groupes logiques</td>
-<td>Regrouper par projet/fonction</td>
-</tr>
-<tr>
-<td>Audit régulier</td>
-<td>Vérifier les utilisateurs</td>
-</tr>
-<tr>
-<td>Désactiver compte</td>
-<td>Jamais supprimer (garder UID)</td>
-</tr>
-<tr>
-<td>Limiter sudo</td>
-<td>Seulement utilisateurs nécessaires</td>
-</tr>
-</tbody>
+<tr><th>Pratique</th><th>Description</th></tr>
+<tr><td>Utiliser sudo</td><td>Pas de connection root directe</td></tr>
+<tr><td>Mots de passe forts</td><td>Minimum 12 caractères, mélange</td></tr>
+<tr><td>Groupes logiques</td><td>Regrouper par projet/fonction</td></tr>
+<tr><td>Audit régulier</td><td>Vérifier les utilisateurs</td></tr>
+<tr><td>Désactiver compte</td><td>Jamais supprimer (garder UID)</td></tr>
+<tr><td>Limiter sudo</td><td>Seulement utilisateurs nécessaires</td></tr>
 </table>
-<hr />
+<hr/>
 <h2>9. Résumé</h2>
 <table>
-<thead>
-<tr>
-<th>Commande</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>useradd</code></td>
-<td>Créer utilisateur</td>
-</tr>
-<tr>
-<td><code>usermod</code></td>
-<td>Modifier utilisateur</td>
-</tr>
-<tr>
-<td><code>userdel</code></td>
-<td>Supprimer utilisateur</td>
-</tr>
-<tr>
-<td><code>passwd</code></td>
-<td>Changer mot de passe</td>
-</tr>
-<tr>
-<td><code>groupadd</code></td>
-<td>Créer groupe</td>
-</tr>
-<tr>
-<td><code>groupdel</code></td>
-<td>Supprimer groupe</td>
-</tr>
-<tr>
-<td><code>groups</code></td>
-<td>Lister ses groupes</td>
-</tr>
-<tr>
-<td><code>id</code></td>
-<td>Voir UID/GID</td>
-</tr>
-<tr>
-<td><code>getent</code></td>
-<td>Consulter base</td>
-</tr>
-</tbody>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>useradd</code></td><td>Créer utilisateur</td></tr>
+<tr><td><code>usermod</code></td><td>Modifier utilisateur</td></tr>
+<tr><td><code>userdel</code></td><td>Supprimer utilisateur</td></tr>
+<tr><td><code>passwd</code></td><td>Changer mot de passe</td></tr>
+<tr><td><code>groupadd</code></td><td>Créer groupe</td></tr>
+<tr><td><code>groupdel</code></td><td>Supprimer groupe</td></tr>
+<tr><td><code>groups</code></td><td>Lister ses groupes</td></tr>
+<tr><td><code>id</code></td><td>Voir UID/GID</td></tr>
+<tr><td><code>getent</code></td><td>Consulter base</td></tr>
 </table>
-<hr />
+<hr/>
 <p>Maîtrise la gestion des utilisateurs pour administrer Linux correctement ! 👤</p>
-</div>
+<hr/>
+<h2>Complément: Commandes useradd/usermod</h2>
+<h3>1. Anatomie d'un compte utilisateur</h3>
+<p>Chaque utilisateur sur Linux est défini par plusieurs informations stockées dans deux fichiers clés :</p>
+<p>/etc/passwd — informations du compte (login, UID, GID principal, shell, etc.)</p>
+<p>/etc/shadow — mot de passe chiffré (accessible uniquement à root)</p>
+<p>/etc/group — liste des groupes et de leurs membres</p>
+<p>/etc/gshadow — mots de passe des groupes (rarement utilisé)</p>
+<h3>3. passwd — Définir le mot de passe</h3>
+<p>Après useradd, il faut attribuer un mot de passe :</p>
+<h3>Résumé</h3>
+<p>La gestion des utilisateurs est une compétence fondamentale pour tout administrateur Linux. Ces commandes te permettent de créer, configurer, protéger et supprimer des comptes en toute sécurité.</p>
 <nav>
-<a href="13-taches-planifiees-cron.html" style="color:#00d9ff;text-decoration:none;">&larr; 13 - Tâches planifiées avec Cron</a> | <span style="color:#666;">14</span> | <a href="15-redirections-pipes.html" style="color:#00d9ff;text-decoration:none;">15 - Redirections et Pipes &rarr;</a>
-</nav>
-
-<script>
-function copyCode(el) {
-  var container = el.closest('.code-block');
-  var code = el.querySelector('code');
-  var btn = el.querySelector('.copy-btn');
-  var progress = container.querySelector('progress');
-  if (!code || !btn) return;
-  var text = code.textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.classList.add('copied');
-    btn.querySelector('svg').innerHTML = '<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';
-    setTimeout(function() {
-      btn.classList.remove('copied');
-      btn.querySelector('svg').innerHTML = '<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';
-    }, 2000);
-    var val = 0;
-    progress.value = 0;
-    progress.classList.remove('loaded');
-    var interval = setInterval(function() {
-      val += 5;
-      progress.value = val;
-      if (val >= 100) {
-        clearInterval(interval);
-        setTimeout(function() { progress.classList.add('loaded'); }, 300);
-      }
-    }, 20);
-  }).catch(function() {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-  });
-}
-</script>
-</body>
-</html>
+<a href="13-taches-planifiees-cron.html">&larr; 13-taches-planifiees-cron</a>
+<a href="15-redirections-pipes.html">15-redirections-pipes &rarr;</a>
+</nav></div></body></html>

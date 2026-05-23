@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 70 : comm — Comparer deux fichiers ligne par ligne</h1>
+<h3>Introduction</h3>
+<p>La commande comm permet de comparer deux fichiers texte ligne par ligne et d'afficher les différences de manière structurée. Contrairement à diff qui montre les modifications, comm sépare clairement les lignes uniques à chaque fichier et celles communes aux deux.</p>
+<h3>Sortie en trois colonnes</h3>
+<p>Par défaut, comm affiche trois colonnes :</p>
+<p>Colonne 1 : Lignes présentes uniquement dans le premier fichier</p>
+<p>Colonne 2 : Lignes présentes uniquement dans le second fichier</p>
+<p>Colonne 3 : Lignes communes aux deux fichiers</p>
+<h3>Exemple simple</h3>
+<p>Créons deux fichiers pour tester :</p>
+<p>Comparons les deux fichiers :</p>
+<p>Résultat :</p>
+<h3>Options principales</h3>
+<p>Affiche uniquement les colonnes 2 et 3 (lignes uniques à B + lignes communes).</p>
+<p>Affiche uniquement les colonnes 1 et 3 (lignes uniques à A + lignes communes).</p>
+<p>Affiche uniquement les colonnes 1 et 2 (lignes uniques à A ou B, sans les communes).</p>
+<p>N'affiche que les lignes qui n'existent que dans un seul des deux fichiers (sans les communes).</p>
+<h3>Comparaison avec fichiers triés</h3>
+<p>comm exige que les fichiers soient triés pour fonctionner correctement. Si vos fichiers ne sont pas triés, vous devez les trier d'abord :</p>
+<h3>Conclusion</h3>
+<p>comm est un outil puissant pour comparer des fichiers texte triés. Sa sortie en trois colonnes permet de visualiser clairement les différences et les similitudes entre deux fichiers. Combiné avec le tri et d'autres commandes Unix, il devient un outil indispensable pour la gestion et la comparaison de données.</p>
+<nav>
+<a href="69-paste.html">&larr; 69-paste</a>
+
+</nav></div></body></html>

@@ -224,3 +224,33 @@ test -e ~/lien_test && echo "OK" || echo "LIEN CASSÉ"
 - Un **lien symbolique** = un raccourci vers un autre chemin (inode différent)
 - Les liens symboliques peuvent traverser les systèmes de fichiers et pointer vers des répertoires
 - Un lien symbolique cassé apparaît clairement ; un lien dur reste valide tant qu'un nom existe encore
+
+---
+
+## Complément: Pratique des liens
+
+### Créer un lien symbolique
+
+La commande ln -s crée un lien symbolique qui pointe vers un autre fichier ou dossier.
+
+### Identifier les liens symboliques
+
+Plusieurs indices révèlent un lien symbolique :
+
+La flèche -> dans ls -la
+
+Le l en premier caractère des permissions
+
+La taille du lien (généralement petite, ~13 octets pour un chemin court)
+
+### Trouver tous les liens symboliques cassés
+
+Quand une cible est supprimée, le lien devient "orphelin". Voici comment les détecter :
+
+### Modifier ou supprimer un lien
+
+Les liens ne sont pas modifiables — il faut les recréer :
+
+### Astuce : Copier des liens вместо des fichiers
+
+Quand vous copiez un dossier contenant des liens, utilisez -L ou -P selon votre besoin :

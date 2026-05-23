@@ -442,3 +442,100 @@ rm backup.tar.gz
 ---
 
 Maîtrise SSH pour administrer tes serveurs comme un pro ! 🔐
+---
+
+## Complément: OpenSSL et clés SSH
+
+### Introduction
+
+Quand on travaille avec Linux, la sécurité des communications et des données est un sujet central. openssl est la boîte à outils reine pour la cryptographie sous Linux : générér des clés, créer des certificats, calculer des hashs, chiffrer des fichiers. ssh-keygen est son pendant spécialisé pour les clés SSH. Dans cette leçon, vous apprendrez à utiliser ces deux outils pour sécuriser vos échanges.
+
+### Générer des clés SSH avec ssh-keygen
+
+ssh-keygen crée les paires de clés (publique/privée) utilisées pour l'authentification SSH sans mot de passe. Le principe : vous gardez la clé privée au chaud, et vous partagez la clé publique avec les serveurs distants.
+
+Questions posées lors de la génération :
+
+Emplacement : valider le chemin par défaut (~/.ssh/id_ed25519) ou en indiquer un autre
+
+Passphrase : fortement recommandée — elle chiffre la clé privée sur le disque
+
+### La passphrase — protection de la clé privée
+
+Sans passphrase, quiconque accède à votre clé privée peut l'utiliser. Avec une passphrase, elle est chiffrée sur le disque :
+
+### Le fichier known_hosts
+
+Lors de la première connexion SSH à un serveur, son fingerprint est enregistré dans ~/.ssh/known_hosts :
+
+### Clés SSH pour多个 connexions
+
+On peut créer des clés dédiées pour différents environnements :
+
+Contenu du fichier ~/.ssh/config :
+
+### Calculer des hashs avec openssl
+
+openssl dgst calcule l'empreinte (hash) d'un fichier — utile pour vérifier l'intégrité d'un téléchargement :
+
+### Vérifier l'intégrité avec shasum
+
+En complément de openssl, sha256sum / sha512sum sont souvent préinstallées :
+
+### Générer des données aléatoires
+
+openssl rand génère des octets pseudo-aléatoires — utile pour des mots de passe ou des clés de session :
+
+### Chiffrer et déchiffrer des fichiers avec openssl
+
+openssl enc permet de chiffrer un fichier avec un mot de passe (AES-256-CBC par défaut) :
+
+### Créer un certificat SSL auto-signé
+
+Pour tester un serveur web en HTTPS sans passer par une autorité de certification :
+
+### Vérifier un certificat SSL distant
+
+Pour inspecter le certificat d'un site web depuis le terminal :
+
+### Conversions de format
+
+openssl peut convertir des clés et certificats entre différents formats :
+
+### Générer un CSR (Certificate Signing Request)
+
+Pour obtenir un certificat signé par une autorité (Let's Encrypt, DigiCert…), il faut d'abord créer un CSR :
+
+### Agent SSH — ne taper sa passphrase qu'une fois
+
+ssh-agent garde les clés déchiffrées en mémoire pour la session :
+
+### SSHFP — fingerprint DNS pour SSH
+
+SSHFP est un enregistrement DNS qui permet à SSH de vérifier automatiquement l'authenticité du serveur :
+
+### Résumé
+
+ssh-keygen -t ed25519 = clé SSH moderne recommandée
+
+ssh-copy-id user@serveur = copier la clé publique sur un serveur
+
+~/.ssh/config = définir des alias et clés par serveur
+
+ssh-agent = retenir la passphrase pour la session
+
+ssh-keygen -R serveur = retirer un serveur du known_hosts
+
+openssl dgst -sha256 fichier = calculer un hash SHA-256
+
+sha256sum -c hashes.txt = vérifier l'intégrité de fichiers
+
+openssl rand -base64 32 = générer des données aléatoires
+
+openssl enc -aes-256-cbc -salt -in f.txt -out f.enc = chiffrer un fichier
+
+openssl req -x509 -key key.pem -out cert.pem -days 365 = certificat auto-signé
+
+openssl s_client -connect site:443 = inspecter le certificat d'un serveur
+
+Toujours chmod 600 sur les clés privées, chmod 700 sur ~/.ssh

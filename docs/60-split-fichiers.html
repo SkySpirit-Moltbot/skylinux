@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
+.container{max-width:800px;margin:0 auto}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+h2{color:#00d9ff;margin:20px 0 10px}
+h3{color:#a855f7;margin:15px 0 8px}
+p{line-height:1.7;margin:10px 0;color:#bbb}
+code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:15px 0}
+th,td{border:1px solid #333;padding:8px}
+th{background:rgba(0,217,255,.1)}
+tr:nth-child(even){background:rgba(255,255,255,.02)}
+blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
+blockquote p{color:#ddd;margin:5px 0}
+li{line-height:1.8;color:#bbb;margin-left:20px}
+nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
+a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
+hr{border:none;border-top:1px solid #333;margin:20px 0}
+.code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-line:hover{background:rgba(255,255,255,.04)}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+</style></head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
+<a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
+</div><div class="container">
+<h1>Leçon 60 : split et cat — Diviser et assembler des fichiers</h1>
+<h3>1. split — Diviser un fichier</h3>
+<p>La syntaxe de base de split est simple :</p>
+<p>Par défaut, split crée des fichiers de 1000 lignes chacun. Le préfixe par défaut est x, donc les fichiers générés s'appellent xaa, xab, xac, etc.</p>
+<h3>3. Exemples pratiques</h3>
+<p>Pour diviser un fichier de log en morceaux de 500 lignes :</p>
+<p>Cela crée des fichiers partie_aa, partie_ab, etc.</p>
+<p>Pour créer des fichiers de 10 Mo chacun :</p>
+<p>Ou des fichiers de 1,5 Mo (utile pour les disquettes/CDs) :</p>
+<p>Pour avoir des suffixes plus lisibles :</p>
+<p>Résultat : data_00, data_01, data_02, etc.</p>
+<p>Pour diviser en exactement 4 parties :</p>
+<h3>4. cat — Réassembler les fichiers</h3>
+<p>Pour reconstruire le fichier original, utilisez cat avec une redirection :</p>
+<p>Ou avec des suffixes numériques :</p>
+<p>Attention : l'ordre de concatenation depend de l'ordre alphabétique. Si vos suffixes sont data_00, data_01, etc., le tri alphabétique fonctionne parfaitement.</p>
+<h3>5. Cas d'usage courants</h3>
+<p>Diviser une archive pour l'envoyer en pieces :</p>
+<h3>6. Vérifier l'intégrité après reassemblage</h3>
+<p>Pour vous assurer que le fichier reassemblé est identique à l'original :</p>
+<p>Les deux hashes doivent être identiques.</p>
+<h3>7. Astuces utiles</h3>
+<p>Si vous recevez des données via un tube :</p>
+<h3>Exercice pratique</h3>
+<p>Créez un fichier texte contenant plusieurs lignes (utilisez seq 1 5000 > test.txt)</p>
+<p>Divisez-le en fichiers de 1000 lignes : split -l 1000 test.txt bloc_</p>
+<p>Listez les fichiers créés : ls -lh bloc_*</p>
+<p>Réassemblez-les : cat bloc_* > test_reconstruit.txt</p>
+<p>Vérifiez l'intégrité : diff test.txt test_reconstruit.txt (ne doit rien afficher)</p>
+<p>Supprimez les fichiers temporaires : rm bloc_* test.txt test_reconstruit.txt</p>
+<nav>
+<a href="59-nohup.html">&larr; 59-nohup</a>
+<a href="61-nc-netcat.html">61-nc-netcat &rarr;</a>
+</nav></div></body></html>
