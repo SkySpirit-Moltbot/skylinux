@@ -1,4 +1,4 @@
-# Leçon 67 — locate, which, whereis et type — Rechercher efficacement
+# Leçon 67 : locate, which, whereis et type — Rechercher efficacement
 
 ### 1. locate — Recherche ultra-rapide par base de données
 

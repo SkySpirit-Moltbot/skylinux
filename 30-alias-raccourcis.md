@@ -455,7 +455,7 @@ Et que vous tapez gp main, le main sera appendu après la commande complète. Ce
 
 ### Les fonctions Bash
 
-Les fonctions sont plus puissantes que les alias. Elles peuvent accepter des paramètres, utiliser des conditions, des boucles, et返回值.
+Les fonctions sont plus puissantes que les alias. Elles peuvent accepter des paramètres, utiliser des conditions, des boucles, etvaleur de retour.
 
 ### Syntaxe des fonctions
 
@@ -463,7 +463,7 @@ Ou avec le mot-clé function (optionnel) :
 
 ### Exemples concrets
 
-Utilisation : backup monfichier.txt crée une copie备份 avec la date dans le nom.
+Utilisation : backup monfichier.txt crée une copiesauvegarde avec la date dans le nom.
 
 Appel : taille_fichier document.pdf
 

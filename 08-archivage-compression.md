@@ -169,7 +169,7 @@ tar -cvf archive.tar dossier/ --use-compress-program=pbzip2
 
 ### Présentation
 
-Le format ZIP est universel et fonctionne sur tous les操作系统.
+Le format ZIP est universel et fonctionne sur tous lessystème d'exploitation.
 
 ### Commandes de base
 

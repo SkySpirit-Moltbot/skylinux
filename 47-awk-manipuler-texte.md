@@ -1,6 +1,6 @@
 # Leçon 47 : AWK — Manipuler et transformer du texte
 
-Dans cette lecon, tu vas decouvrir **AWK**, un langage incruste设计和 un outil en ligne de commande extrmement puissant pour manipuler du texte structure. Si `grep` selectionne des lignes et `sed` remplace du texte, **AWK** va bien plus loin : il permet d'appliquer des calculs, des conditions, des formats et de generer des rapports structures — le tout en une seule commande.
+Dans cette lecon, tu vas decouvrir **AWK**, un langage incrusteconçu et un outil en ligne de commande extrmement puissant pour manipuler du texte structure. Si `grep` selectionne des lignes et `sed` remplace du texte, **AWK** va bien plus loin : il permet d'appliquer des calculs, des conditions, des formats et de generer des rapports structures — le tout en une seule commande.
 
 Tu verras egalement le cousin de AWK : **GAWK** (GNU AWK), qui est la version la plus courante sur Linux aujourd'hui.
 
@@ -129,10 +129,10 @@ David  Developpeur  6100
 
 ---
 
-## 5. BEGIN et END — Traiter avant et apres
+## 5. BEGIN et END — Traiter avant et après
 
 - `BEGIN` : s'execute **avant** le traitement du fichier
-- `END` : s'execute **apres** le traitement du fichier
+- `END` : s'execute **après** le traitement du fichier
 
 Calculer la somme totale des salaries :
 
@@ -160,7 +160,7 @@ awk 'BEGIN { print "Nom", "Salaire" }
 
 ## 6. Les variables integrees
 
-AWK fournit des variables predefinies tres utiles :
+AWK fournit des variables predefinies très utiles :
 
 | Variable | Description |
 |----------|-------------|
@@ -370,7 +370,7 @@ awk 'BEGIN { total=0; ok=0 }
 | `$0, $1, $NF` | Champs d'une ligne |
 | `-F` | Separateur de champs personnalise |
 | `NR, NF` | Numeros de ligne et nombre de champs |
-| `BEGIN / END` | Actions avant / apres le fichier |
+| `BEGIN / END` | Actions avant / après le fichier |
 | `printf` | Formatage personnalise |
 | `-f script.awk` | Executer un script AWK depuis un fichier |
 | Tableaux associatifs | Agrger, compter, grouper |

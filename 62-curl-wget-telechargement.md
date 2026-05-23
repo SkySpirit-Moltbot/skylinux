@@ -14,7 +14,7 @@ L'option -b lance le téléchargement en arrière-plan. Tu peux vérifier l'avan
 
 Cette commande télécharge récursivement tout un site web pour consultation hors ligne.
 
-### curl — Transfert de données多功能
+### curl — Transfert de donnéespolyvalent
 
 curl est plus puissant pour envoyer des données (POST, uploads) et pour visualiser les en-têtes HTTP. Il affiche aussi le résultat dans le terminal par défaut.
 
@@ -28,7 +28,7 @@ L'option -L suit automatiquement les redirections HTTP.
 
 L'option -u permet de s'authentifier avec un nom d'utilisateur et mot de passe.
 
--X POST指定 la méthode et -d envoie les données.
+-X POSTspécifier la méthode et -d envoie les données.
 
 L'option -F envoie un formulaire multipart (utile pour les uploads de fichiers).
 

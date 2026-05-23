@@ -42,7 +42,7 @@ Résultat : B.n.j.r
 
 ### Transformer en colonnes (utiliser avec cut)
 
-tr combine très bien avec cut (vu à la leçon 53) pour transformer du texte tabulé :
+tr combine très bien avec cut (vu à la leçon 51) pour transformer du texte tabulé :
 
 ### Supprimer les retours chariot Windows (CRLF → LF)
 

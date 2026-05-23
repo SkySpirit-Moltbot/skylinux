@@ -419,7 +419,7 @@ Supprime tous les fichiers et répertoires vides dans /tmp.
 
 ### Exemples pratiques
 
-Affiche详细信息 des fichiers de plus de 100 Mo.
+Afficheinformations détaillées des fichiers de plus de 100 Mo.
 
 Affiche les fichiers modifiés aujourd'hui par david.
 
@@ -444,7 +444,7 @@ Pour une recherche par nom uniquement, locate peut être plus rapide (base de do
 
 ### Résumé
 
-La commande find est un outil极为 puissant pour rechercher des fichiers selon de multiples critères. Combinez les options pour créer des recherches très précises, et utilisez -exec ou xargs pour effectuer des actions sur les résultats.
+La commande find est un outilextrêmement puissant pour rechercher des fichiers selon de multiples critères. Combinez les options pour créer des recherches très précises, et utilisez -exec ou xargs pour effectuer des actions sur les résultats.
 
 L'essentiel à retenir :
 

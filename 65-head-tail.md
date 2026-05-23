@@ -30,7 +30,7 @@ Avec +100, tail affichera tout à partir de la ligne 100 jusqu'à la fin du fich
 
 Pour afficher les premiers 500 octets au lieu des premières lignes, utilisez -c. Cela peut être utile pour les fichiers binaires ou les fichiers avec des lignes très longues.
 
-L'option -s permet de spécifier un intervalle en secondes entre chaque vérification. Ici, le fichier sera vérifié toutes les 5 secondes au lieu de l默认值 (1 seconde).
+L'option -s permet de spécifier un intervalle en secondes entre chaque vérification. Ici, le fichier sera vérifié toutes les 5 secondes au lieu de lvaleur par défaut (1 seconde).
 
 Pour afficher les lignes 81 à 100, on peut combiner les deux commandes avec un pipe. Ici, head garde les 100 premières lignes, puis tail en extrait les 20 dernières (donc les lignes 81 à 100).
 
@@ -66,7 +66,7 @@ less — Afficher un fichier page par page
 
 grep — Rechercher du texte dans un fichier (voir Leçon 50)
 
-wc — Compter les lignes, mots et caractères (voir Leçon 83)
+wc — Compter les lignes, mots et caractères (voir Leçon 65)
 
 ### 📚 Pour aller plus loin
 

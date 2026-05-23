@@ -56,7 +56,7 @@ david     1234  10.5  5.2  524288 102400 ?       S    10:00   2:30 firefox
 | TTY | Terminal associé (? = pas de terminal) |
 | STAT | État du processus |
 | START | Heure de démarrage |
-| TIME | Temps CPU累计 |
+| TIME | Temps CPUcumulé |
 | COMMAND | Commande exécutée |
 
 ### États des processus (colonne STAT)
@@ -152,7 +152,7 @@ kill -CONT 1234            # Reprendre le processus
 killall firefox            # Tuer tous les firefox
 killall -i firefox        # Mode interactif
 killall -9 firefox        # Forcé
-killall -u david chrome   # Tous les进程 d'un utilisateur
+killall -u david chrome   # Tous lesprocessus d'un utilisateur
 ```
 
 ### pkill - tuer avec pattern
@@ -160,7 +160,7 @@ killall -u david chrome   # Tous les进程 d'un utilisateur
 ```bash
 pkill firefox              # Tuer par nom
 pkill -f "python"         # Par argument
-pkill -u david            # Tous les进程 d'un utilisateur
+pkill -u david            # Tous lesprocessus d'un utilisateur
 pkill -9 -f "zombie"      # Forcé avec pattern
 ```
 
@@ -180,7 +180,7 @@ fg %1                     # Mettre au premier plan
 bg %1                     # Reprendre en arrière-plan
 
 # Suspendre (Ctrl+Z dans le terminal)
-Ctrl+Z                    # Suspendre le进程 actuel
+Ctrl+Z                    # Suspendre leprocessus actuel
 
 # Tuer le job actuel
 Ctrl+C                    # Interruption
@@ -230,7 +230,7 @@ nice commande              # Priorité par défaut (0)
 ```bash
 renice 10 -p 1234          # Mettre priorité 10
 renice -5 -p 1234          # Mettre priorité -5 (root uniquement)
-renice 5 -u david          # Tous les进程 de david à priorité 5
+renice 5 -u david          # Tous lesprocessus de david à priorité 5
 ```
 
 ### htop pour gérer les priorités

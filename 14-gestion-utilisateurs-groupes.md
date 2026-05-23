@@ -43,7 +43,7 @@ sudo useradd -m nom_utilisateur
 # Avec options
 sudo useradd -m -s /bin/bash -c "Description" -G groupe1,groupe2 nom
 
-#交互式
+#interactif
 sudo adduser nom_utilisateur
 ```
 

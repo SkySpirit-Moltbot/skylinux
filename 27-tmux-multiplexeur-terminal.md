@@ -349,7 +349,7 @@ chmod +x start-work.sh
 
 ### Introduction
 
-Vous avez découvert tmux dans la leçon 27. screen est le multiplexeur de terminal historique, présent sur почти tous les systèmes Unix bien avant tmux. Si tmux n'est pas installé ou si vous devez travailler sur une machine distante ancienne, screen sera votre allié. Il offre les mêmes fonctions essentielles : maintenir des sessions persistantes, diviser l'écran, et reprendre votre travail après une déconnexion.
+Vous avez découvert tmux dans la leçon 27. screen est le multiplexeur de terminal historique, présent sur presque tous les systèmes Unix bien avant tmux. Si tmux n'est pas installé ou si vous devez travailler sur une machine distante ancienne, screen sera votre allié. Il offre les mêmes fonctions essentielles : maintenir des sessions persistantes, diviser l'écran, et reprendre votre travail après une déconnexion.
 
 ### Concepts fondamentaux
 

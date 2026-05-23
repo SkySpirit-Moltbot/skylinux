@@ -251,6 +251,6 @@ Quand une cible est supprimée, le lien devient "orphelin". Voici comment les d�
 
 Les liens ne sont pas modifiables — il faut les recréer :
 
-### Astuce : Copier des liens вместо des fichiers
+### Astuce : Copier des liens au lieu de des fichiers
 
 Quand vous copiez un dossier contenant des liens, utilisez -L ou -P selon votre besoin :

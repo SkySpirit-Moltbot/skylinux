@@ -58,7 +58,7 @@ nc -l -p port > fichier + nc host port  = transfert de fichier
 
 tar cf - | nc host port = transfert de repertoire
 
-nc -l -p port -k = rester en ecoute apres deconnexion
+nc -l -p port -k = rester en ecoute après deconnexion
 
 -u = mode UDP, -w = timeout, -z = mode scan
 

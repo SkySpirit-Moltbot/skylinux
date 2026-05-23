@@ -86,7 +86,7 @@ Ligne 2
 Ligne 3
 EOF
 
-# Avec変数
+# Avecvariables
 NOM="David"
 cat << EOF
 Bonjour $NOM

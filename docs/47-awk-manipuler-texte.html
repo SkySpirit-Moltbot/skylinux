@@ -32,7 +32,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 47 : AWK — Manipuler et transformer du texte</h1>
-<p>Dans cette lecon, tu vas decouvrir **AWK**, un langage incruste设计和 un outil en ligne de commande extrmement puissant pour manipuler du texte structure. Si <code>grep</code> selectionne des lignes et <code>sed</code> remplace du texte, **AWK** va bien plus loin : il permet d'appliquer des calculs, des conditions, des formats et de generer des rapports structures — le tout en une seule commande.</p>
+<p>Dans cette lecon, tu vas decouvrir **AWK**, un langage incrusteconçu et un outil en ligne de commande extrmement puissant pour manipuler du texte structure. Si <code>grep</code> selectionne des lignes et <code>sed</code> remplace du texte, **AWK** va bien plus loin : il permet d'appliquer des calculs, des conditions, des formats et de generer des rapports structures — le tout en une seule commande.</p>
 <p>Tu verras egalement le cousin de AWK : **GAWK** (GNU AWK), qui est la version la plus courante sur Linux aujourd'hui.</p>
 <hr/>
 <h2>1. Qu'est-ce que AWK ?</h2>
@@ -97,10 +97,10 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>**Resultat :**</p>
 <p><div class="code-block"><div class="code-line"><code>David  Developpeur  6100</code></div></div></p>
 <hr/>
-<h2>5. BEGIN et END — Traiter avant et apres</h2>
+<h2>5. BEGIN et END — Traiter avant et après</h2>
 <ul>
 <li><code>BEGIN</code> : s'execute **avant** le traitement du fichier</li>
-<li><code>END</code> : s'execute **apres** le traitement du fichier</li>
+<li><code>END</code> : s'execute **après** le traitement du fichier</li>
 </ul>
 <p>Calculer la somme totale des salaries :</p>
 <p><div class="code-block"><div class="code-line"><code>awk 'BEGIN { total = 0 }</p>
@@ -114,7 +114,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>     END { print "--- Fin du rapport ---" }' employes.txt</code></div></div></p>
 <hr/>
 <h2>6. Les variables integrees</h2>
-<p>AWK fournit des variables predefinies tres utiles :</p>
+<p>AWK fournit des variables predefinies très utiles :</p>
 <table>
 <tr><th>Variable</th><th>Description</th></tr>
 <tr><td><code>NF</code></td><td>Nombre de champs dans la ligne courante</td></tr>
@@ -242,7 +242,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td><code>$0, $1, $NF</code></td><td>Champs d'une ligne</td></tr>
 <tr><td><code>-F</code></td><td>Separateur de champs personnalise</td></tr>
 <tr><td><code>NR, NF</code></td><td>Numeros de ligne et nombre de champs</td></tr>
-<tr><td><code>BEGIN / END</code></td><td>Actions avant / apres le fichier</td></tr>
+<tr><td><code>BEGIN / END</code></td><td>Actions avant / après le fichier</td></tr>
 <tr><td><code>printf</code></td><td>Formatage personnalise</td></tr>
 <tr><td><code>-f script.awk</code></td><td>Executer un script AWK depuis un fichier</td></tr>
 <tr><td>Tableaux associatifs</td><td>Agrger, compter, grouper</td></tr>

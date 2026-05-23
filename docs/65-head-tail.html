@@ -47,7 +47,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>Avec +100, tail affichera tout à partir de la ligne 100 jusqu'à la fin du fichier.</p>
 <h3>🔧 Options avancées</h3>
 <p>Pour afficher les premiers 500 octets au lieu des premières lignes, utilisez -c. Cela peut être utile pour les fichiers binaires ou les fichiers avec des lignes très longues.</p>
-<p>L'option -s permet de spécifier un intervalle en secondes entre chaque vérification. Ici, le fichier sera vérifié toutes les 5 secondes au lieu de l默认值 (1 seconde).</p>
+<p>L'option -s permet de spécifier un intervalle en secondes entre chaque vérification. Ici, le fichier sera vérifié toutes les 5 secondes au lieu de lvaleur par défaut (1 seconde).</p>
 <p>Pour afficher les lignes 81 à 100, on peut combiner les deux commandes avec un pipe. Ici, head garde les 100 premières lignes, puis tail en extrait les 20 dernières (donc les lignes 81 à 100).</p>
 <h3>💡 Cas d'utilisation courants</h3>
 <p>Permet de voir rapidement les 50 dernières erreurs dans un log serveur.</p>
@@ -65,7 +65,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>cat — Afficher l'intégralité d'un fichier (voir Leçon 2)</p>
 <p>less — Afficher un fichier page par page</p>
 <p>grep — Rechercher du texte dans un fichier (voir Leçon 50)</p>
-<p>wc — Compter les lignes, mots et caractères (voir Leçon 83)</p>
+<p>wc — Compter les lignes, mots et caractères (voir Leçon 65)</p>
 <h3>📚 Pour aller plus loin</h3>
 <p>Les commandes head et tail font partie des outils essentiels sous Linux. Leur simplicité cache une grande puissance, surtout quand on les combine avec des pipes et d'autres commandes comme grep ou awk. N'hésitez pas à les intégrer dans vos scripts pour analyser des logs ou extraire des données spécifiques.</p>
 <p>Remember: pour les fichiers très volumineux, head et tail sont beaucoup plus rapides que d'ouvrir le fichier entièrement, car ils ne lisent que les parties nécessaires du fichier.</p>

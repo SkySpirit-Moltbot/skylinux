@@ -134,7 +134,7 @@ at> <EOT>
 job 5 at Mon Apr  6 08:20:00 2026
 ```
 
-La任务 s'exécutera dès que la charge le permet.
+Latâches s'exécutera dès que la charge le permet.
 
 ### Changer le seuil de charge
 
@@ -145,7 +145,7 @@ echo "script_lourd.sh" | at -q b -b 0.8
 
 ### Files de priorité (queues)
 
-`at` utilise des files (queues) обозначенные par une lettre :
+`at` utilise des files (queues) désignées par une lettre :
 
 | Queue | Nice value | Usage |
 |-------|------------|-------|
@@ -196,7 +196,7 @@ atrm 7
 
 ### Qui peut utiliser `at` ?
 
-Par défaut, tout le monde. Pour的限制er :
+Par défaut, tout le monde. Pourlimiteser :
 
 ```bash
 # Lister les fichiers de contrôle

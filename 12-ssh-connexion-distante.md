@@ -468,7 +468,7 @@ Sans passphrase, quiconque accède à votre clé privée peut l'utiliser. Avec u
 
 Lors de la première connexion SSH à un serveur, son fingerprint est enregistré dans ~/.ssh/known_hosts :
 
-### Clés SSH pour多个 connexions
+### Clés SSH pourplusieurs connexions
 
 On peut créer des clés dédiées pour différents environnements :
 

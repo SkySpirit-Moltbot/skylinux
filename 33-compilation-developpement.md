@@ -63,7 +63,7 @@ gcc compile en plusieurs étapes :
 | **Linking** | Assemblage des fichiers objets | exécutable |
 
 ```bash
-# Voir chaque étape单独
+# Voir chaque étapeindividuellement
 gcc -E salut.c -o salut.i    # Préprocessing seulement
 gcc -S salut.c -o salut.s   # Générer l'assembleur
 gcc -c salut.c -o salut.o   # Compiler sans linker (fichier objet)

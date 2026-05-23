@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Docker Compose est un outil qui permet de définir et gérer des applications multi-containers. Au lieu de lancer chaque container séparément avec des commandes longues, vous描述ez toute votre stack dans un fichier YAML et vous lancez tout avec une seule commande.
+Docker Compose est un outil qui permet de définir et gérer des applications multi-containers. Au lieu de lancer chaque container séparément avec des commandes longues, vousdescriptionez toute votre stack dans un fichier YAML et vous lancez tout avec une seule commande.
 
 ## Installation de Docker Compose
 

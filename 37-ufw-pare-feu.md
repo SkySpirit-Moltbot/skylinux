@@ -11,7 +11,7 @@ Un **pare-feu** (firewall) est un filtrage qui décide quelles connexions résea
 - **Entrant** (IN) : connexions vers ta machine (serveur web, SSH...)
 - **Sortant** (OUT) : connexions depuis ta machine (navigation, mises à jour...)
 
-Linux intègre un pare-feu puissant dans le noyau : **iptables** (ou **nftables**). Mais它们的 commandes sont complexes. **UFW**简化了这个过程。
+Linux intègre un pare-feu puissant dans le noyau : **iptables** (ou **nftables**). Maisleurs commandes sont complexes. **UFW**simplifie ce processus。
 
 ---
 

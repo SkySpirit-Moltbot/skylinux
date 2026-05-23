@@ -103,12 +103,12 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p><div class="code-block"><div class="code-line"><code>at&gt; tar -czf /backup/plein_backup.tar.gz /home/</p>
 <p>at&gt; &lt;EOT&gt;</p>
 <p>job 5 at Mon Apr  6 08:20:00 2026</code></div></div></p>
-<p>La任务 s'exécutera dès que la charge le permet.</p>
+<p>Latâches s'exécutera dès que la charge le permet.</p>
 <h3>Changer le seuil de charge</h3>
 <p><div class="code-block"><div class="code-line"><code># Lancer quand la charge est sous 0.8</p>
 <p>echo "script_lourd.sh" | at -q b -b 0.8</code></div></div></p>
 <h3>Files de priorité (queues)</h3>
-<p><code>at</code> utilise des files (queues) обозначенные par une lettre :</p>
+<p><code>at</code> utilise des files (queues) désignées par une lettre :</p>
 <table>
 <tr><th>Queue</th><th>Nice value</th><th>Usage</th></tr>
 <tr><td><code>a</code> à <code>z</code></td><td>-20 à +19</td><td>File <code>a</code> = très prioritaire, <code>z</code> = très patient</td></tr>
@@ -135,7 +135,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>7. La commande <code>at</code> avec les permissions</h2>
 <h3>Qui peut utiliser <code>at</code> ?</h3>
-<p>Par défaut, tout le monde. Pour的限制er :</p>
+<p>Par défaut, tout le monde. Pourlimiteser :</p>
 <p><div class="code-block"><div class="code-line"><code># Lister les fichiers de contrôle</p>
 <p>ls /etc/at*</p>
 <p># Autoriser un utilisateur</p>

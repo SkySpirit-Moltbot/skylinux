@@ -74,7 +74,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td>TTY</td><td>Terminal associé (? = pas de terminal)</td></tr>
 <tr><td>STAT</td><td>État du processus</td></tr>
 <tr><td>START</td><td>Heure de démarrage</td></tr>
-<tr><td>TIME</td><td>Temps CPU累计</td></tr>
+<tr><td>TIME</td><td>Temps CPUcumulé</td></tr>
 <tr><td>COMMAND</td><td>Commande exécutée</td></tr>
 </table>
 <h3>États des processus (colonne STAT)</h3>
@@ -141,11 +141,11 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p><div class="code-block"><div class="code-line"><code>killall firefox            # Tuer tous les firefox</p>
 <p>killall -i firefox        # Mode interactif</p>
 <p>killall -9 firefox        # Forcé</p>
-<p>killall -u david chrome   # Tous les进程 d'un utilisateur</code></div></div></p>
+<p>killall -u david chrome   # Tous lesprocessus d'un utilisateur</code></div></div></p>
 <h3>pkill - tuer avec pattern</h3>
 <p><div class="code-block"><div class="code-line"><code>pkill firefox              # Tuer par nom</p>
 <p>pkill -f "python"         # Par argument</p>
-<p>pkill -u david            # Tous les进程 d'un utilisateur</p>
+<p>pkill -u david            # Tous lesprocessus d'un utilisateur</p>
 <p>pkill -9 -f "zombie"      # Forcé avec pattern</code></div></div></p>
 <hr/>
 <h2>5. Contrôle des tâches (Job Control)</h2>
@@ -157,7 +157,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>fg %1                     # Mettre au premier plan</p>
 <p>bg %1                     # Reprendre en arrière-plan</p>
 <p># Suspendre (Ctrl+Z dans le terminal)</p>
-<p>Ctrl+Z                    # Suspendre le进程 actuel</p>
+<p>Ctrl+Z                    # Suspendre leprocessus actuel</p>
 <p># Tuer le job actuel</p>
 <p>Ctrl+C                    # Interruption</code></div></div></p>
 <h3>Exemple pratique</h3>
@@ -186,7 +186,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h3>renice - changer la priorité</h3>
 <p><div class="code-block"><div class="code-line"><code>renice 10 -p 1234          # Mettre priorité 10</p>
 <p>renice -5 -p 1234          # Mettre priorité -5 (root uniquement)</p>
-<p>renice 5 -u david          # Tous les进程 de david à priorité 5</code></div></div></p>
+<p>renice 5 -u david          # Tous lesprocessus de david à priorité 5</code></div></div></p>
 <h3>htop pour gérer les priorités</h3>
 <p><div class="code-block"><div class="code-line"><code>htop</p>
 <p># Appuyer sur 'r' puis sélectionner le processus</code></div></div></p>
