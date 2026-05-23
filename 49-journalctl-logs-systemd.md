@@ -1,4 +1,4 @@
-# Leçon 49 : Leçon 49 : journalctl — Explorer et filtrer les logs systemd
+# Leçon 49 : journalctl — Explorer et filtrer les logs systemd
 
 ## Objectif
 
