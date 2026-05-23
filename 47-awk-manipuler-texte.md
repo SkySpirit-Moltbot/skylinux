@@ -10,7 +10,7 @@ Tu verras egalement le cousin de AWK : **GAWK** (GNU AWK), qui est la version la
 
 AWK est ne en 1977 aux laboratoires Bell. Son nom vient des initiales de ses createurs : **Aho, Weinberger et Kernighan**.
 
-Concu a l'origine pour traiter des fichiers textes structures (comme des tableaux ou des logs), AWK lit un fichier ligne par ligne, divise chaque ligne en **champs** (colonnes) separes par des espaces ou un separateur personnalise, et execute des **actions** sur chaque ligne correspondant a un **motif**.
+Concu à l'origine pour traiter des fichiers textes structures (comme des tableaux ou des logs), AWK lit un fichier ligne par ligne, divise chaque ligne en **champs** (colonnes) separes par des espaces ou un separateur personnalise, et execute des **actions** sur chaque ligne correspondant a un **motif**.
 
 La syntaxe de base est simple :
 
@@ -253,8 +253,8 @@ awk '{ printf "%-10s %-15s %6d\n", $1, $2, $3 }' employes.txt
 
 | Format | Signification |
 |--------|---------------|
-| `%-10s` | Chaene, justifie a gauche, 10 caracteres |
-| `%6d` | Entier, justifie a droite, 6 caracteres |
+| `%-10s` | Chaene, justifie à gauche, 10 caracteres |
+| `%6d` | Entier, justifie à droite, 6 caracteres |
 
 **Resultat :**
 

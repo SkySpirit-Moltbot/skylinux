@@ -61,7 +61,7 @@ Ajouter une ligne par partage :
 - `ro` — lecture seule uniquement
 - `sync` — écrit sur le disque avant de confirmer (plus sûr)
 - `no_subtree_check` — évite des vérifications qui peuvent causer des lenteurs
-- `no_root_squash` — root du client a les droits root sur le partage (⚠️ sécurité)
+- `no_root_squash` — root du client à les droits root sur le partage (⚠️ sécurité)
 
 > **⚠️ Sécurité :** Par défaut, `root_squash` est activé : l'utilisateur root du client est converti en `nobody`. C'est bien pour la sécurité. N'utilise `no_root_squash` que dans un réseau de confiance.
 

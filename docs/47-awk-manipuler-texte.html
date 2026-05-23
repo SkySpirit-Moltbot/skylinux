@@ -37,7 +37,7 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>1. Qu'est-ce que AWK ?</h2>
 <p>AWK est ne en 1977 aux laboratoires Bell. Son nom vient des initiales de ses createurs : **Aho, Weinberger et Kernighan**.</p>
-<p>Concu a l'origine pour traiter des fichiers textes structures (comme des tableaux ou des logs), AWK lit un fichier ligne par ligne, divise chaque ligne en **champs** (colonnes) separes par des espaces ou un separateur personnalise, et execute des **actions** sur chaque ligne correspondant a un **motif**.</p>
+<p>Concu à l'origine pour traiter des fichiers textes structures (comme des tableaux ou des logs), AWK lit un fichier ligne par ligne, divise chaque ligne en **champs** (colonnes) separes par des espaces ou un separateur personnalise, et execute des **actions** sur chaque ligne correspondant a un **motif**.</p>
 <p>La syntaxe de base est simple :</p>
 <p><div class="code-block"><div class="code-line"><code>awk 'motif { action }' fichier</code></div></div></p>
 <ul>
@@ -171,8 +171,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p><div class="code-block"><div class="code-line"><code>awk '{ printf "%-10s %-15s %6d\n", $1, $2, $3 }' employes.txt</code></div></div></p>
 <table>
 <tr><th>Format</th><th>Signification</th></tr>
-<tr><td><code>%-10s</code></td><td>Chaene, justifie a gauche, 10 caracteres</td></tr>
-<tr><td><code>%6d</code></td><td>Entier, justifie a droite, 6 caracteres</td></tr>
+<tr><td><code>%-10s</code></td><td>Chaene, justifie à gauche, 10 caracteres</td></tr>
+<tr><td><code>%6d</code></td><td>Entier, justifie à droite, 6 caracteres</td></tr>
 </table>
 <p>**Resultat :**</p>
 <p><div class="code-block"><div class="code-line"><code>Alice      Administrateur    4500</p>

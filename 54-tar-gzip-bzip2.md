@@ -2,7 +2,7 @@
 
 ### 1. tar — assembler sans comprimer
 
-tar ne compresse rien — il empile plusieurs fichiers et dossiers en un seul fichier appelé archive. Par convention, une archive tar a l'extension .tar.
+tar ne compresse rien — il empile plusieurs fichiers et dossiers en un seul fichier appelé archive. Par convention, une archive tar à l'extension .tar.
 
 ### 2. gzip — compression rapide
 

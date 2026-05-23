@@ -344,9 +344,9 @@ Tu connais sûrement chmod 755 fichier. Mais il existe des combinaisons plus fin
 
 ### Les permissions spéciales
 
-Quand un fichier a le bit SUID, il s'exécute avec les droits de son propriétaire, pas de l'utilisateur qui le lance. Exemple classique : passwd.
+Quand un fichier à le bit SUID, il s'exécute avec les droits de son propriétaire, pas de l'utilisateur qui le lance. Exemple classique : passwd.
 
-Quand tu changes ton mot de passe, tu modifies /etc/shadow — mais tu n'as pas le droit d'écrire dans ce fichier. Le programme passwd a le bit SUID root, donc il s'exécute avec les droits root.
+Quand tu changes ton mot de passe, tu modifies /etc/shadow — mais tu n'as pas le droit d'écrire dans ce fichier. Le programme passwd à le bit SUID root, donc il s'exécute avec les droits root.
 
 ⚠️ Sécurité : Le SUID est dangereux sur les scripts. Un programme SUID root mal sécurisé peut donner un shell root à un attaquant. Utilise-le avec parcimonie.
 

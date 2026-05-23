@@ -124,7 +124,7 @@ Ctrl+b ,
 # Lister les fenêtres
 Ctrl+b w
 
-# Aller a la fenêtre 1
+# Aller à la fenêtre 1
 Ctrl+b 1
 
 # Déplacer la fenêtre vers la gauche ou la droite
@@ -284,7 +284,7 @@ set -g prefix C-a
 unbind C-b
 bind C-a send-prefix
 
-# Numérotation a partir de 1
+# Numérotation à partir de 1
 set -g base-index 1
 
 # Souris activee
