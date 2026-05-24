@@ -44,27 +44,93 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 51 : Leçon 53 : cut — Extraire des colonnes de texte</h1>
-<h3>Introduction</h3>
-<p>La commande cut permet d'extraire des colonnes ou des portions de texte depuis un fichier ou une entrée standard. C'est l'outil idéal pour manipuler des données structurées par délimiteur (CSV, fichiers de logs, /etc/passwd, etc.).</p>
-<h3>Exemples concrets</h3>
-<p>Imaginons un fichier users.txt avec le format nom:email:ville :</p>
-<p>Pour extraire uniquement les noms (1er champ) :</p>
-<p>Pour obtenir nom et email (champs 1 et 2) :</p>
-<p>Du champ 2 jusqu'à la fin :</p>
-<p>Extraire les 5 premiers caractères de chaque ligne :</p>
-<p>Le fichier /etc/passwd utilise : comme délimiteur. Pour extraire uniquement les noms d'utilisateur :</p>
-<p>Pour obtenir uniquement les répertoires personnels (champ 6) :</p>
-<p>Combiner cut avec d'autres commandes :</p>
-<p>cut peut lire depuis un tube sans fichier :</p>
-<h3>Cas pratiques</h3>
-<p>Cette commande extrait la première colonne (IP), compte les occurrences et trie par fréquence.</p>
-<p>Pour afficher tout SAUF les champs 2 et 3 :</p>
-<h3>Combiner avec d'autres outils</h3>
-<p>cut s'intègre parfaitement dans des pipelines pour manipuler du texte structuré :</p>
-<p>cat fichier.csv | cut -d',' -f2 | sort | uniq — Extrait une colonne, trie et dédoublonne</p>
-<p>ps aux | cut -d' ' -f1,11 | grep utilisateur — Extrait colonnes et filtre</p>
-<p>cut -d':' -f1,5 /etc/passwd | head -10 — Affiche utilisateurs et shells</p>
+<h1>Leçon 51 : cut — Extraire des colonnes de texte</h1>
+<p><code>cut</code> est l'outil idéal pour découper du texte structuré en colonnes : fichiers CSV, logs, sortie de commandes formatées.</p>
+<h2>1. Le principe</h2>
+<p><code>cut</code> découpe chaque ligne selon un délimiteur et extrait les colonnes demandées.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Syntaxe
+cut -d 'délimiteur' -f colonnes fichier
+
+# Exemple : extraire le 1er champ d'un CSV
+cut -d ',' -f 1 utilisateurs.csv</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Découper par caractère (sans délimiteur)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Extraire les 3 premiers caractères de chaque ligne
+echo "abcdef" | cut -c 1-3
+# → abc
+
+# Extraire du 5e caractère jusqu'à la fin
+echo "abcdefgh" | cut -c 5-
+# → efgh
+
+# Extraire le caractère 2 uniquement
+echo "abc" | cut -c 2
+# → b</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Découper par champ avec délimiteur</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Le fichier /etc/passwd utilise ':' comme séparateur
+# Format: user:x:uid:gid:comment:home:shell
+
+# Extraire tous les noms d'utilisateurs (champ 1)
+cut -d ':' -f 1 /etc/passwd
+
+# Extraire le shell par défaut (champ 7)
+cut -d ':' -f 7 /etc/passwd
+
+# Extraire plusieurs champs
+cut -d ':' -f 1,7 /etc/passwd
+
+# Changer le délimiteur en sortie
+cut -d ':' -f 1,7 --output-delimiter=' → ' /etc/passwd</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Cas pratiques</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Afficher l'heure depuis la commande date
+date | cut -d ' ' -f 4
+
+# Extraire une colonne d'un fichier CSV
+cut -d ',' -f 2,3 ventes.csv
+
+# Trouver tous les utilisateurs avec bash comme shell
+grep bash /etc/passwd | cut -d ':' -f 1
+
+# Afficher les permissions (1er champ) de ls -l
+ls -l | tail -n +2 | cut -c 1-10
+
+# Extraire une plage de caractères : du 5e au 12e
+echo "1234567890ABCDEF" | cut -c 5-12</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Exercices pratiques</h2>
+<p>1. **Passwd** — Affiche la liste des utilisateurs avec leur répertoire home (<code>/etc/passwd</code>, champs 1 et 6)</p>
+<p>2. **CSV** — Crée un fichier <code>notes.csv</code> avec "Nom,Note,Matière" et extrais la colonne des notes</p>
+<p>3. **Logs** — Dans un fichier de log avec des colonnes séparées par des espaces, extrais la 3e colonne</p>
 <nav>
 <a href="50-rsync.html">&larr; 50-rsync</a>
 <a href="52-df-du-espace-disque.html">52-df-du-espace-disque &rarr;</a>

@@ -1,42 +1,75 @@
-# Leçon 51 : Leçon 53 : cut — Extraire des colonnes de texte
+# Leçon 51 : cut — Extraire des colonnes de texte
 
-### Introduction
+`cut` est l'outil idéal pour découper du texte structuré en colonnes : fichiers CSV, logs, sortie de commandes formatées.
 
-La commande cut permet d'extraire des colonnes ou des portions de texte depuis un fichier ou une entrée standard. C'est l'outil idéal pour manipuler des données structurées par délimiteur (CSV, fichiers de logs, /etc/passwd, etc.).
+## 1. Le principe
 
-### Exemples concrets
+`cut` découpe chaque ligne selon un délimiteur et extrait les colonnes demandées.
 
-Imaginons un fichier users.txt avec le format nom:email:ville :
+```bash
+# Syntaxe
+cut -d 'délimiteur' -f colonnes fichier
 
-Pour extraire uniquement les noms (1er champ) :
+# Exemple : extraire le 1er champ d'un CSV
+cut -d ',' -f 1 utilisateurs.csv
+```
 
-Pour obtenir nom et email (champs 1 et 2) :
+## 2. Découper par caractère (sans délimiteur)
 
-Du champ 2 jusqu'à la fin :
+```bash
+# Extraire les 3 premiers caractères de chaque ligne
+echo "abcdef" | cut -c 1-3
+# → abc
 
-Extraire les 5 premiers caractères de chaque ligne :
+# Extraire du 5e caractère jusqu'à la fin
+echo "abcdefgh" | cut -c 5-
+# → efgh
 
-Le fichier /etc/passwd utilise : comme délimiteur. Pour extraire uniquement les noms d'utilisateur :
+# Extraire le caractère 2 uniquement
+echo "abc" | cut -c 2
+# → b
+```
 
-Pour obtenir uniquement les répertoires personnels (champ 6) :
+## 3. Découper par champ avec délimiteur
 
-Combiner cut avec d'autres commandes :
+```bash
+# Le fichier /etc/passwd utilise ':' comme séparateur
+# Format: user:x:uid:gid:comment:home:shell
 
-cut peut lire depuis un tube sans fichier :
+# Extraire tous les noms d'utilisateurs (champ 1)
+cut -d ':' -f 1 /etc/passwd
 
-### Cas pratiques
+# Extraire le shell par défaut (champ 7)
+cut -d ':' -f 7 /etc/passwd
 
-Cette commande extrait la première colonne (IP), compte les occurrences et trie par fréquence.
+# Extraire plusieurs champs
+cut -d ':' -f 1,7 /etc/passwd
 
-Pour afficher tout SAUF les champs 2 et 3 :
+# Changer le délimiteur en sortie
+cut -d ':' -f 1,7 --output-delimiter=' → ' /etc/passwd
+```
 
-### Combiner avec d'autres outils
+## 4. Cas pratiques
 
-cut s'intègre parfaitement dans des pipelines pour manipuler du texte structuré :
+```bash
+# Afficher l'heure depuis la commande date
+date | cut -d ' ' -f 4
 
-cat fichier.csv | cut -d',' -f2 | sort | uniq — Extrait une colonne, trie et dédoublonne
+# Extraire une colonne d'un fichier CSV
+cut -d ',' -f 2,3 ventes.csv
 
-ps aux | cut -d' ' -f1,11 | grep utilisateur — Extrait colonnes et filtre
+# Trouver tous les utilisateurs avec bash comme shell
+grep bash /etc/passwd | cut -d ':' -f 1
 
-cut -d':' -f1,5 /etc/passwd | head -10 — Affiche utilisateurs et shells
+# Afficher les permissions (1er champ) de ls -l
+ls -l | tail -n +2 | cut -c 1-10
 
+# Extraire une plage de caractères : du 5e au 12e
+echo "1234567890ABCDEF" | cut -c 5-12
+```
+
+## 5. Exercices pratiques
+
+1. **Passwd** — Affiche la liste des utilisateurs avec leur répertoire home (`/etc/passwd`, champs 1 et 6)
+2. **CSV** — Crée un fichier `notes.csv` avec "Nom,Note,Matière" et extrais la colonne des notes
+3. **Logs** — Dans un fichier de log avec des colonnes séparées par des espaces, extrais la 3e colonne

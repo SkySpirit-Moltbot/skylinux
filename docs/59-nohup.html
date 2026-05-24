@@ -44,21 +44,108 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 59 : Leçon 70 : nohup — Exécuter des commandes persistantes</h1>
-<h3>1. Le problème : les signaux et la déconnexion</h3>
-<p>Sous Linux, quand un terminal se ferme, il envoie un signal SIGHUP (Signal Hang UP) à tous les processus enfants. Ce signal cause normalement l'arrêt du processus. C'est un mécanisme historiqueherited du temps où les terminaux étaient des machines physiques.</p>
-<h3>2. La solution : nohup</h3>
-<p>nohup protège un processus contre le signal SIGHUP. Le processus continuera à tourner même si le terminal est fermé.</p>
-<h3>3. Où va la sortie ?</h3>
-<p>Par défaut, nohup redirige la sortie standard vers nohup.out. Vous pouvez changer ce comportement :</p>
-<h3>5. nohup vs disown vs screen</h3>
-<p>Il existe plusieurs ways de détacher un processus :</p>
-<h3>Résumé</h3>
-<p>nohup commande & — Lance une commande immune au signal SIGHUP</p>
-<p>Par défaut, la sortie va dans nohup.out</p>
-<p>Redirigez la sortie vers un fichier ou /dev/null selon vos besoins</p>
-<p>Vérifiez avec ps aux | grep que le processus tourne toujours</p>
-<p>Pour un contrôle plus avancé, utilisez screen ou tmux (voir leçons 27 et 41)</p>
+<h1>Leçon 59 : nohup — Exécuter des commandes persistantes</h1>
+<p><code>nohup</code> (no hangup) protège une commande de la déconnexion. Si tu fermes le terminal, la commande continue de tourner.</p>
+<h2>1. Le problème</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Tu lances un script long dans un terminal SSH...
+./traitement_long.sh
+
+# ...la connexion SSH coupe → le script est TUÉ
+# Dommage si ça faisait 3 heures que ça tournait !</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. La solution : nohup</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># La commande survit à la déconnexion
+nohup ./traitement_long.sh &amp;
+
+# Sortie redirigée automatiquement vers nohup.out</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Que fait <code>nohup</code> exactement ?</p>
+<ul>
+<li>Ignore le signal <code>SIGHUP</code> (envoyé à la déconnexion)</li>
+<li>Redirige stdout/stderr vers <code>nohup.out</code> si pas déjà redirigés</li>
+<li>Ne bloque pas le terminal si utilisé avec <code>&</code></li>
+</ul>
+<h2>3. Utilisation pratique</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lancer un script long
+nohup ./backup_complet.sh &gt; backup.log 2&gt;&amp;1 &amp;
+
+# Voir le PID (numéro de processus)
+echo $!
+# → 12345
+
+# Vérifier qu'il tourne toujours
+ps -p 12345
+
+# Voir les logs en direct
+tail -f backup.log
+
+# Arrêter proprement
+kill 12345</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. nohup vs screen vs tmux</h2>
+<table>
+<tr><th>Outil</th><th>Usage</th><th>Quand</th></tr>
+<tr><td><code>nohup</code></td><td>Commande unique, feu et oublie</td><td>Scripts batch, une tâche</td></tr>
+<tr><td><code>screen</code></td><td>Session ré-attachable</td><td>Travail interactif long</td></tr>
+<tr><td><code>tmux</code></td><td>Session ré-attachable moderne</td><td>Développement, multitâche</td></tr>
+</table>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># nohup : tu n'as pas besoin de te reconnecter
+nohup ./script.sh &gt; log.txt 2&gt;&amp;1 &amp;
+
+# tmux : tu veux pouvoir te reconnecter et voir l'état
+tmux new -s travail
+./script_interactif.sh
+# Ctrl+B D pour détacher, tmux attach -t travail pour revenir</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Astuce : bien logger</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Rediriger TOUTE la sortie (stdout + stderr)
+nohup ./script.sh &gt; /tmp/script.log 2&gt;&amp;1 &amp;
+
+# Avec la date dans le nom du log
+nohup ./script.sh &gt; "/tmp/script_$(date +%Y%m%d_%H%M).log" 2&gt;&amp;1 &amp;
+
+# Vérifier que ça tourne
+jobs -l</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Exercices pratiques</h2>
+<p>1. **Test nohup** — Lance <code>nohup sleep 120 &</code> puis vérifie que le processus existe avec <code>ps</code></p>
+<p>2. **Déconnexion** — Connecte-toi en SSH, lance <code>nohup sleep 300 &</code>, déconnecte-toi, reconnecte et vérifie avec <code>ps</code></p>
+<p>3. **Logs** — Lance un script avec nohup et vérifie le contenu de <code>nohup.out</code></p>
 <nav>
 <a href="58-file-stat-inspecter-fichiers.html">&larr; 58-file-stat-inspecter-fichiers</a>
 <a href="60-split-fichiers.html">60-split-fichiers &rarr;</a>

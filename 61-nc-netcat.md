@@ -1,64 +1,93 @@
 # Leçon 61 : nc — Netcat, le couteau suisse du réseau
 
-### Introduction
+`nc` (netcat) lit et écrit des données à travers le réseau. Un outil minimaliste capable de tout : transfert de fichiers, chat, scan de ports, serveur web minimal.
 
-nc (Netcat) est souvent qualifié de "couteau suisse du réseau". Il permet d'ouvrir des connexions TCP/UDP, d'écouter sur des ports, de transferred des données, et même de créer des tunnels rapides. C'est un outil indispensable pour le diagnostic réseau, le transfère de fichiers, et les tests de connectivité.
+## 1. Vérifier qu'un port est ouvert
 
-### Test de connectivité simple
+```bash
+# Tester si le port 80 est ouvert sur un serveur
+nc -zv 192.168.1.100 80
+# -z : scan sans envoyer de données
+# -v : verbeux
 
-La forme la plus élémentaire de nc : vérifier qu'un port est accessible sur un hôte distant.
+# Tester une plage de ports
+nc -zv 192.168.1.100 20-25
 
-Les flags -z désactivent la connexion sortante (mode scan) et -v active le mode verbose.
+# Exemple : vérifier que SSH répond
+nc -zv 192.168.1.119 22
+# → Connection to 192.168.1.119 22 port [tcp/ssh] succeeded!
+```
 
-### Transfert de fichiers
+## 2. Chat minimaliste entre deux machines
 
-nc permet de transfèrer des fichiers entre deux machines sans outil supplémentaire.
+```bash
+# Machine A — Serveur (écoute)
+nc -l 1234
 
-### Chat simple entre deux machines
+# Machine B — Client (se connecte)
+nc 192.168.1.100 1234
 
-Tout texte tapé d'un côté apparaît de l'autre côté. Pour quitter, Ctrl+C.
+# Tape du texte de chaque côté, il apparaît chez l'autre.
+# Ctrl+C pour quitter.
+```
 
-### Proxy simple avec nc
+## 3. Transférer un fichier
 
-Rediriger le trafic d'un port vers un autre hôte/port.
+```bash
+# Machine A — Reçoit le fichier (serveur)
+nc -l 1234 > fichier_recu.txt
 
-### Commandes pour le remote shell (attention sécurité !)
+# Machine B — Envoie le fichier (client)
+nc 192.168.1.100 1234 < fichier_a_envoyer.txt
 
-nc permet aussi de créer un shell distant (equivaut à un reverse shell). À utiliser uniquement dans des environnements contrôlés et avec autorisation.
+# Avec barre de progression (via pv)
+# Récepteur :
+nc -l 1234 | pv > gros_fichier.iso
+# Émetteur :
+pv gros_fichier.iso | nc 192.168.1.100 1234
+```
 
-Note : toutes les versions de nc ne supportent pas le flag -e (c'est le cas d'openbsd-nc). Pour ces versions, utilisez un pipe :
+## 4. Servir une page web (one-shot)
 
-### Version GNU vs OpenBSD
+```bash
+# Créer une réponse HTTP minimale
+echo -e "HTTP/1.1 200 OK\n\n<h1>Ça marche !</h1>" | nc -l 8080 -q 1
 
-Il existe deux versions principales de nc :
+# Ouvre http://localhost:8080 dans un navigateur
+# La connexion se ferme après avoir servi la page.
+```
 
-OpenBSD netcat (installÃ© par defaut sur Ubuntu/Debian) — plus moderne, avec support de -c, -e, et autres options avancees.
+## 5. Cloner un disque à travers le réseau
 
-GNU netcat — alternative plus ancienne, moins d'options disponibles.
+```bash
+# Machine source (envoie le disque)
+dd if=/dev/sda | nc 192.168.1.200 9999
 
-### Bonnes pratiques
+# Machine destination (reçoit et écrit)
+nc -l 9999 | dd of=/dev/sdb
 
-Utilisez nc en environnement lab ou avec autorisation pour les exercices reseau.
+# ⚠️ Extrêmement puissant et dangereux. Vérifie 3 fois avant.
+```
 
-Pour les tunnels et shells distances en production, preferez SSH (lecon 44) qui offre le chiffrement.
+## 6. Options utiles
 
-Specifyz toujours un -w (timeout) pour eviter que les connexions restent ouvertes indefiniment.
+```bash
+# -l : mode écoute (serveur)
+# -p : spécifier le port
+# -v : verbeux
+# -z : scan sans données
+# -w : timeout en secondes
+nc -w 5 -zv serveur 80
 
-Combinez nc avec tar, gzip, ou d'autres outils pour des transferts robustes.
+# -k : garder le serveur actif après déconnexion (répéter)
+nc -lk 1234
 
-### Résumé
+# -u : mode UDP (défaut = TCP)
+nc -ul 1234
+```
 
-nc -zv host port = tester la connectivite vers un port
+## 7. Exercices pratiques
 
-nc -l -p port = ecouter sur un port
-
-nc host port = se connecter en client
-
-nc -l -p port > fichier + nc host port  = transfert de fichier
-
-tar cf - | nc host port = transfert de repertoire
-
-nc -l -p port -k = rester en ecoute après deconnexion
-
--u = mode UDP, -w = timeout, -z = mode scan
-
+1. **Scan** — Vérifie que le port 22 (SSH) est ouvert sur `localhost`
+2. **Chat** — Ouvre deux terminaux et fais un chat local avec nc
+3. **Fichier** — Transfère un petit fichier texte entre deux terminaux avec nc

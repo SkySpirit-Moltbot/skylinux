@@ -1,64 +1,100 @@
 # Leçon 64 : bc — La calculatrice en ligne de commande
 
-### Introduction
+`bc` est une calculatrice puissante qui gère les grands nombres, les décimales, et les expressions mathématiques complexes.
 
-Sous Linux, bc est la calculatrice arbitrary-precision (précision arbitraire) du terminal. Contrairement à expr qui ne gère que des nombres entiers, bc supporte les nombres décimaux, les fonctions mathématiques avancées (trigonométrie, racines carrées, logarithmes), et peut même lire des calculs depuis un fichier ou un pipe.
+## 1. Calculs simples
 
-Son nom vient de "Basic Calculator". C'est l'outil idéal pour des calculs rapides sans quitter le terminal.
+```bash
+# Mode interactif
+bc
+# 2+2
+# 4
+# 10*5
+# 50
+# Ctrl+D pour quitter
 
-### Installation
+# En ligne de commande
+echo "2+2" | bc
+# → 4
 
-bc est généralement préinstallé sur les distributions Linux. Si ce n'est pas le cas :
+echo "10*5" | bc
+# → 50
+```
 
-### Utilisation basique
+## 2. Gérer les décimales
 
-Dans le mode interactif, tapez vos calculs et appuyez sur Entrée. Tapez quit pour quitter.
+```bash
+# Par défaut, bc fait des divisions entières !
+echo "5/2" | bc
+# → 2  (entier !)
 
-La variable scale définit le nombre de décimales affichées (par défaut : 0).
+# scale = nombre de décimales
+echo "scale=2; 5/2" | bc
+# → 2.50
 
-### La variable scale
+echo "scale=4; 10/3" | bc
+# → 3.3333
+```
 
-Par défaut, bc affiche uniquement des nombres entiers. Pour obtenir des décimales, utilisez scale :
+## 3. Calculs avancés (avec -l)
 
-Sans scale, la division donne un résultat entier arrondi.
+```bash
+# -l charge la bibliothèque mathématique standard
+echo "scale=2; s(1)" | bc -l
+# → .84  (sinus de 1 radian)
 
-### Fonctions mathématiques
+echo "scale=2; c(0)" | bc -l
+# → 1.00  (cosinus de 0)
 
-bc intègre une bibliothèque mathématique complète. Activez-la avec -l :
+echo "e(1)" | bc -l
+# → 2.718281...  (e^1)
 
-Fonctions disponibles avec -l :
+echo "scale=2; l(2.718281)" | bc -l
+# → 1.00  (logarithme naturel)
 
-### Utilisation avancée
+# Racine carrée
+echo "scale=4; sqrt(2)" | bc -l
+# → 1.4142
+```
 
-L'option -q supprime le message de bienvenue.
+## 4. Conversions pratiques
 
-bc supporte les opérateurs de comparaison (>, , >=, , ==, !=) et les instructions if/else, while, for.
+```bash
+# Décimal → Binaire
+echo "obase=2; 42" | bc
+# → 101010
 
-### Conversion de bases
+# Décimal → Hexadécimal
+echo "obase=16; 255" | bc
+# → FF
 
-bc peut convertir entre différentes bases grâce à ibase et obase :
+# Hexadécimal → Décimal
+echo "ibase=16; FF" | bc
+# → 255
 
-### Exercices pratiques
+# Octets vers Mégaoctets
+echo "scale=2; 12345678 / 1048576" | bc
+# → 11.77  (Mo)
+```
 
-Calculez 256 * 1024 sans calculatrice ni Python.
+## 5. Dans un script bash
 
-Trouvez la racine carrée de 2 avec 10 décimales.
+```bash
+#!/bin/bash
+taille_octets=12345678
+taille_mo=$(echo "scale=2; $taille_octets / 1048576" | bc)
+echo "Taille: ${taille_mo} Mo"
 
-Convertissez le nombre 255 en binaire et en hexadécimal.
+# Calculer un pourcentage
+utilise=32000000
+total=50000000
+pourcent=$(echo "scale=1; $utilise * 100 / $total" | bc)
+echo "Utilisé: ${pourcent}%"
+```
 
-Créez un script qui convertit des degrés Celsius en Fahrenheit.
+## 6. Exercices pratiques
 
-Calculez la factorielle de 20 avec une boucle dans bc.
-
-### Corrections
-
-echo "256 * 1024" | bc → 262144
-
-echo "scale=10; sqrt(2)" | bc → 1.4142135623
-
-Binaire : echo "obase=2; 255" | bc → 11111111Hexadécimal : echo "obase=16; 255" | bc → FF
-
-Script : echo "scale=2; celsius * 9 / 5 + 32" | bc où celsius est une variable
-
-echo "f=1; for(i=1;i → 2432902008176640000
-
+1. **Base** — Calcule 1234 * 5678 avec bc
+2. **Décimales** — Calcule 22/7 avec 6 décimales
+3. **Conversion** — Convertis 255 en binaire et en hexadécimal
+4. **Sinus** — Calcule le sinus de 0.5 radian avec 4 décimales

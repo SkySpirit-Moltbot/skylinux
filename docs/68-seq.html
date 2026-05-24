@@ -45,15 +45,142 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 68 : seq — Générer des suites de nombres</h1>
-<h3>Introduction</h3>
-<p>seq est une commande qui génère une suite de nombres entiers. Très simple, elle s'avère incroyablement utile dans les scripts Bash pour créer des boucles, générer des noms de fichiers numérotés, ou alimenter d'autres commandes.</p>
-<h3>Points clés à retenir</h3>
-<p>seq debut fin → génère les nombres de debut à fin</p>
-<p>seq debut pas fin → génère avec un incrément personnalisé</p>
-<p>-w ajoute des zéros pour aligner (01 au lieu de 1)</p>
-<p>-f permet un format personnalisé (style printf)</p>
-<p>-s change le séparateur entre les nombres</p>
-<p>Indispensable dans les boucles for i in $(seq ...)</p>
+<p><code>seq</code> génère des séquences numériques. Parfait pour les boucles, la création de fichiers de test, ou la génération de listes.</p>
+<h2>1. Séquences simples</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># De 1 à N
+seq 5
+# → 1
+# → 2
+# → 3
+# → 4
+# → 5
+
+# De A à B
+seq 5 10
+# → 5
+# → 6
+# ...
+# → 10
+
+# De A à B par pas de C
+seq 1 2 10
+# → 1
+# → 3
+# → 5
+# → 7
+# → 9</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Changer le séparateur</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Par défaut : saut de ligne
+seq 3
+# 1
+# 2
+# 3
+
+# Avec -s : séparateur personnalisé
+seq -s ", " 5
+# → 1, 2, 3, 4, 5
+
+seq -s " " 1 10
+# → 1 2 3 4 5 6 7 8 9 10
+
+seq -s "-" 5
+# → 1-2-3-4-5</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Égaliser la largeur (-w)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sans -w : tailles différentes
+seq 8 11
+# → 8
+# → 9
+# → 10
+# → 11
+
+# Avec -w : tous même largeur (pratique pour noms de fichiers)
+seq -w 8 11
+# → 08
+# → 09
+# → 10
+# → 11</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Cas pratiques</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer 100 dossiers numérotés
+seq -w 1 100 | xargs -I {} mkdir dossier_{}
+
+# Générer une liste d'hôtes
+seq -f "serveur-%g" 1 5
+# → serveur-1
+# → serveur-2
+# ...
+
+# Format printf personnalisé
+seq -f "host-%02g.local" 1 5
+# → host-01.local
+# → host-02.local
+# ...
+
+# Dans une boucle for
+for i in $(seq 1 10); do
+  echo "Itération $i"
+done
+
+# Tester rapidement avec des fichiers de taille croissante
+for i in $(seq 1 100 1000); do
+  head -c ${i}K /dev/urandom &gt; fichier_${i}K.bin
+done</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Séquences descendantes</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Compte à rebours
+seq 10 -1 1
+# → 10 9 8 7 6 5 4 3 2 1
+
+# Pas négatif
+seq 100 -10 0
+# → 100 90 80 ... 10 0
+
+# Version Bash native (plus rapide) :
+echo {10..1}
+echo {100..0..10}</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Exercices pratiques</h2>
+<p>1. **Base** — Génère les nombres de 1 à 20</p>
+<p>2. **Pas** — Génère tous les nombres pairs de 0 à 20 (pas de 2)</p>
+<p>3. **Séparateur** — Affiche les nombres de 1 à 10 sur une seule ligne séparés par des virgules</p>
+<p>4. **Dossiers** — Crée 20 dossiers nommés <code>test_01</code> à <code>test_20</code></p>
 <nav>
 <a href="67-locate-which-whereis-type.html">&larr; 67-locate-which-whereis-type</a>
 <a href="69-paste.html">69-paste &rarr;</a>

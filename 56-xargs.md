@@ -1,46 +1,81 @@
-# Leçon 56 : Leçon 67 : xargs — Construire des commandes à partir de résultats
+# Leçon 56 : xargs — Construire des commandes à partir de résultats
 
-### 1. Comment fonctionne xargs ?
+`xargs` transforme des lignes de texte en arguments pour une autre commande. C'est le chaînon manquant entre `find` et `rm`, entre `ls` et `wc`.
 
-xargs lit des données depuis l'entrée standard (stdin), puis les utilise comme arguments pour exécuter une commande. Sans argument, il exécute echo par défaut.
+## 1. Le problème que xargs résout
 
-### 2. Exemples pratiques
+```bash
+# ❌ Ne fonctionne pas : rm attend des arguments, pas du stdin
+find . -name "*.tmp" | rm
 
-Trouver et supprimer des fichiers spécifiques avec find :
+# ✅ xargs fait le pont
+find . -name "*.tmp" | xargs rm
+```
 
-Ici, xargs prend chaque résultat de find et le passe comme argument à rm.
+## 2. Syntaxe de base
 
-Par défaut, xargs utilise les espaces et sauts de ligne comme délimiteurs. Vous pouvez spécifier un autre délimiteur avec -d :
+```bash
+commande_source | xargs commande_cible
 
-Par défaut, xargs passe autant d'arguments que possible sur une seule ligne. Utilisez -n pour limiter :
+# Exemple : supprimer tous les .log
+find /var/log -name "*.log" -type f | xargs rm -v
+# -v pour voir ce qui est supprimé
+```
 
-### 3. Utilisation avec des espaces et caractères spéciaux
+## 3. Options essentielles
 
-Si un nom de fichier contient des espaces, xargs peut mal l'interpréter. La solution est d'utiliser find -print0 et xargs -0 :
+```bash
+# -n : combien d'arguments par commande
+echo "a b c d e f" | xargs -n 2
+# → a b
+# → c d
+# → e f
 
-Par défaut, les arguments sont ajoutés à la fin de la commande. Utilisez -I pour spécifier où insérer les arguments :
+# -I : remplacer par chaque élément
+ls *.jpg | xargs -I {} convert {} -resize 50% small/{}
+# {} est remplacé par chaque nom de fichier
 
-Le symbole {} est remplacé par chaque argument lu.
+# -t : afficher la commande exécutée (debug)
+ls *.tmp | xargs -t rm
+# → rm fichier1.tmp fichier2.tmp
 
-### 5. Utilisation avancée
+# -p : demander confirmation avant chaque commande
+find . -name "*.bak" | xargs -p rm
 
-Utilisez -p pour afficher la commande et demander confirmation :
+# -0 : gérer les noms avec espaces (indispensable !)
+find . -name "*.log" -print0 | xargs -0 rm
+```
 
-Utilisez -t pour afficher les commandes exécutées (mode verbose) :
+## 4. Cas pratiques
 
-Utilisez -s pour limiter la longueur totale de la ligne de commande :
+```bash
+# Compter les lignes de tous les fichiers .py
+find . -name "*.py" | xargs wc -l
 
-### 8. Exercices pratiques
+# Chercher un motif dans tous les .conf
+find /etc -name "*.conf" -type f | xargs grep "Listen"
 
-Trouvez tous les fichiers .log de votre répertoire personnel et affichez leur taille avec ls -lh en utilisant xargs.
+# Créer plusieurs dossiers d'un coup
+echo "projet1 projet2 projet3" | xargs -n 1 mkdir
 
-Créez une commande qui utilise find et xargs pour compter le nombre de lignes dans tous les fichiers .txt d'un répertoire.
+# Redémarrer tous les conteneurs Docker
+docker ps -q | xargs docker restart
 
-Utilisez xargs -I pour copier chaque fichier d'un répertoire vers un autre.
+# Archiver les fichiers modifiés depuis 7 jours
+find . -type f -mtime -7 | xargs tar czf recent.tar.gz
+```
 
-Expérimentez avec xargs -p pour voir comment fonctionne la confirmation interactive.
+## 5. Parallélisme avec -P
 
-### Conclusion
+```bash
+# Convertir 100 images en parallèle (4 processus simultanés)
+find . -name "*.jpg" | xargs -P 4 -I {} convert {} -resize 50% converted/{}
 
-xargs est un outil essentiel pour tout administrateur Linux. Il permet de chaîner des commandes de manière flexible et puissante, transformant les résultats d'une commande en arguments pour une autre. Combiné avec find et les Pipes, il devient un outil de manipulation de fichiers très puissant.
+# -P 0 = autant de processus que de cœurs
+```
 
+## 6. Exercices pratiques
+
+1. **Suppression** — Supprime tous les `.tmp` d'un dossier avec find + xargs
+2. **Comptage** — Compte les lignes de tous les `.sh` du dossier courant avec xargs wc -l
+3. **Recherche** — Cherche le mot "localhost" dans tous les `.conf` de `/etc` avec find + xargs grep

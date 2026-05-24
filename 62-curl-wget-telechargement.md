@@ -1,100 +1,101 @@
-# Leçon 62 : curl et wget — Télécharger des fichiers depuis le terminal
+# Leçon 62 : curl et wget — Télécharger depuis le terminal
 
-### wget — Téléchargement simple et automatique
+Deux outils pour télécharger des fichiers et interagir avec des API web. `curl` est le plus polyvalent, `wget` excelle pour le téléchargement récursif.
 
-wget est idéal pour télécharger des fichiers de manière récursive ou en arrière-plan. Il reprend automatiquement un téléchargement interrompu et suit les redirections.
+## 1. wget — Télécharger simplement
 
-Le fichier sera téléchargé et sauvegardé sous le même nom fichier.tar.gz.
+```bash
+# Télécharger un fichier
+wget https://example.com/fichier.zip
 
-L'option -O permet de spécifier le nom du fichier de sortie.
+# Avec un nom différent
+wget -O mon_fichier.zip https://example.com/fichier.zip
 
-Si le téléchargement est interrompu, -c reprend là où il s'est arrêté. Très utile pour les gros fichiers !
+# Reprendre un téléchargement interrompu
+wget -c https://example.com/gros_fichier.iso
 
-L'option -b lance le téléchargement en arrière-plan. Tu peux vérifier l'avancement avec :
+# Télécharger en arrière-plan
+wget -b https://example.com/fichier.zip
+# Logs dans wget.log
 
-Cette commande télécharge récursivement tout un site web pour consultation hors ligne.
+# Télécharger tout un site (miroir)
+wget -r -l 2 -p https://example.com/docs/
+# -r : récursif, -l 2 : profondeur max 2, -p : ressources nécessaires
 
-### curl — Transfert de donnéespolyvalent
+# Limiter la vitesse (500 Ko/s)
+wget --limit-rate=500k https://example.com/gros.iso
+```
 
-curl est plus puissant pour envoyer des données (POST, uploads) et pour visualiser les en-têtes HTTP. Il affiche aussi le résultat dans le terminal par défaut.
+## 2. curl — L'outil universel
 
-Le contenu HTML s'affiche directement dans le terminal (sans sauvegarder).
+```bash
+# Télécharger un fichier (avec son nom d'origine)
+curl -O https://example.com/fichier.zip
 
-L'option -O (majuscule) sauvegarde le fichier sous son nom original.
+# Avec un nom personnalisé
+curl -o local.zip https://example.com/fichier.zip
 
-L'option -o (minuscule) permet de choisir le nom de sortie.
+# Suivre les redirections
+curl -L https://bit.ly/some-short-link
 
-L'option -L suit automatiquement les redirections HTTP.
+# Voir les en-têtes HTTP
+curl -I https://example.com
 
-L'option -u permet de s'authentifier avec un nom d'utilisateur et mot de passe.
+# Mode silencieux + barre de progression
+curl -sS -O https://example.com/fichier.zip
 
--X POSTspécifier la méthode et -d envoie les données.
+# Télécharger plusieurs fichiers
+curl -O https://example.com/fichier1.zip -O https://example.com/fichier2.zip
+```
 
-L'option -F envoie un formulaire multipart (utile pour les uploads de fichiers).
+## 3. curl + API REST
 
-L'option -I affiche uniquement les en-têtes de la réponse.
+```bash
+# Requête GET (défaut)
+curl https://api.github.com/users/torvalds
 
-L'option -H permet d'ajouter des en-têtes personnalisés.
+# Requête POST avec JSON
+curl -X POST https://api.example.com/data \
+  -H "Content-Type: application/json" \
+  -d '{"nom":"test","valeur":42}'
 
-### Utiliser curl avec une API JSON
+# Avec authentification
+curl -u username:password https://api.example.com/private
 
-Pour envoyer ou recevoir des données JSON :
+# Token Bearer
+curl -H "Authorization: Bearer ton_token" https://api.example.com/data
 
-### Téléchargement avec vitesse limitée
+# Sauvegarder les en-têtes de réponse
+curl -D headers.txt https://example.com
+```
 
-Pour ne pas saturer la bande passante :
+## 4. curl pour debugger
 
-La vitesse est limitée à 200 Ko/s dans ces exemples.
+```bash
+# Voir toute la transaction HTTP (très utile !)
+curl -v https://example.com
 
-### Vérifier les liens brisés
+# Mesurer le temps de réponse
+curl -w "\nTemps total: %{time_total}s\n" -o /dev/null -s https://example.com
 
-Avec curl et un peu de script, tu peux vérifier si une liste de liens fonctionne :
+# Tester différents verbes HTTP
+curl -X PUT https://example.com/resource/1
+curl -X DELETE https://example.com/resource/1
+```
 
-Cela affiche le code HTTP de chaque lien dans liens.txt.
+## 5. curl vs wget
 
-### Résumé des options principales
+| Fonctionnalité | curl | wget |
+|---------------|------|------|
+| Téléchargement simple | ✅ | ✅ |
+| API REST (POST, JSON, auth) | ✅ | ❌ |
+| Téléchargement récursif | ❌ | ✅ |
+| Reprise de téléchargement | -C - | -c |
+| Par défaut sur toutes les distros | ✅ | Pas toujours |
 
--O fichier : sauvegarder sous un nom différent
+## 6. Exercices pratiques
 
--c : reprendre un téléchargement interrompu
-
--b : lancer en arrière-plan
-
--q : mode silencieux (sans messages)
-
---limit-rate=X : limiter la vitesse de téléchargement
-
---mirror : dupliquer un site entier
-
--o fichier : sauvegarder sous un nom différent
-
--O : sauvegarder sous le nom original
-
--L : suivre les redirections
-
--I : afficher uniquement les en-têtes
-
--X POST : envoyer en méthode POST
-
--d "data" : envoyer des données
-
--F "fichier=@x" : upload de fichier
-
--H "En-tête" : ajouter un en-tête personnalisé
-
--u user:mdp : authentification
-
---limit-rate X : limiter la vitesse
-
-### Exercices pratiques
-
-Utilise wget pour télécharger un fichier depuis une URL de ton choix.
-
-Utilise curl pour afficher le contenu HTML d'une page web.
-
-Télécharge un fichier archive et décompresse-le en une seule ligne avec pipe.
-
-Utilise curl -I pour voir les en-têtes HTTP d'un site.
-
-Essaie de télécharger un fichier avec wget -c et interrompt-le avec Ctrl+C, puis reprends-le avec la même commande.
-
+1. **wget** — Télécharge une page web avec `wget` et vérifie le fichier créé
+2. **curl** — Télécharge le même fichier avec `curl -O`
+3. **API** — Teste `curl https://api.github.com/users/torvalds` et observe le JSON
+4. **Debug** — Utilise `curl -I` pour voir les en-têtes HTTP d'un site

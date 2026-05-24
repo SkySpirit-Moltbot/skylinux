@@ -45,20 +45,111 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 67 : locate, which, whereis et type — Rechercher efficacement</h1>
-<h3>1. locate — Recherche ultra-rapide par base de données</h3>
-<p>locate ne cherche pas directement sur le disque. Il utilise une base de données pré-construite, ce qui le rend extrêmement rapide. La base est mise à jour périodiquement (généralement via un cron).</p>
-<h3>2. which — Trouver la commande exécutée</h3>
-<p>which recherche l'emplacement d'une commande dans les répertoires du PATH. Idéal pour savoir quel exécutable sera utilisé.</p>
-<h3>3. whereis — Trouver binaire, source et manuel</h3>
-<p>whereis va plus loin que which : il localise le binaire, le code source et la page man d'une commande.</p>
-<h3>4. type — Identifier le type de commande</h3>
-<p>type est intégré au shell Bash. Il montre comment une commande sera interprétée : alias, fonction, builtin ou binaire externe.</p>
-<h3>Points clés à retenir</h3>
-<p>locate utilise une base de données → très rapide, mais moins précis qu'un find en temps réel</p>
-<p>which cherche dans le PATH → idéal pour les binaires exécutables</p>
-<p>whereis donne binaire + manuel + sources → utile pour le développement</p>
-<p>type est intégré au shell → révèle les alias, fonctions et builtins</p>
-<p>Mise à jour de la base locate : sudo updatedb (ou via cron automatique)</p>
+<p>Quatre commandes pour trouver rapidement des fichiers et programmes sans parcourir tout le disque.</p>
+<h2>1. locate — Recherche éclair par nom</h2>
+<p><code>locate</code> utilise une base de données pré-indexée. Ultra-rapide mais pas en temps réel.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer si nécessaire
+sudo apt install plocate
+
+# Mettre à jour la base de données
+sudo updatedb
+
+# Chercher un fichier par nom
+locate fstab
+# → /etc/fstab
+# → /usr/share/doc/mount/examples/fstab
+
+# Ignorer la casse
+locate -i README
+
+# Limiter le nombre de résultats
+locate -l 10 .conf
+
+# Compter les résultats
+locate -c .pdf</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>**Attention** : <code>locate</code> ne voit pas les fichiers créés depuis le dernier <code>updatedb</code>. Pour du temps réel, utilise <code>find</code>.</p>
+<h2>2. which — Où est cet exécutable ?</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Trouver le chemin d'une commande
+which python3
+# → /usr/bin/python3
+
+which ls
+# → /usr/bin/ls
+
+# Afficher TOUS les emplacements (pas seulement le premier)
+which -a python3
+# → /usr/bin/python3
+# → /usr/local/bin/python3</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. whereis — Localiser binaire, sources, manuel</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>whereis bash
+# → bash: /usr/bin/bash /etc/bash.bashrc /usr/share/man/man1/bash.1.gz
+
+# Seulement le binaire
+whereis -b bash
+
+# Seulement les pages de manuel
+whereis -m bash</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. type — Comment le shell interprète cette commande ?</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Est-ce un binaire, un alias, une fonction ?
+type ls
+# → ls est un alias pour « ls --color=auto »
+
+type -a ls
+# → ls est un alias pour « ls --color=auto »
+# → ls est /usr/bin/ls
+
+type cd
+# → cd est une primitive du shell
+
+type -t pwd
+# → builtin</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Types possibles : <code>alias</code>, <code>keyword</code>, <code>function</code>, <code>builtin</code>, <code>file</code></p>
+<h2>5. Comparaison</h2>
+<table>
+<tr><th>Commande</th><th>Ce qu'elle trouve</th><th>Rapidité</th></tr>
+<tr><td><code>locate</code></td><td>Fichiers par nom (BD indexée)</td><td>⚡ Immédiat</td></tr>
+<tr><td><code>which</code></td><td>Exécutables dans le PATH</td><td>⚡ Immédiat</td></tr>
+<tr><td><code>whereis</code></td><td>Binaires, sources, man</td><td>⚡ Immédiat</td></tr>
+<tr><td><code>type</code></td><td>Comment le shell voit la commande</td><td>⚡ Immédiat</td></tr>
+<tr><td><code>find</code></td><td>Fichiers en temps réel</td><td>🐢 Lent</td></tr>
+</table>
+<h2>6. Exercices pratiques</h2>
+<p>1. **locate** — Trouve tous les <code>.conf</code> sur ton système avec <code>locate</code></p>
+<p>2. **which** — Trouve où sont installés <code>python3</code>, <code>node</code> et <code>gcc</code></p>
+<p>3. **type** — Découvre si <code>ls</code> est un alias, un binaire ou une fonction</p>
+<p>4. **whereis** — Trouve le binaire et le manuel de <code>git</code></p>
 <nav>
 <a href="66-wc.html">&larr; 66-wc</a>
 <a href="68-seq.html">68-seq &rarr;</a>

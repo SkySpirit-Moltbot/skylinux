@@ -1,28 +1,87 @@
-# Leçon 58 : Leçon 69 : file et stat — Inspecter les fichiers
+# Leçon 58 : file et stat — Inspecter les fichiers
 
-### 1. La commande file — Déterminer le type de fichier
+Deux commandes pour savoir exactement ce que contient un fichier et ses métadonnées.
 
-file analyze le contenu d'un fichier (pas juste l'extension) et vous dit ce qu'il contient vraiment.
+## 1. file — Déterminer le type d'un fichier
 
-### 2. La commande stat — Métadonnées détaillées
+`file` analyse le contenu du fichier (pas juste l'extension) pour deviner son type.
 
-stat affiche des informations complètes sur un fichier : taille, dates, permissions, inode, etc.
+```bash
+# Type basique
+file document.pdf
+# → document.pdf: PDF document, version 1.4
 
-### Exercice pratique
+file photo.jpg
+# → photo.jpg: JPEG image data, 1920x1080
 
-Essayez ces commandes sur votre système :
+file script.sh
+# → script.sh: Bourne-Again shell script, ASCII text executable
 
-file /bin/ls — Quel type de fichier est l'exécutable ls ?
+# Fichier sans extension
+file data_bin
+# → data_bin: ELF 64-bit LSB executable, x86-64
 
-file /etc/hostname — Vérifiez le type du fichier hostname
+# Analyser tous les fichiers d'un dossier
+file /usr/bin/* | head -10
 
-stat ~/.bashrc — Quelles sont les permissions de votre fichier bashrc ?
+# Afficher le type MIME
+file -i document.pdf
+# → document.pdf: application/pdf; charset=binary
+```
 
-file -i ~/Documents/* — Listez les types MIME de tous vos documents
+## 2. stat — Métadonnées détaillées
 
-stat -c '%a %n' /etc/passwd — Affichez les permissions en octal du fichier passwd
+```bash
+# Toutes les infos d'un fichier
+stat mon_fichier.txt
 
-### Résumé
+# Résultat :
+#   Fichier: mon_fichier.txt
+#   Taille: 1234      Blocs: 8         Bloc d'E/S: 4096
+#   Périphérique: 8,1 Inœud: 456789    Liens: 1
+# Accès: (0644/-rw-r--r--) UID: (1000/david) GID: (1000/david)
+#  Accès: 2026-05-24 10:30:00.000000000 +0200
+# Modif.: 2026-05-23 15:20:00.000000000 +0200
+# Changt: 2026-05-23 15:20:00.000000000 +0200
+```
 
-Ces deux commandes sont vos meilleures alliées pour inspecter n'importe quel fichier sous Linux. file vous dit "ce que contient le fichier", tandis que stat vous dit "tout ce qu'il faut savoir sur ce fichier".
+## 3. Options utiles de stat
 
+```bash
+# Format personnalisé : ne montrer que ce qui t'intéresse
+stat -c "%n a une taille de %s octets" mon_fichier.txt
+
+# Afficher seulement la taille
+stat -c %s mon_fichier.txt
+
+# Afficher les permissions en octal
+stat -c %a mon_fichier.txt
+# → 644
+
+# Afficher le propriétaire
+stat -c %U mon_fichier.txt
+
+# Vérifier la date de dernière modification
+stat -c %y mon_fichier.txt
+```
+
+## 4. Comparer file et ls
+
+```bash
+# ls montre la taille et la date
+ls -l mon_fichier.txt
+# -rw-r--r-- 1 david david 1234 mai 23 15:20 mon_fichier.txt
+
+# file montre le TYPE de contenu
+file mon_fichier.txt
+# mon_fichier.txt: ASCII text
+
+# stat montre TOUTES les métadonnées (inode, blocs, timestamps)
+stat mon_fichier.txt
+```
+
+## 5. Exercices pratiques
+
+1. **Type mystère** — Crée un fichier sans extension et utilise `file` pour l'identifier
+2. **MIME** — Utilise `file -i` sur une image, un PDF et un script .sh
+3. **Stat** — Compare les dates "Accès" et "Modif." d'un fichier avec `stat`

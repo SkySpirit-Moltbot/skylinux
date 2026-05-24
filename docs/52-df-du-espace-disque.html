@@ -44,20 +44,109 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 52 : Leçon 54 : df et du — Gérer l'espace disque</h1>
-<h3>Introduction</h3>
-<p>Deux commandes essentielles pour surveiller l'utilisation de l'espace disque sous Linux : df (disk free) affiche l'espace disponible sur les systèmes de fichiers, tandis que du (disk usage) montre l'espace consommé par les fichiers et répertoires.</p>
-<h3>du — Espace utilisé</h3>
-<p>Les tailles sont en blocs de 1 Ko par défaut.</p>
-<h3>Alias utiles à connaître</h3>
-<p>Ajoute ces alias dans ton ~/.bashrc pour aller plus vite :</p>
-<p>Puis recharge : source ~/.bashrc</p>
-<h3>Exercices pratiques</h3>
-<p>État du disque — Exécute df -h et identifie le disque principal ainsi que son pourcentage d'utilisation.</p>
-<p>Espace home — Affiche la taille totale de ton répertoire /home avec du -sh.</p>
-<p>Top 10 — Trouve les 10 plus gros répertoires de /var avec tri par taille.</p>
-<p>Gros fichiers — Utilise find pour lister les fichiers de plus de 50 Mo sur ta machine.</p>
-<p>Exploration — Descends dans l'arborescence pour identifier ce qui consomme le plus d'espace chez toi.</p>
+<h1>Leçon 52 : df et du — Gérer l'espace disque</h1>
+<p>Deux commandes indispensables pour savoir où passe ton espace disque : <code>df</code> pour une vue d'ensemble, <code>du</code> pour descendre dans le détail.</p>
+<h2>1. df — Espace disponible par partition</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Vue d'ensemble en format lisible
+df -h
+
+# Résultat type :
+# Filesystem      Size  Used Avail Use% Mounted on
+# /dev/sda1        50G   32G   16G  67% /
+# /dev/sdb1       200G  120G   71G  63% /home</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Options utiles :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Afficher le type de système de fichiers
+df -hT
+
+# Afficher seulement les systèmes de fichiers locaux (pas les tmpfs)
+df -hl
+
+# Voir l'espace inode (nombre de fichiers max)
+df -i
+
+# Un disque peut être plein en inodes même avec de l'espace libre !</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. du — Espace consommé par dossier</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Taille d'un dossier spécifique
+du -sh /home/david/Documents
+
+# Taille de chaque sous-dossier de /var
+du -sh /var/*
+
+# Trier du plus gros au plus petit
+du -sh /var/* | sort -rh
+
+# Descendre dans l'arborescence
+du -h --max-depth=1 /home/david/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Top 10 des plus gros dossiers</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Trouver ce qui prend le plus de place
+du -ah /home/david | sort -rh | head -10
+
+# Par dossier uniquement (pas les fichiers)
+du -h --max-depth=1 / | sort -rh | head -10
+
+# Version plus rapide sur les gros systèmes
+ncdu /home/david/
+# (ncdu est interactif, à installer avec apt install ncdu)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Nettoyer l'espace disque</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Trouver les gros fichiers (&gt; 100 Mo)
+find / -type f -size +100M -exec ls -lh {} \; 2&gt;/dev/null
+
+# Vider la corbeille
+rm -rf ~/.local/share/Trash/*
+
+# Nettoyer les logs anciens
+sudo journalctl --vacuum-size=500M
+
+# Nettoyer le cache des paquets (Debian/Ubuntu)
+sudo apt clean
+
+# Voir la taille du cache apt AVANT nettoyage
+du -sh /var/cache/apt/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Exercices pratiques</h2>
+<p>1. **État du disque** — Exécute <code>df -h</code> et note quel disque est le plus rempli</p>
+<p>2. **Espace home** — Affiche la taille totale de ton <code>/home</code> avec <code>du -sh</code></p>
+<p>3. **Top 10** — Trouve les 10 plus gros répertoires de <code>/var</code></p>
+<p>4. **Gros fichiers** — Trouve les fichiers de plus de 50 Mo avec <code>find</code></p>
 <nav>
 <a href="51-cut.html">&larr; 51-cut</a>
 <a href="53-canaux-nommes-fifo.html">53-canaux-nommes-fifo &rarr;</a>

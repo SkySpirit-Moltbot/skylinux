@@ -1,30 +1,97 @@
 # Leçon 67 : locate, which, whereis et type — Rechercher efficacement
 
-### 1. locate — Recherche ultra-rapide par base de données
+Quatre commandes pour trouver rapidement des fichiers et programmes sans parcourir tout le disque.
 
-locate ne cherche pas directement sur le disque. Il utilise une base de données pré-construite, ce qui le rend extrêmement rapide. La base est mise à jour périodiquement (généralement via un cron).
+## 1. locate — Recherche éclair par nom
 
-### 2. which — Trouver la commande exécutée
+`locate` utilise une base de données pré-indexée. Ultra-rapide mais pas en temps réel.
 
-which recherche l'emplacement d'une commande dans les répertoires du PATH. Idéal pour savoir quel exécutable sera utilisé.
+```bash
+# Installer si nécessaire
+sudo apt install plocate
 
-### 3. whereis — Trouver binaire, source et manuel
+# Mettre à jour la base de données
+sudo updatedb
 
-whereis va plus loin que which : il localise le binaire, le code source et la page man d'une commande.
+# Chercher un fichier par nom
+locate fstab
+# → /etc/fstab
+# → /usr/share/doc/mount/examples/fstab
 
-### 4. type — Identifier le type de commande
+# Ignorer la casse
+locate -i README
 
-type est intégré au shell Bash. Il montre comment une commande sera interprétée : alias, fonction, builtin ou binaire externe.
+# Limiter le nombre de résultats
+locate -l 10 .conf
 
-### Points clés à retenir
+# Compter les résultats
+locate -c .pdf
+```
 
-locate utilise une base de données → très rapide, mais moins précis qu'un find en temps réel
+**Attention** : `locate` ne voit pas les fichiers créés depuis le dernier `updatedb`. Pour du temps réel, utilise `find`.
 
-which cherche dans le PATH → idéal pour les binaires exécutables
+## 2. which — Où est cet exécutable ?
 
-whereis donne binaire + manuel + sources → utile pour le développement
+```bash
+# Trouver le chemin d'une commande
+which python3
+# → /usr/bin/python3
 
-type est intégré au shell → révèle les alias, fonctions et builtins
+which ls
+# → /usr/bin/ls
 
-Mise à jour de la base locate : sudo updatedb (ou via cron automatique)
+# Afficher TOUS les emplacements (pas seulement le premier)
+which -a python3
+# → /usr/bin/python3
+# → /usr/local/bin/python3
+```
 
+## 3. whereis — Localiser binaire, sources, manuel
+
+```bash
+whereis bash
+# → bash: /usr/bin/bash /etc/bash.bashrc /usr/share/man/man1/bash.1.gz
+
+# Seulement le binaire
+whereis -b bash
+
+# Seulement les pages de manuel
+whereis -m bash
+```
+
+## 4. type — Comment le shell interprète cette commande ?
+
+```bash
+# Est-ce un binaire, un alias, une fonction ?
+type ls
+# → ls est un alias pour « ls --color=auto »
+
+type -a ls
+# → ls est un alias pour « ls --color=auto »
+# → ls est /usr/bin/ls
+
+type cd
+# → cd est une primitive du shell
+
+type -t pwd
+# → builtin
+```
+
+Types possibles : `alias`, `keyword`, `function`, `builtin`, `file`
+
+## 5. Comparaison
+
+| Commande | Ce qu'elle trouve | Rapidité |
+|----------|-------------------|----------|
+| `locate` | Fichiers par nom (BD indexée) | ⚡ Immédiat |
+| `which` | Exécutables dans le PATH | ⚡ Immédiat |
+| `whereis` | Binaires, sources, man | ⚡ Immédiat |
+| `type` | Comment le shell voit la commande | ⚡ Immédiat |
+| `find` | Fichiers en temps réel | 🐢 Lent |
+
+## 6. Exercices pratiques
+
+1. **locate** — Trouve tous les `.conf` sur ton système avec `locate`
+2. **which** — Trouve où sont installés `python3`, `node` et `gcc`
+3. **type** — Découvre si `ls` est un alias, un binaire ou une fonction
+4. **whereis** — Trouve le binaire et le manuel de `git`

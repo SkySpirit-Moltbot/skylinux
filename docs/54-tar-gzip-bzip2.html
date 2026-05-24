@@ -44,17 +44,115 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 54 : 61 - tar, gzip et bzip2 — Archiver et compresser</h1>
-<h3>1. tar — assembler sans comprimer</h3>
-<p>tar ne compresse rien — il empile plusieurs fichiers et dossiers en un seul fichier appelé archive. Par convention, une archive tar à l'extension .tar.</p>
-<h3>2. gzip — compression rapide</h3>
-<p>gzip compresse un fichier pour réduire sa taille. Le fichier original est remplacé par un fichier .gz. La compression est rapide mais moins efficace que bzip2.</p>
-<h3>3. bzip2 — meilleure compression</h3>
-<p>bzip2 compresse mieux que gzip mais prend plus de temps. Idéal pour les fichiers volumineux où chaque mégabyte compte.</p>
-<h3>4. Combiner tar + compression</h3>
-<p>La vraie puissance vient de la combinaison. Tu peux créer une archive tar compressée en une seule commande.</p>
-<h3>Résumé</h3>
-<p>Ces outils forment le socle de toute gestion de fichiers compressés sur Linux. Pratique chaque format jusqu'à connaître instinctively lequel utiliser selon le contexte — sauvegarde rapide, partage multiplateforme, ou archivage à long terme.</p>
+<h1>Leçon 54 : tar, gzip et bzip2 — Archiver et compresser</h1>
+<p>Trois outils complémentaires : <code>tar</code> rassemble des fichiers en une archive, <code>gzip</code> et <code>bzip2</code> compressent. Souvent utilisés ensemble.</p>
+<h2>1. tar — Mettre en archive</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer une archive (regrouper sans compresser)
+tar cf mon_archive.tar /home/david/Documents/
+
+# Options :
+# c = create (créer)
+# f = file (nom du fichier archive)
+
+# Lister le contenu d'une archive
+tar tf mon_archive.tar
+
+# Extraire une archive
+tar xf mon_archive.tar</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. tar + gzip = .tar.gz (le standard Linux)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer une archive compressée (gzip)
+tar czf mon_archive.tar.gz /home/david/Documents/
+# z = gzip
+
+# Extraire
+tar xzf mon_archive.tar.gz
+
+# Taille : gzip compresse bien, décompresse vite</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. tar + bzip2 = .tar.bz2 (meilleure compression)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer une archive avec bzip2 (plus lent, plus efficace)
+tar cjf mon_archive.tar.bz2 /home/david/Documents/
+# j = bzip2
+
+# Extraire
+tar xjf mon_archive.tar.bz2</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Comparaison gzip vs bzip2</h2>
+<table>
+<tr><th>Format</th><th>Compression</th><th>Vitesse</th><th>Usage typique</th></tr>
+<tr><td><code>.tar.gz</code></td><td>Bonne</td><td>Rapide</td><td>Usage général</td></tr>
+<tr><td><code>.tar.bz2</code></td><td>Meilleure</td><td>Lent</td><td>Archives finales, distribution</td></tr>
+<tr><td><code>.tar.xz</code></td><td>Excellente</td><td>Très lent</td><td>Très gros volumes</td></tr>
+</table>
+<h2>5. gzip et bzip2 seuls (fichier unique)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Compresser un fichier
+gzip fichier.txt          # → fichier.txt.gz
+bzip2 fichier.txt         # → fichier.txt.bz2
+
+# Décompresser
+gunzip fichier.txt.gz     # → fichier.txt
+bunzip2 fichier.txt.bz2   # → fichier.txt
+
+# Garder l'original après compression
+gzip -k fichier.txt       # garde fichier.txt + crée fichier.txt.gz
+
+# Voir le taux de compression
+gzip -l fichier.txt.gz</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Exemples concrets</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sauvegarder /etc en une archive compressée
+sudo tar czf /tmp/etc-backup-$(date +%Y%m%d).tar.gz /etc/
+
+# Extraire un seul fichier d'une archive
+tar xzf mon_archive.tar.gz chemin/vers/fichier.txt
+
+# Créer une archive SANS le chemin complet
+tar czf docs.tar.gz -C /home/david/Documents .
+
+# Voir ce qui serait extrait (dry-run... pas vraiment, utiliser -t)
+tar tzf archive.tar.gz | head -20</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>7. Exercices pratiques</h2>
+<p>1. **Archive** — Crée une archive <code>.tar.gz</code> de ton dossier <code>~/Documents</code></p>
+<p>2. **Liste** — Affiche le contenu de l'archive avec <code>tar tzf</code></p>
+<p>3. **Extraction** — Extrais l'archive dans <code>/tmp/test-extract/</code></p>
+<p>4. **Comparaison** — Compresse un gros fichier avec gzip puis bzip2, compare les tailles avec <code>ls -lh</code></p>
 <nav>
 <a href="53-canaux-nommes-fifo.html">&larr; 53-canaux-nommes-fifo</a>
 <a href="55-nproc-uname-hostname.html">55-nproc-uname-hostname &rarr;</a>

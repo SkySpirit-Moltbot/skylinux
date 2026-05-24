@@ -45,37 +45,119 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 61 : nc — Netcat, le couteau suisse du réseau</h1>
-<h3>Introduction</h3>
-<p>nc (Netcat) est souvent qualifié de "couteau suisse du réseau". Il permet d'ouvrir des connexions TCP/UDP, d'écouter sur des ports, de transferred des données, et même de créer des tunnels rapides. C'est un outil indispensable pour le diagnostic réseau, le transfère de fichiers, et les tests de connectivité.</p>
-<h3>Test de connectivité simple</h3>
-<p>La forme la plus élémentaire de nc : vérifier qu'un port est accessible sur un hôte distant.</p>
-<p>Les flags -z désactivent la connexion sortante (mode scan) et -v active le mode verbose.</p>
-<h3>Transfert de fichiers</h3>
-<p>nc permet de transfèrer des fichiers entre deux machines sans outil supplémentaire.</p>
-<h3>Chat simple entre deux machines</h3>
-<p>Tout texte tapé d'un côté apparaît de l'autre côté. Pour quitter, Ctrl+C.</p>
-<h3>Proxy simple avec nc</h3>
-<p>Rediriger le trafic d'un port vers un autre hôte/port.</p>
-<h3>Commandes pour le remote shell (attention sécurité !)</h3>
-<p>nc permet aussi de créer un shell distant (equivaut à un reverse shell). À utiliser uniquement dans des environnements contrôlés et avec autorisation.</p>
-<p>Note : toutes les versions de nc ne supportent pas le flag -e (c'est le cas d'openbsd-nc). Pour ces versions, utilisez un pipe :</p>
-<h3>Version GNU vs OpenBSD</h3>
-<p>Il existe deux versions principales de nc :</p>
-<p>OpenBSD netcat (installÃ© par defaut sur Ubuntu/Debian) — plus moderne, avec support de -c, -e, et autres options avancees.</p>
-<p>GNU netcat — alternative plus ancienne, moins d'options disponibles.</p>
-<h3>Bonnes pratiques</h3>
-<p>Utilisez nc en environnement lab ou avec autorisation pour les exercices reseau.</p>
-<p>Pour les tunnels et shells distances en production, preferez SSH (lecon 44) qui offre le chiffrement.</p>
-<p>Specifyz toujours un -w (timeout) pour eviter que les connexions restent ouvertes indefiniment.</p>
-<p>Combinez nc avec tar, gzip, ou d'autres outils pour des transferts robustes.</p>
-<h3>Résumé</h3>
-<p>nc -zv host port = tester la connectivite vers un port</p>
-<p>nc -l -p port = ecouter sur un port</p>
-<p>nc host port = se connecter en client</p>
-<p>nc -l -p port > fichier + nc host port  = transfert de fichier</p>
-<p>tar cf - | nc host port = transfert de repertoire</p>
-<p>nc -l -p port -k = rester en ecoute après deconnexion</p>
-<p>-u = mode UDP, -w = timeout, -z = mode scan</p>
+<p><code>nc</code> (netcat) lit et écrit des données à travers le réseau. Un outil minimaliste capable de tout : transfert de fichiers, chat, scan de ports, serveur web minimal.</p>
+<h2>1. Vérifier qu'un port est ouvert</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Tester si le port 80 est ouvert sur un serveur
+nc -zv 192.168.1.100 80
+# -z : scan sans envoyer de données
+# -v : verbeux
+
+# Tester une plage de ports
+nc -zv 192.168.1.100 20-25
+
+# Exemple : vérifier que SSH répond
+nc -zv 192.168.1.119 22
+# → Connection to 192.168.1.119 22 port [tcp/ssh] succeeded!</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Chat minimaliste entre deux machines</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Machine A — Serveur (écoute)
+nc -l 1234
+
+# Machine B — Client (se connecte)
+nc 192.168.1.100 1234
+
+# Tape du texte de chaque côté, il apparaît chez l'autre.
+# Ctrl+C pour quitter.</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Transférer un fichier</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Machine A — Reçoit le fichier (serveur)
+nc -l 1234 &gt; fichier_recu.txt
+
+# Machine B — Envoie le fichier (client)
+nc 192.168.1.100 1234 &lt; fichier_a_envoyer.txt
+
+# Avec barre de progression (via pv)
+# Récepteur :
+nc -l 1234 | pv &gt; gros_fichier.iso
+# Émetteur :
+pv gros_fichier.iso | nc 192.168.1.100 1234</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Servir une page web (one-shot)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer une réponse HTTP minimale
+echo -e "HTTP/1.1 200 OK\n\n&lt;h1&gt;Ça marche !&lt;/h1&gt;" | nc -l 8080 -q 1
+
+# Ouvre http://localhost:8080 dans un navigateur
+# La connexion se ferme après avoir servi la page.</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Cloner un disque à travers le réseau</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Machine source (envoie le disque)
+dd if=/dev/sda | nc 192.168.1.200 9999
+
+# Machine destination (reçoit et écrit)
+nc -l 9999 | dd of=/dev/sdb
+
+# ⚠️ Extrêmement puissant et dangereux. Vérifie 3 fois avant.</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Options utiles</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># -l : mode écoute (serveur)
+# -p : spécifier le port
+# -v : verbeux
+# -z : scan sans données
+# -w : timeout en secondes
+nc -w 5 -zv serveur 80
+
+# -k : garder le serveur actif après déconnexion (répéter)
+nc -lk 1234
+
+# -u : mode UDP (défaut = TCP)
+nc -ul 1234</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>7. Exercices pratiques</h2>
+<p>1. **Scan** — Vérifie que le port 22 (SSH) est ouvert sur <code>localhost</code></p>
+<p>2. **Chat** — Ouvre deux terminaux et fais un chat local avec nc</p>
+<p>3. **Fichier** — Transfère un petit fichier texte entre deux terminaux avec nc</p>
 <nav>
 <a href="60-split-fichiers.html">&larr; 60-split-fichiers</a>
 <a href="62-curl-wget-telechargement.html">62-curl-wget-telechargement &rarr;</a>

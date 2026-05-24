@@ -1,40 +1,58 @@
-# Leçon 57 : Leçon 68 : tee — Lire depuis l'entrée et écrire partout
+# Leçon 57 : tee — Lire depuis l'entrée et écrire partout
 
-### 1. Comment fonctionne tee ?
+`tee` lit l'entrée standard et la copie à la fois vers la sortie standard ET vers un ou plusieurs fichiers. Pense à un "T" de plomberie qui divise le flux.
 
-Imaginons un té (T) de plomberie : l'eau arrive d'un côté, se divise en deux directions. tee fait pareil avec les données : elles arrivent du pipe, et une copie part vers le fichier pendant que l'autre continue son chemin.
+## 1. Le principe
 
-Le contenu est écrit dans fichier.txt ET passe à commande2.
+```bash
+commande | tee fichier.txt
+# → le résultat s'affiche à l'écran ET s'écrit dans le fichier
+```
 
-### 2. Utilisation de base
+## 2. Utilisation de base
 
-Ce comando écrit "Bonjour le monde" dans salut.txt ET le compte avec wc -c.
+```bash
+# Voir ET sauvegarder la sortie d'une commande
+ls -la | tee liste_fichiers.txt
 
-### 3. Ajouter à un fichier existant
+# Ajouter à la fin d'un fichier existant (-a = append)
+echo "Nouvelle entrée" | tee -a journal.log
 
-Par défaut, tee écrase le fichier. Avec -a, il ajoute à la fin :
+# Écrire dans plusieurs fichiers à la fois
+dmesg | tee log1.txt log2.txt log3.txt
+```
 
-### 4. Utilisation avec les droits administrateur
+## 3. Cas pratiques
 
-tee est très utile quand vous devez écrire dans un fichier root avec sudo :
+```bash
+# Logger une commande interactive (compilation, script long)
+./configure 2>&1 | tee build.log
+make 2>&1 | tee -a build.log
 
-Cette technique est plus propre que sudo sh -c 'echo ... >> fichier'.
+# Debug : voir ce qui passe dans un pipe
+cat fichier.csv | grep -i erreur | tee /tmp/erreurs.txt | wc -l
+# → affiche le nombre ET sauvegarde les erreurs dans /tmp
 
-### 5. tee avec plusieurs fichiers
+# Enregistrer une session de terminal
+script -c "bash" session.log
+# Alternative à tee pour capturer TOUTE la session
+```
 
-tee peut envoyer le contenu vers plusieurs fichiers simultanément :
+## 4. tee + sudo pour écrire dans des fichiers protégés
 
-### 10. Exercices pratiques
+```bash
+# ❌ Ne marche pas : la redirection est faite par le shell utilisateur
+echo "options" > /etc/modprobe.d/options.conf
 
-Créez un fichier liste.txt contenant le résultat de ls -R ~ tout en l'affichant à l'écran.
+# ✅ tee avec sudo fait l'écriture en root
+echo "options" | sudo tee /etc/modprobe.d/options.conf
 
-Utilisez tee -a pour ajouter plusieurs lignes de texte à un même fichier.
+# Sans afficher le résultat à l'écran
+echo "options" | sudo tee /etc/modprobe.d/options.conf > /dev/null
+```
 
-Sauvegardez la sortie d'une commande ps filtrée avec grep, puis utilisez tee pour la sauvegarder ET l'afficher.
+## 5. Exercices pratiques
 
-Créez un script qui utilise tee pour logger les étapes d'une installation dans un fichier.
-
-### Conclusion
-
-tee est une commande simple mais puissante. Elle permet de dupliquer un flux de données sans interrompre le pipe, ce qui est idéal pour le débogage, la sauvegarde de résultats intermédiaires, ou l'écriture dans des fichiers protégés. Associé à sudo, il devient un outil indispensable pour administrer un système Linux.
-
+1. **Journal** — Lance `dmesg` et enregistre la sortie dans un fichier tout en la voyant défiler
+2. **Sudo** — Ajoute une ligne dans `/etc/hosts` avec `echo ... | sudo tee -a`
+3. **Multi** — Écris la date du jour dans 3 fichiers différents avec un seul tee

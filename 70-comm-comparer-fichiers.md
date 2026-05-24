@@ -1,42 +1,108 @@
 # Leçon 70 : comm — Comparer deux fichiers ligne par ligne
 
-### Introduction
+`comm` compare deux fichiers triés et affiche les lignes uniques à chacun et les lignes communes.
 
-La commande comm permet de comparer deux fichiers texte ligne par ligne et d'afficher les différences de manière structurée. Contrairement à diff qui montre les modifications, comm sépare clairement les lignes uniques à chaque fichier et celles communes aux deux.
+## 1. Prérequis : fichiers triés
 
-### Sortie en trois colonnes
+```bash
+# ⚠️ comm exige des fichiers TRIÉS !
+# Sinon, résultat faux.
 
-Par défaut, comm affiche trois colonnes :
+# Toujours trier avant :
+sort fichier1.txt > f1_trie.txt
+sort fichier2.txt > f2_trie.txt
+comm f1_trie.txt f2_trie.txt
+```
 
-Colonne 1 : Lignes présentes uniquement dans le premier fichier
+## 2. Comprendre les 3 colonnes
 
-Colonne 2 : Lignes présentes uniquement dans le second fichier
+```bash
+comm fichier1.txt fichier2.txt
+# → Colonne 1 : lignes UNIQUES à fichier1
+# → Colonne 2 : lignes UNIQUES à fichier2
+# → Colonne 3 : lignes COMMUNES
+```
 
-Colonne 3 : Lignes communes aux deux fichiers
+Exemple :
 
-### Exemple simple
+```bash
+echo -e "Alice\nBob\nCharlie" > equipe_a.txt
+echo -e "Bob\nCharlie\nDavid" > equipe_b.txt
 
-Créons deux fichiers pour tester :
+comm equipe_a.txt equipe_b.txt
+# Alice                  ← uniquement dans A
+#         David          ← uniquement dans B
+#                 Bob    ← commun
+#                 Charlie← commun
+```
 
-Comparons les deux fichiers :
+## 3. Masquer des colonnes
 
-Résultat :
+```bash
+# -1 : masquer la colonne 1 (lignes uniques à fichier1)
+comm -1 f1.txt f2.txt
+# → uniquement fichier2 + commun
 
-### Options principales
+# -2 : masquer la colonne 2
+comm -2 f1.txt f2.txt
+# → uniquement fichier1 + commun
 
-Affiche uniquement les colonnes 2 et 3 (lignes uniques à B + lignes communes).
+# -3 : masquer la colonne 3
+comm -3 f1.txt f2.txt
+# → uniquement fichier1 + uniquement fichier2
 
-Affiche uniquement les colonnes 1 et 3 (lignes uniques à A + lignes communes).
+# Combiner : afficher SEULEMENT ce qui est commun
+comm -12 f1.txt f2.txt
+# → uniquement les lignes communes
 
-Affiche uniquement les colonnes 1 et 2 (lignes uniques à A ou B, sans les communes).
+# Afficher SEULEMENT ce qui est unique à fichier1
+comm -23 f1.txt f2.txt
+# → lignes dans f1 mais pas dans f2
 
-N'affiche que les lignes qui n'existent que dans un seul des deux fichiers (sans les communes).
+# Afficher SEULEMENT ce qui est unique à fichier2
+comm -13 f1.txt f2.txt
+```
 
-### Comparaison avec fichiers triés
+## 4. Cas pratiques
 
-comm exige que les fichiers soient triés pour fonctionner correctement. Si vos fichiers ne sont pas triés, vous devez les trier d'abord :
+```bash
+# Quels paquets sont installés sur serveur1 mais pas sur serveur2 ?
+ssh serveur1 'dpkg -l | awk "{print \$2}" | sort' > paquets_srv1.txt
+ssh serveur2 'dpkg -l | awk "{print \$2}" | sort' > paquets_srv2.txt
+comm -23 paquets_srv1.txt paquets_srv2.txt
 
-### Conclusion
+# Quels utilisateurs sont sur les deux machines ?
+comm -12 <(sort /etc/passwd | cut -d: -f1) <(ssh autre 'sort /etc/passwd | cut -d: -f1')
 
-comm est un outil puissant pour comparer des fichiers texte triés. Sa sortie en trois colonnes permet de visualiser clairement les différences et les similitudes entre deux fichiers. Combiné avec le tri et d'autres commandes Unix, il devient un outil indispensable pour la gestion et la comparaison de données.
+# Comparer deux backups de configuration
+comm -3 <(sort config_avant.txt) <(sort config_apres.txt)
+```
 
+## 5. comm avec des flux (sans fichiers temporaires)
+
+```bash
+# La syntaxe <(commande) crée un pseudo-fichier avec la sortie de la commande
+comm -23 <(sort liste1.txt) <(sort liste2.txt)
+
+# Comparer deux dossiers (les noms de fichiers)
+comm -23 <(ls dossier1/ | sort) <(ls dossier2/ | sort)
+```
+
+## 6. Résumé des options
+
+| Option | Affiche |
+|--------|---------|
+| `comm f1 f2` | Les 3 colonnes |
+| `comm -1 f1 f2` | Uniques f2 + commun |
+| `comm -2 f1 f2` | Uniques f1 + commun |
+| `comm -3 f1 f2` | Uniques f1 + uniques f2 |
+| `comm -12 f1 f2` | Commun seulement |
+| `comm -23 f1 f2` | Uniques f1 seulement |
+| `comm -13 f1 f2` | Uniques f2 seulement |
+
+## 7. Exercices pratiques
+
+1. **Base** — Crée deux fichiers triés et compare-les avec `comm`
+2. **Commun** — Affiche uniquement les lignes communes avec `comm -12`
+3. **Différence** — Trouve les lignes présentes dans le fichier A mais pas dans le B avec `comm -23`
+4. **Dossiers** — Compare le contenu de deux dossiers avec `comm -3`

@@ -44,20 +44,105 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 58 : Leçon 69 : file et stat — Inspecter les fichiers</h1>
-<h3>1. La commande file — Déterminer le type de fichier</h3>
-<p>file analyze le contenu d'un fichier (pas juste l'extension) et vous dit ce qu'il contient vraiment.</p>
-<h3>2. La commande stat — Métadonnées détaillées</h3>
-<p>stat affiche des informations complètes sur un fichier : taille, dates, permissions, inode, etc.</p>
-<h3>Exercice pratique</h3>
-<p>Essayez ces commandes sur votre système :</p>
-<p>file /bin/ls — Quel type de fichier est l'exécutable ls ?</p>
-<p>file /etc/hostname — Vérifiez le type du fichier hostname</p>
-<p>stat ~/.bashrc — Quelles sont les permissions de votre fichier bashrc ?</p>
-<p>file -i ~/Documents/* — Listez les types MIME de tous vos documents</p>
-<p>stat -c '%a %n' /etc/passwd — Affichez les permissions en octal du fichier passwd</p>
-<h3>Résumé</h3>
-<p>Ces deux commandes sont vos meilleures alliées pour inspecter n'importe quel fichier sous Linux. file vous dit "ce que contient le fichier", tandis que stat vous dit "tout ce qu'il faut savoir sur ce fichier".</p>
+<h1>Leçon 58 : file et stat — Inspecter les fichiers</h1>
+<p>Deux commandes pour savoir exactement ce que contient un fichier et ses métadonnées.</p>
+<h2>1. file — Déterminer le type d'un fichier</h2>
+<p><code>file</code> analyse le contenu du fichier (pas juste l'extension) pour deviner son type.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Type basique
+file document.pdf
+# → document.pdf: PDF document, version 1.4
+
+file photo.jpg
+# → photo.jpg: JPEG image data, 1920x1080
+
+file script.sh
+# → script.sh: Bourne-Again shell script, ASCII text executable
+
+# Fichier sans extension
+file data_bin
+# → data_bin: ELF 64-bit LSB executable, x86-64
+
+# Analyser tous les fichiers d'un dossier
+file /usr/bin/* | head -10
+
+# Afficher le type MIME
+file -i document.pdf
+# → document.pdf: application/pdf; charset=binary</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. stat — Métadonnées détaillées</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Toutes les infos d'un fichier
+stat mon_fichier.txt
+
+# Résultat :
+#   Fichier: mon_fichier.txt
+#   Taille: 1234      Blocs: 8         Bloc d'E/S: 4096
+#   Périphérique: 8,1 Inœud: 456789    Liens: 1
+# Accès: (0644/-rw-r--r--) UID: (1000/david) GID: (1000/david)
+#  Accès: 2026-05-24 10:30:00.000000000 +0200
+# Modif.: 2026-05-23 15:20:00.000000000 +0200
+# Changt: 2026-05-23 15:20:00.000000000 +0200</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Options utiles de stat</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Format personnalisé : ne montrer que ce qui t'intéresse
+stat -c "%n a une taille de %s octets" mon_fichier.txt
+
+# Afficher seulement la taille
+stat -c %s mon_fichier.txt
+
+# Afficher les permissions en octal
+stat -c %a mon_fichier.txt
+# → 644
+
+# Afficher le propriétaire
+stat -c %U mon_fichier.txt
+
+# Vérifier la date de dernière modification
+stat -c %y mon_fichier.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Comparer file et ls</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># ls montre la taille et la date
+ls -l mon_fichier.txt
+# -rw-r--r-- 1 david david 1234 mai 23 15:20 mon_fichier.txt
+
+# file montre le TYPE de contenu
+file mon_fichier.txt
+# mon_fichier.txt: ASCII text
+
+# stat montre TOUTES les métadonnées (inode, blocs, timestamps)
+stat mon_fichier.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Exercices pratiques</h2>
+<p>1. **Type mystère** — Crée un fichier sans extension et utilise <code>file</code> pour l'identifier</p>
+<p>2. **MIME** — Utilise <code>file -i</code> sur une image, un PDF et un script .sh</p>
+<p>3. **Stat** — Compare les dates "Accès" et "Modif." d'un fichier avec <code>stat</code></p>
 <nav>
 <a href="57-tee.html">&larr; 57-tee</a>
 <a href="59-nohup.html">59-nohup &rarr;</a>

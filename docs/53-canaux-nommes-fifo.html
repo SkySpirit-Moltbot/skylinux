@@ -44,34 +44,103 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 53 : Leçon 60 : Canaux nommés (Named Pipes / FIFO)</h1>
-<h3>Qu'est-ce qu'un canal nommé ?</h3>
-<p>Un canal nommé (named pipe ou FIFO) est un fichier spécial de type p. Contrairement à un pipe anonyme (|) qui n'existe que pendant l'exécution d'un processus, le FIFO existe dans le système de fichiers et peut être utilisé par n'importe quel processus, à n'importe quel moment.</p>
-<p>Communication entre processus qui ne sont pas liés par un pipe classique</p>
-<p>Un processus écrit, un autre lit, à des moments différents</p>
-<p>Débogage : rediriger la sortie d'un programme vers un fichier lisible à distance</p>
-<p>Logs en temps réel consultables par plusieurs outils simultanément</p>
-<p>Architecture simple sans réseau ni sockets TCP</p>
-<h3>Créer et utiliser un canal nommé</h3>
-<p>Ouvre deux terminaux. Dans le premier :</p>
-<p>Dans le second :</p>
-<p>Le message apparaît dans le terminal 1. Chaque nouveau message envoyé depuis le terminal 2 sera affiché dans le terminal 1.</p>
-<h3>Comportement de lecture et écriture</h3>
-<p>Les opérations de lecture et d'écriture sur un FIFO sont bloquantes par défaut. Cela signifie :</p>
-<p>Un read bloque jusqu'à ce que des données soient disponibles</p>
-<p>Un write bloque jusqu'à ce que les données soient lues</p>
-<p>C'est ce comportement qui permet de synchroniser deux processus</p>
-<p>Si tu veux qu'un processus lise et écrive sur le même FIFO, ouvre-le dans les deux directions :</p>
-<h3>Bonnes pratiques</h3>
-<p>Toujours supprimer les FIFO quand tu n'en as plus besoin : rm ~/mon-fifo</p>
-<p>Utiliser des noms explicites : /tmp/serveur-cmds, /tmp/logs-app</p>
-<p>Placer les FIFO dans /tmp ou ton dossier personnel (pas dans /dev)</p>
-<p>Penser à la gestion du bloquage : utilise timeout si ton lecteur doit mourir proprement</p>
-<p>En bash, utiliser while IFS= read -r ligne &lt; "$FIFO" pour lire ligne par ligne</p>
-<p>Ne jamais écrire dans un FIFO sans lecteur actif (le write bloquera indéfiniment)</p>
-<p>Utiliser un fichier temporaire classique (file()) pour les gros volumes de données</p>
-<h3>Résumé</h3>
-<p>Les canaux nommés sont un outil puissant pour la communication inter-processus sur Linux. Ils permettent de créer des architectures simples sans réseau ni configuration avancée. Maîtrise-les et tu disposeras d'un outil supplémentaire pour structurer tes scripts et automatisations.</p>
+<h1>Leçon 53 : Canaux nommés (Named Pipes / FIFO)</h1>
+<p>Un canal nommé (FIFO) permet à deux processus de communiquer via un fichier spécial, même s'ils n'ont aucun lien entre eux.</p>
+<h2>1. C'est quoi une FIFO ?</h2>
+<p>Contrairement au pipe classique <code>|</code> qui relie deux commandes sur une même ligne, une FIFO est un **fichier spécial** qui persiste sur le disque. Un processus écrit dedans, un autre lit — et les données transitent en mémoire, pas sur le disque.</p>
+<h2>2. Créer une FIFO</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un canal nommé
+mkfifo mon_tube
+
+# Voir son type (p = pipe)
+ls -l mon_tube
+# prw-r--r-- 1 david david 0 Mar 10 10:00 mon_tube
+# ↑ le 'p' indique un pipe nommé</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Utilisation de base</h2>
+<p>La FIFO bloque jusqu'à ce qu'un lecteur et un écriveur soient connectés :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Terminal 1 — Lecteur (reste bloqué en attente)
+cat mon_tube
+
+# Terminal 2 — Écriveur (débloque le lecteur)
+echo "Message à travers le tube" &gt; mon_tube</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Dès que le Terminal 2 exécute sa commande, le Terminal 1 affiche le message et les deux se terminent.</p>
+<h2>4. Cas concret : communication entre scripts</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Script producteur (producer.sh)
+#!/bin/bash
+while true; do
+  echo "$(date): Nouvelle donnée" &gt; /tmp/data_pipe
+  sleep 2
+done
+
+# Script consommateur (consumer.sh)
+#!/bin/bash
+while true; do
+  read line &lt; /tmp/data_pipe
+  echo "Reçu: $line"
+done</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. FIFO + compression à la volée</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer la FIFO
+mkfifo /tmp/backup_pipe
+
+# Lecteur : compresse ce qui arrive dans la FIFO
+gzip &lt; /tmp/backup_pipe &gt; sauvegarde.tar.gz &amp;
+
+# Écriveur : envoie l'archive tar dans la FIFO
+tar cf /tmp/backup_pipe /home/david/Documents/
+
+# Nettoyage
+rm /tmp/backup_pipe</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Supprimer une FIFO</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Se supprime comme un fichier normal
+rm mon_tube
+
+# Un tube nommé ne stocke rien sur le disque, rm est sans danger</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>7. Exercices pratiques</h2>
+<p>1. **Premier tube** — Crée une FIFO, lis-la dans un terminal, écris dedans depuis un autre</p>
+<p>2. **Log en direct** — Utilise une FIFO pour qu'un script écrive des logs et un autre les affiche</p>
+<p>3. **Compression** — Reproduis l'exemple de compression à la volée avec tar et gzip</p>
+<hr/>
+<p>**À retenir** : les FIFO sont utiles pour connecter des processus indépendants. Pour les pipes simples entre commandes, <code>|</code> suffit dans 95% des cas.</p>
 <nav>
 <a href="52-df-du-espace-disque.html">&larr; 52-df-du-espace-disque</a>
 <a href="54-tar-gzip-bzip2.html">54-tar-gzip-bzip2 &rarr;</a>

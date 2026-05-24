@@ -44,78 +44,173 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 48 : Leçon 50 : grep, sed et xargs — Rechercher, modifier et chaîner</h1>
-<h3>Objectif</h3>
-<p>Découvrir trois outils complémentaires pour manipuler du texte en ligne de commande : **grep** (rechercher), **sed** (modifier) et **xargs** (chaîner des commandes).</p>
-<h3>Prérequis</h3>
-<p>Savoir naviguer dans le terminal (leçon 2)</p>
-<p>Comprendre les tubes (pipes) (leçon 8)</p>
-<h3>1. grep — Rechercher du texte</h3>
-<p>grep (Global Regular Expression Print) cherche un motif dans un fichier ou une entrée standard.</p>
-<p># Rechercher "error" dans un fichier</p>
-<p>grep "error" /var/log/syslog</p>
-<p># Recherche insensible à la casse</p>
-<p>grep -i "warning" app.log</p>
-<p># Afficher les lignes QUI NE contiennent PAS le motif</p>
-<p>grep -v "debug" app.log</p>
-<p># Afficher le numéro des lignes</p>
-<p>grep -n "error" app.log</p>
-<p># Recherche récursive dans un répertoire</p>
-<p>grep -r "failed" /etc/</p>
-<p># Trouver les lignes avec une adresse IP</p>
-<p>grep -E "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" logs.txt</p>
-<p># Compter le nombre d'occurrences</p>
-<p>grep -c "error" app.log</p>
-<p># Afficher 3 lignes avant et après chaque match</p>
-<p>grep -B 3 -A 3 "exception" app.log</p>
-<h3>2. sed — Éditeur de flux</h3>
-<p>sed modifie du texte sans ouvrir de fichier. Il applique des transformations ligne par ligne.</p>
-<p># Remplacer la première occurrence de "foo" par "bar" par ligne</p>
-<p>sed 's/foo/bar/' fichier.txt</p>
-<p># Remplacer TOUTES les occurrences (drapeau g)</p>
-<p>sed 's/foo/bar/g' fichier.txt</p>
-<p># Modifier le fichier directement (-i)</p>
-<p>sed -i 's/localhost/127.0.0.1/g' config.txt</p>
-<p># Remplacer surplace avec backup (.bak)</p>
-<p>sed -i.bak 's/old/new/g' config.txt</p>
-<p># Supprimer les lignes contenant un motif</p>
-<p>sed '/temporaire/d' logs.txt</p>
-<p># Afficher les lignes 10 à 20</p>
-<p>sed -n '10,20p' grand_fichier.txt</p>
-<p># Ajouter du texte après une ligne</p>
-<p>sed -i '/pattern/a\Nouvelle ligne' fichier.txt</p>
-<p># Remplacer par une expression régulière</p>
-<p>sed -E 's/[0-9]{4}/****/g' fichier.txt</p>
-<p># Remplacer tous les "http://" par "https://" dans un fichier HTML</p>
-<p>sed -i 's/http:\/\//https:\/\//g' index.html</p>
-<p># Supprimer tous les espaces de fin de ligne</p>
-<p>sed -i 's/[[:space:]]*$//' fichier.txt</p>
-<h3>3. xargs — Construire des commandes</h3>
-<p>xargs lit des éléments depuis l'entrée standard et les passe comme arguments à une autre commande. Indispensable pour chaîner avec find.</p>
-<p># Compter le nombre de lignes de chaque fichier trouvé</p>
-<p>find . -name "*.txt" | xargs wc -l</p>
-<p># Supprimer tous les fichiers .tmp trouvés</p>
-<p>find . -name "*.tmp" | xargs rm -f</p>
-<p># Copier tous les fichiers .conf dans backup/</p>
-<p>find /etc -name "*.conf" | xargs -I {} cp {} /backup/</p>
-<p># Demander confirmation avant chaque suppression</p>
-<p>find . -name "*.log" -mtime +7 | xargs -p rm -f</p>
-<p># Lancer 4 processus en parallèle</p>
-<p>find . -name "*.jpg" | xargs -P 4 -I {} convert {} -resize 800x600 {}</p>
-<h3>4. Combiner les trois</h3>
-<p># Rechercher les lignes avec "error", remplacer "old" par "new", sauvegarder</p>
-<p>grep "error" app.log | sed 's/old/new/g' &gt; app_new.log</p>
-<p># Trouver les fichiers modifiés récemment, afficher leur contenu</p>
-<p>find . -mtime -7 -name "*.txt" | xargs grep -l "TODO"</p>
-<p># Nettoyer : trouver les .bak, les compresser, supprimer l'original</p>
-<p>find . -name "*.bak" | xargs gzip &amp;&amp; find . -name "*.bak" | xargs rm</p>
-<h3>Exercices pratiques</h3>
-<p>1. **Recherche simple** — Dans /var/log/syslog, trouve toutes les lignes contenant "sshd".</p>
-<p>2. **Remplacement** — Dans un fichier config.txt, remplace "port = 8080" par "port = 443" avec sed.</p>
-<p>3. **Chaînage** — Trouve tous les fichiers .log dans /var/log/ qui contiennent "error", puis affiche leurs permissions avec ls -l.</p>
-<p>4. **Nettoyage** — Trouve tous les fichiers .tmp de plus de 7 jours et supprime-les avec confirmation.</p>
-<h3>Navigation</h3>
-<p>[← Leçon 49 : journalctl](49-journalctl-logs-systemd.html) | [Leçon 51 : sort, uniq et wc](51-sort-uniq-wc.html) | [Sommaire](index.html)</p>
+<h1>Leçon 48 : grep, sed et xargs — Rechercher, modifier et chaîner</h1>
+<p>Dans cette leçon, tu vas maîtriser trois outils fondamentaux pour traiter du texte en ligne de commande : <code>grep</code> pour chercher, <code>sed</code> pour modifier, et <code>xargs</code> pour enchaîner des commandes.</p>
+<h2>1. grep — Rechercher dans du texte</h2>
+<p><code>grep</code> cherche des motifs dans des fichiers ou dans le flux d'entrée.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Syntaxe de base
+grep [options] "motif" fichier
+
+# Chercher un mot dans un fichier
+grep "erreur" /var/log/syslog
+
+# Ignorer la casse (majuscule/minuscule)
+grep -i "erreur" /var/log/syslog
+
+# Chercher récursivement dans tous les fichiers d'un dossier
+grep -r "TODO" ~/projets/
+
+# Afficher le numéro de ligne
+grep -n "fonction" script.sh
+
+# Compter les occurrences
+grep -c "200" access.log
+
+# Inverser : lignes qui ne contiennent PAS le motif
+grep -v "DEBUG" app.log
+
+# Motif exact (mot entier)
+grep -w "port" config.txt
+
+# Afficher le nom du fichier pour chaque correspondance
+grep -l "FIXME" *.c</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>**Astuce** : combine grep avec un pipe pour filtrer la sortie d'une autre commande :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ps aux | grep firefox
+dmesg | grep -i usb
+history | grep rsync</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Expressions régulières avec grep</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lignes qui commencent par "root"
+grep "^root" /etc/passwd
+
+# Lignes qui finissent par ".conf"
+grep "\.conf$" /etc/file_list.txt
+
+# L'un ou l'autre (erreur OU warning)
+grep -E "erreur|warning" /var/log/syslog
+
+# Un chiffre suivi de "Go"
+grep -E "[0-9]+Go" disque_info.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. sed — Modifier du texte en flux</h2>
+<p><code>sed</code> (stream editor) modifie du texte ligne par ligne. Idéal pour des remplacements automatisés.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Syntaxe : sed 's/motif/remplacement/' fichier
+
+# Remplacer la première occurrence par ligne
+sed 's/rouge/bleu/' fichier.txt
+
+# Remplacer TOUTES les occurrences par ligne
+sed 's/rouge/bleu/g' fichier.txt
+
+# Modifier le fichier sur place (--in-place)
+sed -i 's/192.168.1.1/10.0.0.1/g' config.conf
+
+# Supprimer les lignes vides
+sed '/^$/d' fichier.txt
+
+# Supprimer une ligne spécifique (la 5e)
+sed '5d' fichier.txt
+
+# Afficher seulement les lignes 10 à 20
+sed -n '10,20p' fichier.txt
+
+# Sauvegarder l'original avant modification
+sed -i.bak 's/old/new/g' config.conf
+# → crée config.conf.bak avant de modifier config.conf</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>**Cas concret** : changer toutes les occurrences d'une IP dans 50 fichiers de config :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sed -i 's/192.168.1.100/10.0.50.100/g' /etc/app/configs/*.conf</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. xargs — Transformer des résultats en arguments</h2>
+<p><code>xargs</code> prend chaque ligne de l'entrée standard et la passe comme argument à une commande.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sans xargs : rm ne peut pas lire depuis stdin
+# ❌ find . -name "*.tmp" | rm
+
+# Avec xargs : chaque fichier devient un argument de rm
+find . -name "*.tmp" | xargs rm
+
+# Traiter les noms avec des espaces (important !)
+find . -name "*.log" -print0 | xargs -0 rm
+
+# Afficher ce qui va être exécuté (dry-run)
+ls *.txt | xargs -t rm
+
+# Limiter le nombre d'arguments par lot
+echo {1..100} | xargs -n 5
+# Résultat : 1 2 3 4 5
+#           6 7 8 9 10
+#           ...
+
+# Exécuter en parallèle (plus rapide !)
+find . -name "*.jpg" | xargs -P 4 -I {} convert {} -resize 50% small/{}</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. La puissance de la combinaison</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Trouver tous les "TODO" dans les scripts Python et les compter
+grep -r "TODO" ~/projets/ --include="*.py" | wc -l
+
+# Remplacer "localhost" par "mon-serveur.local" dans tous les .conf
+grep -rl "localhost" /etc/ | xargs sed -i 's/localhost/mon-serveur.local/g'
+
+# Trouver les 5 plus gros fichiers .log et afficher leur taille
+find /var/log -name "*.log" -type f | xargs ls -lhS | head -5</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Exercices pratiques</h2>
+<p>1. **grep** — Trouve toutes les lignes contenant "error" (insensible à la casse) dans <code>/var/log/syslog</code></p>
+<p>2. **sed** — Crée un fichier test et remplace toutes les occurrences de "chien" par "chat"</p>
+<p>3. **xargs** — Liste tous les <code>.txt</code> du dossier courant et supprime-les avec xargs</p>
+<p>4. **Combo** — Trouve tous les fichiers <code>.conf</code> modifiés aujourd'hui et affiche leur nom</p>
+<hr/>
+<p>**Résumé** : grep pour chercher, sed pour modifier, xargs pour enchaîner. Ensemble, ils couvrent 90% des tâches de traitement de texte en shell.</p>
 <nav>
 <a href="47-awk-manipuler-texte.html">&larr; 47-awk-manipuler-texte</a>
 <a href="49-journalctl-logs-systemd.html">49-journalctl-logs-systemd &rarr;</a>

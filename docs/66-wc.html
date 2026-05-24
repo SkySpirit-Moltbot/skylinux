@@ -45,40 +45,100 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 66 : wc — Compter lignes, mots et caractères</h1>
-<h3>📖 Utilisation de base</h3>
-<p>La syntaxe de base de wc est simple :</p>
-<p>L'option -l (lines) affiche le nombre de lignes. C'est l'utilisation la plus courante de wc.</p>
-<p>L'option -w (words) compte le nombre de mots dans le fichier.</p>
-<p>L'option -c (characters) affiche le nombre d'octets (caractères) dans le fichier.</p>
-<p>Sans option, wc affiche les trois informations : lignes, mots et caractères, dans cet ordre, séparés par des espaces.</p>
-<h3>💡 Combinaisons utiles</h3>
-<p>wc peut traiter plusieurs fichiers. Il affichera les statistiques pour chaque fichier, plus un total.</p>
-<p>Vous pouvez utiliser wc avec d'autres commandes via un pipe pour compter le résultat.</p>
-<p>Une utilisation classique : compter le nombre de fichiers ou répertoires dans le répertoire courant. L'option -1 de ls affiche un fichier par ligne.</p>
-<p>Compter le nombre de processus en cours. Le résultat inclut la ligne d'en-tête de ps, donc retirez 1 pour avoir le nombre exact de processus.</p>
-<p>Permet de savoir combien d'utilisateurs sont connectés au système.</p>
-<p>Utile pour évaluer la taille d'un script ou comparer deux versions.</p>
-<h3>🎯 Cas d'utilisation courants</h3>
-<p>Permet de connaître le nombre d'entrées dans un fichier de log.</p>
-<p>Combinez grep et wc pour compter les lignes contenant un motif spécifique.</p>
-<p>Sur Debian/Ubuntu ou Red Hat/CentOS, comptez facilement le nombre de packages installés.</p>
-<p>Listez le contenu d'une archive et comptez le nombre de fichiers qu'elle contient.</p>
-<p>Pour les développeurs, comptez rapidement le nombre de lignes de code par langage.</p>
-<p>L'option -L affiche la longueur de la ligne la plus longue. Très utile pour formater du texte ou détecter des lignes problématique.</p>
-<h3>📝 Exercices pratiques</h3>
-<p>Comptez le nombre de lignes du fichier /etc/passwd pour voir combien d'utilisateurs sont définis sur le système.</p>
-<p>Combien de mots contient votre fichier .bashrc ou .bash_history ?</p>
-<p>Trouvez le nombre de fichiers dans votre répertoire personnel :</p>
-<p>Comptez le nombre de lignes contenant le mot "root" dans /etc/passwd :</p>
-<p>Utilisez wc pour vérifier la longueur de la ligne la plus longue dans un fichier texte :</p>
-<h3>🔗 Commandes liées</h3>
-<p>cat — Afficher le contenu d'un fichier (voir Leçon 2)</p>
-<p>head et tail — Afficher le début ou la fin d'un fichier (voir Leçon 66)</p>
-<p>sort — Trier les lignes (voir Leçon 51)</p>
-<p>grep — Rechercher du texte (voir Leçon 50)</p>
-<h3>📚 Pour aller plus loin</h3>
-<p>La commande wc est souvent utilisée dans les scripts bash pour prendre des décisions basées sur le nombre de lignes ou de mots. Par exemple, vous pouvez vérifier qu'un fichier n'est pas vide avant de le traiter, ou compter le nombre de résultats d'une recherche avant de lancer une opération.</p>
-<p>Remember: wc compte réellement les séparateurs de mots pour déterminer le nombre de mots. Un mot est défini comme une séquence de caractères séparée par des espaces, tabulations ou sauts de ligne.</p>
+<p><code>wc</code> (word count) est l'outil de statistiques le plus simple et le plus utilisé du shell.</p>
+<h2>1. Utilisation de base</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Compter tout : lignes, mots, octets
+wc mon_fichier.txt
+# → 150  1200  8500 mon_fichier.txt
+#   ↑     ↑      ↑
+#  lignes mots  octets
+
+# Seulement les lignes
+wc -l mon_fichier.txt
+
+# Seulement les mots
+wc -w mon_fichier.txt
+
+# Seulement les caractères
+wc -m mon_fichier.txt
+
+# Seulement les octets
+wc -c mon_fichier.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Cas pratiques du quotidien</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Combien de fichiers dans un dossier ?
+ls | wc -l
+
+# Combien de processus ?
+ps aux | wc -l
+
+# Combien d'utilisateurs ont un compte ?
+wc -l /etc/passwd
+
+# Combien de lignes de code dans un projet ?
+find . -name "*.py" | xargs wc -l
+
+# Total global
+find . -name "*.py" | xargs wc -l | tail -1
+
+# Compter les occurrences d'un mot
+grep "erreur" /var/log/syslog | wc -l
+
+# Taille totale des .log
+find /var/log -name "*.log" | xargs wc -c | tail -1</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Différence entre -c et -m</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># -c = octets (bytes)
+# -m = caractères (UTF-8, un caractère peut valoir plusieurs octets)
+
+echo "ça" | wc -c
+# → 4  (c=1, ¸=2, a=1, \n=1)
+
+echo "ça" | wc -m
+# → 3  (ç=1, a=1, \n=1)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Dans un script</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+nb_lignes=$(wc -l &lt; fichier.txt)
+echo "Le fichier contient $nb_lignes lignes"
+
+if [ "$nb_lignes" -gt 1000 ]; then
+    echo "Gros fichier détecté !"
+fi</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Exercices pratiques</h2>
+<p>1. **Base** — Compte les lignes, mots et caractères d'un fichier</p>
+<p>2. **Dossier** — Compte combien de fichiers <code>.sh</code> sont dans <code>/usr/bin</code></p>
+<p>3. **Logs** — Compte le nombre de lignes contenant "error" dans <code>/var/log/syslog</code></p>
+<p>4. **Projet** — Compte les lignes de tous les <code>.md</code> de ton dossier courant</p>
 <nav>
 <a href="65-head-tail.html">&larr; 65-head-tail</a>
 <a href="67-locate-which-whereis-type.html">67-locate-which-whereis-type &rarr;</a>

@@ -1,76 +1,92 @@
 # Leçon 65 : head et tail — Visualiser le début et la fin des fichiers
 
-### 📖 head — Afficher le début d'un fichier
+Deux commandes jumelles : `head` montre les premières lignes, `tail` les dernières. Indispensables pour explorer des fichiers rapidement.
 
-La commande head affiche par défaut les 10 premières lignes d'un fichier. C'est très pratique pour prévisualiser un fichier sans charger l'intégralité de son contenu.
+## 1. head — Le début du fichier
 
-Cet exemple affiche les 10 premières lignes de fichier.txt.
+```bash
+# 10 premières lignes (défaut)
+head mon_fichier.txt
 
-Pour afficher les 20 premières lignes, on utilise l'option -n suivie du nombre souhaité. On peut aussi écrire simplement head -20 fichier.txt.
+# N premières lignes
+head -n 5 mon_fichier.txt
 
-head peut traiter plusieurs fichiers à la fois. Il affichera alors un en-tête avec le nom du fichier avant chaque section.
+# Premiers octets
+head -c 100 mon_fichier.txt
 
-Comme beaucoup de commandes Linux, head fonctionne parfaitement avec les pipes. Ici, on affiche les 50 premières lignes du résultat de cat.
+# Tous SAUF les N dernières lignes
+head -n -5 mon_fichier.txt
+# → tout le fichier sauf les 5 dernières lignes
+```
 
-### 📖 tail — Afficher la fin d'un fichier
+## 2. tail — La fin du fichier
 
-La commande tail fait l'inverse de head : elle affiche les dernières lignes d'un fichier. C'est l'outil idéal pour consulter les logs en temps réel ou voir les dernières entrées d'un fichier.
+```bash
+# 10 dernières lignes (défaut)
+tail mon_fichier.txt
 
-Par défaut, tail affiche les 10 dernières lignes de fichier.txt.
+# N dernières lignes
+tail -n 20 mon_fichier.txt
 
-Pour voir les 30 dernières lignes, utilisez l'option -n 30 ou simplement -30.
+# Derniers octets
+tail -c 500 mon_fichier.txt
 
-L'option -f (follow) est particulièrement utile pour monitorer les logs. Le terminal continuera à afficher les nouvelles lignes au fur et à mesure qu'elles sont ajoutées au fichier. Pour arrêter, appuyez sur Ctrl+C.
+# Suivre un fichier en temps réel !
+tail -f /var/log/syslog
+# Ctrl+C pour arrêter
 
-On peut surveiller plusieurs fichiers simultanément. Les nouvelles lignes de chaque fichier seront affichées avec un en-tête identifiant la source.
+# Suivre avec conservation si le fichier est recréé
+tail -F /var/log/nginx/access.log
+```
 
-Avec +100, tail affichera tout à partir de la ligne 100 jusqu'à la fin du fichier.
+## 3. tail -f : le plus utile
 
-### 🔧 Options avancées
+```bash
+# Voir les logs en direct (le cas d'usage numéro 1)
+tail -f /var/log/syslog
 
-Pour afficher les premiers 500 octets au lieu des premières lignes, utilisez -c. Cela peut être utile pour les fichiers binaires ou les fichiers avec des lignes très longues.
+# Suivre plusieurs fichiers à la fois
+tail -f /var/log/syslog /var/log/auth.log
 
-L'option -s permet de spécifier un intervalle en secondes entre chaque vérification. Ici, le fichier sera vérifié toutes les 5 secondes au lieu de lvaleur par défaut (1 seconde).
+# Filtrer ce qui défile
+tail -f /var/log/syslog | grep --line-buffered erreur
 
-Pour afficher les lignes 81 à 100, on peut combiner les deux commandes avec un pipe. Ici, head garde les 100 premières lignes, puis tail en extrait les 20 dernières (donc les lignes 81 à 100).
+# Voir ses propres actions en direct
+tail -f ~/.bash_history
+```
 
-### 💡 Cas d'utilisation courants
+## 4. Combinaisons head + tail
 
-Permet de voir rapidement les 50 dernières erreurs dans un log serveur.
+```bash
+# Lignes 15 à 25 d'un fichier
+head -n 25 fichier.txt | tail -n 11
 
-Utile pour surveiller les tentatives de connexion sur un serveur Linux.
+# Lignes 100 à 110
+cat -n fichier.txt | tail -n +100 | head -n 11
 
-Permet de vérifier rapidement la structure d'un fichier CSV avant de le traiter.
+# La 3e ligne d'un fichier
+head -n 3 fichier.txt | tail -n 1
+```
 
-En combinant tail -f avec grep, on peut filtrer en temps réel pour ne voir que les lignes contenant "ERROR".
+## 5. Cas pratiques
 
-Pour obtenir l'avant-dernière ligne, on affiche les 2 dernières puis on garde la première avec head.
+```bash
+# Vérifier le début d'un CSV (entête + premières données)
+head -n 5 data.csv
 
-### 📝 Exercices pratiques
+# Voir les dernières connexions SSH
+tail -n 20 /var/log/auth.log | grep sshd
 
-Essayez d'afficher les 5 premières lignes de votre fichier /etc/passwd. Vous verrez la liste des utilisateurs système.
+# Extraire une plage : enlever l'entête d'un CSV
+tail -n +2 data.csv > data_sans_entete.csv
 
-Affichez les 20 dernières lignes du fichier /var/log/syslog (ou /var/log/messages sur certaines distributions).
+# Afficher les 5 plus récentes entrées
+tail -n 5 /var/log/syslog
+```
 
-Ouvrez un second terminal et lancez la commande suivante pour suivre un log en temps réel :
+## 6. Exercices pratiques
 
-Revenez à votre premier terminal et tapez une commande (par exemple ls). Vous verrez les nouvelles entrées apparaître dans le second terminal.
-
-Comment afficher les lignes 50 à 75 d'un fichier ?
-
-### 🔗 Commandes liées
-
-cat — Afficher l'intégralité d'un fichier (voir Leçon 2)
-
-less — Afficher un fichier page par page
-
-grep — Rechercher du texte dans un fichier (voir Leçon 50)
-
-wc — Compter les lignes, mots et caractères (voir Leçon 65)
-
-### 📚 Pour aller plus loin
-
-Les commandes head et tail font partie des outils essentiels sous Linux. Leur simplicité cache une grande puissance, surtout quand on les combine avec des pipes et d'autres commandes comme grep ou awk. N'hésitez pas à les intégrer dans vos scripts pour analyser des logs ou extraire des données spécifiques.
-
-Remember: pour les fichiers très volumineux, head et tail sont beaucoup plus rapides que d'ouvrir le fichier entièrement, car ils ne lisent que les parties nécessaires du fichier.
-
+1. **Head** — Affiche les 3 premières lignes de `/etc/passwd`
+2. **Tail** — Affiche les 10 dernières lignes de `/var/log/syslog`
+3. **Live** — Lance `tail -f` sur un fichier de log et écris dedans depuis un autre terminal
+4. **Plage** — Affiche les lignes 5 à 10 d'un fichier avec head et tail combinés

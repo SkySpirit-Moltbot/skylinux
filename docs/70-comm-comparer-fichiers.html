@@ -45,26 +45,133 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 70 : comm — Comparer deux fichiers ligne par ligne</h1>
-<h3>Introduction</h3>
-<p>La commande comm permet de comparer deux fichiers texte ligne par ligne et d'afficher les différences de manière structurée. Contrairement à diff qui montre les modifications, comm sépare clairement les lignes uniques à chaque fichier et celles communes aux deux.</p>
-<h3>Sortie en trois colonnes</h3>
-<p>Par défaut, comm affiche trois colonnes :</p>
-<p>Colonne 1 : Lignes présentes uniquement dans le premier fichier</p>
-<p>Colonne 2 : Lignes présentes uniquement dans le second fichier</p>
-<p>Colonne 3 : Lignes communes aux deux fichiers</p>
-<h3>Exemple simple</h3>
-<p>Créons deux fichiers pour tester :</p>
-<p>Comparons les deux fichiers :</p>
-<p>Résultat :</p>
-<h3>Options principales</h3>
-<p>Affiche uniquement les colonnes 2 et 3 (lignes uniques à B + lignes communes).</p>
-<p>Affiche uniquement les colonnes 1 et 3 (lignes uniques à A + lignes communes).</p>
-<p>Affiche uniquement les colonnes 1 et 2 (lignes uniques à A ou B, sans les communes).</p>
-<p>N'affiche que les lignes qui n'existent que dans un seul des deux fichiers (sans les communes).</p>
-<h3>Comparaison avec fichiers triés</h3>
-<p>comm exige que les fichiers soient triés pour fonctionner correctement. Si vos fichiers ne sont pas triés, vous devez les trier d'abord :</p>
-<h3>Conclusion</h3>
-<p>comm est un outil puissant pour comparer des fichiers texte triés. Sa sortie en trois colonnes permet de visualiser clairement les différences et les similitudes entre deux fichiers. Combiné avec le tri et d'autres commandes Unix, il devient un outil indispensable pour la gestion et la comparaison de données.</p>
+<p><code>comm</code> compare deux fichiers triés et affiche les lignes uniques à chacun et les lignes communes.</p>
+<h2>1. Prérequis : fichiers triés</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># ⚠️ comm exige des fichiers TRIÉS !
+# Sinon, résultat faux.
+
+# Toujours trier avant :
+sort fichier1.txt &gt; f1_trie.txt
+sort fichier2.txt &gt; f2_trie.txt
+comm f1_trie.txt f2_trie.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Comprendre les 3 colonnes</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>comm fichier1.txt fichier2.txt
+# → Colonne 1 : lignes UNIQUES à fichier1
+# → Colonne 2 : lignes UNIQUES à fichier2
+# → Colonne 3 : lignes COMMUNES</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Exemple :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>echo -e "Alice\nBob\nCharlie" &gt; equipe_a.txt
+echo -e "Bob\nCharlie\nDavid" &gt; equipe_b.txt
+
+comm equipe_a.txt equipe_b.txt
+# Alice                  ← uniquement dans A
+#         David          ← uniquement dans B
+#                 Bob    ← commun
+#                 Charlie← commun</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Masquer des colonnes</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># -1 : masquer la colonne 1 (lignes uniques à fichier1)
+comm -1 f1.txt f2.txt
+# → uniquement fichier2 + commun
+
+# -2 : masquer la colonne 2
+comm -2 f1.txt f2.txt
+# → uniquement fichier1 + commun
+
+# -3 : masquer la colonne 3
+comm -3 f1.txt f2.txt
+# → uniquement fichier1 + uniquement fichier2
+
+# Combiner : afficher SEULEMENT ce qui est commun
+comm -12 f1.txt f2.txt
+# → uniquement les lignes communes
+
+# Afficher SEULEMENT ce qui est unique à fichier1
+comm -23 f1.txt f2.txt
+# → lignes dans f1 mais pas dans f2
+
+# Afficher SEULEMENT ce qui est unique à fichier2
+comm -13 f1.txt f2.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Cas pratiques</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Quels paquets sont installés sur serveur1 mais pas sur serveur2 ?
+ssh serveur1 'dpkg -l | awk "{print \$2}" | sort' &gt; paquets_srv1.txt
+ssh serveur2 'dpkg -l | awk "{print \$2}" | sort' &gt; paquets_srv2.txt
+comm -23 paquets_srv1.txt paquets_srv2.txt
+
+# Quels utilisateurs sont sur les deux machines ?
+comm -12 &lt;(sort /etc/passwd | cut -d: -f1) &lt;(ssh autre 'sort /etc/passwd | cut -d: -f1')
+
+# Comparer deux backups de configuration
+comm -3 &lt;(sort config_avant.txt) &lt;(sort config_apres.txt)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. comm avec des flux (sans fichiers temporaires)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># La syntaxe &lt;(commande) crée un pseudo-fichier avec la sortie de la commande
+comm -23 &lt;(sort liste1.txt) &lt;(sort liste2.txt)
+
+# Comparer deux dossiers (les noms de fichiers)
+comm -23 &lt;(ls dossier1/ | sort) &lt;(ls dossier2/ | sort)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Résumé des options</h2>
+<table>
+<tr><th>Option</th><th>Affiche</th></tr>
+<tr><td><code>comm f1 f2</code></td><td>Les 3 colonnes</td></tr>
+<tr><td><code>comm -1 f1 f2</code></td><td>Uniques f2 + commun</td></tr>
+<tr><td><code>comm -2 f1 f2</code></td><td>Uniques f1 + commun</td></tr>
+<tr><td><code>comm -3 f1 f2</code></td><td>Uniques f1 + uniques f2</td></tr>
+<tr><td><code>comm -12 f1 f2</code></td><td>Commun seulement</td></tr>
+<tr><td><code>comm -23 f1 f2</code></td><td>Uniques f1 seulement</td></tr>
+<tr><td><code>comm -13 f1 f2</code></td><td>Uniques f2 seulement</td></tr>
+</table>
+<h2>7. Exercices pratiques</h2>
+<p>1. **Base** — Crée deux fichiers triés et compare-les avec <code>comm</code></p>
+<p>2. **Commun** — Affiche uniquement les lignes communes avec <code>comm -12</code></p>
+<p>3. **Différence** — Trouve les lignes présentes dans le fichier A mais pas dans le B avec <code>comm -23</code></p>
+<p>4. **Dossiers** — Compare le contenu de deux dossiers avec <code>comm -3</code></p>
 <nav>
 <a href="69-paste.html">&larr; 69-paste</a>
 

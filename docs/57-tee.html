@@ -44,26 +44,77 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 57 : Leçon 68 : tee — Lire depuis l'entrée et écrire partout</h1>
-<h3>1. Comment fonctionne tee ?</h3>
-<p>Imaginons un té (T) de plomberie : l'eau arrive d'un côté, se divise en deux directions. tee fait pareil avec les données : elles arrivent du pipe, et une copie part vers le fichier pendant que l'autre continue son chemin.</p>
-<p>Le contenu est écrit dans fichier.txt ET passe à commande2.</p>
-<h3>2. Utilisation de base</h3>
-<p>Ce comando écrit "Bonjour le monde" dans salut.txt ET le compte avec wc -c.</p>
-<h3>3. Ajouter à un fichier existant</h3>
-<p>Par défaut, tee écrase le fichier. Avec -a, il ajoute à la fin :</p>
-<h3>4. Utilisation avec les droits administrateur</h3>
-<p>tee est très utile quand vous devez écrire dans un fichier root avec sudo :</p>
-<p>Cette technique est plus propre que sudo sh -c 'echo ... >> fichier'.</p>
-<h3>5. tee avec plusieurs fichiers</h3>
-<p>tee peut envoyer le contenu vers plusieurs fichiers simultanément :</p>
-<h3>10. Exercices pratiques</h3>
-<p>Créez un fichier liste.txt contenant le résultat de ls -R ~ tout en l'affichant à l'écran.</p>
-<p>Utilisez tee -a pour ajouter plusieurs lignes de texte à un même fichier.</p>
-<p>Sauvegardez la sortie d'une commande ps filtrée avec grep, puis utilisez tee pour la sauvegarder ET l'afficher.</p>
-<p>Créez un script qui utilise tee pour logger les étapes d'une installation dans un fichier.</p>
-<h3>Conclusion</h3>
-<p>tee est une commande simple mais puissante. Elle permet de dupliquer un flux de données sans interrompre le pipe, ce qui est idéal pour le débogage, la sauvegarde de résultats intermédiaires, ou l'écriture dans des fichiers protégés. Associé à sudo, il devient un outil indispensable pour administrer un système Linux.</p>
+<h1>Leçon 57 : tee — Lire depuis l'entrée et écrire partout</h1>
+<p><code>tee</code> lit l'entrée standard et la copie à la fois vers la sortie standard ET vers un ou plusieurs fichiers. Pense à un "T" de plomberie qui divise le flux.</p>
+<h2>1. Le principe</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>commande | tee fichier.txt
+# → le résultat s'affiche à l'écran ET s'écrit dans le fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Utilisation de base</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir ET sauvegarder la sortie d'une commande
+ls -la | tee liste_fichiers.txt
+
+# Ajouter à la fin d'un fichier existant (-a = append)
+echo "Nouvelle entrée" | tee -a journal.log
+
+# Écrire dans plusieurs fichiers à la fois
+dmesg | tee log1.txt log2.txt log3.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Cas pratiques</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Logger une commande interactive (compilation, script long)
+./configure 2&gt;&amp;1 | tee build.log
+make 2&gt;&amp;1 | tee -a build.log
+
+# Debug : voir ce qui passe dans un pipe
+cat fichier.csv | grep -i erreur | tee /tmp/erreurs.txt | wc -l
+# → affiche le nombre ET sauvegarde les erreurs dans /tmp
+
+# Enregistrer une session de terminal
+script -c "bash" session.log
+# Alternative à tee pour capturer TOUTE la session</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. tee + sudo pour écrire dans des fichiers protégés</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># ❌ Ne marche pas : la redirection est faite par le shell utilisateur
+echo "options" &gt; /etc/modprobe.d/options.conf
+
+# ✅ tee avec sudo fait l'écriture en root
+echo "options" | sudo tee /etc/modprobe.d/options.conf
+
+# Sans afficher le résultat à l'écran
+echo "options" | sudo tee /etc/modprobe.d/options.conf &gt; /dev/null</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Exercices pratiques</h2>
+<p>1. **Journal** — Lance <code>dmesg</code> et enregistre la sortie dans un fichier tout en la voyant défiler</p>
+<p>2. **Sudo** — Ajoute une ligne dans <code>/etc/hosts</code> avec <code>echo ... | sudo tee -a</code></p>
+<p>3. **Multi** — Écris la date du jour dans 3 fichiers différents avec un seul tee</p>
 <nav>
 <a href="56-xargs.html">&larr; 56-xargs</a>
 <a href="58-file-stat-inspecter-fichiers.html">58-file-stat-inspecter-fichiers &rarr;</a>

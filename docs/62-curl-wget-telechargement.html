@@ -44,56 +44,119 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 62 : curl et wget — Télécharger des fichiers depuis le terminal</h1>
-<h3>wget — Téléchargement simple et automatique</h3>
-<p>wget est idéal pour télécharger des fichiers de manière récursive ou en arrière-plan. Il reprend automatiquement un téléchargement interrompu et suit les redirections.</p>
-<p>Le fichier sera téléchargé et sauvegardé sous le même nom fichier.tar.gz.</p>
-<p>L'option -O permet de spécifier le nom du fichier de sortie.</p>
-<p>Si le téléchargement est interrompu, -c reprend là où il s'est arrêté. Très utile pour les gros fichiers !</p>
-<p>L'option -b lance le téléchargement en arrière-plan. Tu peux vérifier l'avancement avec :</p>
-<p>Cette commande télécharge récursivement tout un site web pour consultation hors ligne.</p>
-<h3>curl — Transfert de donnéespolyvalent</h3>
-<p>curl est plus puissant pour envoyer des données (POST, uploads) et pour visualiser les en-têtes HTTP. Il affiche aussi le résultat dans le terminal par défaut.</p>
-<p>Le contenu HTML s'affiche directement dans le terminal (sans sauvegarder).</p>
-<p>L'option -O (majuscule) sauvegarde le fichier sous son nom original.</p>
-<p>L'option -o (minuscule) permet de choisir le nom de sortie.</p>
-<p>L'option -L suit automatiquement les redirections HTTP.</p>
-<p>L'option -u permet de s'authentifier avec un nom d'utilisateur et mot de passe.</p>
-<p>-X POSTspécifier la méthode et -d envoie les données.</p>
-<p>L'option -F envoie un formulaire multipart (utile pour les uploads de fichiers).</p>
-<p>L'option -I affiche uniquement les en-têtes de la réponse.</p>
-<p>L'option -H permet d'ajouter des en-têtes personnalisés.</p>
-<h3>Utiliser curl avec une API JSON</h3>
-<p>Pour envoyer ou recevoir des données JSON :</p>
-<h3>Téléchargement avec vitesse limitée</h3>
-<p>Pour ne pas saturer la bande passante :</p>
-<p>La vitesse est limitée à 200 Ko/s dans ces exemples.</p>
-<h3>Vérifier les liens brisés</h3>
-<p>Avec curl et un peu de script, tu peux vérifier si une liste de liens fonctionne :</p>
-<p>Cela affiche le code HTTP de chaque lien dans liens.txt.</p>
-<h3>Résumé des options principales</h3>
-<p>-O fichier : sauvegarder sous un nom différent</p>
-<p>-c : reprendre un téléchargement interrompu</p>
-<p>-b : lancer en arrière-plan</p>
-<p>-q : mode silencieux (sans messages)</p>
-<p>--limit-rate=X : limiter la vitesse de téléchargement</p>
-<p>--mirror : dupliquer un site entier</p>
-<p>-o fichier : sauvegarder sous un nom différent</p>
-<p>-O : sauvegarder sous le nom original</p>
-<p>-L : suivre les redirections</p>
-<p>-I : afficher uniquement les en-têtes</p>
-<p>-X POST : envoyer en méthode POST</p>
-<p>-d "data" : envoyer des données</p>
-<p>-F "fichier=@x" : upload de fichier</p>
-<p>-H "En-tête" : ajouter un en-tête personnalisé</p>
-<p>-u user:mdp : authentification</p>
-<p>--limit-rate X : limiter la vitesse</p>
-<h3>Exercices pratiques</h3>
-<p>Utilise wget pour télécharger un fichier depuis une URL de ton choix.</p>
-<p>Utilise curl pour afficher le contenu HTML d'une page web.</p>
-<p>Télécharge un fichier archive et décompresse-le en une seule ligne avec pipe.</p>
-<p>Utilise curl -I pour voir les en-têtes HTTP d'un site.</p>
-<p>Essaie de télécharger un fichier avec wget -c et interrompt-le avec Ctrl+C, puis reprends-le avec la même commande.</p>
+<h1>Leçon 62 : curl et wget — Télécharger depuis le terminal</h1>
+<p>Deux outils pour télécharger des fichiers et interagir avec des API web. <code>curl</code> est le plus polyvalent, <code>wget</code> excelle pour le téléchargement récursif.</p>
+<h2>1. wget — Télécharger simplement</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Télécharger un fichier
+wget https://example.com/fichier.zip
+
+# Avec un nom différent
+wget -O mon_fichier.zip https://example.com/fichier.zip
+
+# Reprendre un téléchargement interrompu
+wget -c https://example.com/gros_fichier.iso
+
+# Télécharger en arrière-plan
+wget -b https://example.com/fichier.zip
+# Logs dans wget.log
+
+# Télécharger tout un site (miroir)
+wget -r -l 2 -p https://example.com/docs/
+# -r : récursif, -l 2 : profondeur max 2, -p : ressources nécessaires
+
+# Limiter la vitesse (500 Ko/s)
+wget --limit-rate=500k https://example.com/gros.iso</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. curl — L'outil universel</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Télécharger un fichier (avec son nom d'origine)
+curl -O https://example.com/fichier.zip
+
+# Avec un nom personnalisé
+curl -o local.zip https://example.com/fichier.zip
+
+# Suivre les redirections
+curl -L https://bit.ly/some-short-link
+
+# Voir les en-têtes HTTP
+curl -I https://example.com
+
+# Mode silencieux + barre de progression
+curl -sS -O https://example.com/fichier.zip
+
+# Télécharger plusieurs fichiers
+curl -O https://example.com/fichier1.zip -O https://example.com/fichier2.zip</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. curl + API REST</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Requête GET (défaut)
+curl https://api.github.com/users/torvalds
+
+# Requête POST avec JSON
+curl -X POST https://api.example.com/data \
+  -H "Content-Type: application/json" \
+  -d '{"nom":"test","valeur":42}'
+
+# Avec authentification
+curl -u username:password https://api.example.com/private
+
+# Token Bearer
+curl -H "Authorization: Bearer ton_token" https://api.example.com/data
+
+# Sauvegarder les en-têtes de réponse
+curl -D headers.txt https://example.com</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. curl pour debugger</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir toute la transaction HTTP (très utile !)
+curl -v https://example.com
+
+# Mesurer le temps de réponse
+curl -w "\nTemps total: %{time_total}s\n" -o /dev/null -s https://example.com
+
+# Tester différents verbes HTTP
+curl -X PUT https://example.com/resource/1
+curl -X DELETE https://example.com/resource/1</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. curl vs wget</h2>
+<table>
+<tr><th>Fonctionnalité</th><th>curl</th><th>wget</th></tr>
+<tr><td>Téléchargement simple</td><td>✅</td><td>✅</td></tr>
+<tr><td>API REST (POST, JSON, auth)</td><td>✅</td><td>❌</td></tr>
+<tr><td>Téléchargement récursif</td><td>❌</td><td>✅</td></tr>
+<tr><td>Reprise de téléchargement</td><td>-C -</td><td>-c</td></tr>
+<tr><td>Par défaut sur toutes les distros</td><td>✅</td><td>Pas toujours</td></tr>
+</table>
+<h2>6. Exercices pratiques</h2>
+<p>1. **wget** — Télécharge une page web avec <code>wget</code> et vérifie le fichier créé</p>
+<p>2. **curl** — Télécharge le même fichier avec <code>curl -O</code></p>
+<p>3. **API** — Teste <code>curl https://api.github.com/users/torvalds</code> et observe le JSON</p>
+<p>4. **Debug** — Utilise <code>curl -I</code> pour voir les en-têtes HTTP d'un site</p>
 <nav>
 <a href="61-nc-netcat.html">&larr; 61-nc-netcat</a>
 <a href="63-tr-transformer-texte.html">63-tr-transformer-texte &rarr;</a>

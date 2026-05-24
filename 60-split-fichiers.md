@@ -1,60 +1,81 @@
 # Leçon 60 : split et cat — Diviser et assembler des fichiers
 
-### 1. split — Diviser un fichier
+Deux opérations complémentaires : `split` découpe un fichier en morceaux, `cat` les recolle.
 
-La syntaxe de base de split est simple :
+## 1. split — Découper un fichier
 
-Par défaut, split crée des fichiers de 1000 lignes chacun. Le préfixe par défaut est x, donc les fichiers générés s'appellent xaa, xab, xac, etc.
+```bash
+# Découper en morceaux de 1000 lignes
+split -l 1000 gros_fichier.txt morceau_
+# → morceau_aa, morceau_ab, morceau_ac...
 
-### 3. Exemples pratiques
+# Découper par taille (10 Mo)
+split -b 10M grosse_archive.tar.gz partie_
+# → partie_aa, partie_ab...
 
-Pour diviser un fichier de log en morceaux de 500 lignes :
+# Découper un CSV en gardant l'en-tête
+head -1 data.csv > entete.csv
+tail -n +2 data.csv | split -l 50000 - morceau_
+for f in morceau_*; do cat entete.csv "$f" > "$f.csv"; done
+```
 
-Cela crée des fichiers partie_aa, partie_ab, etc.
+## 2. Options de split
 
-Pour créer des fichiers de 10 Mo chacun :
+```bash
+# -b : taille en octets, Ko, Mo, Go
+split -b 100K fichier part_
 
-Ou des fichiers de 1,5 Mo (utile pour les disquettes/CDs) :
+# -l : nombre de lignes
+split -l 5000 fichier part_
 
-Pour avoir des suffixes plus lisibles :
+# -d : suffixes numériques au lieu de aa, ab, ac
+split -d -l 1000 fichier part_
+# → part_00, part_01, part_02...
 
-Résultat : data_00, data_01, data_02, etc.
+# -n : diviser en N morceaux égaux
+split -n 5 fichier part_
 
-Pour diviser en exactement 4 parties :
+# Préfixe personnalisé
+split -l 1000 fichier 2026-05-24_section_
+```
 
-### 4. cat — Réassembler les fichiers
+## 3. cat — Assembler (et plus)
 
-Pour reconstruire le fichier original, utilisez cat avec une redirection :
+```bash
+# Assembler des morceaux = fichier original
+cat morceau_* > fichier_reconstitue.txt
 
-Ou avec des suffixes numériques :
+# Vérifier : les tailles doivent correspondre
+wc -l fichier_reconstitue.txt
+wc -l gros_fichier.txt
 
-Attention : l'ordre de concatenation depend de l'ordre alphabétique. Si vos suffixes sont data_00, data_01, etc., le tri alphabétique fonctionne parfaitement.
+# Afficher plusieurs fichiers à la suite
+cat debut.txt milieu.txt fin.txt
 
-### 5. Cas d'usage courants
+# Numéroter les lignes à l'affichage
+cat -n fichier.txt
 
-Diviser une archive pour l'envoyer en pieces :
+# Créer un fichier rapidement
+cat > nouveau_fichier.txt << 'EOF'
+Ligne 1
+Ligne 2
+EOF
+```
 
-### 6. Vérifier l'intégrité après reassemblage
+## 4. Cas concret : transférer un gros fichier par email
 
-Pour vous assurer que le fichier reassemblé est identique à l'original :
+```bash
+# Ta pièce jointe fait 30 Mo, la limite est 10 Mo
+split -b 9M gros_document.pdf doc_part_
 
-Les deux hashes doivent être identiques.
+# Résultat : doc_part_aa, doc_part_ab, doc_part_ac, doc_part_ad
 
-### 7. Astuces utiles
+# Le destinataire recolle :
+cat doc_part_* > gros_document.pdf
+```
 
-Si vous recevez des données via un tube :
+## 5. Exercices pratiques
 
-### Exercice pratique
-
-Créez un fichier texte contenant plusieurs lignes (utilisez seq 1 5000 > test.txt)
-
-Divisez-le en fichiers de 1000 lignes : split -l 1000 test.txt bloc_
-
-Listez les fichiers créés : ls -lh bloc_*
-
-Réassemblez-les : cat bloc_* > test_reconstruit.txt
-
-Vérifiez l'intégrité : diff test.txt test_reconstruit.txt (ne doit rien afficher)
-
-Supprimez les fichiers temporaires : rm bloc_* test.txt test_reconstruit.txt
-
+1. **Split** — Prends un fichier texte, découpe-le en morceaux de 50 lignes
+2. **Cat** — Recolle les morceaux et vérifie que le résultat est identique à l'original
+3. **Taille** — Découpe une archive en morceaux de 1 Mo avec des suffixes numériques

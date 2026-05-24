@@ -1,90 +1,86 @@
 # Leçon 63 : tr — Transformez du texte facilement
 
-### Syntaxe de base
+`tr` (translate) remplace ou supprime des caractères. Simple, rapide, parfait pour nettoyer du texte en pipeline.
 
-tr ne lit pas de fichiers directement — il travaille sur l'entrée standard. Pour traiter un fichier, vous utiliserez donc un tube ou une redirection :
+## 1. Remplacer des caractères
 
-### Les classes de caractères
+```bash
+# Syntaxe : tr 'anciens' 'nouveaux'
 
-Au lieu de taper tous les caractères, tr reconnaît des classes prédéfinies très pratiques :
+# Remplacer a par X, b par Y, c par Z
+echo "abc" | tr 'abc' 'XYZ'
+# → XYZ
 
-### Convertir majuscules et minuscules
+# Tout en majuscules
+echo "bonjour" | tr 'a-z' 'A-Z'
+# → BONJOUR
 
-C'est l'utilisation la plus courante de tr. Pour mettre tout en majuscules :
+# Tout en minuscules
+echo "BONJOUR" | tr 'A-Z' 'a-z'
+# → bonjour
+```
 
-Résultat : BONJOUR LE MONDE
+## 2. Supprimer des caractères (-d)
 
-Pour mettre tout en minuscules, utilisez les classes pour plus de robustesse :
+```bash
+# Supprimer tous les chiffres
+echo "abc123def456" | tr -d '0-9'
+# → abcdef
 
-Résultat : bonjour le monde
+# Supprimer les retours chariot Windows (\r)
+tr -d '\r' < fichier_windows.txt > fichier_linux.txt
 
-### Supprimer des caractères
+# Supprimer les espaces
+echo "a b c" | tr -d ' '
+# → abc
+```
 
-L'option -d (delete) supprime tous les caractères spécifiés de l'entrée :
+## 3. Comprimer les répétitions (-s)
 
-Résultat : Mon mot de passe est Pass!
+```bash
+# Remplacer les espaces multiples par un seul
+echo "a    b     c" | tr -s ' '
+# → a b c
 
-Résultat : texteavecespaces
+# Remplacer les sauts de ligne multiples
+cat fichier.txt | tr -s '\n'
 
-### Compresser et squeeze
+# Supprimer les lignes vides
+cat fichier.txt | tr -s '\n' '\n'
+```
 
-L'option -s (squeeze) remplace les occurrences répétées par une seule. Très utile pour compacter les espaces :
+## 4. Cas pratiques
 
-Résultat : texte avec beaucoup d'espaces
+```bash
+# Nettoyer un CSV : remplacer les virgules par des tabulations
+cat data.csv | tr ',' '\t' > data.tsv
 
-### Remplacer des caractères précis
+# Transformer une liste verticale en horizontale
+seq 1 10 | tr '\n' ' '
+# → 1 2 3 4 5 6 7 8 9 10
 
-Pour remplacer un caractère par un autre, donnez les deux ensembles dans le même ordre :
+# Extraire seulement les chiffres d'une ligne
+echo "Commande #42: 150 CHF" | tr -d -c '0-9'
+# → 42150
 
-Résultat : nom-fichier-test
+# -c = complement (tout SAUF ce qui est spécifié)
 
-Résultat : B.n.j.r
+# ROT13 (chiffrement léger)
+echo "secret" | tr 'a-zA-Z' 'n-za-mN-ZA-M'
+```
 
-### Transformer en colonnes (utiliser avec cut)
+## 5. tr + cut : combo gagnant
 
-tr combine très bien avec cut (vu à la leçon 51) pour transformer du texte tabulé :
+```bash
+# Extraire les noms d'utilisateurs séparés par des espaces
+who | tr -s ' ' | cut -d ' ' -f 1
 
-### Supprimer les retours chariot Windows (CRLF → LF)
+# Nettoyer la sortie de ps
+ps aux | tr -s ' ' | cut -d ' ' -f 11-
+```
 
-Un problème très courant : les fichiers texte créés sous Windows finissent par \r\n au lieu de \n. tr résout ça en une commande :
+## 6. Exercices pratiques
 
-### Compter les caractères ou lignes
-
-tr peut servir à compter des éléments en combinant avec wc :
-
-Résultat : 3
-
-### Mode translate (sans -d ni -s)
-
-Sans options, tr remplace chaque caractère de l'ensemble 1 par le caractère correspondant de l'ensemble 2 — c'est le mode "translate" classique :
-
-Résultat : frperg zrfxfgr (ROT13)
-
-### Combiner tr avec des groupes
-
-Vous pouvez spécifier des plages de caractères directement avec les crochets :
-
-Résultat : abc123def456
-
-### Exercices pratiques
-
-Transforme un fichier texte pour qu'il soit entièrement en majuscules : cat fichier.txt | tr '[:lower:]' '[:upper:]'
-
-Supprime tous les espaces d'un texte : echo "un texte avec des espaces" | tr -d ' '
-
-Remplace tous les tirets bas (_) par des points dans un nom de fichier.
-
-Transforme un fichier CSV (séparateur ;) en TSV (séparateur tabulation).
-
-Nettoie un fichier Windows en supprimant les retours chariot \r.
-
-Compresse les espaces multiples en un seul espace : tr -s ' '
-
-Utilise tr avec cut pour extraire une colonne et la convertir en majuscules.
-
-Compte le nombre de caractères uniques différents dans un fichier : cat fichier.txt | tr -d '\n' | grep -o '.' | sort -u | wc -l
-
-### Résumé
-
-tr est un outil simple mais puissant pour manipuler du texte caractère par caractère. Combiné avec d'autres commandes via des pipes, il devient un allié précieux pour le nettoyage et la transformation de données.
-
+1. **Majuscules** — Transforme un fichier texte en majuscules avec tr
+2. **Nettoyage** — Supprime tous les chiffres d'une chaîne
+3. **Espaces** — Nettoie un fichier avec des espaces multiples en un seul espace par ligne

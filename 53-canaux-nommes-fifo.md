@@ -1,56 +1,86 @@
-# Leçon 53 : Leçon 60 : Canaux nommés (Named Pipes / FIFO)
+# Leçon 53 : Canaux nommés (Named Pipes / FIFO)
 
-### Qu'est-ce qu'un canal nommé ?
+Un canal nommé (FIFO) permet à deux processus de communiquer via un fichier spécial, même s'ils n'ont aucun lien entre eux.
 
-Un canal nommé (named pipe ou FIFO) est un fichier spécial de type p. Contrairement à un pipe anonyme (|) qui n'existe que pendant l'exécution d'un processus, le FIFO existe dans le système de fichiers et peut être utilisé par n'importe quel processus, à n'importe quel moment.
+## 1. C'est quoi une FIFO ?
 
-Communication entre processus qui ne sont pas liés par un pipe classique
+Contrairement au pipe classique `|` qui relie deux commandes sur une même ligne, une FIFO est un **fichier spécial** qui persiste sur le disque. Un processus écrit dedans, un autre lit — et les données transitent en mémoire, pas sur le disque.
 
-Un processus écrit, un autre lit, à des moments différents
+## 2. Créer une FIFO
 
-Débogage : rediriger la sortie d'un programme vers un fichier lisible à distance
+```bash
+# Créer un canal nommé
+mkfifo mon_tube
 
-Logs en temps réel consultables par plusieurs outils simultanément
+# Voir son type (p = pipe)
+ls -l mon_tube
+# prw-r--r-- 1 david david 0 Mar 10 10:00 mon_tube
+# ↑ le 'p' indique un pipe nommé
+```
 
-Architecture simple sans réseau ni sockets TCP
+## 3. Utilisation de base
 
-### Créer et utiliser un canal nommé
+La FIFO bloque jusqu'à ce qu'un lecteur et un écriveur soient connectés :
 
-Ouvre deux terminaux. Dans le premier :
+```bash
+# Terminal 1 — Lecteur (reste bloqué en attente)
+cat mon_tube
 
-Dans le second :
+# Terminal 2 — Écriveur (débloque le lecteur)
+echo "Message à travers le tube" > mon_tube
+```
 
-Le message apparaît dans le terminal 1. Chaque nouveau message envoyé depuis le terminal 2 sera affiché dans le terminal 1.
+Dès que le Terminal 2 exécute sa commande, le Terminal 1 affiche le message et les deux se terminent.
 
-### Comportement de lecture et écriture
+## 4. Cas concret : communication entre scripts
 
-Les opérations de lecture et d'écriture sur un FIFO sont bloquantes par défaut. Cela signifie :
+```bash
+# Script producteur (producer.sh)
+#!/bin/bash
+while true; do
+  echo "$(date): Nouvelle donnée" > /tmp/data_pipe
+  sleep 2
+done
 
-Un read bloque jusqu'à ce que des données soient disponibles
+# Script consommateur (consumer.sh)
+#!/bin/bash
+while true; do
+  read line < /tmp/data_pipe
+  echo "Reçu: $line"
+done
+```
 
-Un write bloque jusqu'à ce que les données soient lues
+## 5. FIFO + compression à la volée
 
-C'est ce comportement qui permet de synchroniser deux processus
+```bash
+# Créer la FIFO
+mkfifo /tmp/backup_pipe
 
-Si tu veux qu'un processus lise et écrive sur le même FIFO, ouvre-le dans les deux directions :
+# Lecteur : compresse ce qui arrive dans la FIFO
+gzip < /tmp/backup_pipe > sauvegarde.tar.gz &
 
-### Bonnes pratiques
+# Écriveur : envoie l'archive tar dans la FIFO
+tar cf /tmp/backup_pipe /home/david/Documents/
 
-Toujours supprimer les FIFO quand tu n'en as plus besoin : rm ~/mon-fifo
+# Nettoyage
+rm /tmp/backup_pipe
+```
 
-Utiliser des noms explicites : /tmp/serveur-cmds, /tmp/logs-app
+## 6. Supprimer une FIFO
 
-Placer les FIFO dans /tmp ou ton dossier personnel (pas dans /dev)
+```bash
+# Se supprime comme un fichier normal
+rm mon_tube
 
-Penser à la gestion du bloquage : utilise timeout si ton lecteur doit mourir proprement
+# Un tube nommé ne stocke rien sur le disque, rm est sans danger
+```
 
-En bash, utiliser while IFS= read -r ligne &lt; "$FIFO" pour lire ligne par ligne
+## 7. Exercices pratiques
 
-Ne jamais écrire dans un FIFO sans lecteur actif (le write bloquera indéfiniment)
+1. **Premier tube** — Crée une FIFO, lis-la dans un terminal, écris dedans depuis un autre
+2. **Log en direct** — Utilise une FIFO pour qu'un script écrive des logs et un autre les affiche
+3. **Compression** — Reproduis l'exemple de compression à la volée avec tar et gzip
 
-Utiliser un fichier temporaire classique (file()) pour les gros volumes de données
+---
 
-### Résumé
-
-Les canaux nommés sont un outil puissant pour la communication inter-processus sur Linux. Ils permettent de créer des architectures simples sans réseau ni configuration avancée. Maîtrise-les et tu disposeras d'un outil supplémentaire pour structurer tes scripts et automatisations.
-
+**À retenir** : les FIFO sont utiles pour connecter des processus indépendants. Pour les pipes simples entre commandes, `|` suffit dans 95% des cas.

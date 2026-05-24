@@ -1,36 +1,76 @@
 # Leçon 55 : nproc, uname et hostname — Identifier le système
 
-### nproc — Nombre de processeurs
+Trois commandes simples pour connaître les caractéristiques de ta machine.
 
-nproc affiche le nombre d'unités de traitement disponibles. Très utile pour optimiser les performances ou comprendre les capacités de votre serveur.
+## 1. nproc — Nombre de processeurs
 
-Déterminer le nombre de jobs parallèles pour make -j
+```bash
+# Nombre de cœurs disponibles
+nproc
+# Exemple : 4
 
-Configurer des conteneurs Docker avec --cpus
+# Utile pour make -j$(nproc) : compiler sur tous les cœurs
+make -j$(nproc)
+```
 
-Évaluer les performances d'un serveur
+## 2. uname — Infos système
 
-### uname — Informations sur le noyau
+```bash
+# Nom du noyau
+uname
+# → Linux
 
-uname affiche des informations détaillées sur le système d'exploitation et le noyau Linux.
+# Tout savoir d'un coup
+uname -a
+# → Linux molbot 6.1.0-rpi-2712 #1 SMP PREEMPT arm64 GNU/Linux
 
-### hostname — Nom de la machine
+# Options détaillées
+uname -s    # Nom du système (Linux)
+uname -n    # Nom d'hôte (hostname)
+uname -r    # Version du noyau (6.1.0)
+uname -m    # Architecture (arm64, x86_64)
+uname -p    # Type de processeur
+uname -o    # Système d'exploitation (GNU/Linux)
+```
 
-hostname gère le nom d'hôte de votre machine. Il existe trois types de noms :
+## 3. hostname — Nom de la machine
 
-Nom statique — défini dans /etc/hostname, persiste au redémarrage
+```bash
+# Afficher le nom d'hôte
+hostname
+# → molbot
 
-Nom transitoire — modifié en mémoire, perdu au reboot
+# Afficher le nom complet (FQDN)
+hostname -f
 
-Nom "pretty" — nom lisible pour l'affichage (ex: "PC de David")
+# Changer temporairement (root)
+sudo hostname nouveau-nom
 
-### Exercices pratiques
+# Adresse IP associée au hostname
+hostname -I
+# → 192.168.1.119
+```
 
-Informations de base — Exécute uname -a et identifie chaque champ.
+## 4. Bonus : infos plus détaillées
 
-Nom d'hôte — Affiche ton nom de machine, puis le domaine avec hostname -d.
+```bash
+# Version de la distribution
+lsb_release -a
+cat /etc/os-release
 
-Script diagnostic — Écris un script qui affiche le nombre de cœurs et l'architecture CPU.
+# Architecture détaillée
+lscpu | head -10
 
-Planification — Utilise nproc pour déterminer le nombre optimal de jobs de compilation.
+# Mémoire
+free -h
 
+# Modèle du matériel (Raspberry Pi, VM, etc.)
+cat /proc/device-tree/model 2>/dev/null
+cat /sys/class/dmi/id/product_name 2>/dev/null
+```
+
+## 5. Exercices pratiques
+
+1. **Identité** — Lance `uname -a` et identifie l'architecture de ta machine
+2. **Cœurs** — Vérifie le nombre de cœurs avec `nproc`
+3. **Hostname** — Affiche ton hostname et son adresse IP avec `hostname -I`

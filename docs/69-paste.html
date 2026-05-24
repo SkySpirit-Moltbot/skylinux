@@ -45,15 +45,120 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 69 : paste — Fusionner des lignes de fichiers</h1>
-<h3>Introduction</h3>
-<p>paste est une commande qui fusionne les lignes de plusieurs fichiers, en les plaçant côte à côte et en les séparant par des tabulations. Contrairement à cat qui affiche les fichiers bout à bout, paste les place en colonnes parallèles. C'est l'outil idéal pour combiner des données tabulaires ou créer des tableaux à partir de plusieurs sources.</p>
-<h3>Points clés à retenir</h3>
-<p>paste fichier1 fichier2 → fusionne ligne par ligne avec tabulation</p>
-<p>-d'séparateur' → change le délimiteur entre les colonnes</p>
-<p>-s → place toutes les lignes sur une seule ligne</p>
-<p>Idéal pour créer des tableaux CSV ou TSV</p>
-<p>Combinez avec cut, awk, seq pour des usages avancés</p>
-<p>paste = colonnes parallèles, join = fusion sur clé commune</p>
+<p><code>paste</code> fusionne des fichiers ligne par ligne. L'équivalent horizontal de <code>cat</code> (qui concatène verticalement).</p>
+<h2>1. Principe de base</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Deux fichiers : prenoms.txt et noms.txt
+cat prenoms.txt
+# Alice
+# Bob
+# Charlie
+
+cat noms.txt
+# Dupont
+# Martin
+# Dubois
+
+# Fusionner côte à côte
+paste prenoms.txt noms.txt
+# Alice	Dupont
+# Bob	Martin
+# Charlie	Dubois</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Par défaut, le séparateur est la tabulation.</p>
+<h2>2. Changer le délimiteur</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Avec -d : délimiteur personnalisé
+paste -d ',' prenoms.txt noms.txt
+# Alice,Dupont
+# Bob,Martin
+# Charlie,Dubois
+
+# Délimiteur multiple (alterne)
+paste -d ',|' fichier1 fichier2 fichier3 fichier4
+# → séparateur 1: ,  séparateur 2: |  séparateur 3: ,  séparateur 4: | ...</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Mode série (-s)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sans -s : fusion colonne par colonne (défaut)
+paste fichier1 fichier2
+# Alice	1
+# Bob	2
+
+# Avec -s : tout sur une ligne
+paste -s fichier1 fichier2
+# Alice	Bob	Charlie
+# 1	2	3
+
+# Avec -s et délimiteur
+paste -sd ',' fichier1
+# Alice,Bob,Charlie</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Cas pratiques</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un CSV à partir de deux fichiers
+paste -d ',' ids.txt noms.txt emails.txt &gt; contacts.csv
+
+# Transformer une colonne en ligne (l'inverse de cat)
+cat liste.txt | paste -sd ','
+# → item1,item2,item3
+
+# Reconstituer /etc/passwd utile
+cut -d ':' -f 1 /etc/passwd &gt; users.txt
+cut -d ':' -f 7 /etc/passwd &gt; shells.txt
+paste -d ' utilise ' users.txt shells.txt
+
+# Numéroter les lignes d'un fichier
+seq $(wc -l &lt; fichier.txt) | paste -d '. ' - fichier.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Le <code>-</code> dans paste signifie "lire depuis stdin".</p>
+<h2>5. paste vs join</h2>
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>paste</code></td><td>Fusion simple ligne à ligne</td></tr>
+<tr><td><code>join</code></td><td>Fusion avec clé commune (comme SQL JOIN)</td></tr>
+</table>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># paste : fusion bête par position
+paste ids.txt noms.txt
+
+# join : fusion intelligente sur un champ commun
+join -1 1 -2 1 ids.txt noms.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Exercices pratiques</h2>
+<p>1. **Fusion** — Crée deux fichiers de 5 lignes et fusionne-les avec paste</p>
+<p>2. **CSV** — Transforme une liste verticale en CSV horizontal avec <code>paste -sd ','</code></p>
+<p>3. **Numérotation** — Numérote les lignes d'un fichier avec seq + paste</p>
 <nav>
 <a href="68-seq.html">&larr; 68-seq</a>
 <a href="70-comm-comparer-fichiers.html">70-comm-comparer-fichiers &rarr;</a>

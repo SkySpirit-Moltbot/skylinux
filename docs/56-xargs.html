@@ -44,29 +44,104 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 56 : Leçon 67 : xargs — Construire des commandes à partir de résultats</h1>
-<h3>1. Comment fonctionne xargs ?</h3>
-<p>xargs lit des données depuis l'entrée standard (stdin), puis les utilise comme arguments pour exécuter une commande. Sans argument, il exécute echo par défaut.</p>
-<h3>2. Exemples pratiques</h3>
-<p>Trouver et supprimer des fichiers spécifiques avec find :</p>
-<p>Ici, xargs prend chaque résultat de find et le passe comme argument à rm.</p>
-<p>Par défaut, xargs utilise les espaces et sauts de ligne comme délimiteurs. Vous pouvez spécifier un autre délimiteur avec -d :</p>
-<p>Par défaut, xargs passe autant d'arguments que possible sur une seule ligne. Utilisez -n pour limiter :</p>
-<h3>3. Utilisation avec des espaces et caractères spéciaux</h3>
-<p>Si un nom de fichier contient des espaces, xargs peut mal l'interpréter. La solution est d'utiliser find -print0 et xargs -0 :</p>
-<p>Par défaut, les arguments sont ajoutés à la fin de la commande. Utilisez -I pour spécifier où insérer les arguments :</p>
-<p>Le symbole {} est remplacé par chaque argument lu.</p>
-<h3>5. Utilisation avancée</h3>
-<p>Utilisez -p pour afficher la commande et demander confirmation :</p>
-<p>Utilisez -t pour afficher les commandes exécutées (mode verbose) :</p>
-<p>Utilisez -s pour limiter la longueur totale de la ligne de commande :</p>
-<h3>8. Exercices pratiques</h3>
-<p>Trouvez tous les fichiers .log de votre répertoire personnel et affichez leur taille avec ls -lh en utilisant xargs.</p>
-<p>Créez une commande qui utilise find et xargs pour compter le nombre de lignes dans tous les fichiers .txt d'un répertoire.</p>
-<p>Utilisez xargs -I pour copier chaque fichier d'un répertoire vers un autre.</p>
-<p>Expérimentez avec xargs -p pour voir comment fonctionne la confirmation interactive.</p>
-<h3>Conclusion</h3>
-<p>xargs est un outil essentiel pour tout administrateur Linux. Il permet de chaîner des commandes de manière flexible et puissante, transformant les résultats d'une commande en arguments pour une autre. Combiné avec find et les Pipes, il devient un outil de manipulation de fichiers très puissant.</p>
+<h1>Leçon 56 : xargs — Construire des commandes à partir de résultats</h1>
+<p><code>xargs</code> transforme des lignes de texte en arguments pour une autre commande. C'est le chaînon manquant entre <code>find</code> et <code>rm</code>, entre <code>ls</code> et <code>wc</code>.</p>
+<h2>1. Le problème que xargs résout</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># ❌ Ne fonctionne pas : rm attend des arguments, pas du stdin
+find . -name "*.tmp" | rm
+
+# ✅ xargs fait le pont
+find . -name "*.tmp" | xargs rm</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Syntaxe de base</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>commande_source | xargs commande_cible
+
+# Exemple : supprimer tous les .log
+find /var/log -name "*.log" -type f | xargs rm -v
+# -v pour voir ce qui est supprimé</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Options essentielles</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># -n : combien d'arguments par commande
+echo "a b c d e f" | xargs -n 2
+# → a b
+# → c d
+# → e f
+
+# -I : remplacer par chaque élément
+ls *.jpg | xargs -I {} convert {} -resize 50% small/{}
+# {} est remplacé par chaque nom de fichier
+
+# -t : afficher la commande exécutée (debug)
+ls *.tmp | xargs -t rm
+# → rm fichier1.tmp fichier2.tmp
+
+# -p : demander confirmation avant chaque commande
+find . -name "*.bak" | xargs -p rm
+
+# -0 : gérer les noms avec espaces (indispensable !)
+find . -name "*.log" -print0 | xargs -0 rm</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Cas pratiques</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Compter les lignes de tous les fichiers .py
+find . -name "*.py" | xargs wc -l
+
+# Chercher un motif dans tous les .conf
+find /etc -name "*.conf" -type f | xargs grep "Listen"
+
+# Créer plusieurs dossiers d'un coup
+echo "projet1 projet2 projet3" | xargs -n 1 mkdir
+
+# Redémarrer tous les conteneurs Docker
+docker ps -q | xargs docker restart
+
+# Archiver les fichiers modifiés depuis 7 jours
+find . -type f -mtime -7 | xargs tar czf recent.tar.gz</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Parallélisme avec -P</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Convertir 100 images en parallèle (4 processus simultanés)
+find . -name "*.jpg" | xargs -P 4 -I {} convert {} -resize 50% converted/{}
+
+# -P 0 = autant de processus que de cœurs</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Exercices pratiques</h2>
+<p>1. **Suppression** — Supprime tous les <code>.tmp</code> d'un dossier avec find + xargs</p>
+<p>2. **Comptage** — Compte les lignes de tous les <code>.sh</code> du dossier courant avec xargs wc -l</p>
+<p>3. **Recherche** — Cherche le mot "localhost" dans tous les <code>.conf</code> de <code>/etc</code> avec find + xargs grep</p>
 <nav>
 <a href="55-nproc-uname-hostname.html">&larr; 55-nproc-uname-hostname</a>
 <a href="57-tee.html">57-tee &rarr;</a>

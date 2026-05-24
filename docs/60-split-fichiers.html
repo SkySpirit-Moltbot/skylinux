@@ -45,35 +45,99 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
 <h1>Leçon 60 : split et cat — Diviser et assembler des fichiers</h1>
-<h3>1. split — Diviser un fichier</h3>
-<p>La syntaxe de base de split est simple :</p>
-<p>Par défaut, split crée des fichiers de 1000 lignes chacun. Le préfixe par défaut est x, donc les fichiers générés s'appellent xaa, xab, xac, etc.</p>
-<h3>3. Exemples pratiques</h3>
-<p>Pour diviser un fichier de log en morceaux de 500 lignes :</p>
-<p>Cela crée des fichiers partie_aa, partie_ab, etc.</p>
-<p>Pour créer des fichiers de 10 Mo chacun :</p>
-<p>Ou des fichiers de 1,5 Mo (utile pour les disquettes/CDs) :</p>
-<p>Pour avoir des suffixes plus lisibles :</p>
-<p>Résultat : data_00, data_01, data_02, etc.</p>
-<p>Pour diviser en exactement 4 parties :</p>
-<h3>4. cat — Réassembler les fichiers</h3>
-<p>Pour reconstruire le fichier original, utilisez cat avec une redirection :</p>
-<p>Ou avec des suffixes numériques :</p>
-<p>Attention : l'ordre de concatenation depend de l'ordre alphabétique. Si vos suffixes sont data_00, data_01, etc., le tri alphabétique fonctionne parfaitement.</p>
-<h3>5. Cas d'usage courants</h3>
-<p>Diviser une archive pour l'envoyer en pieces :</p>
-<h3>6. Vérifier l'intégrité après reassemblage</h3>
-<p>Pour vous assurer que le fichier reassemblé est identique à l'original :</p>
-<p>Les deux hashes doivent être identiques.</p>
-<h3>7. Astuces utiles</h3>
-<p>Si vous recevez des données via un tube :</p>
-<h3>Exercice pratique</h3>
-<p>Créez un fichier texte contenant plusieurs lignes (utilisez seq 1 5000 > test.txt)</p>
-<p>Divisez-le en fichiers de 1000 lignes : split -l 1000 test.txt bloc_</p>
-<p>Listez les fichiers créés : ls -lh bloc_*</p>
-<p>Réassemblez-les : cat bloc_* > test_reconstruit.txt</p>
-<p>Vérifiez l'intégrité : diff test.txt test_reconstruit.txt (ne doit rien afficher)</p>
-<p>Supprimez les fichiers temporaires : rm bloc_* test.txt test_reconstruit.txt</p>
+<p>Deux opérations complémentaires : <code>split</code> découpe un fichier en morceaux, <code>cat</code> les recolle.</p>
+<h2>1. split — Découper un fichier</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Découper en morceaux de 1000 lignes
+split -l 1000 gros_fichier.txt morceau_
+# → morceau_aa, morceau_ab, morceau_ac...
+
+# Découper par taille (10 Mo)
+split -b 10M grosse_archive.tar.gz partie_
+# → partie_aa, partie_ab...
+
+# Découper un CSV en gardant l'en-tête
+head -1 data.csv &gt; entete.csv
+tail -n +2 data.csv | split -l 50000 - morceau_
+for f in morceau_*; do cat entete.csv "$f" &gt; "$f.csv"; done</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>2. Options de split</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># -b : taille en octets, Ko, Mo, Go
+split -b 100K fichier part_
+
+# -l : nombre de lignes
+split -l 5000 fichier part_
+
+# -d : suffixes numériques au lieu de aa, ab, ac
+split -d -l 1000 fichier part_
+# → part_00, part_01, part_02...
+
+# -n : diviser en N morceaux égaux
+split -n 5 fichier part_
+
+# Préfixe personnalisé
+split -l 1000 fichier 2026-05-24_section_</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. cat — Assembler (et plus)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Assembler des morceaux = fichier original
+cat morceau_* &gt; fichier_reconstitue.txt
+
+# Vérifier : les tailles doivent correspondre
+wc -l fichier_reconstitue.txt
+wc -l gros_fichier.txt
+
+# Afficher plusieurs fichiers à la suite
+cat debut.txt milieu.txt fin.txt
+
+# Numéroter les lignes à l'affichage
+cat -n fichier.txt
+
+# Créer un fichier rapidement
+cat &gt; nouveau_fichier.txt &lt;&lt; 'EOF'
+Ligne 1
+Ligne 2
+EOF</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>4. Cas concret : transférer un gros fichier par email</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ta pièce jointe fait 30 Mo, la limite est 10 Mo
+split -b 9M gros_document.pdf doc_part_
+
+# Résultat : doc_part_aa, doc_part_ab, doc_part_ac, doc_part_ad
+
+# Le destinataire recolle :
+cat doc_part_* &gt; gros_document.pdf</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Exercices pratiques</h2>
+<p>1. **Split** — Prends un fichier texte, découpe-le en morceaux de 50 lignes</p>
+<p>2. **Cat** — Recolle les morceaux et vérifie que le résultat est identique à l'original</p>
+<p>3. **Taille** — Découpe une archive en morceaux de 1 Mo avec des suffixes numériques</p>
 <nav>
 <a href="59-nohup.html">&larr; 59-nohup</a>
 <a href="61-nc-netcat.html">61-nc-netcat &rarr;</a>
