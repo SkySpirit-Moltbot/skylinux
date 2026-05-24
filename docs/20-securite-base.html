@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -36,129 +49,247 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>1. Surveillance des utilisateurs</h2>
 <h3>Voir qui est connecté</h3>
-<p><div class="code-block"><div class="code-line"><code># Liste simple des utilisateurs connectés</p>
-<p>who</p>
-<p># Détails (idle, process, terminal)</p>
-<p>w</p>
-<p># Dernières connexions</p>
-<p>last</p>
-<p># Dernière connexion par utilisateur</p>
-<p>last -5</p>
-<p>lastlog</p>
-<p># Qui est actuellement connecté et depuis où</p>
-<p>who -H</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Liste simple des utilisateurs connectés
+who
+
+# Détails (idle, process, terminal)
+w
+
+# Dernières connexions
+last
+
+# Dernière connexion par utilisateur
+last -5
+lastlog
+
+# Qui est actuellement connecté et depuis où
+who -H</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Analyser les sessions</h3>
-<p><div class="code-block"><div class="code-line"><code># Voir tous les processus d'un utilisateur</p>
-<p>ps -u nom_utilisateur</p>
-<p># Tuer une session</p>
-<p>pkill -KILL -u nom_utilisateur</p>
-<p># Voir l'activité récente</p>
-<p>ac -p                    # Temps de connexion total par utilisateur</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir tous les processus d'un utilisateur
+ps -u nom_utilisateur
+
+# Tuer une session
+pkill -KILL -u nom_utilisateur
+
+# Voir l'activité récente
+ac -p                    # Temps de connexion total par utilisateur</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>2. Gestion des mots de passe</h2>
 <h3>Commandes de base</h3>
-<p><div class="code-block"><div class="code-line"><code># Changer son mot de passe</p>
-<p>passwd</p>
-<p># Changer le mot de passe d'un utilisateur (root)</p>
-<p>sudo passwd nom_utilisateur</p>
-<p># Changer avec date d'expiration</p>
-<p>sudo passwd -e nom_utilisateur          # Exiger changement au prochain login</p>
-<p>sudo passwd -n 30 nom_utilisateur       # Minimum 30 jours avant changement</p>
-<p>sudo passwd -x 90 nom_utilisateur       # Maximum 90 jours</p>
-<p>sudo passwd -w 7 nom_utilisateur        # Avertissement 7 jours avant expiration</p>
-<p># Verrouiller/déverrouiller</p>
-<p>sudo passwd -l nom_utilisateur          # Verrouiller</p>
-<p>sudo passwd -u nom_utilisateur          # Déverrouiller</p>
-<p># Statut du mot de passe</p>
-<p>sudo passwd -S nom_utilisateur</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Changer son mot de passe
+passwd
+
+# Changer le mot de passe d'un utilisateur (root)
+sudo passwd nom_utilisateur
+
+# Changer avec date d'expiration
+sudo passwd -e nom_utilisateur          # Exiger changement au prochain login
+sudo passwd -n 30 nom_utilisateur       # Minimum 30 jours avant changement
+sudo passwd -x 90 nom_utilisateur       # Maximum 90 jours
+sudo passwd -w 7 nom_utilisateur        # Avertissement 7 jours avant expiration
+
+# Verrouiller/déverrouiller
+sudo passwd -l nom_utilisateur          # Verrouiller
+sudo passwd -u nom_utilisateur          # Déverrouiller
+
+# Statut du mot de passe
+sudo passwd -S nom_utilisateur</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Politique de mots de passe (PAM)</h3>
-<p><div class="code-block"><div class="code-line"><code># Installer libpam-pwquality</p>
-<p>sudo apt install libpam-pwquality</p>
-<p># Configurer (/etc/security/pwquality.conf)</p>
-<p>sudo nano /etc/security/pwquality.conf</p>
-<p># Paramètres recommandés:</p>
-<p># minlen = 12</p>
-<p># dcredit = -1 (au moins 1 chiffre)</p>
-<p># ucredit = -1 (au moins 1 majuscule)</p>
-<p># lcredit = -1 (au moins 1 minuscule)</p>
-<p># ocredit = -1 (au moins 1 caractère spécial)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer libpam-pwquality
+sudo apt install libpam-pwquality
+
+# Configurer (/etc/security/pwquality.conf)
+sudo nano /etc/security/pwquality.conf
+
+# Paramètres recommandés:
+# minlen = 12
+# dcredit = -1 (au moins 1 chiffre)
+# ucredit = -1 (au moins 1 majuscule)
+# lcredit = -1 (au moins 1 minuscule)
+# ocredit = -1 (au moins 1 caractère spécial)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. Analyse des ports et connexions</h2>
 <h3>ss - Socket Statistics (moderne)</h3>
-<p><div class="code-block"><div class="code-line"><code># Ports en écoute</p>
-<p>ss -tuln</p>
-<p>ss -tulnp</p>
-<p># Connexions établies</p>
-<p>ss -tn</p>
-<p>ss -tnp</p>
-<p># Connexions par état</p>
-<p>ss -tan state established</p>
-<p># Statistiques</p>
-<p>ss -s</p>
-<p># Filtrer par port</p>
-<p>ss -tn sport = :22</p>
-<p>ss -tn dport = :80</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ports en écoute
+ss -tuln
+ss -tulnp
+
+# Connexions établies
+ss -tn
+ss -tnp
+
+# Connexions par état
+ss -tan state established
+
+# Statistiques
+ss -s
+
+# Filtrer par port
+ss -tn sport = :22
+ss -tn dport = :80</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>netstat (legacy)</h3>
-<p><div class="code-block"><div class="code-line"><code># Ports ouverts</p>
-<p>netstat -tuln</p>
-<p>netstat -tulnp</p>
-<p># Routes</p>
-<p>netstat -rn</p>
-<p># Connexions actives</p>
-<p>netstat -an</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ports ouverts
+netstat -tuln
+netstat -tulnp
+
+# Routes
+netstat -rn
+
+# Connexions actives
+netstat -an</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Nmap - Scanner de ports</h3>
-<p><div class="code-block"><div class="code-line"><code># Installer</p>
-<p>sudo apt install nmap</p>
-<p># Scanner local</p>
-<p>nmap localhost</p>
-<p>nmap -sV localhost</p>
-<p># Scanner une IP</p>
-<p>nmap 192.168.1.1</p>
-<p># Scanner un réseau</p>
-<p>nmap 192.168.1.0/24</p>
-<p># Scan rapide</p>
-<p>nmap -F 192.168.1.1</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer
+sudo apt install nmap
+
+# Scanner local
+nmap localhost
+nmap -sV localhost
+
+# Scanner une IP
+nmap 192.168.1.1
+
+# Scanner un réseau
+nmap 192.168.1.0/24
+
+# Scan rapide
+nmap -F 192.168.1.1</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>4. Pare-feu UFW</h2>
 <h3>Installation et activation</h3>
-<p><div class="code-block"><div class="code-line"><code># Installer</p>
-<p>sudo apt install ufw</p>
-<p># Statut</p>
-<p>sudo ufw status</p>
-<p>sudo ufw status numbered</p>
-<p># Activer/désactiver</p>
-<p>sudo ufw enable</p>
-<p>sudo ufw disable</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer
+sudo apt install ufw
+
+# Statut
+sudo ufw status
+sudo ufw status numbered
+
+# Activer/désactiver
+sudo ufw enable
+sudo ufw disable</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Règles de base</h3>
-<p><div class="code-block"><div class="code-line"><code># Autoriser par port</p>
-<p>sudo ufw allow 22          # SSH</p>
-<p>sudo ufw allow 80/tcp       # HTTP</p>
-<p>sudo ufw allow 443/tcp     # HTTPS</p>
-<p>sudo ufw allow 53/udp      # DNS</p>
-<p># Bloquer</p>
-<p>sudo ufw deny 23           # Telnet</p>
-<p># Supprimer règles</p>
-<p>sudo ufw delete allow 22</p>
-<p>sudo ufw delete deny 23</p>
-<p># Autoriser par service</p>
-<p>sudo ufw allow ssh</p>
-<p>sudo ufw allow http</p>
-<p>sudo ufw allow 'Apache Full'</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Autoriser par port
+sudo ufw allow 22          # SSH
+sudo ufw allow 80/tcp       # HTTP
+sudo ufw allow 443/tcp     # HTTPS
+sudo ufw allow 53/udp      # DNS
+
+# Bloquer
+sudo ufw deny 23           # Telnet
+
+# Supprimer règles
+sudo ufw delete allow 22
+sudo ufw delete deny 23
+
+# Autoriser par service
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow 'Apache Full'</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Règles avancées</h3>
-<p><div class="code-block"><div class="code-line"><code># Autoriser depuis IP spécifique</p>
-<p>sudo ufw allow from 192.168.1.100</p>
-<p>sudo ufw allow from 192.168.1.0/24 to any port 22</p>
-<p># Autoriser subnet</p>
-<p>sudo ufw allow from 10.0.0.0/8</p>
-<p># Limiter les tentatives (protection brute force)</p>
-<p>sudo ufw limit ssh</p>
-<p># Ports spécifiques</p>
-<p>sudo ufw allow 8000:9000/tcp</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Autoriser depuis IP spécifique
+sudo ufw allow from 192.168.1.100
+sudo ufw allow from 192.168.1.0/24 to any port 22
+
+# Autoriser subnet
+sudo ufw allow from 10.0.0.0/8
+
+# Limiter les tentatives (protection brute force)
+sudo ufw limit ssh
+
+# Ports spécifiques
+sudo ufw allow 8000:9000/tcp</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Configuration par défaut</h3>
-<p><div class="code-block"><div class="code-line"><code># Politique par défaut</p>
-<p>sudo ufw default deny incoming</p>
-<p>sudo ufw default allow outgoing</p>
-<p>sudo ufw default allow routed</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Politique par défaut
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw default allow routed</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Permissions spéciales</h2>
 <h3>Les 3 bits spéciaux</h3>
@@ -169,52 +300,107 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td>**Sticky Bit (1000)**</td><td>t</td><td>Sauvegarde protégé dans répertoire</td></tr>
 </table>
 <h3>Commandes</h3>
-<p><div class="code-block"><div class="code-line"><code># Ajouter setuid</p>
-<p>chmod u+s fichier</p>
-<p>chmod 4755 fichier</p>
-<p># Ajouter setgid</p>
-<p>chmod g+s repertoire</p>
-<p>chmod 2755 repertoire</p>
-<p># Ajouter sticky bit</p>
-<p>chmod +t /tmp</p>
-<p>chmod 1777 /tmp</p>
-<p># Voir les fichiers setuid</p>
-<p>sudo find / -perm -4000 2&gt;/dev/null</p>
-<p>sudo find / -perm -2000 2&gt;/dev/null</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter setuid
+chmod u+s fichier
+chmod 4755 fichier
+
+# Ajouter setgid
+chmod g+s repertoire
+chmod 2755 repertoire
+
+# Ajouter sticky bit
+chmod +t /tmp
+chmod 1777 /tmp
+
+# Voir les fichiers setuid
+sudo find / -perm -4000 2&gt;/dev/null
+sudo find / -perm -2000 2&gt;/dev/null</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemples pratiques</h3>
-<p><div class="code-block"><div class="code-line"><code># ping a besoin de setuid (pour accès réseau)</p>
-<p>ls -l /bin/ping</p>
-<p># -rwsr-xr-x 1 root root ... /bin/ping</p>
-<p># Répertoire partagé avec sticky bit</p>
-<p>ls -ld /tmp</p>
-<p># drwxrwxrwt 10 root root ... /tmp</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># ping a besoin de setuid (pour accès réseau)
+ls -l /bin/ping
+# -rwsr-xr-x 1 root root ... /bin/ping
+
+# Répertoire partagé avec sticky bit
+ls -ld /tmp
+# drwxrwxrwt 10 root root ... /tmp</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Sécurisation SSH</h2>
 <h3>Configuration sécurisée</h3>
-<p><div class="code-block"><div class="code-line"><code># Éditer la configuration</p>
-<p>sudo nano /etc/ssh/sshd_config</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Éditer la configuration
+sudo nano /etc/ssh/sshd_config</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Modifier ces lignes:</p>
-<p><div class="code-block"><div class="code-line"><code>Port 2222                              # Changer le port</p>
-<p>PermitRootLogin no                     # Pas de root</p>
-<p>PubkeyAuthentication yes              # Clés uniquement</p>
-<p>PasswordAuthentication no             # Pas de mot de passe</p>
-<p>PermitEmptyPasswords no                # Pas de mot de passe vide</p>
-<p>X11Forwarding no                       # Désactiver X11 si pas besoin</p>
-<p>MaxAuthTries 3                         # Tentatives max</p>
-<p>ClientAliveInterval 300               # Timeout</p>
-<p>ClientAliveCountMax 2                 # Nombre de checks</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Port 2222                              # Changer le port
+PermitRootLogin no                     # Pas de root
+PubkeyAuthentication yes              # Clés uniquement
+PasswordAuthentication no             # Pas de mot de passe
+PermitEmptyPasswords no                # Pas de mot de passe vide
+X11Forwarding no                       # Désactiver X11 si pas besoin
+MaxAuthTries 3                         # Tentatives max
+ClientAliveInterval 300               # Timeout
+ClientAliveCountMax 2                 # Nombre de checks</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Générer des clés SSH</h3>
-<p><div class="code-block"><div class="code-line"><code># Clé ED25519 (recommandée)</p>
-<p>ssh-keygen -t ed25519 -C "mon@email.com"</p>
-<p># Clé RSA (legacy)</p>
-<p>ssh-keygen -t rsa -b 4096 -C "mon@email.com"</p>
-<p># Avec passphrase (fortement recommandé)</p>
-<p># Entrez une passphrase forte quand demandé</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Clé ED25519 (recommandée)
+ssh-keygen -t ed25519 -C "mon@email.com"
+
+# Clé RSA (legacy)
+ssh-keygen -t rsa -b 4096 -C "mon@email.com"
+
+# Avec passphrase (fortement recommandé)
+# Entrez une passphrase forte quand demandé</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Déployer la clé</h3>
-<p><div class="code-block"><div class="code-line"><code># Copie automatique</p>
-<p>ssh-copy-id user@serveur</p>
-<p># Ajouter manuellement</p>
-<p>cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys"</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Copie automatique
+ssh-copy-id user@serveur
+
+# Ajouter manuellement
+cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys"</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7. Analyse des logs de sécurité</h2>
 <h3>Fichiers de logs importants</h3>
@@ -227,82 +413,161 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td><code>/var/log/btmp</code></td><td>Mauvaises connexions</td></tr>
 </table>
 <h3>Commandes de analyse</h3>
-<p><div class="code-block"><div class="code-line"><code># Rechercher les échecs</p>
-<p>grep "Failed" /var/log/auth.log</p>
-<p>grep "Failed" /var/log/auth.log | tail -20</p>
-<p># Rechercher les succès</p>
-<p>grep "Accepted" /var/log/auth.log</p>
-<p># Voir les sudo</p>
-<p>sudo grep "COMMAND" /var/log/auth.log</p>
-<p># Surveiller en temps réel</p>
-<p>sudo tail -f /var/log/auth.log</p>
-<p># Compter les tentatives</p>
-<p>grep "Failed password" /var/log/auth.log | wc -l</p>
-<p># Voir qui a utilisé sudo</p>
-<p>sudo grep "SESSION" /var/log/auth.log</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Rechercher les échecs
+grep "Failed" /var/log/auth.log
+grep "Failed" /var/log/auth.log | tail -20
+
+# Rechercher les succès
+grep "Accepted" /var/log/auth.log
+
+# Voir les sudo
+sudo grep "COMMAND" /var/log/auth.log
+
+# Surveiller en temps réel
+sudo tail -f /var/log/auth.log
+
+# Compter les tentatives
+grep "Failed password" /var/log/auth.log | wc -l
+
+# Voir qui a utilisé sudo
+sudo grep "SESSION" /var/log/auth.log</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Utiliser journalctl</h3>
-<p><div class="code-block"><div class="code-line"><code># Logs d'authentification</p>
-<p>journalctl -u ssh</p>
-<p># Logs kernel</p>
-<p>journalctl -k</p>
-<p>#Dernières heures</p>
-<p>journalctl --since "1 hour ago"</p>
-<p># Filtrer par priorité</p>
-<p>journalctl -p err</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Logs d'authentification
+journalctl -u ssh
+
+# Logs kernel
+journalctl -k
+
+#Dernières heures
+journalctl --since "1 hour ago"
+
+# Filtrer par priorité
+journalctl -p err</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Détection des intrusion basiques</h2>
 <h3>Signes d'alerte</h3>
-<p><div class="code-block"><div class="code-line"><code># Fichiers créés récemment</p>
-<p>sudo find / -mtime -1 -type f 2&gt;/dev/null</p>
-<p># Fichiers avec setuid root</p>
-<p>sudo find / -perm -4000 -type f 2&gt;/dev/null</p>
-<p># Connexions étrange</p>
-<p>ss -tnp</p>
-<p># Processus inhabituel</p>
-<p>ps auxf</p>
-<p># Utilisateurs suspects</p>
-<p>last | head -20</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Fichiers créés récemment
+sudo find / -mtime -1 -type f 2&gt;/dev/null
+
+# Fichiers avec setuid root
+sudo find / -perm -4000 -type f 2&gt;/dev/null
+
+# Connexions étrange
+ss -tnp
+
+# Processus inhabituel
+ps auxf
+
+# Utilisateurs suspects
+last | head -20</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Scripts de surveillance</h3>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p># script secu.sh</p>
-<p>LOG="/var/log/securite.log"</p>
-<p>echo "=== Vérification sécurité $(date) ===" &gt;&gt; $LOG</p>
-<p># Vérifier échecs de connexion</p>
-<p>echo "Tentatives échouées:" &gt;&gt; $LOG</p>
-<p>grep "Failed" /var/log/auth.log | tail -5 &gt;&gt; $LOG</p>
-<p># Vérifier nouveaux fichiers setuid</p>
-<p>echo "Fichiers setuid:" &gt;&gt; $LOG</p>
-<p>find / -perm -4000 2&gt;/dev/null &gt;&gt; $LOG</p>
-<p># Vérifier utilisateurs connectés</p>
-<p>echo "Utilisateurs:" &gt;&gt; $LOG</p>
-<p>who &gt;&gt; $LOG</p>
-<p>echo "---" &gt;&gt; $LOG</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+# script secu.sh
+
+LOG="/var/log/securite.log"
+
+echo "=== Vérification sécurité $(date) ===" &gt;&gt; $LOG
+
+# Vérifier échecs de connexion
+echo "Tentatives échouées:" &gt;&gt; $LOG
+grep "Failed" /var/log/auth.log | tail -5 &gt;&gt; $LOG
+
+# Vérifier nouveaux fichiers setuid
+echo "Fichiers setuid:" &gt;&gt; $LOG
+find / -perm -4000 2&gt;/dev/null &gt;&gt; $LOG
+
+# Vérifier utilisateurs connectés
+echo "Utilisateurs:" &gt;&gt; $LOG
+who &gt;&gt; $LOG
+
+echo "---" &gt;&gt; $LOG</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>9. Fail2ban - Protection brute force</h2>
 <h3>Installation</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo apt install fail2ban</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt install fail2ban</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Configuration</h3>
-<p><div class="code-block"><div class="code-line"><code># Copier config</p>
-<p>sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local</p>
-<p># Éditer</p>
-<p>sudo nano /etc/fail2ban/jail.local</p>
-<p># Paramètres essentiels</p>
-<p>[bantime]</p>
-<p>bantime = 1h</p>
-<p>findtime = 10m</p>
-<p>maxretry = 5</p>
-<p>[sshd]</p>
-<p>enabled = true</p>
-<p>port = ssh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Copier config
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+
+# Éditer
+sudo nano /etc/fail2ban/jail.local
+
+# Paramètres essentiels
+[bantime]
+bantime = 1h
+findtime = 10m
+maxretry = 5
+
+[sshd]
+enabled = true
+port = ssh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Commandes</h3>
-<p><div class="code-block"><div class="code-line"><code># Statut</p>
-<p>sudo fail2ban-client status</p>
-<p>sudo fail2ban-client status sshd</p>
-<p># Bannir/Débannir</p>
-<p>sudo fail2ban-client set sshd banip 192.168.1.100</p>
-<p>sudo fail2ban-client set sshd unbanip 192.168.1.100</p>
-<p># Redémarrer</p>
-<p>sudo systemctl restart fail2ban</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Statut
+sudo fail2ban-client status
+sudo fail2ban-client status sshd
+
+# Bannir/Débannir
+sudo fail2ban-client set sshd banip 192.168.1.100
+sudo fail2ban-client set sshd unbanip 192.168.1.100
+
+# Redémarrer
+sudo systemctl restart fail2ban</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>10. Checklist sécurité</h2>
 <ul>
@@ -337,4 +602,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="19-sauvegardes-restauration.html">&larr; 19-sauvegardes-restauration</a>
 <a href="21-services-systemd.html">21-services-systemd &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

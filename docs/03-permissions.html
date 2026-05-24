@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -50,10 +63,17 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td>**Autres (Others)**</td><td>Tous les autres utilisateurs</td></tr>
 </table>
 <h3>Notation symbolique</h3>
-<p><div class="code-block"><div class="code-line"><code>| propriétaire |    Groupe    |    Autres    |</p>
-<table>
-<tr><th>rwx</th><th>rwx</th><th>rwx</th></tr>
-</table>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>| propriétaire |    Groupe    |    Autres    |
+|:---------:|:----------:|:---------:|
+|    rwx    |    rwx     |    rwx     |</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <table>
 <tr><th>Symbole</th><th>Signification</th></tr>
 <tr><td><code>r</code></td><td>Lecture autorisée</td></tr>
@@ -64,13 +84,37 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>2. Voir les permissions</h2>
 <h3>Commande ls -l</h3>
-<p><div class="code-block"><div class="code-line"><code>ls -l /home/david/fichier.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ls -l /home/david/fichier.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Résultat :</p>
-<p><div class="code-block"><div class="code-line"><code>-rw-r--r-- 1 david david 1234 Mar 10 10:00 fichier.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>-rw-r--r-- 1 david david 1234 Mar 10 10:00 fichier.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Décryptage :</p>
-<p><div class="code-block"><div class="code-line"><code>-    rw-    r--    r--  1  david  david  1234  Mar 10 10:00 fichier.txt</p>
-<p>│    │      │      │    │     │      │      │       │         │</p>
-<p>Type│Owner │Group │Other│Link │Owner │Group │Size   │Date      │Name</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>-    rw-    r--    r--  1  david  david  1234  Mar 10 10:00 fichier.txt
+│    │      │      │    │     │      │      │       │         │
+Type│Owner │Group │Other│Link │Owner │Group │Size   │Date      │Name</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <table>
 <tr><th>Caractère</th><th>Type</th></tr>
 <tr><td><code>-</code></td><td>Fichier régulier</td></tr>
@@ -83,29 +127,46 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h2>3. Modifier les permissions</h2>
 <h3>Commande chmod</h3>
 <p>#### Notation symbolique</p>
-<p><div class="code-block"><div class="code-line"><code># Ajouter une permission</p>
-<p>chmod +x script.sh         # Ajouter exécution pour tous</p>
-<p>chmod u+x script.sh       # Propriétaire peut exécuter</p>
-<p>chmod g+w dossier/        # Groupe peut écrire</p>
-<p>chmod o-r fichier.txt     # Autres ne peuvent plus lire</p>
-<p># Retirer une permission</p>
-<p>chmod -w fichier.txt      # Retirer écriture pour tous</p>
-<p># Définir exactement</p>
-<p>chmod u=rwx,g=rx,o=r fichier</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter une permission
+chmod +x script.sh         # Ajouter exécution pour tous
+chmod u+x script.sh       # Propriétaire peut exécuter
+chmod g+w dossier/        # Groupe peut écrire
+chmod o-r fichier.txt     # Autres ne peuvent plus lire
+
+# Retirer une permission
+chmod -w fichier.txt      # Retirer écriture pour tous
+
+# Définir exactement
+chmod u=rwx,g=rx,o=r fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>#### Notation octale</p>
-<p><div class="code-block"><div class="code-line"><code>#Valeurs</p>
-<p>r = 4</p>
-<p>w = 2</p>
-<p>x = 1</p>
-<ul>
-<li>= 0</li>
-</ul>
-<p># Exemples</p>
-<p>chmod 777 fichier     # rwxrwxrwx (tout permis)</p>
-<p>chmod 755 fichier    # rwxr-xr-x (standard)</p>
-<p>chmod 644 fichier    # rw-r--r-- (lecture pour tous)</p>
-<p>chmod 700 fichier    # rwx------ (propriétaire seul)</p>
-<p>chmod 600 fichier    # rw------- (propriétaire seul)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#Valeurs
+r = 4
+w = 2
+x = 1
+- = 0
+
+# Exemples
+chmod 777 fichier     # rwxrwxrwx (tout permis)
+chmod 755 fichier    # rwxr-xr-x (standard)
+chmod 644 fichier    # rw-r--r-- (lecture pour tous)
+chmod 700 fichier    # rwx------ (propriétaire seul)
+chmod 600 fichier    # rw------- (propriétaire seul)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Tableau des permissions Octales</h3>
 <table>
 <tr><th>Octal</th><th>Symbolique</th><th>Description</th></tr>
@@ -121,55 +182,128 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>4. Modifier propriétaire et groupe</h2>
 <h3>Chown - Changer le propriétaire</h3>
-<p><div class="code-block"><div class="code-line"><code># Changer le propriétaire</p>
-<p>sudo chown utilisateur fichier</p>
-<p># Changer propriétaire et groupe</p>
-<p>sudo chown utilisateur:groupe fichier</p>
-<p># Changer le groupe seulement</p>
-<p>sudo chown :groupe fichier</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Changer le propriétaire
+sudo chown utilisateur fichier
+
+# Changer propriétaire et groupe
+sudo chown utilisateur:groupe fichier
+
+# Changer le groupe seulement
+sudo chown :groupe fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Chgrp - Changer le groupe</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo chgrp groupe fichier</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo chgrp groupe fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Options utiles</h3>
-<p><div class="code-block"><div class="code-line"><code># Récursif (dossiers)</p>
-<p>sudo chown -R utilisateur dossier/</p>
-<p># Préserver les liens symbolique</p>
-<p>sudo chown -h lien_symbolique</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Récursif (dossiers)
+sudo chown -R utilisateur dossier/
+
+# Préserver les liens symbolique
+sudo chown -h lien_symbolique</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemples pratiques</h3>
-<p><div class="code-block"><div class="code-line"><code># Rendre un script exécutable</p>
-<p>chmod +x monscript.sh</p>
-<p># Permettre l'écriture au groupe</p>
-<p>chmod g+w dossier/</p>
-<p># Serveur web (Apache/Nginx)</p>
-<p>sudo chown -R www-data:www-data /var/www/html/</p>
-<p># Dossier partagé</p>
-<p>sudo chown -R root:shared /partage/</p>
-<p>sudo chmod -R 2775 /partage/  # SGID pour hériter</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Rendre un script exécutable
+chmod +x monscript.sh
+
+# Permettre l'écriture au groupe
+chmod g+w dossier/
+
+# Serveur web (Apache/Nginx)
+sudo chown -R www-data:www-data /var/www/html/
+
+# Dossier partagé
+sudo chown -R root:shared /partage/
+sudo chmod -R 2775 /partage/  # SGID pour hériter</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Permissions spéciales</h2>
 <h3>SetUID (4000)</h3>
 <p>Exécute avec les droits du propriétaire (rare, dangéreux).</p>
-<p><div class="code-block"><div class="code-line"><code># Ajouter</p>
-<p>chmod 4755 executable</p>
-<p># Notation symbolique</p>
-<p>chmod u+s executable</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter
+chmod 4755 executable
+
+# Notation symbolique
+chmod u+s executable</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>SetGID (2000)</h3>
 <p>Les fichiers héritent du groupe du répertoire.</p>
-<p><div class="code-block"><div class="code-line"><code>chmod 2755 dossier/</p>
-<p>chmod g+s dossier/</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>chmod 2755 dossier/
+chmod g+s dossier/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Sticky Bit (1000)</h3>
 <p>Sur un répertoire, seuls les propriétaires peuvent supprimer leurs fichiers.</p>
-<p><div class="code-block"><div class="code-line"><code>chmod 1777 /tmp</p>
-<p>chmod +t /tmp</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>chmod 1777 /tmp
+chmod +t /tmp</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Umask</h2>
 <h3>Qu'est-ce que umask ?</h3>
 <p><code>umask</code> définit les permissions par défaut pour les nouveaux fichiers.</p>
-<p><div class="code-block"><div class="code-line"><code># Voir umask actuel</p>
-<p>umask</p>
-<p># Modifier pour la session</p>
-<p>umask 022</p>
-<p># Rendre permanent (ajouter dans ~/.bashrc)</p>
-<p>echo "umask 022" &gt;&gt; ~/.bashrc</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir umask actuel
+umask
+
+# Modifier pour la session
+umask 022
+
+# Rendre permanent (ajouter dans ~/.bashrc)
+echo "umask 022" &gt;&gt; ~/.bashrc</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Calculer umask</h3>
 <p>Pour un fichier (par défaut 666) :</p>
 <ul>
@@ -183,16 +317,28 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h2>7. Propriétés avancées des fichiers</h2>
 <h3>ACL (Access Control Lists)</h3>
 <p>Pour des permissions plus fines, utiliser les ACL.</p>
-<p><div class="code-block"><div class="code-line"><code># Installer si besoin</p>
-<p>sudo apt install acl</p>
-<p># Voir les ACL</p>
-<p>getfacl fichier</p>
-<p># Ajouter une permission ACL</p>
-<p>setfacl -m u:utilisateur:rwx fichier</p>
-<p># Supprimer ACL</p>
-<p>setfacl -x u:utilisateur fichier</p>
-<p># Par défaut (pour nouveaux fichiers)</p>
-<p>setfacl -m d:u:utilisateur:rx dossier/</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer si besoin
+sudo apt install acl
+
+# Voir les ACL
+getfacl fichier
+
+# Ajouter une permission ACL
+setfacl -m u:utilisateur:rwx fichier
+
+# Supprimer ACL
+setfacl -x u:utilisateur fichier
+
+# Par défaut (pour nouveaux fichiers)
+setfacl -m d:u:utilisateur:rx dossier/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Bonnes pratiques de sécurité</h2>
 <h3>Permissions recommandées</h3>
@@ -206,29 +352,57 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td>Fichiers config système</td><td>644</td><td>Lecture, écriture root</td></tr>
 </table>
 <h3>⚠️ Commandes dangereuses à éviter</h3>
-<p><div class="code-block"><div class="code-line"><code>chmod -R 777 /          # DANGER!</p>
-<p>chmod -R 777 /home      # DANGER!</p>
-<p>chmod -R 777 /etc       # TRES DANGER!</p>
-<p>chmod 777 /etc/passwd   # DANGER!</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>chmod -R 777 /          # DANGER!
+chmod -R 777 /home      # DANGER!
+chmod -R 777 /etc       # TRES DANGER!
+chmod 777 /etc/passwd   # DANGER!</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Script exécutable</h3>
-<p><div class="code-block"><div class="code-line"><code># Créer un script</p>
-<p>echo '#!/bin/bash' &gt; test.sh</p>
-<p>echo 'echo "Hello"' &gt;&gt; test.sh</p>
-<p># Rendre exécutable</p>
-<p>chmod +x test.sh</p>
-<p># Exécuter</p>
-<p>./test.sh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un script
+echo '#!/bin/bash' &gt; test.sh
+echo 'echo "Hello"' &gt;&gt; test.sh
+
+# Rendre exécutable
+chmod +x test.sh
+
+# Exécuter
+./test.sh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exercice 2 : Partage de dossier</h3>
-<p><div class="code-block"><div class="code-line"><code># Créer un groupe</p>
-<p>sudo groupadd partage</p>
-<p># Ajouter des utilisateurs</p>
-<p>sudo usermod -aG partage utilisateur1</p>
-<p>sudo usermod -aG partage utilisateur2</p>
-<p># Configurer le dossier</p>
-<p>sudo chown :partage /partage</p>
-<p>sudo chmod 2775 /partage</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un groupe
+sudo groupadd partage
+
+# Ajouter des utilisateurs
+sudo usermod -aG partage utilisateur1
+sudo usermod -aG partage utilisateur2
+
+# Configurer le dossier
+sudo chown :partage /partage
+sudo chmod 2775 /partage</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>10. Résumé</h2>
 <table>
@@ -265,4 +439,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="02-commandes-base.html">&larr; 02-commandes-base</a>
 <a href="04-processus-services.html">04-processus-services &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

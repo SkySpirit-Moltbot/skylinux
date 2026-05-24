@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -44,85 +57,183 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>2. Installer UFW</h2>
 <p>UFW est généralement **préinstallé** sur Ubuntu. Pour les autres distributions :</p>
-<p><div class="code-block"><div class="code-line"><code># Debian / Ubuntu / Linux Mint</p>
-<p>sudo apt install ufw</p>
-<p># Fedora</p>
-<p>sudo dnf install ufw</p>
-<p># Vérifier le statut</p>
-<p>sudo ufw status</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Debian / Ubuntu / Linux Mint
+sudo apt install ufw
+
+# Fedora
+sudo dnf install ufw
+
+# Vérifier le statut
+sudo ufw status</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. Règles de base</h2>
 <h3>Voir le statut</h3>
-<p><div class="code-block"><div class="code-line"><code># Statut actuel (actif/inactif, règles en place)</p>
-<p>sudo ufw status verbose</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Statut actuel (actif/inactif, règles en place)
+sudo ufw status verbose</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Activer / Désactiver le pare-feu</h3>
-<p><div class="code-block"><div class="code-line"><code># Activer UFW (appliquera les règles définies)</p>
-<p>sudo ufw enable</p>
-<p># Désactiver UFW (tout ouvert)</p>
-<p>sudo ufw disable</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Activer UFW (appliquera les règles définies)
+sudo ufw enable
+
+# Désactiver UFW (tout ouvert)
+sudo ufw disable</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <blockquote>
 <p>⚠️ **Attention** : si tu te connectes en SSH et que le pare-feu est inactive, assieds-toi d'abord une règle SSH AVANT d'activer UFW !</p>
 </blockquote>
 <hr/>
 <h2>4. Autoriser ou Bloquer des Ports</h2>
 <h3>Autoriser un port (entrant)</h3>
-<p><div class="code-block"><div class="code-line"><code># Autoriser le port 80 (HTTP)</p>
-<p>sudo ufw allow 80/tcp</p>
-<p># Autoriser le port 443 (HTTPS)</p>
-<p>sudo ufw allow 443/tcp</p>
-<p># Autoriser un service par son nom</p>
-<p>sudo ufw allow ssh</p>
-<p>sudo ufw allow http</p>
-<p>sudo ufw allow https</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Autoriser le port 80 (HTTP)
+sudo ufw allow 80/tcp
+
+# Autoriser le port 443 (HTTPS)
+sudo ufw allow 443/tcp
+
+# Autoriser un service par son nom
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Bloquer un port (entrant)</h3>
-<p><div class="code-block"><div class="code-line"><code># Bloquer le port 23 (Telnet — non sécurisé)</p>
-<p>sudo ufw deny 23/tcp</p>
-<p># Bloquer tout le trafic entrant (très restrictif)</p>
-<p>sudo ufw default deny incoming</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Bloquer le port 23 (Telnet — non sécurisé)
+sudo ufw deny 23/tcp
+
+# Bloquer tout le trafic entrant (très restrictif)
+sudo ufw default deny incoming</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Autoriser depuis une IP ou un réseau</h3>
-<p><div class="code-block"><div class="code-line"><code># Autoriser une IP spécifique</p>
-<p>sudo ufw allow from 192.168.1.100</p>
-<p># Autoriser un réseau entier</p>
-<p>sudo ufw allow from 192.168.1.0/24</p>
-<p># Autoriser SSH uniquement depuis le réseau local</p>
-<p>sudo ufw allow from 192.168.1.0/24 to any port 22</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Autoriser une IP spécifique
+sudo ufw allow from 192.168.1.100
+
+# Autoriser un réseau entier
+sudo ufw allow from 192.168.1.0/24
+
+# Autoriser SSH uniquement depuis le réseau local
+sudo ufw allow from 192.168.1.0/24 to any port 22</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Supprimer une règle</h2>
-<p><div class="code-block"><div class="code-line"><code># Voir les règles avec leurs numéros</p>
-<p>sudo ufw status numbered</p>
-<p># Supprimer la règle n°3</p>
-<p>sudo ufw delete 3</p>
-<p># Supprimer une règle par sa définition</p>
-<p>sudo ufw delete allow 80/tcp</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir les règles avec leurs numéros
+sudo ufw status numbered
+
+# Supprimer la règle n°3
+sudo ufw delete 3
+
+# Supprimer une règle par sa définition
+sudo ufw delete allow 80/tcp</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Logging (journalisation)</h2>
-<p><div class="code-block"><div class="code-line"><code># Niveau basique</p>
-<p>sudo ufw logging low</p>
-<p># Niveau moyen (recommandé)</p>
-<p>sudo ufw logging medium</p>
-<p># Désactiver les logs</p>
-<p>sudo ufw logging off</p>
-<p># Lire les logs</p>
-<p>sudo tail -f /var/log/ufw.log</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Niveau basique
+sudo ufw logging low
+
+# Niveau moyen (recommandé)
+sudo ufw logging medium
+
+# Désactiver les logs
+sudo ufw logging off
+
+# Lire les logs
+sudo tail -f /var/log/ufw.log</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7. Configuration pour un serveur SSH</h2>
 <p>C'est le cas le plus courant — on veut sécuriser l'accès SSH :</p>
-<p><div class="code-block"><div class="code-line"><code># 1. Autoriser SSH (port 22)</p>
-<p>sudo ufw allow ssh</p>
-<p># Ou explicitement :</p>
-<p>sudo ufw allow 22/tcp</p>
-<p># 2. Si tu te connectes depuis une IP fixe, encore mieux :</p>
-<p>sudo ufw allow from 192.168.1.50 to any port 22</p>
-<p># 3. Tout le reste en entrée : refuser</p>
-<p>sudo ufw default deny incoming</p>
-<p># 4. Sortie : tout autorisé (par défaut)</p>
-<p>sudo ufw default allow outgoing</p>
-<p># 5. Activer le pare-feu</p>
-<p>sudo ufw enable</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Autoriser SSH (port 22)
+sudo ufw allow ssh
+
+# Ou explicitement :
+sudo ufw allow 22/tcp
+
+# 2. Si tu te connectes depuis une IP fixe, encore mieux :
+sudo ufw allow from 192.168.1.50 to any port 22
+
+# 3. Tout le reste en entrée : refuser
+sudo ufw default deny incoming
+
+# 4. Sortie : tout autorisé (par défaut)
+sudo ufw default allow outgoing
+
+# 5. Activer le pare-feu
+sudo ufw enable</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Réinitialiser UFW</h2>
-<p><div class="code-block"><div class="code-line"><code># Remettre à zéro (efface toutes les règles)</p>
-<p>sudo ufw reset</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Remettre à zéro (efface toutes les règles)
+sudo ufw reset</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>Exercice pratique</h2>
 <p>**Objectif :** Configure UFW sur ta machine pour un usage bureautique sécurisé.</p>
@@ -271,4 +382,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="36-conky-surveillance-systeme.html">&larr; 36-conky-surveillance-systeme</a>
 <a href="38-debogage-strace-ltrace.html">38-debogage-strace-ltrace &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

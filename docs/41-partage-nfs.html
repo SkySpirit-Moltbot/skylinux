@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -49,21 +62,54 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>2. Côté serveur : exporter un dossier</h2>
 <h3>Étape 1 : Installer le serveur NFS</h3>
-<p><div class="code-block"><div class="code-line"><code># Ubuntu / Debian</p>
-<p>sudo apt update &amp;&amp; sudo apt install nfs-kernel-server</p>
-<p># Fedora / CentOS / RHEL</p>
-<p>sudo dnf install nfs-utils</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ubuntu / Debian
+sudo apt update &amp;&amp; sudo apt install nfs-kernel-server
+
+# Fedora / CentOS / RHEL
+sudo dnf install nfs-utils</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Étape 2 : Créer le dossier à partager</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo mkdir -p /srv/nfs/partage</p>
-<p>sudo chown nobody:nogroup /srv/nfs/partage</p>
-<p>sudo chmod 755 /srv/nfs/partage</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo mkdir -p /srv/nfs/partage
+sudo chown nobody:nogroup /srv/nfs/partage
+sudo chmod 755 /srv/nfs/partage</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Étape 3 : Configurer les exports</h3>
 <p>Le fichier <code>/etc/exports</code> définit quels dossiers sont partagés et à qui :</p>
-<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/exports</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo nano /etc/exports</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Ajouter une ligne par partage :</p>
-<p><div class="code-block"><div class="code-line"><code># Format : dossier_client  IP_client(options)</p>
-<p># Exemple : partage accessible en lecture/écriture pour 192.168.1.0/24</p>
-<p>/srv/nfs/partage   192.168.1.0/24(rw,sync,no_subtree_check)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Format : dossier_client  IP_client(options)
+# Exemple : partage accessible en lecture/écriture pour 192.168.1.0/24
+/srv/nfs/partage   192.168.1.0/24(rw,sync,no_subtree_check)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Options principales :**</p>
 <ul>
 <li><code>rw</code> — lecture et écriture (par défaut : read-only)</li>
@@ -76,42 +122,118 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>**⚠️ Sécurité :** Par défaut, <code>root_squash</code> est activé : l'utilisateur root du client est converti en <code>nobody</code>. C'est bien pour la sécurité. N'utilise <code>no_root_squash</code> que dans un réseau de confiance.</p>
 </blockquote>
 <h3>Étape 4 : Redémarrer le service</h3>
-<p><div class="code-block"><div class="code-line"><code># Exporter les partages et redémarrer le service</p>
-<p>sudo exportfs -a</p>
-<p>sudo systemctl restart nfs-kernel-server</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Exporter les partages et redémarrer le service
+sudo exportfs -a
+sudo systemctl restart nfs-kernel-server</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Vérifier les exports actifs</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo exportfs -v</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo exportfs -v</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. Côté client : monter le partage NFS</h2>
 <h3>Étape 1 : Installer le client NFS</h3>
-<p><div class="code-block"><div class="code-line"><code># Ubuntu / Debian</p>
-<p>sudo apt update &amp;&amp; sudo apt install nfs-common</p>
-<p># Fedora / CentOS / RHEL</p>
-<p>sudo dnf install nfs-utils</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ubuntu / Debian
+sudo apt update &amp;&amp; sudo apt install nfs-common
+
+# Fedora / CentOS / RHEL
+sudo dnf install nfs-utils</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Étape 2 : Monter le partage manuellement</h3>
-<p><div class="code-block"><div class="code-line"><code># Créer le point de montage local</p>
-<p>sudo mkdir -p /mnt/nfs/partage</p>
-<p># Monter le partage NFS</p>
-<p>sudo mount 192.168.1.100:/srv/nfs/partage /mnt/nfs/partage</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer le point de montage local
+sudo mkdir -p /mnt/nfs/partage
+
+# Monter le partage NFS
+sudo mount 192.168.1.100:/srv/nfs/partage /mnt/nfs/partage</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Remplace <code>192.168.1.100</code> par l'adresse IP réelle de ton serveur NFS.</p>
 <h3>Vérifier le montage</h3>
-<p><div class="code-block"><div class="code-line"><code>df -h | grep nfs</code></div></div></p>
-<p><div class="code-block"><div class="code-line"><code># Tester l'accès</p>
-<p>ls -la /mnt/nfs/partage/</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>df -h | grep nfs</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Tester l'accès
+ls -la /mnt/nfs/partage/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Étape 3 : Montage automatique au boot (fstab)</h3>
 <p>Pour monter automatiquement au démarrage, ajoute une ligne dans <code>/etc/fstab</code> :</p>
-<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/fstab</code></div></div></p>
-<p><div class="code-block"><div class="code-line"><code># Ajouter cette ligne :</p>
-<p>192.168.1.100:/srv/nfs/partage   /mnt/nfs/partage   nfs   defaults,_netdev   0   0</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo nano /etc/fstab</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter cette ligne :
+192.168.1.100:/srv/nfs/partage   /mnt/nfs/partage   nfs   defaults,_netdev   0   0</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p><code>_netdev</code> = attend que le réseau soit prêt avant de monter (important pour NFS).</p>
 <hr/>
 <h2>4. Démonter un partage NFS</h2>
-<p><div class="code-block"><div class="code-line"><code># Démonter le partage</p>
-<p>sudo umount /mnt/nfs/partage</p>
-<p># Forcer si occupé (si des fichiers sont ouverts)</p>
-<p>sudo umount -f /mnt/nfs/partage</p>
-<p># Lazy unmount (détache immédiatement, processus continuent)</p>
-<p>sudo umount -l /mnt/nfs/partage</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Démonter le partage
+sudo umount /mnt/nfs/partage
+
+# Forcer si occupé (si des fichiers sont ouverts)
+sudo umount -f /mnt/nfs/partage
+
+# Lazy unmount (détache immédiatement, processus continuent)
+sudo umount -l /mnt/nfs/partage</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Commandes utiles</h2>
 <table>
@@ -156,4 +278,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="40-minuteurs-systemd.html">&larr; 40-minuteurs-systemd</a>
 <a href="42-configuration-dns.html">42-configuration-dns &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

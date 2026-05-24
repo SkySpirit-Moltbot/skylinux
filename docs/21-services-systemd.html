@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -54,87 +67,211 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 </ul>
 <h2>Commandes de base avec systemctl</h2>
 <h3>Voir le statut d'un service</h3>
-<p><div class="code-block"><div class="code-line"><code># Voir le statut d'un service spécifique</p>
-<p>sudo systemctl status nginx</p>
-<p># Statut sans les détails (plus concis)</p>
-<p>sudo systemctl is-active nginx</p>
-<p># Vérifier si un service est activé au démarrage</p>
-<p>sudo systemctl is-enabled nginx</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir le statut d'un service spécifique
+sudo systemctl status nginx
+
+# Statut sans les détails (plus concis)
+sudo systemctl is-active nginx
+
+# Vérifier si un service est activé au démarrage
+sudo systemctl is-enabled nginx</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Démarrer et arrêter un service</h3>
-<p><div class="code-block"><div class="code-line"><code># Démarrer un service</p>
-<p>sudo systemctl start nginx</p>
-<p># Arrêter un service</p>
-<p>sudo systemctl stop nginx</p>
-<p># Redémarrer un service (arrêt + démarrage)</p>
-<p>sudo systemctl restart nginx</p>
-<p># Recharger la configuration sans arrêter le service</p>
-<p>sudo systemctl reload nginx</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Démarrer un service
+sudo systemctl start nginx
+
+# Arrêter un service
+sudo systemctl stop nginx
+
+# Redémarrer un service (arrêt + démarrage)
+sudo systemctl restart nginx
+
+# Recharger la configuration sans arrêter le service
+sudo systemctl reload nginx</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Activer ou désactiver un service</h3>
-<p><div class="code-block"><div class="code-line"><code># Activer un service au démarrage (démarrage automatique)</p>
-<p>sudo systemctl enable nginx</p>
-<p># Désactiver un service au démarrage</p>
-<p>sudo systemctl disable nginx</p>
-<p># Activer et démarrer immédiatement</p>
-<p>sudo systemctl enable --now nginx</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Activer un service au démarrage (démarrage automatique)
+sudo systemctl enable nginx
+
+# Désactiver un service au démarrage
+sudo systemctl disable nginx
+
+# Activer et démarrer immédiatement
+sudo systemctl enable --now nginx</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Lister les services</h3>
-<p><div class="code-block"><div class="code-line"><code># Lister tous les services actifs</p>
-<p>systemctl list-units --type=service</p>
-<p># Lister tous les services (actifs et inactifs)</p>
-<p>systemctl list-units --type=service --all</p>
-<p># Lister les services qui ont échoué</p>
-<p>systemctl --failed --type=service</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister tous les services actifs
+systemctl list-units --type=service
+
+# Lister tous les services (actifs et inactifs)
+systemctl list-units --type=service --all
+
+# Lister les services qui ont échoué
+systemctl --failed --type=service</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Voir les journaux d'un service</h3>
-<p><div class="code-block"><div class="code-line"><code># Voir les journaux d'un service (logs)</p>
-<p>sudo journalctl -u nginx</p>
-<p># Suivre les journaux en temps réel</p>
-<p>sudo journalctl -u nginx -f</p>
-<p># Voir les journaux depuis le dernier démarrage</p>
-<p>sudo journalctl -u nginx --since today</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir les journaux d'un service (logs)
+sudo journalctl -u nginx
+
+# Suivre les journaux en temps réel
+sudo journalctl -u nginx -f
+
+# Voir les journaux depuis le dernier démarrage
+sudo journalctl -u nginx --since today</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h2>Exemples pratiques</h2>
 <h3>Exemple 1 : Gestion du service SSH</h3>
-<p><div class="code-block"><div class="code-line"><code># Vérifier le statut de SSH</p>
-<p>sudo systemctl status ssh</p>
-<p># Démarrer SSH</p>
-<p>sudo systemctl start ssh</p>
-<p># Activer SSH au démarrage</p>
-<p>sudo systemctl enable ssh</p>
-<p># Voir les journaux SSH</p>
-<p>sudo journalctl -u ssh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Vérifier le statut de SSH
+sudo systemctl status ssh
+
+# Démarrer SSH
+sudo systemctl start ssh
+
+# Activer SSH au démarrage
+sudo systemctl enable ssh
+
+# Voir les journaux SSH
+sudo journalctl -u ssh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple 2 : Gestion du service Cron</h3>
-<p><div class="code-block"><div class="code-line"><code># Statut de cron</p>
-<p>sudo systemctl status cron</p>
-<p># Redémarrer cron pour prendre en compte les changements</p>
-<p>sudo systemctl restart cron</p>
-<p># Vérifier si cron est actif</p>
-<p>systemctl is-active cron</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Statut de cron
+sudo systemctl status cron
+
+# Redémarrer cron pour prendre en compte les changements
+sudo systemctl restart cron
+
+# Vérifier si cron est actif
+systemctl is-active cron</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple 3 : Analyser pourquoi un service ne démarre pas</h3>
-<p><div class="code-block"><div class="code-line"><code># Voir le statut détaillé</p>
-<p>sudo systemctl status nginx</p>
-<p># Voir les dernières lignes de journal</p>
-<p>sudo journalctl -xe -u nginx</p>
-<p># Voir la configuration du service</p>
-<p>sudo systemctl cat nginx</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir le statut détaillé
+sudo systemctl status nginx
+
+# Voir les dernières lignes de journal
+sudo journalctl -xe -u nginx
+
+# Voir la configuration du service
+sudo systemctl cat nginx</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h2>Exercice pratique</h2>
 <p>1. **Vérifier le statut de votre service cron** :</p>
-<p>   <div class="code-block"><div class="code-line"><code>systemctl status cron</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>systemctl status cron</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>2. **Activer le service cron au démarrage** :</p>
-<p>   <div class="code-block"><div class="code-line"><code>sudo systemctl enable cron</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo systemctl enable cron</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>3. **Créer un script de test** dans <code>/tmp/test_service.sh</code> :</p>
-<p>   <div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p>   echo "Mon script de test" &gt;&gt; /tmp/test.log</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+   echo "Mon script de test" &gt;&gt; /tmp/test.log</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>4. **Créer un service systemd** dans <code>/etc/systemd/system/test.service</code> :</p>
-<p>   <div class="code-block"><div class="code-line"><code>[Unit]</p>
-<p>   Description=Mon service de test</p>
-<p>   [Service]</p>
-<p>   Type=oneshot</p>
-<p>   ExecStart=/tmp/test_service.sh</p>
-<p>   [Install]</p>
-<p>   WantedBy=multi-user.target</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>[Unit]
+   Description=Mon service de test
+
+   [Service]
+   Type=oneshot
+   ExecStart=/tmp/test_service.sh
+
+   [Install]
+   WantedBy=multi-user.target</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>5. **Tester le service** :</p>
-<p>   <div class="code-block"><div class="code-line"><code>sudo systemctl daemon-reload</p>
-<p>   sudo systemctl start test</p>
-<p>   cat /tmp/test.log</p>
-<p>   sudo systemctl enable test</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo systemctl daemon-reload
+   sudo systemctl start test
+   cat /tmp/test.log
+   sudo systemctl enable test</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h2>Résumé</h2>
 <ul>
 <li>**systemd** est le gestionnaire de services standard sous Linux</li>
@@ -209,4 +346,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="20-securite-base.html">&larr; 20-securite-base</a>
 <a href="22-conteneurs-docker.html">22-conteneurs-docker &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

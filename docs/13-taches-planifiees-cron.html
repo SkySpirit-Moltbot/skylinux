@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -47,23 +60,37 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>Chaque utilisateur a son propre fichier **crontab** contenant les tâches planifiées.</p>
 <hr/>
 <h2>2. Commandes de base</h2>
-<p><div class="code-block"><div class="code-line"><code>crontab -l                # Lister les tâches</p>
-<p>crontab -e                # Éditer les tâches</p>
-<p>crontab -r                # Supprimer toutes les tâches</p>
-<p>crontab -i                # Confirmation avant suppression</p>
-<p>crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>crontab -l                # Lister les tâches
+crontab -e                # Éditer les tâches
+crontab -r                # Supprimer toutes les tâches
+crontab -i                # Confirmation avant suppression
+crontab -u utilisateur -l # Voir les tâches d'un autre utilisateur (root)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. Format d'une tâche Cron</h2>
-<p><div class="code-block"><div class="code-line"><code>┌───────────── Minute (0 - 59)</p>
-<p>│ ┌───────────── Heure (0 - 23)</p>
-<p>│ │ ┌───────────── Jour du mois (1 - 31)</p>
-<p>│ │ │ ┌───────────── Mois (1 - 12)</p>
-<p>│ │ │ │ ┌───────────── Jour de la semaine (0 - 7)</p>
-<p>│ │ │ │ │             (0 et 7 = dimanche)</p>
-<p>│ │ │ │ │</p>
-<ul>
-<li>* * * * commande à exécuter</code></div></div></li>
-</ul>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>┌───────────── Minute (0 - 59)
+│ ┌───────────── Heure (0 - 23)
+│ │ ┌───────────── Jour du mois (1 - 31)
+│ │ │ ┌───────────── Mois (1 - 12)
+│ │ │ │ ┌───────────── Jour de la semaine (0 - 7)
+│ │ │ │ │             (0 et 7 = dimanche)
+│ │ │ │ │
+* * * * * commande à exécuter</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Symboles spéciaux</h3>
 <table>
 <tr><th>Symbole</th><th>Signification</th></tr>
@@ -88,45 +115,101 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td><code>30 4 1,15 * *</code></td><td>1er et 15 du mois à 4h30</td></tr>
 </table>
 <h3>Exemples concrets</h3>
-<p><div class="code-block"><div class="code-line"><code># Sauvegarde quotidienne à 18h</p>
-<p>0 18 * * * rsync -av ~/Documents/ /media/backup/</p>
-<p># Nettoyage des fichiers temporaires chaque semaine</p>
-<p>0 3 * * 0 find /tmp -type f -mtime +7 -delete</p>
-<p># Surveillance du disque chaque matin à 7h</p>
-<p>0 7 * * * df -h &gt;&gt; ~/disk_usage.log</p>
-<p># Redémarrer un service chaque nuit</p>
-<p>0 4 * * * sudo systemctl restart nginx</p>
-<p># Script Python chaque heure</p>
-<p>0 * * * * /usr/bin/python3 /home/user/script.py</p>
-<p># Vérification DNS chaque jour à 8h</p>
-<p>0 8 * * * ping -c 1 google.com || echo "Pas de réseau" | mail -s "Alerte" user@email.com</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sauvegarde quotidienne à 18h
+0 18 * * * rsync -av ~/Documents/ /media/backup/
+
+# Nettoyage des fichiers temporaires chaque semaine
+0 3 * * 0 find /tmp -type f -mtime +7 -delete
+
+# Surveillance du disque chaque matin à 7h
+0 7 * * * df -h &gt;&gt; ~/disk_usage.log
+
+# Redémarrer un service chaque nuit
+0 4 * * * sudo systemctl restart nginx
+
+# Script Python chaque heure
+0 * * * * /usr/bin/python3 /home/user/script.py
+
+# Vérification DNS chaque jour à 8h
+0 8 * * * ping -c 1 google.com || echo "Pas de réseau" | mail -s "Alerte" user@email.com</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Variables d'environnement dans Cron</h2>
 <h3>Problème courant</h3>
 <p>Cron utilise un **environnement minimal**. Tes variables ($PATH, $HOME) peuvent ne pas fonctionner.</p>
 <h3>Solution</h3>
-<p><div class="code-block"><div class="code-line"><code># Définir les variables dans la crontab</p>
-<p>SHELL=/bin/bash</p>
-<p>PATH=/usr/local/bin:/usr/bin:/bin</p>
-<p>HOME=/home/utilisateur</p>
-<p># Ensuite les tâches...</p>
-<p>0 9 * * * /home/utilisateur/scripts/backup.sh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Définir les variables dans la crontab
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+HOME=/home/utilisateur
+
+# Ensuite les tâches...
+0 9 * * * /home/utilisateur/scripts/backup.sh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Rediriger la sortie</h3>
-<p><div class="code-block"><div class="code-line"><code># Ignorer la sortie</p>
-<p>0 9 * * * /script.sh &gt; /dev/null 2&gt;&amp;1</p>
-<p># Envoyer vers un log</p>
-<p>0 9 * * * /script.sh &gt;&gt; /var/log/scripts.log 2&gt;&amp;1</p>
-<p># Envoyer par email (si configuré)</p>
-<p>MAILTO="user@example.com"</p>
-<p>0 9 * * * /script.sh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ignorer la sortie
+0 9 * * * /script.sh &gt; /dev/null 2&gt;&amp;1
+
+# Envoyer vers un log
+0 9 * * * /script.sh &gt;&gt; /var/log/scripts.log 2&gt;&amp;1
+
+# Envoyer par email (si configuré)
+MAILTO="user@example.com"
+0 9 * * * /script.sh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Système Cron</h2>
 <h3>Cron système (/etc/crontab)</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/crontab</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo nano /etc/crontab</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Format légèrement différent :</p>
-<p><div class="code-block"><div class="code-line"><code>minute hour day month weekday user command</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>minute hour day month weekday user command</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Exemple :</p>
-<p><div class="code-block"><div class="code-line"><code>0 3 * * * root /usr/bin/backup.sh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>0 3 * * * root /usr/bin/backup.sh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Répertoires spéciaux</h3>
 <table>
 <tr><th>Répertoire</th><th>Fréquence</th></tr>
@@ -139,39 +222,81 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>7. Commandes at (tâches uniques)</h2>
 <p>Pour une exécution unique, utilise <code>at</code> :</p>
-<p><div class="code-block"><div class="code-line"><code># Planifier une tâche pour demain à 10h</p>
-<p>echo "/script.sh" | at 10:00 tomorrow</p>
-<p># Planifier pour dans 2 heures</p>
-<p>echo "/script.sh" | at now +2 hours</p>
-<p># Lister les tâches</p>
-<p>atq</p>
-<p># Supprimer une tâche</p>
-<p>atrm 1</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Planifier une tâche pour demain à 10h
+echo "/script.sh" | at 10:00 tomorrow
+
+# Planifier pour dans 2 heures
+echo "/script.sh" | at now +2 hours
+
+# Lister les tâches
+atq
+
+# Supprimer une tâche
+atrm 1</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. anacron - pour ordinateurs non allumés</h2>
 <p><code>anacron</code> exécute les tâches qui ont raté car l'ordinateur était éteint.</p>
-<p><div class="code-block"><div class="code-line"><code># Installer</p>
-<p>sudo apt install anacron</p>
-<p># Fichier de config</p>
-<p>sudo nano /etc/anacrontab</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer
+sudo apt install anacron
+
+# Fichier de config
+sudo nano /etc/anacrontab</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Test basique</h3>
-<p><div class="code-block"><div class="code-line"><code>crontab -e</p>
-<p># Ajouter:</p>
-<ul>
-<li>* * * * echo "$(date)" &gt;&gt; ~/cron_test.txt</li>
-</ul>
-<p># Attendre 1 minute, vérifier:</p>
-<p>cat ~/cron_test.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>crontab -e
+# Ajouter:
+* * * * * echo "$(date)" &gt;&gt; ~/cron_test.txt
+# Attendre 1 minute, vérifier:
+cat ~/cron_test.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exercice 2 : Backup automatique</h3>
-<p><div class="code-block"><div class="code-line"><code>crontab -e</p>
-<p># Ajouter (chaque jour à 20h):</p>
-<p>0 20 * * * rsync -avz ~/Documents/ /media/backup/ &gt;&gt; ~/backup.log 2&gt;&amp;1</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>crontab -e
+# Ajouter (chaque jour à 20h):
+0 20 * * * rsync -avz ~/Documents/ /media/backup/ &gt;&gt; ~/backup.log 2&gt;&amp;1</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exercice 3 : Nettoyage automatique</h3>
-<p><div class="code-block"><div class="code-line"><code>crontab -e</p>
-<p># Chaque dimanche à 3h:</p>
-<p>0 3 * * 0 find ~/.cache -type f -mtime +30 -delete</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>crontab -e
+# Chaque dimanche à 3h:
+0 3 * * 0 find ~/.cache -type f -mtime +30 -delete</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>10. Tableau résumé</h2>
 <table>
@@ -235,4 +360,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="12-ssh-connexion-distante.html">&larr; 12-ssh-connexion-distante</a>
 <a href="14-gestion-utilisateurs-groupes.html">14-gestion-utilisateurs-groupes &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

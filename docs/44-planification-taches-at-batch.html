@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -36,19 +49,51 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>1. Préparer le terrain</h2>
 <h3>Installer at</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo apt update</p>
-<p>sudo apt install at -y</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update
+sudo apt install at -y</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Démarrer le service</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo systemctl enable atd</p>
-<p>sudo systemctl start atd</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo systemctl enable atd
+sudo systemctl start atd</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Vérifier que ça fonctionne</h3>
-<p><div class="code-block"><div class="code-line"><code>at -V</p>
-<p># at version 3.2.4</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at -V
+# at version 3.2.4</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>2. La commande <code>at</code></h2>
 <p><code>at</code> planifie une commande pour qu'elle s'exécute **une seule fois**, à l'heure que tu indiques.</p>
 <h3>Syntaxe de base</h3>
-<p><div class="code-block"><div class="code-line"><code>at &lt;heure&gt; [jour mois [année]]</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at &lt;heure&gt; [jour mois [année]]</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Formats d'heure courants</h3>
 <table>
 <tr><th>Format</th><th>Exemple</th><th>Signification</th></tr>
@@ -66,82 +111,215 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>3. Utiliser <code>at</code> pas à pas</h2>
 <h3>Exemple 1 : Exécution dans 2 minutes</h3>
-<p><div class="code-block"><div class="code-line"><code>at now + 2 minutes</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at now + 2 minutes</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Tu verras un prompt <code>at></code> — tape ta commande puis <code>Ctrl+D</code> :</p>
-<p><div class="code-block"><div class="code-line"><code>at&gt; echo "La tâche a exécuté $(date)" &gt;&gt; ~/test_at.log</p>
-<p>at&gt; &lt;EOT&gt;</p>
-<p>job 1 at Mon Apr  6 08:15:00 2026</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at&gt; echo "La tâche a exécuté $(date)" &gt;&gt; ~/test_at.log
+at&gt; &lt;EOT&gt;
+job 1 at Mon Apr  6 08:15:00 2026</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple 2 : À une heure précise</h3>
-<p><div class="code-block"><div class="code-line"><code>at 17:30</code></div></div></p>
-<p><div class="code-block"><div class="code-line"><code>at&gt; echo "C'est l'heure !" | tee ~/alerte_17h30.txt</p>
-<p>at&gt; &lt;EOT&gt;</p>
-<p>job 2 at Mon Apr  6 17:30:00 2026</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at 17:30</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at&gt; echo "C'est l'heure !" | tee ~/alerte_17h30.txt
+at&gt; &lt;EOT&gt;
+job 2 at Mon Apr  6 17:30:00 2026</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple 3 : Demain à 9h</h3>
-<p><div class="code-block"><div class="code-line"><code>at 9am tomorrow</code></div></div></p>
-<p><div class="code-block"><div class="code-line"><code>at&gt; /home/utilisateur/scripts/backup_rapide.sh</p>
-<p>at&gt; &lt;EOT&gt;</p>
-<p>job 3 at Tue Apr  7 09:00:00 2026</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at 9am tomorrow</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at&gt; /home/utilisateur/scripts/backup_rapide.sh
+at&gt; &lt;EOT&gt;
+job 3 at Tue Apr  7 09:00:00 2026</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple 4 : Avec un script complet</h3>
-<p><div class="code-block"><div class="code-line"><code>at 20:00 &lt;&lt;EOF</p>
-<p>tar -czf /backup/home_$(date +%Y%m%d).tar.gz /home/utilisateur/</p>
-<p>echo "Sauvegarde terminée" | mail -s "Backup" utilisateur@email.com</p>
-<p>EOF</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at 20:00 &lt;&lt;EOF
+tar -czf /backup/home_$(date +%Y%m%d).tar.gz /home/utilisateur/
+echo "Sauvegarde terminée" | mail -s "Backup" utilisateur@email.com
+EOF</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>4. Syntaxe alternative par tube</h2>
 <p>Planifier sans entrer dans le mode interactif :</p>
-<p><div class="code-block"><div class="code-line"><code># Avec un tube (pipe)</p>
-<p>echo "/home/utilisateur/scripts/rapport.sh" | at 10am tomorrow</p>
-<p># Avec un here-doc via fichier</p>
-<p>cat &lt;&lt; 'CMDS' | at now + 1 hour</p>
-<p>mkdir -p ~/archives/$(date +%Y%m%d)</p>
-<p>cp ~/Documents/*.pdf ~/archives/$(date +%Y%m%d)/</p>
-<p>CMDS</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Avec un tube (pipe)
+echo "/home/utilisateur/scripts/rapport.sh" | at 10am tomorrow
+
+# Avec un here-doc via fichier
+cat &lt;&lt; 'CMDS' | at now + 1 hour
+mkdir -p ~/archives/$(date +%Y%m%d)
+cp ~/Documents/*.pdf ~/archives/$(date +%Y%m%d)/
+CMDS</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. <code>batch</code> — exécution quand le système est calme</h2>
 <p><code>batch</code> lance ta commande quand la **charge moyenne** du système descend sous 1.5 (par défaut). C'est idéal pour les tâches lourdes qu'on veut faire tourner aux heures creuses.</p>
-<p><div class="code-block"><div class="code-line"><code>batch</code></div></div></p>
-<p><div class="code-block"><div class="code-line"><code>at&gt; tar -czf /backup/plein_backup.tar.gz /home/</p>
-<p>at&gt; &lt;EOT&gt;</p>
-<p>job 5 at Mon Apr  6 08:20:00 2026</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>batch</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>at&gt; tar -czf /backup/plein_backup.tar.gz /home/
+at&gt; &lt;EOT&gt;
+job 5 at Mon Apr  6 08:20:00 2026</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Latâches s'exécutera dès que la charge le permet.</p>
 <h3>Changer le seuil de charge</h3>
-<p><div class="code-block"><div class="code-line"><code># Lancer quand la charge est sous 0.8</p>
-<p>echo "script_lourd.sh" | at -q b -b 0.8</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lancer quand la charge est sous 0.8
+echo "script_lourd.sh" | at -q b -b 0.8</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Files de priorité (queues)</h3>
 <p><code>at</code> utilise des files (queues) désignées par une lettre :</p>
 <table>
 <tr><th>Queue</th><th>Nice value</th><th>Usage</th></tr>
 <tr><td><code>a</code> à <code>z</code></td><td>-20 à +19</td><td>File <code>a</code> = très prioritaire, <code>z</code> = très patient</td></tr>
 </table>
-<p><div class="code-block"><div class="code-line"><code># Queue b (normal)</p>
-<p>at -q b 10pm tomorrow</p>
-<p># Queue c (patient)</p>
-<p>at -q c 2am</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Queue b (normal)
+at -q b 10pm tomorrow
+
+# Queue c (patient)
+at -q c 2am</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Gérer les tâches planifiées</h2>
 <h3>Lister les tâches en attente</h3>
-<p><div class="code-block"><div class="code-line"><code>atq</p>
-<p># 3   Mon Apr  7 09:00:00 2026 a utilisateur</p>
-<p># 5   Mon Apr  6 08:20:00 2026 a root</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>atq
+# 3   Mon Apr  7 09:00:00 2026 a utilisateur
+# 5   Mon Apr  6 08:20:00 2026 a root</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>La premièr colonne est le **numéro de job**.</p>
 <h3>Supprimer une tâche</h3>
-<p><div class="code-block"><div class="code-line"><code># Par numéro de job</p>
-<p>atrm 3</p>
-<p># Supprimer plusieurs</p>
-<p>atrm 2 5</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Par numéro de job
+atrm 3
+
+# Supprimer plusieurs
+atrm 2 5</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Alternative avec <code>atq</code> + <code>atrm</code></h3>
-<p><div class="code-block"><div class="code-line"><code># Supprimer le job 7</p>
-<p>atrm 7</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Supprimer le job 7
+atrm 7</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7. La commande <code>at</code> avec les permissions</h2>
 <h3>Qui peut utiliser <code>at</code> ?</h3>
 <p>Par défaut, tout le monde. Pourlimiteser :</p>
-<p><div class="code-block"><div class="code-line"><code># Lister les fichiers de contrôle</p>
-<p>ls /etc/at*</p>
-<p># Autoriser un utilisateur</p>
-<p>sudo echo "utilisateur" &gt; /etc/at.allow</p>
-<p># Interdire un utilisateur</p>
-<p>sudo echo "utilisateur" &gt;&gt; /etc/at.deny</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister les fichiers de contrôle
+ls /etc/at*
+
+# Autoriser un utilisateur
+sudo echo "utilisateur" &gt; /etc/at.allow
+
+# Interdire un utilisateur
+sudo echo "utilisateur" &gt;&gt; /etc/at.deny</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Différences entre <code>at</code> et <code>cron</code></h2>
 <table>
@@ -156,20 +334,46 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h2>9. Exercice pratique</h2>
 <h3>Exercice : Planifier une sauvegarde unique</h3>
 <p>**Objectif :** Créer une sauvegarde de ton répertoire <code>~/Documents</code> à exécuter dans 5 minutes.</p>
-<p><div class="code-block"><div class="code-line"><code># 1. Vérifie que at est installé et le service actif</p>
-<p>sudo systemctl status atd</p>
-<p># 2. Planifie la tâche</p>
-<p>at now + 5 minutes</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Vérifie que at est installé et le service actif
+sudo systemctl status atd
+
+# 2. Planifie la tâche
+at now + 5 minutes</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Dans le prompt <code>at></code>, tape :</p>
-<p><div class="code-block"><div class="code-line"><code>mkdir -p ~/backup_unique</p>
-<p>tar -czf ~/backup_unique/docs_backup_$(date +%H%M).tar.gz ~/Documents/</p>
-<p>echo "Sauvegarde terminée le $(date)" &gt; ~/backup_unique/rapport.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>mkdir -p ~/backup_unique
+tar -czf ~/backup_unique/docs_backup_$(date +%H%M).tar.gz ~/Documents/
+echo "Sauvegarde terminée le $(date)" &gt; ~/backup_unique/rapport.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Puis <code>Ctrl+D</code> pour valider.</p>
-<p><div class="code-block"><div class="code-line"><code># 3. Vérifie que le job est dans la queue</p>
-<p>atq</p>
-<p># 4. Après quelques minutes, vérifie que ça a fonctionné</p>
-<p>ls ~/backup_unique/</p>
-<p>cat ~/backup_unique/rapport.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 3. Vérifie que le job est dans la queue
+atq
+
+# 4. Après quelques minutes, vérifie que ça a fonctionné
+ls ~/backup_unique/
+cat ~/backup_unique/rapport.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Bonus :** Supprime le job avec <code>atrm <numéro></code> AVANT qu'il ne s'exécute, puis reprogramme-le pour demain à 8h avec <code>at 8am tomorrow</code>.</p>
 <hr/>
 <h2>10. Récapitulatif</h2>
@@ -187,4 +391,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="43-ssh-tunnels-port-forwarding.html">&larr; 43-ssh-tunnels-port-forwarding</a>
 <a href="45-priorite-processus-nice-renice.html">45-priorite-processus-nice-renice &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -49,174 +62,388 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>2. Commandes de configuration IP</h2>
 <h3>Voir les adresses IP</h3>
-<p><div class="code-block"><div class="code-line"><code>ip addr                 # Méthode moderne</p>
-<p>ip addr show eth0      # Une interface spécifique</p>
-<p>ip -4 addr             # IPv4 seulement</p>
-<p>ip -6 addr             # IPv6 seulement</p>
-<p># Méthode classique (deprecated mais encore là)</p>
-<p>ifconfig</p>
-<p>ifconfig -a</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ip addr                 # Méthode moderne
+ip addr show eth0      # Une interface spécifique
+ip -4 addr             # IPv4 seulement
+ip -6 addr             # IPv6 seulement
+
+# Méthode classique (deprecated mais encore là)
+ifconfig
+ifconfig -a</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Paramètres d'une interface</h3>
-<p><div class="code-block"><div class="code-line"><code>ip link show           # Liste des interfaces</p>
-<p>ip link set eth0 up   # Activer interface</p>
-<p>ip link set eth0 down # Désactiver</p>
-<p># Ajouter une IP</p>
-<p>ip addr add 192.168.1.100/24 dev eth0</p>
-<p># Supprimer une IP</p>
-<p>ip addr del 192.168.1.100/24 dev eth0</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ip link show           # Liste des interfaces
+ip link set eth0 up   # Activer interface
+ip link set eth0 down # Désactiver
+
+# Ajouter une IP
+ip addr add 192.168.1.100/24 dev eth0
+
+# Supprimer une IP
+ip addr del 192.168.1.100/24 dev eth0</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Table de routage</h3>
-<p><div class="code-block"><div class="code-line"><code>ip route               # Routes actuelles</p>
-<p>ip route show</p>
-<p>ip route add default via 192.168.1.1  # Passerelle par défaut</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ip route               # Routes actuelles
+ip route show
+ip route add default via 192.168.1.1  # Passerelle par défaut</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. Diagnostic réseau</h2>
 <h3>Ping - Tester la connectivité</h3>
-<p><div class="code-block"><div class="code-line"><code>ping google.com              # Ping infini</p>
-<p>ping -c 4 google.com         # 4 pings seulement</p>
-<p>ping -i 0.2 google.com       # Intervalle de 0.2s</p>
-<p>ping -w 5 google.com         # Timeout 5 secondes</p>
-<p># Types de ping</p>
-<p>ping -4 google.com           # IPv4 seulement</p>
-<p>ping -6 google.com           # IPv6 seulement</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ping google.com              # Ping infini
+ping -c 4 google.com         # 4 pings seulement
+ping -i 0.2 google.com       # Intervalle de 0.2s
+ping -w 5 google.com         # Timeout 5 secondes
+
+# Types de ping
+ping -4 google.com           # IPv4 seulement
+ping -6 google.com           # IPv6 seulement</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Traceroute - Chemin jusqu'à la destination</h3>
-<p><div class="code-block"><div class="code-line"><code>traceroute google.com        # Linux (utilise UDP)</p>
-<p>traceroute -I google.com    # ICMP</p>
-<p>traceroute -n google.com    # Sans résolution DNS</p>
-<p>mtr google.com               # Ping + traceroute en temps réel</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>traceroute google.com        # Linux (utilise UDP)
+traceroute -I google.com    # ICMP
+traceroute -n google.com    # Sans résolution DNS
+mtr google.com               # Ping + traceroute en temps réel</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Connexions réseau</h3>
-<p><div class="code-block"><div class="code-line"><code># Commandes modernes (ss)</p>
-<p>ss -tuln                   # TCP/UDP en écoute</p>
-<p>ss -tuln -p                # Avec processus</p>
-<p>ss -tan                    # Toutes connexions TCP</p>
-<p>ss -tnp | grep ESTAB       # Connexions établies</p>
-<p># Commandes classiques (net-tools)</p>
-<p>netstat -tuln              # Ports en écoute</p>
-<p>netstat -rn                # Table de routage</p>
-<p>netstat -i                 # Stats interfaces</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Commandes modernes (ss)
+ss -tuln                   # TCP/UDP en écoute
+ss -tuln -p                # Avec processus
+ss -tan                    # Toutes connexions TCP
+ss -tnp | grep ESTAB       # Connexions établies
+
+# Commandes classiques (net-tools)
+netstat -tuln              # Ports en écoute
+netstat -rn                # Table de routage
+netstat -i                 # Stats interfaces</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>DNS</h3>
-<p><div class="code-block"><div class="code-line"><code># Serveurs DNS utilisés</p>
-<p>cat /etc/resolv.conf</p>
-<p>resolvectl status</p>
-<p># Tester DNS</p>
-<p>nslookup google.com</p>
-<p>dig google.com</p>
-<p>host google.com</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Serveurs DNS utilisés
+cat /etc/resolv.conf
+resolvectl status
+
+# Tester DNS
+nslookup google.com
+dig google.com
+host google.com</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>IP publique</h3>
-<p><div class="code-block"><div class="code-line"><code>curl ifconfig.me</p>
-<p>curl icanhazip.com</p>
-<p>wget -qO- ifconfig.me</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>curl ifconfig.me
+curl icanhazip.com
+wget -qO- ifconfig.me</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>4. Configuration réseau</h2>
 <h3>Fichiers de configuration (Debian/Ubuntu)</h3>
-<p><div class="code-block"><div class="code-line"><code># Configuration interfaces</p>
-<p>sudo nano /etc/network/interfaces</p>
-<p># Configuration DNS</p>
-<p>sudo nano /etc/resolv.conf</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Configuration interfaces
+sudo nano /etc/network/interfaces
+
+# Configuration DNS
+sudo nano /etc/resolv.conf</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple /etc/network/interfaces</h3>
-<p><div class="code-block"><div class="code-line"><code>auto eth0</p>
-<p>iface eth0 inet static</p>
-<p>    address 192.168.1.100</p>
-<p>    netmask 255.255.255.0</p>
-<p>    gateway 192.168.1.1</p>
-<p>    dns-nameservers 8.8.8.8 8.8.4.4</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>auto eth0
+iface eth0 inet static
+    address 192.168.1.100
+    netmask 255.255.255.0
+    gateway 192.168.1.1
+    dns-nameservers 8.8.8.8 8.8.4.4</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Redémarrer le réseau</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo systemctl restart networking</p>
-<p># ou</p>
-<p>sudo /etc/init.d/networking restart</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo systemctl restart networking
+# ou
+sudo /etc/init.d/networking restart</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Le fichier /etc/hosts</h2>
 <p>Le fichier hosts permet de résoudre les noms localement.</p>
-<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/hosts</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo nano /etc/hosts</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Contenu :</p>
-<p><div class="code-block"><div class="code-line"><code>127.0.0.1       localhost</p>
-<p>127.0.1.1       raspberrypi</p>
-<p># Cartes alias</p>
-<p>192.168.1.1     mon-routeur.local</p>
-<p>192.168.1.10    serveur.local</p>
-<p>192.168.1.20    nas.local</p>
-<p># Bloquer un site</p>
-<p>127.0.0.1       facebook.com</p>
-<p>127.0.0.1       www.facebook.com</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>127.0.0.1       localhost
+127.0.1.1       raspberrypi
+
+# Cartes alias
+192.168.1.1     mon-routeur.local
+192.168.1.10    serveur.local
+192.168.1.20    nas.local
+
+# Bloquer un site
+127.0.0.1       facebook.com
+127.0.0.1       www.facebook.com</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. SSH - Connexion à distance</h2>
 <h3>Installer le serveur</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo apt install openssh-server</p>
-<p>sudo systemctl enable ssh</p>
-<p>sudo systemctl start ssh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Se connecter</h3>
-<p><div class="code-block"><div class="code-line"><code>ssh utilisateur@adresse_ip</p>
-<p>ssh -p 2222 utilisateur@ip    # Port personnalisé</p>
-<p>ssh -i ~/.ssh/cle_privee user@ip  # Avec clé SSH</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ssh utilisateur@adresse_ip
+ssh -p 2222 utilisateur@ip    # Port personnalisé
+ssh -i ~/.ssh/cle_privee user@ip  # Avec clé SSH</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Sécurisation SSH</h3>
-<p><div class="code-block"><div class="code-line"><code># Modifier le port (dans /etc/ssh/sshd_config)</p>
-<p>sudo nano /etc/ssh/sshd_config</p>
-<p># Changer "Port 22" en "Port 2222"</p>
-<p># Redémarrer SSH</p>
-<p>sudo systemctl restart ssh</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Modifier le port (dans /etc/ssh/sshd_config)
+sudo nano /etc/ssh/sshd_config
+# Changer "Port 22" en "Port 2222"
+
+# Redémarrer SSH
+sudo systemctl restart ssh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Clés SSH</h3>
-<p><div class="code-block"><div class="code-line"><code># Générer une clé</p>
-<p>ssh-keygen -t ed25519 -C "mon@email.com"</p>
-<p># Copier la clé sur le serveur</p>
-<p>ssh-copy-id utilisateur@serveur</p>
-<p># Ou manuellement</p>
-<p>cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys"</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Générer une clé
+ssh-keygen -t ed25519 -C "mon@email.com"
+
+# Copier la clé sur le serveur
+ssh-copy-id utilisateur@serveur
+
+# Ou manuellement
+cat ~/.ssh/id_ed25519.pub | ssh user@serveur "mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys"</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7. Transfert de fichiers</h2>
 <h3>SCP - Copie sécurisée</h3>
-<p><div class="code-block"><div class="code-line"><code># Copier vers le serveur</p>
-<p>scp fichier.txt user@serveur:/home/user/</p>
-<p>scp -r dossier/ user@serveur:/home/user/</p>
-<p># Copier depuis le serveur</p>
-<p>scp user@serveur:/home/user/fichier.txt ./</p>
-<p># Options utiles</p>
-<p>scp -P 2222 fichier.txt user@serveur:/dossier/  # Port</p>
-<p>scp -v fichier.txt user@serveur:/dossier/       # Verbeux</p>
-<p>scp -C fichier.txt user@serveur:/dossier/       # Compression</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Copier vers le serveur
+scp fichier.txt user@serveur:/home/user/
+scp -r dossier/ user@serveur:/home/user/
+
+# Copier depuis le serveur
+scp user@serveur:/home/user/fichier.txt ./
+
+# Options utiles
+scp -P 2222 fichier.txt user@serveur:/dossier/  # Port
+scp -v fichier.txt user@serveur:/dossier/       # Verbeux
+scp -C fichier.txt user@serveur:/dossier/       # Compression</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>SFTP - Transfert interactif</h3>
-<p><div class="code-block"><div class="code-line"><code>sftp user@serveur</p>
-<p># Commandes: ls, cd, put, get, rm, mkdir, etc.</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sftp user@serveur
+# Commandes: ls, cd, put, get, rm, mkdir, etc.</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>RSYNC - Synchronisation</h3>
-<p><div class="code-block"><div class="code-line"><code># Synchroniser un dossier</p>
-<p>rsync -av dossier/ user@serveur:/home/user/backup/</p>
-<p># Synchronisation avec compression et suppression</p>
-<p>rsync -avz --delete dossier/ user@serveur:/home/user/backup/</p>
-<p># Exclure des fichiers</p>
-<p>rsync -av --exclude='*.log' dossier/ user@serveur:/backup/</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Synchroniser un dossier
+rsync -av dossier/ user@serveur:/home/user/backup/
+
+# Synchronisation avec compression et suppression
+rsync -avz --delete dossier/ user@serveur:/home/user/backup/
+
+# Exclure des fichiers
+rsync -av --exclude='*.log' dossier/ user@serveur:/backup/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Commandes firewall (UFW)</h2>
 <h3>UFW (Uncomplicated Firewall)</h3>
-<p><div class="code-block"><div class="code-line"><code># Activer</p>
-<p>sudo ufw enable</p>
-<p># Désactiver</p>
-<p>sudo ufw disable</p>
-<p># Statut</p>
-<p>sudo ufw status</p>
-<p># Autoriser SSH</p>
-<p>sudo ufw allow ssh</p>
-<p>sudo ufw allow 22/tcp</p>
-<p># Autoriser un port</p>
-<p>sudo ufw allow 80/tcp    # HTTP</p>
-<p>sudo ufw allow 443/tcp   # HTTPS</p>
-<p>sudo ufw allow 8080/tcp</p>
-<p># Bloquer</p>
-<p>sudo ufw deny 80/tcp</p>
-<p># Supprimer une règle</p>
-<p>sudo ufw delete allow 80/tcp</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Activer
+sudo ufw enable
+
+# Désactiver
+sudo ufw disable
+
+# Statut
+sudo ufw status
+
+# Autoriser SSH
+sudo ufw allow ssh
+sudo ufw allow 22/tcp
+
+# Autoriser un port
+sudo ufw allow 80/tcp    # HTTP
+sudo ufw allow 443/tcp   # HTTPS
+sudo ufw allow 8080/tcp
+
+# Bloquer
+sudo ufw deny 80/tcp
+
+# Supprimer une règle
+sudo ufw delete allow 80/tcp</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>9. Exercices pratiques</h2>
 <h3>Exercice 1 : Vérifier la connectivité</h3>
-<p><div class="code-block"><div class="code-line"><code>ip addr</p>
-<p>ping -c 3 8.8.8.8</p>
-<p>traceroute google.com</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ip addr
+ping -c 3 8.8.8.8
+traceroute google.com</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exercice 2 : Configurer une IP statique</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/network/interfaces</p>
-<p># Ajouter la configuration statique</p>
-<p>sudo systemctl restart networking</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo nano /etc/network/interfaces
+# Ajouter la configuration statique
+sudo systemctl restart networking</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exercice 3 : Transférer un fichier</h3>
-<p><div class="code-block"><div class="code-line"><code># Créer un fichier test</p>
-<p>echo "Test" &gt; test.txt</p>
-<p># Le copier sur le serveur</p>
-<p>scp test.txt user@serveur:/tmp/</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un fichier test
+echo "Test" &gt; test.txt
+# Le copier sur le serveur
+scp test.txt user@serveur:/tmp/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>10. Tableau résumé</h2>
 <table>
@@ -237,4 +464,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="05-installation-logiciels.html">&larr; 05-installation-logiciels</a>
 <a href="07-gestion-fichiers.html">07-gestion-fichiers &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

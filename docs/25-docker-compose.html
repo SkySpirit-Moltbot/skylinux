@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -36,16 +49,41 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>Docker Compose est un outil qui permet de définir et gérer des applications multi-containers. Au lieu de lancer chaque container séparément avec des commandes longues, vousdescriptionez toute votre stack dans un fichier YAML et vous lancez tout avec une seule commande.</p>
 <h2>Installation de Docker Compose</h2>
 <h3>Via apt (Debian/Ubuntu)</h3>
-<p><div class="code-block"><div class="code-line"><code># Installation</p>
-<p>sudo apt update</p>
-<p>sudo apt install docker-compose</p>
-<p># Vérifier la version</p>
-<p>docker-compose --version</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installation
+sudo apt update
+sudo apt install docker-compose
+
+# Vérifier la version
+docker-compose --version</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Via Python pip</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo pip install docker-compose</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo pip install docker-compose</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Utiliser Docker Compose v2 (recommandé)</h3>
-<p><div class="code-block"><div class="code-line"><code># Docker Compose est maintenant un plugin</p>
-<p>docker compose version</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Docker Compose est maintenant un plugin
+docker compose version</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h2>Le fichier docker-compose.yml</h2>
 <h3>Structure de base</h3>
 <p>```yaml</p>
@@ -70,7 +108,16 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>    driver: bridge</p>
 <p>volumes:</p>
 <p>  mon_volume:</p>
-<p><div class="code-block"><div class="code-line"><code>### Exemple : Stack web simple</code></div></div>yaml</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Exemple : Stack web simple</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>version: '3.8'</p>
 <p>services:</p>
 <p>  web:</p>
@@ -97,8 +144,18 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>    restart: always</p>
 <p>volumes:</p>
 <p>  postgres_data:</p>
-<p><div class="code-block"><div class="code-line"><code>## Commandes de base</p>
-<h3>Lancer et arrêter</code></div></div>bash</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>## Commandes de base
+
+### Lancer et arrêter</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Lancer tous les services</p>
 <p>docker-compose up -d</p>
 <p># Lancer avec reconstruction</p>
@@ -109,7 +166,16 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>docker-compose down -v</p>
 <p># Arrêter et supprimer les images</p>
 <p>docker-compose down --rmi local</p>
-<p><div class="code-block"><div class="code-line"><code>### Gestion des services</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Gestion des services</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Voir le statut</p>
 <p>docker-compose ps</p>
 <p># Voir les logs</p>
@@ -121,7 +187,16 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>docker-compose exec db psql -U user -d madb</p>
 <p># Voir les processus</p>
 <p>docker-compose top</p>
-<p><div class="code-block"><div class="code-line"><code>### Manipulation des services</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Manipulation des services</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Redémarrer un service</p>
 <p>docker-compose restart app</p>
 <p># Recréer un service</p>
@@ -131,14 +206,33 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p># Pause / Unpause</p>
 <p>docker-compose pause</p>
 <p>docker-compose unpause</p>
-<p><div class="code-block"><div class="code-line"><code>## Variables d'environnement</p>
-<h3>Fichier .env</h3>
-<p>Créez un fichier <code>.env</code> à la racine du projet :</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>## Variables d'environnement
+
+### Fichier .env
+
+Créez un fichier `.env` à la racine du projet :</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>POSTGRES_USER=monuser</p>
 <p>POSTGRES_PASSWORD=monpassword</p>
 <p>POSTGRES_DB=mabasededonnees</p>
 <p>NGINX_PORT=8080</p>
-<p><div class="code-block"><div class="code-line"><code>### Utilisation dans docker-compose.yml</code></div></div>yaml</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Utilisation dans docker-compose.yml</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>services:</p>
 <p>  db:</p>
 <p>    image: postgres:15-alpine</p>
@@ -150,7 +244,16 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>    image: nginx:alpine</p>
 <p>    ports:</p>
 <p>      - "${NGINX_PORT}:80"</p>
-<p><div class="code-block"><div class="code-line"><code>### Variables d'environnement supplémentaires</code></div></div>yaml</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Variables d'environnement supplémentaires</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>services:</p>
 <p>  app:</p>
 <p>    environment:</p>
@@ -158,8 +261,18 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>      - DEBUG=false</p>
 <p>    env_file:</p>
 <p>      - ./variables.env</p>
-<p><div class="code-block"><div class="code-line"><code>## Networks et Volumes nommés</p>
-<h3>Networks personnalisés</code></div></div>yaml</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>## Networks et Volumes nommés
+
+### Networks personnalisés</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>version: '3.8'</p>
 <p>services:</p>
 <p>  frontend:</p>
@@ -181,7 +294,16 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>  backend_network:</p>
 <p>    driver: bridge</p>
 <p>    internal: true  # Pas d'accès internet</p>
-<p><div class="code-block"><div class="code-line"><code>### Volumes nommés</code></div></div>yaml</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Volumes nommés</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>version: '3.8'</p>
 <p>services:</p>
 <p>  db:</p>
@@ -195,15 +317,34 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>volumes:</p>
 <p>  postgres_data:</p>
 <p>  redis_data:</p>
-<p><div class="code-block"><div class="code-line"><code>### Bind mounts (chemins locaux)</code></div></div>yaml</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Bind mounts (chemins locaux)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>services:</p>
 <p>  web:</p>
 <p>    image: nginx:alpine</p>
 <p>    volumes:</p>
 <p>      - ./html:/usr/share/nginx/html:ro</p>
 <p>      - ./nginx.conf:/etc/nginx/nginx.conf:ro</p>
-<p><div class="code-block"><div class="code-line"><code>## Healthchecks et dépendances</p>
-<h3>Healthcheck</code></div></div>yaml</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>## Healthchecks et dépendances
+
+### Healthcheck</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>services:</p>
 <p>  db:</p>
 <p>    image: postgres:15-alpine</p>
@@ -217,15 +358,34 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>    depends_on:</p>
 <p>      db:</p>
 <p>        condition: service_healthy</p>
-<p><div class="code-block"><div class="code-line"><code>### Dépendances simples</code></div></div>yaml</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Dépendances simples</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>services:</p>
 <p>  app:</p>
 <p>    depends_on:</p>
 <p>      - db</p>
 <p>      - redis</p>
 <p>    # db et redis démarreront avant app</p>
-<p><div class="code-block"><div class="code-line"><code>## Commandes avancées</p>
-<h3>Build personnalisé</code></div></div>yaml</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>## Commandes avancées
+
+### Build personnalisé</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>services:</p>
 <p>  app:</p>
 <p>    build:</p>
@@ -233,20 +393,56 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>      dockerfile: Dockerfile.prod</p>
 <p>      args:</p>
 <p>        - BUILD_VERSION=1.0</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>docker-compose build</p>
 <p>docker-compose build --no-cache</p>
-<p><div class="code-block"><div class="code-line"><code>### Override de configuration</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Override de configuration</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Utiliser un fichier spécifique</p>
 <p>docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d</p>
 <p># Fichier de développement</p>
 <p>docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d</p>
-<p><div class="code-block"><div class="code-line"><code>### Mode interactif</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Mode interactif</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Lancer sans detached mode</p>
 <p>docker-compose up</p>
 <p># Avec logs en temps réel</p>
 <p>docker-compose up --remove-orphans</p>
-<p><div class="code-block"><div class="code-line"><code>## Exemple : Stack complète</code></div></div>yaml</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>## Exemple : Stack complète</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>yaml</p>
 <p>version: '3.8'</p>
 <p>services:</p>
 <p>  reverse_proxy:</p>
@@ -328,4 +524,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="24-reseaux-avances.html">&larr; 24-reseaux-avances</a>
 <a href="26-liens-symboliques-durs.html">26-liens-symboliques-durs &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

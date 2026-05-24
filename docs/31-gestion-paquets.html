@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -55,105 +68,236 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h2>2. APT (Debian/Ubuntu)</h2>
 <p>APT (*Advanced Package Tool*) est le système de paquets le plus utilisé sur Linux.</p>
 <h3>Mettre à jour la liste des paquets</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo apt update</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Cette commande ne installe rien, elle met à jour la liste des paquets disponibles depuis les dépôts.</p>
 <h3>Mettre à jour le système</h3>
-<p><div class="code-block"><div class="code-line"><code># Mettre à jour tous les paquets</p>
-<p>sudo apt upgrade</p>
-<p># Mettre à jour en installant aussi de nouveaux paquets si nécessaire</p>
-<p>sudo apt full-upgrade</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Mettre à jour tous les paquets
+sudo apt upgrade
+
+# Mettre à jour en installant aussi de nouveaux paquets si nécessaire
+sudo apt full-upgrade</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Installer un paquet</h3>
-<p><div class="code-block"><div class="code-line"><code># Installer un paquet</p>
-<p>sudo apt install nom_du_paquet</p>
-<p># Installer plusieurs paquets</p>
-<p>sudo apt install paquet1 paquet2 paquet3</p>
-<p># Installer sans demander confirmation</p>
-<p>sudo apt install -y nom_du_paquet</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer un paquet
+sudo apt install nom_du_paquet
+
+# Installer plusieurs paquets
+sudo apt install paquet1 paquet2 paquet3
+
+# Installer sans demander confirmation
+sudo apt install -y nom_du_paquet</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple concret</h3>
-<p><div class="code-block"><div class="code-line"><code># Installer le serveur web Nginx</p>
-<p>sudo apt install nginx</p>
-<p># Installer des outils de développement</p>
-<p>sudo apt install build-essential git curl wget</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer le serveur web Nginx
+sudo apt install nginx
+
+# Installer des outils de développement
+sudo apt install build-essential git curl wget</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Supprimer un paquet</h3>
-<p><div class="code-block"><div class="code-line"><code># Supprimer le paquet mais garder les fichiers de configuration</p>
-<p>sudo apt remove nom_du_paquet</p>
-<p># Supprimer le paquet ET ses fichiers de configuration</p>
-<p>sudo apt purge nom_du_paquet</p>
-<p># Supprimer les paquets devenus inutiles</p>
-<p>sudo apt autoremove</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Supprimer le paquet mais garder les fichiers de configuration
+sudo apt remove nom_du_paquet
+
+# Supprimer le paquet ET ses fichiers de configuration
+sudo apt purge nom_du_paquet
+
+# Supprimer les paquets devenus inutiles
+sudo apt autoremove</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Chercher un paquet</h3>
-<p><div class="code-block"><div class="code-line"><code># Rechercher dans les noms de paquets</p>
-<p>apt search nom_du_paquet</p>
-<p># Afficher les informations d'un paquet</p>
-<p>apt show nom_du_paquet</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Rechercher dans les noms de paquets
+apt search nom_du_paquet
+
+# Afficher les informations d'un paquet
+apt show nom_du_paquet</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Lister les paquets installés</h3>
-<p><div class="code-block"><div class="code-line"><code># Lister tous les paquets installés</p>
-<p>apt list --installed</p>
-<p># Vérifier si un paquet est installé</p>
-<p>dpkg -l | grep nom_du_paquet</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister tous les paquets installés
+apt list --installed
+
+# Vérifier si un paquet est installé
+dpkg -l | grep nom_du_paquet</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. DNF et YUM (Fedora/RHEL)</h2>
 <h3>DNF (Dandified YUM) - Fedora, RHEL 8+</h3>
-<p><div class="code-block"><div class="code-line"><code># Mettre à jour tous les paquets</p>
-<p>sudo dnf update</p>
-<p># Installer un paquet</p>
-<p>sudo dnf install nom_du_paquet</p>
-<p># Supprimer un paquet</p>
-<p>sudo dnf remove nom_du_paquet</p>
-<p># Rechercher un paquet</p>
-<p>dnf search nom_du_paquet</p>
-<p># Lister les mises à jour disponibles</p>
-<p>dnf check-update</p>
-<p># Nettoyer le cache</p>
-<p>dnf clean all</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Mettre à jour tous les paquets
+sudo dnf update
+
+# Installer un paquet
+sudo dnf install nom_du_paquet
+
+# Supprimer un paquet
+sudo dnf remove nom_du_paquet
+
+# Rechercher un paquet
+dnf search nom_du_paquet
+
+# Lister les mises à jour disponibles
+dnf check-update
+
+# Nettoyer le cache
+dnf clean all</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>YUM - Ancien (RHEL 7, CentOS 7)</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo yum update</p>
-<p>sudo yum install nom_du_paquet</p>
-<p>sudo yum remove nom_du_paquet</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo yum update
+sudo yum install nom_du_paquet
+sudo yum remove nom_du_paquet</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>4. Snap</h2>
 <p>**Snap** est un système de paquets universel créé par Canonical. Les applications snp sont isoléées dans des sandbox.</p>
-<p><div class="code-block"><div class="code-line"><code># Installer snapd (si pas déjà installé)</p>
-<p>sudo apt install snapd</p>
-<p># Installer une application snap</p>
-<p>sudo snap install nom_du_paquet</p>
-<p># Lister les snaps installés</p>
-<p>snap list</p>
-<p># Mettre à jour un snap</p>
-<p>sudo snap refresh nom_du_paquet</p>
-<p># Mettre à jour tous les snaps</p>
-<p>sudo snap refresh</p>
-<p># Supprimer un snap</p>
-<p>sudo snap remove nom_du_paquet</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer snapd (si pas déjà installé)
+sudo apt install snapd
+
+# Installer une application snap
+sudo snap install nom_du_paquet
+
+# Lister les snaps installés
+snap list
+
+# Mettre à jour un snap
+sudo snap refresh nom_du_paquet
+
+# Mettre à jour tous les snaps
+sudo snap refresh
+
+# Supprimer un snap
+sudo snap remove nom_du_paquet</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemples concrets</h3>
-<p><div class="code-block"><div class="code-line"><code># Installer VS Code</p>
-<p>sudo snap install code --classic</p>
-<p># Installer Spotify</p>
-<p>sudo snap install spotify</p>
-<p># Installer Firefox</p>
-<p>sudo snap install firefox</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer VS Code
+sudo snap install code --classic
+
+# Installer Spotify
+sudo snap install spotify
+
+# Installer Firefox
+sudo snap install firefox</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Flatpak</h2>
 <p>**Flatpak** est un autre système de paquets universel, très utilisé sur Linux.</p>
-<p><div class="code-block"><div class="code-line"><code># Installer flatpak (si pas déjà installé)</p>
-<p>sudo apt install flatpak</p>
-<p># Ajouter le dépôt Flathub</p>
-<p>flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo</p>
-<p># Installer une application</p>
-<p>flatpak install flathub nom.de.lapplication</p>
-<p># Lister les applications installées</p>
-<p>flatpak list</p>
-<p># Mettre à jour</p>
-<p>flatpak update</p>
-<p># Supprimer</p>
-<p>flatpak uninstall nom.de.lapplication</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer flatpak (si pas déjà installé)
+sudo apt install flatpak
+
+# Ajouter le dépôt Flathub
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# Installer une application
+flatpak install flathub nom.de.lapplication
+
+# Lister les applications installées
+flatpak list
+
+# Mettre à jour
+flatpak update
+
+# Supprimer
+flatpak uninstall nom.de.lapplication</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemples concrets</h3>
-<p><div class="code-block"><div class="code-line"><code># Installer GIMP (traitement d'image)</p>
-<p>flatpak install flathub org.gimp.GIMP</p>
-<p># Installer VLC</p>
-<p>flatpak install flathub org.videolan.VLC</p>
-<p># Installer LibreOffice</p>
-<p>flatpak install flathub org.libreoffice.LibreOffice</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installer GIMP (traitement d'image)
+flatpak install flathub org.gimp.GIMP
+
+# Installer VLC
+flatpak install flathub org.videolan.VLC
+
+# Installer LibreOffice
+flatpak install flathub org.libreoffice.LibreOffice</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Comparatif des systèmes</h2>
 <table>
@@ -168,45 +312,89 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h2>7. Dépôts de paquets</h2>
 <p>Un **dépôt** (repository) est un serveur qui contient des paquets. Tu peux en ajouter pour avoir plus de logiciels.</p>
 <h3>APT : Ajouter un dépôt</h3>
-<p><div class="code-block"><div class="code-line"><code># Exemple : ajouter le dépôt VS Code sur Ubuntu</p>
-<p>sudo apt install software-properties-common apt-transport-https wget</p>
-<p>wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor &gt; packages.microsoft.gpg</p>
-<p>sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/</p>
-<p>echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list</p>
-<p>sudo apt update</p>
-<p>sudo apt install code</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Exemple : ajouter le dépôt VS Code sur Ubuntu
+sudo apt install software-properties-common apt-transport-https wget
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor &gt; packages.microsoft.gpg
+sudo install -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | sudo tee /etc/apt/sources.list.d/vscode.list
+sudo apt update
+sudo apt install code</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Gérer les dépôts via interface</h3>
-<p><div class="code-block"><div class="code-line"><code># Ubuntu/Debian : interface graphique</p>
-<p>sudo software-properties-gtk</p>
-<p># Fedora : interface graphique</p>
-<p>sudo dnf dragora</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ubuntu/Debian : interface graphique
+sudo software-properties-gtk
+
+# Fedora : interface graphique
+sudo dnf dragora</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Paquets .deb et .rpm manuels</h2>
 <p>Parfois, tu download un fichier <code>.deb</code> ou <code>.rpm</code> directement.</p>
 <h3>Installer un .deb (Debian/Ubuntu)</h3>
-<p><div class="code-block"><div class="code-line"><code># Avec dpkg (gestionnaire de base)</p>
-<p>sudo dpkg -i fichier.deb</p>
-<p># Si des dépendances manquent, les installer</p>
-<p>sudo apt install -f</p>
-<p># Ou avec gdebi (résout les dépendances automatiquement)</p>
-<p>sudo apt install gdebi</p>
-<p>sudo gdebi fichier.deb</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Avec dpkg (gestionnaire de base)
+sudo dpkg -i fichier.deb
+
+# Si des dépendances manquent, les installer
+sudo apt install -f
+
+# Ou avec gdebi (résout les dépendances automatiquement)
+sudo apt install gdebi
+sudo gdebi fichier.deb</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Installer un .rpm (Fedora/RHEL)</h3>
-<p><div class="code-block"><div class="code-line"><code># Avec rpm (gestionnaire de base)</p>
-<p>sudo rpm -i fichier.rpm</p>
-<p># Ou avec dnf (meilleur, résout les dépendances)</p>
-<p>sudo dnf install fichier.rpm</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Avec rpm (gestionnaire de base)
+sudo rpm -i fichier.rpm
+
+# Ou avec dnf (meilleur, résout les dépendances)
+sudo dnf install fichier.rpm</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <blockquote>
 <p>⚠️ Installer des paquets manuellement (hors dépôts) présente des risques : pas de mises à jour automatiques, possibles conflits de dépendances.</p>
 </blockquote>
 <hr/>
 <h2>9. Hiérarchie des dossiers importants</h2>
-<p><div class="code-block"><div class="code-line"><code>/etc/apt/sources.list.d/    → Dépôts APT supplémentaires</p>
-<p>/var/cache/apt/archives/    → Paquets .deb téléchargés</p>
-<p>/var/lib/dpkg/              → Base de données des paquets installés</p>
-<p>/var/cache/dnf/             → Cache DNF</p>
-<p>/snap/                      → Applications Snap</p>
-<p>~/.local/share/flatpak/     → Applications Flatpak</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>/etc/apt/sources.list.d/    → Dépôts APT supplémentaires
+/var/cache/apt/archives/    → Paquets .deb téléchargés
+/var/lib/dpkg/              → Base de données des paquets installés
+/var/cache/dnf/             → Cache DNF
+/snap/                      → Applications Snap
+~/.local/share/flatpak/     → Applications Flatpak</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>10. Résumé des commandes</h2>
 <table>
@@ -227,41 +415,101 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h3>Exercice : Gère les paquets sur ton système</h3>
 <p>**Objectif** : Apprendre à utiliser le système de paquets de ta distribution.</p>
 <p>**Étape 1 : Connais ta distribution**</p>
-<p><div class="code-block"><div class="code-line"><code># Voir ta distribution</p>
-<p>lsb_release -a</p>
-<p># Ou</p>
-<p>cat /etc/os-release</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir ta distribution
+lsb_release -a
+
+# Ou
+cat /etc/os-release</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Étape 2 : Mets à jour ton système**</p>
-<p><div class="code-block"><div class="code-line"><code># Sur Ubuntu/Debian</p>
-<p>sudo apt update</p>
-<p>sudo apt upgrade -y</p>
-<p># Sur Fedora</p>
-<p>sudo dnf update -y</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sur Ubuntu/Debian
+sudo apt update
+sudo apt upgrade -y
+
+# Sur Fedora
+sudo dnf update -y</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Étape 3 : Recherche un paquet**</p>
-<p><div class="code-block"><div class="code-line"><code># Recherche un outil (exemple : htop)</p>
-<p>apt search htop</p>
-<p># ou</p>
-<p>dnf search htop</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Recherche un outil (exemple : htop)
+apt search htop
+# ou
+dnf search htop</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Étape 4 : Installe un paquet**</p>
-<p><div class="code-block"><div class="code-line"><code># Installe htop (gestionnaire de processus en ligne de commande)</p>
-<p>sudo apt install htop</p>
-<p># ou</p>
-<p>sudo dnf install htop</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Installe htop (gestionnaire de processus en ligne de commande)
+sudo apt install htop
+# ou
+sudo dnf install htop</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Étape 5 : Vérifie l'installation**</p>
-<p><div class="code-block"><div class="code-line"><code>htop</p>
-<p># (appuie sur q pour quitter)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>htop
+# (appuie sur q pour quitter)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Étape 6 : Lis les informations du paquet**</p>
-<p><div class="code-block"><div class="code-line"><code>apt show htop</p>
-<p># ou</p>
-<p>dnf info htop</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>apt show htop
+# ou
+dnf info htop</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Étape 7 : Désinstalle et nettoie**</p>
-<p><div class="code-block"><div class="code-line"><code># Désinstalle htop</p>
-<p>sudo apt remove htop</p>
-<p>sudo apt autoremove</p>
-<p># Nettoie le cache des paquets</p>
-<p>sudo apt clean</p>
-<p># Sur Fedora</p>
-<p>sudo dnf clean all</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Désinstalle htop
+sudo apt remove htop
+sudo apt autoremove
+
+# Nettoie le cache des paquets
+sudo apt clean
+
+# Sur Fedora
+sudo dnf clean all</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>✅ Tu sais maintenant gérer les logiciels sur Linux !</p>
 <hr/>
 <h2>12. Aller plus loin</h2>
@@ -971,4 +1219,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="30-alias-raccourcis.html">&larr; 30-alias-raccourcis</a>
 <a href="32-expressions-regulieres.html">32-expressions-regulieres &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

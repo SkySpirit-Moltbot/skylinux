@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -52,29 +65,72 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>2. Le principe : deux fichiers unit</h2>
 <p>Un minuteur systemd fonctionne toujours par **paire** :</p>
-<p><div class="code-block"><div class="code-line"><code>tache.service   → Le script/la commande à exécuter</p>
-<p>tache.timer     → Le déclencheur (quand et comment)</code></div></div></p>
-<p><div class="code-block"><div class="code-line"><code>┌──────────────────────────────────────────────┐</p>
-<p>│  tache.timer (minuteur)                     │</p>
-<p>│    └─ active → déclenche → tache.service    │</p>
-<p>│                                              │</p>
-<p>│  tache.service (service)                    │</p>
-<p>│    └─ exécute → ta commande/script          │</p>
-<p>└──────────────────────────────────────────────┘</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>tache.service   → Le script/la commande à exécuter
+tache.timer     → Le déclencheur (quand et comment)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>┌──────────────────────────────────────────────┐
+│  tache.timer (minuteur)                     │
+│    └─ active → déclenche → tache.service    │
+│                                              │
+│  tache.service (service)                    │
+│    └─ exécute → ta commande/script          │
+└──────────────────────────────────────────────┘</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. Créer un minuteur simple</h2>
 <h3>Étape 1 : Créer le service</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo nano /etc/systemd/system/ma-tache.service</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo nano /etc/systemd/system/ma-tache.service</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>```ini</p>
 <p>[Unit]</p>
 <p>Description=Ma première tâche planifiée</p>
 <p>[Service]</p>
 <p>Type=oneshot</p>
 <p>ExecStart=/home/user/scripts/backup.sh</p>
-<p><div class="code-block"><div class="code-line"><code><code>Type=oneshot</code> = le service s'exécute une fois et se termine.</p>
-<h3>Étape 2 : Créer le minuteur</code></div></div>bash</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>`Type=oneshot` = le service s'exécute une fois et se termine.
+
+### Étape 2 : Créer le minuteur</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo nano /etc/systemd/system/ma-tache.timer</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Unit]</p>
 <p>Description=Mon minuteur quotidien</p>
 <p>[Timer]</p>
@@ -82,12 +138,20 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>Persistent=true</p>
 <p>[Install]</p>
 <p>WantedBy=timers.target</p>
-<p><div class="code-block"><div class="code-line"><code>**Explications des options :**</p>
-<ul>
-<li><code>OnCalendar=daily</code> → s'exécute une fois par jour (à minuit)</li>
-<li><code>Persistent=true</code> → rattrape les exécutions manquées si le PC était éteint</li>
-</ul>
-<h3>Étape 3 : Activer et démarrer</code></div></div>bash</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>**Explications des options :**
+- `OnCalendar=daily` → s'exécute une fois par jour (à minuit)
+- `Persistent=true` → rattrape les exécutions manquées si le PC était éteint
+
+### Étape 3 : Activer et démarrer</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Recharger systemd pour voir les nouvelles unités</p>
 <p>sudo systemctl daemon-reload</p>
 <p># Activer le minuteur (démarre au boot)</p>
@@ -96,9 +160,20 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>sudo systemctl start ma-tache.timer</p>
 <p># Vérifier que le minuteur est actif</p>
 <p>sudo systemctl status ma-tache.timer</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>4. Les calendriers disponibles</h2>
-<h3>Formats courants</code></div></div>ini</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 4. Les calendriers disponibles
+
+### Formats courants</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>OnCalendar=daily        # Une fois par jour à minuit</p>
 <p>OnCalendar=hourly      # Toutes les heures</p>
 <p>OnCalendar=minutely    # Chaque minute</p>
@@ -108,57 +183,151 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>OnCalendar=Mon *-*-* 09:00:00 # Chaque lundi à 9h</p>
 <p>OnCalendar=*-*-25 12:00:00    # Le 25 du mois à midi</p>
 <p>OnCalendar=Sat,Sun *-*-* 10:00:00  # Weekends à 10h</p>
-<p><div class="code-block"><div class="code-line"><code>### Syntaxe étendue</code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Syntaxe étendue</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>OnCalendar=*-*-* *:00:00           # Toutes les heures pile</p>
 <p>OnCalendar=*-*-* *:00/15:00        # Toutes les 15 minutes</p>
 <p>OnCalendar=*-*-03..09 18:00:00     # Du 3 au 9 du mois à 18h</p>
 <p>OnCalendar=hourly::00               # Toutes les heures</p>
 <p>OnCalendar=*:0/5                   # Toutes les 5 minutes</p>
-<p><div class="code-block"><div class="code-line"><code>### Vérifier les calendriers</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Vérifier les calendriers</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Voir quand un calendrier sera déclenché</p>
 <p>systemd-analyze calendar "daily"</p>
 <p>systemd-analyze calendar "Mon *-*-* 09:00:00"</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>5. Minuteur avec intervalle (au lieu de calendrier)</code></div></div>ini</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 5. Minuteur avec intervalle (au lieu de calendrier)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Timer]</p>
 <p># Exécute 1h après le démarrage, puis toutes les 24h</p>
 <p>OnBootSec=1h</p>
 <p>OnUnitActiveSec=24h</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>OnBootSec=1h      → 1h après le démarrage</p>
 <p>OnUnitActiveSec=24h  → puis toutes les 24h après la dernière exécution</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Timer]</p>
 <p># Exécute 5 minutes après le démarrage</p>
 <p>OnBootSec=5min</p>
 <p># Puis toutes les 12 heures</p>
 <p>OnUnitActiveSec=12h</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>6. Débogage et surveillance</h2>
-<h3>Voir les minuteurs actifs</code></div></div>bash</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 6. Débogage et surveillance
+
+### Voir les minuteurs actifs</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Lister tous les minuteurs</p>
 <p>systemctl list-timers --all</p>
 <p># Résultat :</p>
 <p>NEXT                         LEFT          LAST                         PASSED       UNIT                    ACTIVATES</p>
 <p>lun. 2026-03-30 09:00:00 CET  42min gauche  dim. 2026-03-29 09:00:00 CET  23h ago   mon-backup.timer        mon-backup.service</p>
-<p><div class="code-block"><div class="code-line"><code>### Voir les logs d'un service</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Voir les logs d'un service</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Logs du service</p>
 <p>sudo journalctl -u ma-tache.service</p>
 <p># Logs du minuteur</p>
 <p>sudo journalctl -u ma-tache.timer</p>
 <p># Suivre en temps réel</p>
 <p>sudo journalctl -f -u ma-tache.service</p>
-<p><div class="code-block"><div class="code-line"><code>### Exécuter manuellement</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Exécuter manuellement</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Lancer le service maintenant (sans attendre le minuteur)</p>
 <p>sudo systemctl start ma-tache.service</p>
 <p># Forcer le minuteur à s'exécuter maintenant</p>
 <p>sudo systemctl start ma-tache.timer</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>7. Exemple complet : backup automatique</h2>
-<h3>Script de backup</code></div></div>bash</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 7. Exemple complet : backup automatique
+
+### Script de backup</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>mkdir -p ~/scripts</p>
 <p>nano ~/scripts/backup.sh</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>#!/bin/bash</p>
 <p># backup.sh - Backup quotidien du home</p>
 <p>DATE=$(date +%Y-%m-%d)</p>
@@ -169,11 +338,38 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p># Garder que les 7 derniers backups</p>
 <p>ls -t "$BACKUP_DIR"/backup-*.tar.gz | tail -n +8 | xargs rm -f 2>/dev/null</p>
 <p>echo "$(date) : Backup effectué avec succès" >> /var/log/backup.log</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>chmod +x ~/scripts/backup.sh</p>
-<p><div class="code-block"><div class="code-line"><code>### Service</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Service</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo nano /etc/systemd/system/backup.service</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Unit]</p>
 <p>Description=Backup quotidien du répertoire documents</p>
 <p>After=network.target</p>
@@ -185,9 +381,27 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>StandardError=journal</p>
 <p>[Install]</p>
 <p>WantedBy=multi-user.target</p>
-<p><div class="code-block"><div class="code-line"><code>### Minuteur (quotidien à 3h du matin)</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Minuteur (quotidien à 3h du matin)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo nano /etc/systemd/system/backup.timer</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Unit]</p>
 <p>Description=Minuteur de backup quotidien</p>
 <p>[Timer]</p>
@@ -196,13 +410,34 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>RandomizedDelaySec=30min</p>
 <p>[Install]</p>
 <p>WantedBy=timers.target</p>
-<p><div class="code-block"><div class="code-line"><code><code>RandomizedDelaySec=30min</code> = ajoute un délai aléatoire jusqu'à 30 min pour éviter que tous les minuteurs s'exécutent en même temps.</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>`RandomizedDelaySec=30min` = ajoute un délai aléatoire jusqu'à 30 min pour éviter que tous les minuteurs s'exécutent en même temps.</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo systemctl daemon-reload</p>
 <p>sudo systemctl enable --now backup.timer</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>8. Gestion avancée : avec état (persistant)</h2>
-<h3>Service de type "notify" (plus complexe)</h3>
-<p>Pour un script qui surveille un processus :</code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 8. Gestion avancée : avec état (persistant)
+
+### Service de type "notify" (plus complexe)
+
+Pour un script qui surveille un processus :</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Unit]</p>
 <p>Description=Monitor de surveillance</p>
 <p>[Service]</p>
@@ -212,7 +447,16 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>RestartSec=10</p>
 <p>[Install]</p>
 <p>WantedBy=multi-user.target</p>
-<p><div class="code-block"><div class="code-line"><code>### Minuteur avec contraintes</code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Minuteur avec contraintes</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Unit]</p>
 <p>Description=Mission critique</p>
 <p>[Timer]</p>
@@ -224,20 +468,32 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>RandomizedDelaySec=5min</p>
 <p>[Install]</p>
 <p>WantedBy=timers.target</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>9. Comparatif cron vs systemd timers</h2>
-<table>
-<tr><th>Fonctionnalité</th><th>cron</th><th>systemd timers</th></tr>
-<tr><td>Configuration</td><td><code>crontab -e</code></td><td>Fichiers <code>.service</code> + <code>.timer</code> dans <code>/etc/systemd/system/</code></td></tr>
-<tr><td>Logs</td><td>Fichier externe (cron, syslog)</td><td><code>journalctl -u unit</code></td></tr>
-<tr><td>Reprise après veille</td><td>❌</td><td>✅ (avec <code>Persistent=true</code>)</td></tr>
-<tr><td>Décalage aléatoire</td><td>❌</td><td>✅ (<code>RandomizedDelaySec</code>)</td></tr>
-<tr><td>Débogage</td><td>Difficile</td><td>Facile (<code>systemctl status</code>)</td></tr>
-<tr><td>Dépendances</td><td>Manuelles (dans le script)</td><td>Via <code>[Unit]</code> directives</td></tr>
-<tr><td>Activation par événement</td><td>❌</td><td>✅ (via <code>OnCalendar</code> + <code>OnBootSec</code>)</td></tr>
-</table>
-<hr/>
-<h2>10. Commandes de référence</code></div></div>bash</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 9. Comparatif cron vs systemd timers
+
+| Fonctionnalité | cron | systemd timers |
+|---|---|---|
+| Configuration | `crontab -e` | Fichiers `.service` + `.timer` dans `/etc/systemd/system/` |
+| Logs | Fichier externe (cron, syslog) | `journalctl -u unit` |
+| Reprise après veille | ❌ | ✅ (avec `Persistent=true`) |
+| Décalage aléatoire | ❌ | ✅ (`RandomizedDelaySec`) |
+| Débogage | Difficile | Facile (`systemctl status`) |
+| Dépendances | Manuelles (dans le script) | Via `[Unit]` directives |
+| Activation par événement | ❌ | ✅ (via `OnCalendar` + `OnBootSec`) |
+
+---
+
+## 10. Commandes de référence</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Recharger après modification</p>
 <p>sudo systemctl daemon-reload</p>
 <p># Activer (au démarrage)</p>
@@ -261,20 +517,68 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>sudo systemctl start unit.service</p>
 <p># Vérifier la validité d'un calendrier</p>
 <p>systemd-analyze calendar "*-*-* 03:00:00"</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>11. Exercice pratique</h2>
-<p>**Objectif :** Créer un minuteur qui affiche un message dans les logs toutes les 5 minutes.</p>
-<p>**Étape 1 : Crée le script**</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 11. Exercice pratique
+
+**Objectif :** Créer un minuteur qui affiche un message dans les logs toutes les 5 minutes.
+
+**Étape 1 : Crée le script**</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>mkdir -p ~/scripts</p>
 <p>nano ~/scripts/log-message.sh</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>#!/bin/bash</p>
 <p>echo "$(date) : Le minuteur fonctionne ! ID du système : $(hostname)"</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>chmod +x ~/scripts/log-message.sh</p>
-<p><div class="code-block"><div class="code-line"><code>**Étape 2 : Crée le service**</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>**Étape 2 : Crée le service**</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo nano /etc/systemd/system/log-message.service</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Unit]</p>
 <p>Description=Message de test pour minuteur systemd</p>
 <p>[Service]</p>
@@ -284,9 +588,27 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>StandardError=journal</p>
 <p>[Install]</p>
 <p>WantedBy=multi-user.target</p>
-<p><div class="code-block"><div class="code-line"><code>**Étape 3 : Crée le minuteur (toutes les 5 minutes)**</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>**Étape 3 : Crée le minuteur (toutes les 5 minutes)**</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo nano /etc/systemd/system/log-message.timer</p>
-<p><div class="code-block"><div class="code-line"><code></code></div></div>ini</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code></code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>ini</p>
 <p>[Unit]</p>
 <p>Description=Minuteur de test - toutes les 5 minutes</p>
 <p>[Timer]</p>
@@ -294,16 +616,43 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>Persistent=true</p>
 <p>[Install]</p>
 <p>WantedBy=timers.target</p>
-<p><div class="code-block"><div class="code-line"><code>**Étape 4 : Active et vérifie**</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>**Étape 4 : Active et vérifie**</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo systemctl daemon-reload</p>
 <p>sudo systemctl enable --now log-message.timer</p>
 <p>sudo systemctl status log-message.timer</p>
-<p><div class="code-block"><div class="code-line"><code>**Étape 5 : Vérifie les logs**</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>**Étape 5 : Vérifie les logs**</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>journalctl -u log-message.service -f</p>
 <p># (attends 5 minutes ou force l'exécution)</p>
 <p>sudo systemctl start log-message.service</p>
 <p>journalctl -u log-message.service --no-pager</p>
-<p><div class="code-block"><div class="code-line"><code>**Étape 6 : Nettoie (une fois l'exercice terminé)**</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>**Étape 6 : Nettoie (une fois l'exercice terminé)**</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p>sudo systemctl stop log-message.timer</p>
 <p>sudo systemctl disable log-message.timer</p>
 <p>sudo rm /etc/systemd/system/log-message.timer</p>
@@ -330,4 +679,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="39-gestion-volumes-lvm.html">&larr; 39-gestion-volumes-lvm</a>
 <a href="41-partage-nfs.html">41-partage-nfs &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

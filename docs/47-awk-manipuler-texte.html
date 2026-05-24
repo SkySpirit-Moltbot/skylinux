@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -39,7 +52,15 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>AWK est ne en 1977 aux laboratoires Bell. Son nom vient des initiales de ses createurs : **Aho, Weinberger et Kernighan**.</p>
 <p>Concu à l'origine pour traiter des fichiers textes structures (comme des tableaux ou des logs), AWK lit un fichier ligne par ligne, divise chaque ligne en **champs** (colonnes) separes par des espaces ou un separateur personnalise, et execute des **actions** sur chaque ligne correspondant a un **motif**.</p>
 <p>La syntaxe de base est simple :</p>
-<p><div class="code-block"><div class="code-line"><code>awk 'motif { action }' fichier</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk 'motif { action }' fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <ul>
 <li>**motif** : condition que la ligne doit verifier (ou <code>BEGIN</code> / <code>END</code> speciales)</li>
 <li>**action** : ce qu'on fait quand le motif correspond</li>
@@ -57,45 +78,133 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td><code>$NF</code></td><td>Le dernier champ (NF = Number of Fields)</td></tr>
 </table>
 <p>**Exemple** — Voici un fichier <code>employes.txt</code> :</p>
-<p><div class="code-block"><div class="code-line"><code>Alice  Administrateur  4500</p>
-<p>Bob    Developpeur      6200</p>
-<p>Claire Technicien      3800</p>
-<p>David  Developpeur      6100</p>
-<p>Emma   Manager          7500</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Alice  Administrateur  4500
+Bob    Developpeur      6200
+Claire Technicien      3800
+David  Developpeur      6100
+Emma   Manager          7500</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Afficher le nom et le salaire (1er et 3e champ) :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '{ print $1, $3 }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '{ print $1, $3 }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>Alice 4500</p>
-<p>Bob 6200</p>
-<p>Claire 3800</p>
-<p>David 6100</p>
-<p>Emma 7500</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Alice 4500
+Bob 6200
+Claire 3800
+David 6100
+Emma 7500</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. Le separateur de champs (option -F)</h2>
 <p>Par defaut, AWK utilise l'espace comme separateur. Pour un fichier CSV (separateur <code>;</code>) :</p>
-<p><div class="code-block"><div class="code-line"><code>awk -F';' '{ print $1, $3 }' employes.csv</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk -F';' '{ print $1, $3 }' employes.csv</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>On peut aussi changer le separateur avec <code>BEGIN { FS = ";" }</code> :</p>
-<p><div class="code-block"><div class="code-line"><code>awk 'BEGIN { FS = ":" } { print $1, $NF }' /etc/passwd | head -5</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk 'BEGIN { FS = ":" } { print $1, $NF }' /etc/passwd | head -5</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>4. Les conditions et motifs</h2>
 <h3>Motif sur un champ</h3>
 <p>Afficher uniquement les developpeurs :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '$2 == "Developpeur" { print $1, $3 }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '$2 == "Developpeur" { print $1, $3 }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>Bob 6200</p>
-<p>David 6100</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Bob 6200
+David 6100</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Comparaison numerique</h3>
 <p>Afficher les employes gagnant plus de 5000 :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '$3 &gt; 5000 { print $1, $3 }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '$3 &gt; 5000 { print $1, $3 }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>Bob 6200</p>
-<p>David 6100</p>
-<p>Emma 7500</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Bob 6200
+David 6100
+Emma 7500</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Motif texte (expression reguliere)</h3>
 <p>Afficher les lignes commençant par "D" :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '$1 ~ /^D/ { print $0 }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '$1 ~ /^D/ { print $0 }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>David  Developpeur  6100</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>David  Developpeur  6100</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. BEGIN et END — Traiter avant et après</h2>
 <ul>
@@ -103,15 +212,39 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <li><code>END</code> : s'execute **après** le traitement du fichier</li>
 </ul>
 <p>Calculer la somme totale des salaries :</p>
-<p><div class="code-block"><div class="code-line"><code>awk 'BEGIN { total = 0 }</p>
-<p>     { total += $3 }</p>
-<p>     END { print "Total salaries :", total }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk 'BEGIN { total = 0 }
+     { total += $3 }
+     END { print "Total salaries :", total }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>Total salaries : 28100</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Total salaries : 28100</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Autre exemple — ajouter un en-tete :</p>
-<p><div class="code-block"><div class="code-line"><code>awk 'BEGIN { print "Nom", "Salaire" }</p>
-<p>     { print $1, $3 }</p>
-<p>     END { print "--- Fin du rapport ---" }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk 'BEGIN { print "Nom", "Salaire" }
+     { print $1, $3 }
+     END { print "--- Fin du rapport ---" }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Les variables integrees</h2>
 <p>AWK fournit des variables predefinies très utiles :</p>
@@ -126,13 +259,29 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td><code>ORS</code></td><td>Separateur d'enregistrements en sortie</td></tr>
 </table>
 <p>**Exemple** — Numeroter les lignes :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '{ print NR, $0 }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '{ print NR, $0 }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>1 Alice  Administrateur  4500</p>
-<p>2 Bob    Developpeur      6200</p>
-<p>3 Claire Technicien       3800</p>
-<p>4 David  Developpeur      6100</p>
-<p>5 Emma   Manager          7500</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>1 Alice  Administrateur  4500
+2 Bob    Developpeur      6200
+3 Claire Technicien       3800
+4 David  Developpeur      6100
+5 Emma   Manager          7500</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7. Les fonctions</h2>
 <p>AWK dispose de nombreuses fonctions predefinies :</p>
@@ -147,94 +296,201 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td><code> systime()</code></td><td>Timestamp Unix</td></tr>
 </table>
 <p>**Exemple** — Mettre les noms en majuscules :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '{ print toupper($1), $3 }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '{ print toupper($1), $3 }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>ALICE 4500</p>
-<p>BOB 6200</p>
-<p>CLAIRE 3800</p>
-<p>DAVID 6100</p>
-<p>EMMA 7500</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ALICE 4500
+BOB 6200
+CLAIRE 3800
+DAVID 6100
+EMMA 7500</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Les tableaux associatifs</h2>
 <p>AWK supporte des **tableaux associatifs** (cles = chaines) :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '{ salaries[$2] += $3 }</p>
-<p>     END { for (dept in salaries)</p>
-<p>           print dept, salaries[dept] }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '{ salaries[$2] += $3 }
+     END { for (dept in salaries)
+           print dept, salaries[dept] }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>Administrateur 4500</p>
-<p>Developpeur 12300</p>
-<p>Technicien 3800</p>
-<p>Manager 7500</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Administrateur 4500
+Developpeur 12300
+Technicien 3800
+Manager 7500</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>9. Formatage avec printf</h2>
 <p>Pour un controle precis du formatage, utilise <code>printf</code> :</p>
-<p><div class="code-block"><div class="code-line"><code>awk '{ printf "%-10s %-15s %6d\n", $1, $2, $3 }' employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk '{ printf "%-10s %-15s %6d\n", $1, $2, $3 }' employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <table>
 <tr><th>Format</th><th>Signification</th></tr>
 <tr><td><code>%-10s</code></td><td>Chaene, justifie à gauche, 10 caracteres</td></tr>
 <tr><td><code>%6d</code></td><td>Entier, justifie à droite, 6 caracteres</td></tr>
 </table>
 <p>**Resultat :**</p>
-<p><div class="code-block"><div class="code-line"><code>Alice      Administrateur    4500</p>
-<p>Bob        Developpeur        6200</p>
-<p>Claire     Technicien         3800</p>
-<p>David      Developpeur        6100</p>
-<p>Emma       Manager            7500</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>Alice      Administrateur    4500
+Bob        Developpeur        6200
+Claire     Technicien         3800
+David      Developpeur        6100
+Emma       Manager            7500</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>10. Utiliser un script AWK dans un fichier</h2>
 <p>Quand la logique devient complexe, place-la dans un fichier <code>.awk</code> :</p>
-<p><div class="code-block"><div class="code-line"><code># rapport.awk</p>
-<p>BEGIN {</p>
-<p>    print "=== Rapport des salaries ==="</p>
-<p>    FS = " "</p>
-<p>}</p>
-<p>$3 &gt; 5000 {</p>
-<p>    count++</p>
-<p>    total += $3</p>
-<p>    printf "%-10s %6d\n", $1, $3</p>
-<p>}</p>
-<p>END {</p>
-<p>    printf "\n%d employes &gt; 5000 | Total : %d\n", count, total</p>
-<p>}</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># rapport.awk
+BEGIN {
+    print "=== Rapport des salaries ==="
+    FS = " "
+}
+$3 &gt; 5000 {
+    count++
+    total += $3
+    printf "%-10s %6d\n", $1, $3
+}
+END {
+    printf "\n%d employes &gt; 5000 | Total : %d\n", count, total
+}</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Execute-le avec :</p>
-<p><div class="code-block"><div class="code-line"><code>awk -f rapport.awk employes.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>awk -f rapport.awk employes.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>11. Combiner AWK avec des pipes</h2>
 <p>AWK brille aussi en combinaison avec d'autres commandes :</p>
 <p>Nombre de connexions SSH par IP dans les logs :</p>
-<p><div class="code-block"><div class="code-line"><code>grep "sshd" /var/log/auth.log | awk '{ print $NF }' | sort | uniq -c | sort -rn | head -10</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>grep "sshd" /var/log/auth.log | awk '{ print $NF }' | sort | uniq -c | sort -rn | head -10</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Afficher la memoire libre toutes les 2 secondes (3 iterations) :</p>
-<p><div class="code-block"><div class="code-line"><code>free -m | awk 'NR==2{print "Memoire libre : "$7 " MB"}'</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>free -m | awk 'NR==2{print "Memoire libre : "$7 " MB"}'</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Extraire les colonnes 1 et 5 d'un <code>ls -l</code> (taille et nom) :</p>
-<p><div class="code-block"><div class="code-line"><code>ls -l | awk '{ print $5, $9 }' | tail -n +2</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ls -l | awk '{ print $5, $9 }' | tail -n +2</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>12. Exercice pratique</h2>
 <p>**Contexte** : Tu as un fichier <code>logs.txt</code> avec le format suivant :</p>
-<p><div class="code-block"><div class="code-line"><code>2026-04-08 10:15:22 GET /index.html 200</p>
-<p>2026-04-08 10:15:45 POST /api/login 401</p>
-<p>2026-04-08 10:16:03 GET /index.html 200</p>
-<p>2026-04-08 10:16:28 GET /dashboard 302</p>
-<p>2026-04-08 10:17:01 GET /api/users 200</p>
-<p>2026-04-08 10:17:33 POST /api/login 200</p>
-<p>2026-04-08 10:18:05 GET /index.html 200</p>
-<p>2026-04-08 10:18:22 GET /dashboard 404</p>
-<p>2026-04-08 10:19:11 GET /api/users 200</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>2026-04-08 10:15:22 GET /index.html 200
+2026-04-08 10:15:45 POST /api/login 401
+2026-04-08 10:16:03 GET /index.html 200
+2026-04-08 10:16:28 GET /dashboard 302
+2026-04-08 10:17:01 GET /api/users 200
+2026-04-08 10:17:33 POST /api/login 200
+2026-04-08 10:18:05 GET /index.html 200
+2026-04-08 10:18:22 GET /dashboard 404
+2026-04-08 10:19:11 GET /api/users 200</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Objectifs** (realise-les avec AWK) :</p>
 <p>1. Affiche uniquement les lignes avec un code HTTP 200 (OK)</p>
 <p>2. Affiche la date, l'heure et l'URL de chaque requete</p>
 <p>3. Compte combien de fois chaque URL apparait</p>
 <p>4. Affiche le nombre total de requetes et combien ont retourne 200</p>
 <p>**Corrige** :</p>
-<p><div class="code-block"><div class="code-line"><code># 1. Lignes avec code 200</p>
-<p>awk '$NF == 200 { print $0 }' logs.txt</p>
-<p># 2. Date, heure et URL</p>
-<p>awk '{ print $1, $2, $4 }' logs.txt</p>
-<p># 3. Compteur par URL</p>
-<p>awk '{ urls[$4]++ } END { for (u in urls) print urls[u], u }' logs.txt</p>
-<p># 4. Total et compteur 200</p>
-<p>awk 'BEGIN { total=0; ok=0 }</p>
-<p>     { total++; if ($NF == 200) ok++ }</p>
-<p>     END { print "Total :", total, "| 200 OK :", ok }' logs.txt</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Lignes avec code 200
+awk '$NF == 200 { print $0 }' logs.txt
+
+# 2. Date, heure et URL
+awk '{ print $1, $2, $4 }' logs.txt
+
+# 3. Compteur par URL
+awk '{ urls[$4]++ } END { for (u in urls) print urls[u], u }' logs.txt
+
+# 4. Total et compteur 200
+awk 'BEGIN { total=0; ok=0 }
+     { total++; if ($NF == 200) ok++ }
+     END { print "Total :", total, "| 200 OK :", ok }' logs.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>Resumé</h2>
 <table>
@@ -253,4 +509,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="46-signaux-erreurs-scripts.html">&larr; 46-signaux-erreurs-scripts</a>
 <a href="48-grep-sed-xargs.html">48-grep-sed-xargs &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

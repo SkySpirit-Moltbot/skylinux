@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -50,21 +63,40 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h2>2. La commande <code>trap</code> — intercepter les signaux</h2>
 <p><code>trap</code> te permet d'exécuter une commande (ou une fonction) quand un signal précis est reçu. C'est indispensable pour nettoyer proprement.</p>
 <h3>Syntaxe de base</h3>
-<p><div class="code-block"><div class="code-line"><code>trap 'commande' SIGNAL</p>
-<p>trap 'fonction' SIGNAL1 SIGNAL2</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>trap 'commande' SIGNAL
+trap 'fonction' SIGNAL1 SIGNAL2</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Exemple fondamental : nettoyer à la sortie</h3>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p># Fonction de nettoyage</p>
-<p>nettoyer() {</p>
-<p>    echo "Nettoyage en cours..."</p>
-<p>    rm -f /tmp/mon-script.lock</p>
-<p>    rm -f /tmp/mon-script.tmp</p>
-<p>    echo "Programme terminé proprement."</p>
-<p>}</p>
-<p># Intercepter Ctrl+C (SIGINT) et sortie normale (EXIT)</p>
-<p>trap nettoyer EXIT INT TERM</p>
-<p>echo "Mon script tourne... (Ctrl+C pour arrêter)"</p>
-<p>sleep 30</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+
+# Fonction de nettoyage
+nettoyer() {
+    echo "Nettoyage en cours..."
+    rm -f /tmp/mon-script.lock
+    rm -f /tmp/mon-script.tmp
+    echo "Programme terminé proprement."
+}
+
+# Intercepter Ctrl+C (SIGINT) et sortie normale (EXIT)
+trap nettoyer EXIT INT TERM
+
+echo "Mon script tourne... (Ctrl+C pour arrêter)"
+sleep 30</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Ce qui se passe :**</p>
 <ul>
 <li>Le script démarre et enregistre la fonction <code>nettoyer</code></li>
@@ -78,21 +110,47 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <h2>3. Gérer les erreurs avec <code>set -e</code> et <code>set -u</code></h2>
 <h3>Quitter dès qu'une commande échoue : <code>set -e</code></h3>
 <p>Par défaut, Bash continue l'exécution même si une commande échoue. <code>set -e</code> change ce comportement.</p>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p>set -e  # Quitte immédiatement si une commande échoue</p>
-<p>echo "Création du dossier..."</p>
-<p>mkdir /tmp/mon-projet</p>
-<p>cd /tmp/mon-projet</p>
-<p>echo "Projet créé."</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+set -e  # Quitte immédiatement si une commande échoue
+
+echo "Création du dossier..."
+mkdir /tmp/mon-projet
+cd /tmp/mon-projet
+echo "Projet créé."</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Si <code>mkdir</code> échoue (droits insuffisants, disque plein), le script s'arrête là.</p>
 <h3>Quitter sur variable non définie : <code>set -u</code></h3>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p>set -u</p>
-<p>echo "Salutation pour $NOM"  # Si $NOM n'existe pas → erreur</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+set -u
+
+echo "Salutation pour $NOM"  # Si $NOM n'existe pas → erreur</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Sans <code>set -u</code>, Bash remplace <code>$NOM</code> par une chaîne vide sans protester. Avec <code>set -u</code>, le script s'arrête.</p>
 <h3>Combinaison recommandée</h3>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p>set -euo pipefail</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+set -euo pipefail</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <table>
 <tr><th>Option</th><th>Rôle</th></tr>
 <tr><td><code>-e</code></td><td>Quitte sur erreur</td></tr>
@@ -102,50 +160,76 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>4. Vérifier les codes de retour</h2>
 <p>Chaque commande retourne un **code de sortie** : <code>0</code> = succès, <code>!= 0</code> = erreur.</p>
-<p><div class="code-block"><div class="code-line"><code># Lancer une commande et tester son résultat</p>
-<p>mkdir /backup || { echo "Échec de la création du dossier"; exit 1; }</p>
-<p># Ou avec if</p>
-<p>if grep -q "error" /var/log/syslog; then</p>
-<p>    echo "Des erreurs ont été trouvées !"</p>
-<p>fi</p>
-<p># Capturer le code de sortie dans une variable</p>
-<p>ls /etc/passwd</p>
-<p>resultat=$?</p>
-<p>echo "Code de sortie de ls : $resultat"  # 0 si succès</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lancer une commande et tester son résultat
+mkdir /backup || { echo "Échec de la création du dossier"; exit 1; }
+
+# Ou avec if
+if grep -q "error" /var/log/syslog; then
+    echo "Des erreurs ont été trouvées !"
+fi
+
+# Capturer le code de sortie dans une variable
+ls /etc/passwd
+resultat=$?
+echo "Code de sortie de ls : $resultat"  # 0 si succès</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Exemple complet : script robuste de sauvegarde</h2>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p>#</p>
-<p># sauvegarde-robuste.sh — Exemple de script avec gestion de signaux et d'erreurs</p>
-<p>#</p>
-<p>set -euo pipefail</p>
-<p># Répertoires</p>
-<p>SOURCE="/home/david/documents"</p>
-<p>DEST="/tmp/backup-$(date +%Y%m%d).tar.gz"</p>
-<p>LOCKFILE="/tmp/sauvegarde.lock"</p>
-<p># Fonction de nettoyage</p>
-<p>cleanup() {</p>
-<p>    local exit_code=$?</p>
-<p>    rm -f "$LOCKFILE"</p>
-<p>    if [ $exit_code -ne 0 ]; then</p>
-<p>        echo "Sauvegarde échouée (code: $exit_code)" &gt;&amp;2</p>
-<p>    fi</p>
-<p>    exit $exit_code</p>
-<p>}</p>
-<p># Intercepter les signaux</p>
-<p>trap cleanup EXIT INT TERM</p>
-<p># Vérifier qu'une seule instance tourne</p>
-<p>if [ -f "$LOCKFILE" ]; then</p>
-<p>    echo "Une sauvegarde est déjà en cours. Quittez l'autre instance."</p>
-<p>    exit 1</p>
-<p>fi</p>
-<p># Créer le lockfile</p>
-<p>echo $$ &gt; "$LOCKFILE"</p>
-<p># Corps du script</p>
-<p>echo "Sauvegarde de $SOURCE vers $DEST..."</p>
-<p>tar -czf "$DEST" "$SOURCE" &amp;&amp; echo "Sauvegarde terminée : $DEST"</p>
-<p># Supprimer le lockfile avant de quitter (cleanup le fait, mais explicite)</p>
-<p>rm -f "$LOCKFILE"</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+#
+# sauvegarde-robuste.sh — Exemple de script avec gestion de signaux et d'erreurs
+#
+
+set -euo pipefail
+
+# Répertoires
+SOURCE="/home/david/documents"
+DEST="/tmp/backup-$(date +%Y%m%d).tar.gz"
+LOCKFILE="/tmp/sauvegarde.lock"
+
+# Fonction de nettoyage
+cleanup() {
+    local exit_code=$?
+    rm -f "$LOCKFILE"
+    if [ $exit_code -ne 0 ]; then
+        echo "Sauvegarde échouée (code: $exit_code)" &gt;&amp;2
+    fi
+    exit $exit_code
+}
+
+# Intercepter les signaux
+trap cleanup EXIT INT TERM
+
+# Vérifier qu'une seule instance tourne
+if [ -f "$LOCKFILE" ]; then
+    echo "Une sauvegarde est déjà en cours. Quittez l'autre instance."
+    exit 1
+fi
+
+# Créer le lockfile
+echo $$ &gt; "$LOCKFILE"
+
+# Corps du script
+echo "Sauvegarde de $SOURCE vers $DEST..."
+tar -czf "$DEST" "$SOURCE" &amp;&amp; echo "Sauvegarde terminée : $DEST"
+
+# Supprimer le lockfile avant de quitter (cleanup le fait, mais explicite)
+rm -f "$LOCKFILE"</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Points clés de ce script :**</p>
 <ul>
 <li><code>set -euo pipefail</code> → arrêt sur erreur, variable manquante ou pipe cassé</li>
@@ -156,21 +240,41 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>6. Les signaux dans la pratique</h2>
 <h3>Envoyer un signal manuellement</h3>
-<p><div class="code-block"><div class="code-line"><code># Voir les signaux disponibles</p>
-<p>kill -l</p>
-<p># Envoyer SIGTERM à un processus (demande polie)</p>
-<p>kill -15 1234</p>
-<p># Envoyer SIGKILL (forcé)</p>
-<p>kill -9 1234</p>
-<p># Envoyer un signal à tous les processus d'un nom</p>
-<p>pkill -f "mon-script.sh"</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir les signaux disponibles
+kill -l
+
+# Envoyer SIGTERM à un processus (demande polie)
+kill -15 1234
+
+# Envoyer SIGKILL (forcé)
+kill -9 1234
+
+# Envoyer un signal à tous les processus d'un nom
+pkill -f "mon-script.sh"</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Tester un signal dans un script</h3>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p>trap 'echo "Signal reçu !"' INT</p>
-<p>echo "En attente... (Ctrl+C pour tester)"</p>
-<p>while true; do</p>
-<p>    sleep 1</p>
-<p>done</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+trap 'echo "Signal reçu !"' INT
+
+echo "En attente... (Ctrl+C pour tester)"
+while true; do
+    sleep 1
+done</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7. Récapitulatif des options de <code>set</code></h2>
 <table>
@@ -189,37 +293,58 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>2. Supprime son fichier lock à la sortie</p>
 <p>3. Utilise <code>set -euo pipefail</code></p>
 <p>4. Vérifie l'espace disque et affiche une alerte si > 80%</p>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p># Objectif : créer ce script</p>
-<p># 1. Ajouter set -euo pipefail</p>
-<p># 2. Créer un lockfile /tmp/monitoring.lock</p>
-<p># 3. Écrire une fonction cleanup() qui supprime le lock</p>
-<p># 4. Intercepter EXIT, INT, TERM</p>
-<p># 5. Vérifier l'espace disque : df / | grep -v Filesystem | awk '{print $5}' | tr -d '%'</p>
-<p># 6. Si &gt; 80%, afficher "Alerte : espace disque faible !"</p>
-<p># 7. Boucle infinie avec sleep 10</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+# Objectif : créer ce script
+
+# 1. Ajouter set -euo pipefail
+# 2. Créer un lockfile /tmp/monitoring.lock
+# 3. Écrire une fonction cleanup() qui supprime le lock
+# 4. Intercepter EXIT, INT, TERM
+# 5. Vérifier l'espace disque : df / | grep -v Filesystem | awk '{print $5}' | tr -d '%'
+# 6. Si &gt; 80%, afficher "Alerte : espace disque faible !"
+# 7. Boucle infinie avec sleep 10</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Solution indicative :**</p>
-<p><div class="code-block"><div class="code-line"><code>#!/bin/bash</p>
-<p>set -euo pipefail</p>
-<p>LOCKFILE="/tmp/monitoring.lock"</p>
-<p>cleanup() {</p>
-<p>    rm -f "$LOCKFILE"</p>
-<p>    echo "Script arrêté. Au revoir !"</p>
-<p>}</p>
-<p>trap cleanup EXIT INT TERM</p>
-<p>if [ -f "$LOCKFILE" ]; then</p>
-<p>    echo "Le script tourne déjà."</p>
-<p>    exit 1</p>
-<p>fi</p>
-<p>echo $$ &gt; "$LOCKFILE"</p>
-<p>echo " Surveillance disque... (Ctrl+C pour arrêter)"</p>
-<p>while true; do</p>
-<p>    usage=$(df / | tail -1 | awk '{print $5}' | tr -d '%')</p>
-<p>    if [ "$usage" -gt 80 ]; then</p>
-<p>        echo " Alerte : espace disque à ${usage}% !"</p>
-<p>    fi</p>
-<p>    sleep 10</p>
-<p>done</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+set -euo pipefail
+
+LOCKFILE="/tmp/monitoring.lock"
+
+cleanup() {
+    rm -f "$LOCKFILE"
+    echo "Script arrêté. Au revoir !"
+}
+trap cleanup EXIT INT TERM
+
+if [ -f "$LOCKFILE" ]; then
+    echo "Le script tourne déjà."
+    exit 1
+fi
+echo $$ &gt; "$LOCKFILE"
+
+echo " Surveillance disque... (Ctrl+C pour arrêter)"
+while true; do
+    usage=$(df / | tail -1 | awk '{print $5}' | tr -d '%')
+    if [ "$usage" -gt 80 ]; then
+        echo " Alerte : espace disque à ${usage}% !"
+    fi
+    sleep 10
+done</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>Résumé</h2>
 <table>
@@ -235,4 +360,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="45-priorite-processus-nice-renice.html">&larr; 45-priorite-processus-nice-renice</a>
 <a href="47-awk-manipuler-texte.html">47-awk-manipuler-texte &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

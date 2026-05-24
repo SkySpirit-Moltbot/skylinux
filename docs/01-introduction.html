@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -84,25 +97,33 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>3. Architecture Linux</h2>
 <h3>Structure des répertoires</h3>
-<p><div class="code-block"><div class="code-line"><code>/</p>
-<p>├── bin/       # Commandes essentielles</p>
-<p>├── boot/      # Fichiers de démarrage</p>
-<p>├── dev/       # Périphériques</p>
-<p>├── etc/       # Configuration</p>
-<p>├── home/      # Répertoires utilisateurs</p>
-<p>├── lib/       # Bibliothèques partagées</p>
-<p>├── media/     # Points de montage amovibles</p>
-<p>├── mnt/       # Points de montage temporaires</p>
-<p>├── opt/       # Logiciels optionnels</p>
-<p>├── proc/      # Informations processus (virtuel)</p>
-<p>├── root/      # Répertoire admin</p>
-<p>├── run/       # Données temporaires</p>
-<p>├── sbin/      # Commandes système</p>
-<p>├── srv/       # Données services</p>
-<p>├── sys/       # Infos système (virtuel)</p>
-<p>├── tmp/       # Fichiers temporaires</p>
-<p>├── usr/       # Programmes utilisateur</p>
-<p>└── var/       # Données variables (logs)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>/
+├── bin/       # Commandes essentielles
+├── boot/      # Fichiers de démarrage
+├── dev/       # Périphériques
+├── etc/       # Configuration
+├── home/      # Répertoires utilisateurs
+├── lib/       # Bibliothèques partagées
+├── media/     # Points de montage amovibles
+├── mnt/       # Points de montage temporaires
+├── opt/       # Logiciels optionnels
+├── proc/      # Informations processus (virtuel)
+├── root/      # Répertoire admin
+├── run/       # Données temporaires
+├── sbin/      # Commandes système
+├── srv/       # Données services
+├── sys/       # Infos système (virtuel)
+├── tmp/       # Fichiers temporaires
+├── usr/       # Programmes utilisateur
+└── var/       # Données variables (logs)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Répertoires importants</h3>
 <table>
 <tr><th>Chemin</th><th>Description</th></tr>
@@ -123,49 +144,97 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <li>**macOS** : Cmd + Espace, taper "Terminal"</li>
 </ul>
 <h3>Commandes de base</h3>
-<p><div class="code-block"><div class="code-line"><code>ls              # Lister les fichiers</p>
-<p>cd dossier     # Changer de répertoire</p>
-<p>pwd             # Répertoire courant</p>
-<p>mkdir dossier  # Créer un dossier</p>
-<p>touch fichier  # Créer un fichier</p>
-<p>rm fichier     # Supprimer</p>
-<p>cp source dest # Copier</p>
-<p>mv source dest # Déplacer/renommer</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ls              # Lister les fichiers
+cd dossier     # Changer de répertoire
+pwd             # Répertoire courant
+mkdir dossier  # Créer un dossier
+touch fichier  # Créer un fichier
+rm fichier     # Supprimer
+cp source dest # Copier
+mv source dest # Déplacer/renommer</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Premier pas : Commandes essentielles</h2>
 <h3>Navigation</h3>
-<p><div class="code-block"><div class="code-line"><code>pwd                 # Où suis-je ?</p>
-<p>ls                  # Liste fichiers</p>
-<p>ls -l               # Liste détaillée</p>
-<p>ls -a               # Inclure cachés</p>
-<p>ls -la              # Tout</p>
-<p>cd /                # Aller à la racine</p>
-<p>cd ~                # Retourner au home</p>
-<p>cd ..               # Répertoire parent</p>
-<p>cd -                # Revenir en arrière</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>pwd                 # Où suis-je ?
+ls                  # Liste fichiers
+ls -l               # Liste détaillée
+ls -a               # Inclure cachés
+ls -la              # Tout
+cd /                # Aller à la racine
+cd ~                # Retourner au home
+cd ..               # Répertoire parent
+cd -                # Revenir en arrière</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Manipulation de fichiers</h3>
-<p><div class="code-block"><div class="code-line"><code>mkdir mon_dossier   # Créer dossier</p>
-<p>rmdir mon_dossier   # Supprimer dossier vide</p>
-<p>touch fichier       # Créer fichier</p>
-<p>cp fichier copie    # Copier</p>
-<p>mv fichier nouveau  # Renommer/déplacer</p>
-<p>rm fichier          # Supprimer</p>
-<p>rm -rf dossier     # Supprimer récursif (DANGER!)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>mkdir mon_dossier   # Créer dossier
+rmdir mon_dossier   # Supprimer dossier vide
+touch fichier       # Créer fichier
+cp fichier copie    # Copier
+mv fichier nouveau  # Renommer/déplacer
+rm fichier          # Supprimer
+rm -rf dossier     # Supprimer récursif (DANGER!)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Lire les fichiers</h3>
-<p><div class="code-block"><div class="code-line"><code>cat fichier         # Afficher contenu</p>
-<p>less fichier        # Afficher page par page</p>
-<p>head -n 10 fichier # 10 premières lignes</p>
-<p>tail -n 10 fichier # 10 dernières lignes</p>
-<p>tail -f fichier    # Suivre en temps réel</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>cat fichier         # Afficher contenu
+less fichier        # Afficher page par page
+head -n 10 fichier # 10 premières lignes
+tail -n 10 fichier # 10 dernières lignes
+tail -f fichier    # Suivre en temps réel</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Recherche</h3>
-<p><div class="code-block"><div class="code-line"><code>which commande      # Trouver une commande</p>
-<p>man commande        # Manuel</p>
-<p>--help              # Aide</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>which commande      # Trouver une commande
+man commande        # Manuel
+--help              # Aide</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>6. Notions de droits et permissions</h2>
 <h3>Les permissions</h3>
 <p>Chaque fichier a des permissions :</p>
-<p><div class="code-block"><div class="code-line"><code>-rw-r--r-- 1 user group 1234 Mar 10 10:00 fichier</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>-rw-r--r-- 1 user group 1234 Mar 10 10:00 fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <table>
 <tr><th>Partie</th><th>Signification</th></tr>
 <tr><td><code>-</code></td><td>Type (fichier)</td></tr>
@@ -174,35 +243,67 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <tr><td><code>r--</code></td><td>Autres</td></tr>
 </table>
 <h3>Modifier les permissions</h3>
-<p><div class="code-block"><div class="code-line"><code>chmod +x fichier     # Rendre exécutable</p>
-<p>chmod 644 fichier    # rw-r--r--</p>
-<p>chmod 755 dossier/   # rwxr-xr-x</p>
-<p>chmod -R 777 dossier # Plein accès (DANGER!)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>chmod +x fichier     # Rendre exécutable
+chmod 644 fichier    # rw-r--r--
+chmod 755 dossier/   # rwxr-xr-x
+chmod -R 777 dossier # Plein accès (DANGER!)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7.root et sudo</h2>
 <h3>Utilisateur root</h3>
 <p>root est le **super-utilisateur** avec tous les droits. Linux demande souvent confirmation.</p>
 <h3>sudo</h3>
 <p><code>sudo</code> (Super User Do) permet d'exécuter une commande avec les droits admin :</p>
-<p><div class="code-block"><div class="code-line"><code>sudo apt update      # Mettre à jour les paquets</p>
-<p>sudo mkdir /test     # Créer dans /</p>
-<p>sudo rm -rf /        # DANGER!</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update      # Mettre à jour les paquets
+sudo mkdir /test     # Créer dans /
+sudo rm -rf /        # DANGER!</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <blockquote>
 <p>⚠️ **Attention** : root peut tout faire, y compris détruire le système !</p>
 </blockquote>
 <hr/>
 <h2>8. Installation de logiciels</h2>
 <h3>Avec APT (Debian/Ubuntu)</h3>
-<p><div class="code-block"><div class="code-line"><code>sudo apt update          # Mettre à jour</p>
-<p>sudo apt install NomPaquet    # Installer</p>
-<p>sudo apt upgrade         # Mettre à jour</p>
-<p>sudo apt remove NomPaquet    # Supprimer</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo apt update          # Mettre à jour
+sudo apt install NomPaquet    # Installer
+sudo apt upgrade         # Mettre à jour
+sudo apt remove NomPaquet    # Supprimer</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>9. Aide et documentation</h2>
 <h3>Obtenir de l'aide</h3>
-<p><div class="code-block"><div class="code-line"><code>commande --help         # Aide rapide</p>
-<p>man commande            # Manuel complet</p>
-<p>info commande           # Documentation info</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>commande --help         # Aide rapide
+man commande            # Manuel complet
+info commande           # Documentation info</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Ressources en ligne</h3>
 <ul>
 <li>**askubuntu.com** : Questions/réponses</li>
@@ -228,4 +329,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 
 <a href="02-commandes-base.html">02-commandes-base &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>

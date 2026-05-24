@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"Inter",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:40px 20px}
@@ -18,13 +18,26 @@ tr:nth-child(even){background:rgba(255,255,255,.02)}
 blockquote{border-left:3px solid #a855f7;padding:10px 15px;margin:15px 0;background:rgba(168,85,247,.1);border-radius:0 8px 8px 0}
 blockquote p{color:#ddd;margin:5px 0}
 li{line-height:1.8;color:#bbb;margin-left:20px}
+li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
 nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid #333}
 a{color:#00d9ff;text-decoration:none}a:hover{text-decoration:underline}
 hr{border:none;border-top:1px solid #333;margin:20px 0}
+p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* === Code Block avec copie + progression === */
 .code-block{background:#111118;border-radius:8px;overflow:hidden;margin:15px 0;border:1px solid #30363d}
-.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;transition:background .15s}
+.code-block progress{width:100%;height:3px;appearance:none;border:none;display:block}
+.code-block progress::-webkit-progress-bar{background:#238636}
+.code-block progress::-moz-progress-bar{background:#238636}
+.code-block progress.loaded{background:#30363d}
+.code-line{display:flex;align-items:center;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s}
 .code-line:hover{background:rgba(255,255,255,.04)}
-.code-line code{background:none;color:#e6edf3;padding:0;font-family:'Courier New',monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.code-line code{background:none;color:#e6edf3;padding:0;font-family:"Courier New",monospace;font-size:13.5px;line-height:1.5;white-space:pre;flex:1;overflow-x:auto}
+.copy-btn{margin-left:12px;background:none;border:1px solid #30363d;border-radius:6px;cursor:pointer;padding:4px 8px;opacity:.5;transition:opacity .2s,border-color .2s;flex-shrink:0;display:flex;align-items:center}
+.copy-btn:hover{opacity:1;border-color:#58a6ff}
+.copy-btn.copied{border-color:#238636;opacity:1}
+.copy-btn svg{width:14px;height:14px;fill:#8b949e;display:block}
+.copy-btn.copied svg{fill:#238636}
 </style></head>
 <body>
 <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333">
@@ -54,15 +67,31 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>2. NANO - L'éditeur simple</h2>
 <h3>Lancer Nano</h3>
-<p><div class="code-block"><div class="code-line"><code>nano                    # Nouveau fichier</p>
-<p>nano fichier.txt        # Ouvrir fichier existant</p>
-<p>nano -c fichier.txt     # Afficher position curseur</p>
-<p>nano -m fichier.txt     # Activer souris</p>
-<p>nano +10 fichier.txt    # Aller à la ligne 10</p>
-<p>nano -i fichier.txt    # Indentation automatique</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>nano                    # Nouveau fichier
+nano fichier.txt        # Ouvrir fichier existant
+nano -c fichier.txt     # Afficher position curseur
+nano -m fichier.txt     # Activer souris
+nano +10 fichier.txt    # Aller à la ligne 10
+nano -i fichier.txt    # Indentation automatique</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Interface Nano</h3>
-<p><div class="code-block"><div class="code-line"><code>GNU nano 6.2           Modification de fichier.txt                          </p>
-<p>^G Aide    ^O Écrire   ^R Lire    ^X Quitter   ^C Position ^_ Recherche</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>GNU nano 6.2           Modification de fichier.txt                          
+^G Aide    ^O Écrire   ^R Lire    ^X Quitter   ^C Position ^_ Recherche</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>Le <code>^</code> représente la touche **Ctrl**.</p>
 <h3>Raccourcis essentiels</h3>
 <table>
@@ -91,18 +120,35 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>**Note** : Meta = Alt ou Échap</p>
 </blockquote>
 <h3>Rechercher et remplacer</h3>
-<p><div class="code-block"><div class="code-line"><code># Rechercher</p>
-<p>Ctrl + W, taper le mot, Entrée</p>
-<p># Suivant: Ctrl + W puis Entrée</p>
-<p># Rechercher et remplacer</p>
-<p>Ctrl + \ , taper recherche, Entrée, taper remplacement, Entrée</p>
-<p># Confirmer: A pour tous, Y pour un par un</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Rechercher
+Ctrl + W, taper le mot, Entrée
+# Suivant: Ctrl + W puis Entrée
+
+# Rechercher et remplacer
+Ctrl + \ , taper recherche, Entrée, taper remplacement, Entrée
+# Confirmer: A pour tous, Y pour un par un</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>###nano par défaut</p>
-<p><div class="code-block"><div class="code-line"><code># Créer ~/.nanorc</p>
-<p>set linenumbers      # Numéros de ligne</p>
-<p>set mouse           # Support souris</p>
-<p>set autoindent      # Indentation auto</p>
-<p>set noread          # Fichiers ouverts en lecture seule</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer ~/.nanorc
+set linenumbers      # Numéros de ligne
+set mouse           # Support souris
+set autoindent      # Indentation auto
+set noread          # Fichiers ouverts en lecture seule</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>3. VIM - L'éditeur puissant</h2>
 <h3>Vim vs Vi</h3>
@@ -111,12 +157,20 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <li>**Vim** : Vi Improved, version améliorée (la plus utilisée)</li>
 </ul>
 <h3>Lancer Vim</h3>
-<p><div class="code-block"><div class="code-line"><code>vim                     # Vim vide</p>
-<p>vim fichier.txt         # Ouvrir fichier</p>
-<p>vim +10 fichier.txt     # Ligne 10</p>
-<p>vim +/motif fichier     # Rechercher "motif"</p>
-<p>vim -R fichier.txt      # Lecture seule</p>
-<p>vim -d fichier1.txt fichier2.txt   # Comparer 2 fichiers</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>vim                     # Vim vide
+vim fichier.txt         # Ouvrir fichier
+vim +10 fichier.txt     # Ligne 10
+vim +/motif fichier     # Rechercher "motif"
+vim -R fichier.txt      # Lecture seule
+vim -d fichier1.txt fichier2.txt   # Comparer 2 fichiers</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>4. Les modes de Vim</h2>
 <p>C'est le concept le plus important à comprendre !</p>
@@ -129,39 +183,71 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 </table>
 <h3>Mode Normal</h3>
 <p>C'est le mode par défaut quand vous ouvrez Vim. Ici, chaque touche exécute une commande !</p>
-<p><div class="code-block"><div class="code-line"><code># Quand vous tapez "x", ça supprime le caractère, ça n'écrit pas "x" !</p>
-<p># C'est normal, c'est le mode NORMAL.</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Quand vous tapez "x", ça supprime le caractère, ça n'écrit pas "x" !
+# C'est normal, c'est le mode NORMAL.</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Mouvements de base :**</p>
-<p><div class="code-block"><div class="code-line"><code>h j k l           # Gauche, Bas, Haut, Droite (ou flèches)</p>
-<p>w                 # Mot suivant</p>
-<p>b                 # Mot précédent</p>
-<p>e                 # Fin du mot</p>
-<p>0                 # Début de ligne</p>
-<p>$                 # Fin de ligne</p>
-<p>gg                # Début du fichier</p>
-<p>G                 # Fin du fichier</p>
-<p>:n                # Aller à la ligne n</p>
-<p>%                 # Aller à l'accolade opposante</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>h j k l           # Gauche, Bas, Haut, Droite (ou flèches)
+w                 # Mot suivant
+b                 # Mot précédent
+e                 # Fin du mot
+0                 # Début de ligne
+$                 # Fin de ligne
+gg                # Début du fichier
+G                 # Fin du fichier
+:n                # Aller à la ligne n
+%                 # Aller à l'accolade opposante</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Passer en mode Insertion</h3>
-<p><div class="code-block"><div class="code-line"><code>i          # Insertion avant le curseur (le plus utilisé)</p>
-<p>I          # Insertion début de ligne</p>
-<p>a          # Insertion après le curseur</p>
-<p>A          # Insertion fin de ligne</p>
-<p>o          # Nouvelle ligne dessous</p>
-<p>O          # Nouvelle ligne dessus</p>
-<p>s          # Supprimer caractère et insérer</p>
-<p>S          # Supprimer ligne et insérer</p>
-<p>cc         # Supprimer ligne et insérer</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>i          # Insertion avant le curseur (le plus utilisé)
+I          # Insertion début de ligne
+a          # Insertion après le curseur
+A          # Insertion fin de ligne
+o          # Nouvelle ligne dessous
+O          # Nouvelle ligne dessus
+s          # Supprimer caractère et insérer
+S          # Supprimer ligne et insérer
+cc         # Supprimer ligne et insérer</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <p>**Touche Échap** ou **Ctrl + [** pour revenir au mode Normal !</p>
 <h3>Mode Commande</h3>
 <p>En mode Normal, taper <code>:</code> pour accéder aux commandes.</p>
-<p><div class="code-block"><div class="code-line"><code>:w             # Enregistrer (write)</p>
-<p>:wq            # Enregistrer et quitter</p>
-<p>:x             # Enregistrer et quitter (plus court)</p>
-<p>:q             # Quitter (si pas de changement)</p>
-<p>:q!            # Quitter sans enregistrer</p>
-<p>:wqa           # Enregistrer et quitter tous les fichiers</p>
-<p>:qa            # Quitter tous les fichiers</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>:w             # Enregistrer (write)
+:wq            # Enregistrer et quitter
+:x             # Enregistrer et quitter (plus court)
+:q             # Quitter (si pas de changement)
+:q!            # Quitter sans enregistrer
+:wqa           # Enregistrer et quitter tous les fichiers
+:qa            # Quitter tous les fichiers</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>5. Commandes du mode Normal</h2>
 <h3>Suppression et modification</h3>
@@ -212,70 +298,130 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <hr/>
 <h2>6. Commandes du mode Commande</h2>
 <h3>Enregistrement et sauvegarde</h3>
-<p><div class="code-block"><div class="code-line"><code>:w             # Enregistrer</p>
-<p>:w fichier     # Enregistrer sous</p>
-<p>:wq            # Enregistrer et quitter</p>
-<p>:x             # Enregistrer et quitter</p>
-<p>:q             # Quitter</p>
-<p>:q!            # Quitter sans enregistrer</p>
-<p>:wqa           # Enregistrer et quitter tout</p>
-<p>:qa            # Quitter tout</p>
-<p>:qa!           # Forcer quitter tout</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>:w             # Enregistrer
+:w fichier     # Enregistrer sous
+:wq            # Enregistrer et quitter
+:x             # Enregistrer et quitter
+:q             # Quitter
+:q!            # Quitter sans enregistrer
+:wqa           # Enregistrer et quitter tout
+:qa            # Quitter tout
+:qa!           # Forcer quitter tout</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Rechercher et remplacer</h3>
-<p><div class="code-block"><div class="code-line"><code>:/motif        # Rechercher</p>
-<p>:%s/old/new/   # Remplacer premiere occurrence</p>
-<p>:%s/old/new/g  # Remplacer toutes les occurrences</p>
-<p>:%s/old/new/gc # Confirmer chaque remplacement</p>
-<p>:s/old/new/    # Ligne actuelle seulement</p>
-<p>:5,10s/old/new/g  # Lignes 5 à 10</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>:/motif        # Rechercher
+:%s/old/new/   # Remplacer premiere occurrence
+:%s/old/new/g  # Remplacer toutes les occurrences
+:%s/old/new/gc # Confirmer chaque remplacement
+:s/old/new/    # Ligne actuelle seulement
+:5,10s/old/new/g  # Lignes 5 à 10</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Édition avancée</h3>
-<p><div class="code-block"><div class="code-line"><code>:set nu         # Afficher numéros de ligne</p>
-<p>:set nonu       # Masquer numéros</p>
-<p>:set hlsearch   # Surligner recherches</p>
-<p>:set incsearch  # Recherche incrémentale</p>
-<p>:set syntax on  # Coloration syntaxique</p>
-<p>:set tabstop=4  # Taille tabulation</p>
-<p>:set expandtab  # Espaces au lieu de tab</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>:set nu         # Afficher numéros de ligne
+:set nonu       # Masquer numéros
+:set hlsearch   # Surligner recherches
+:set incsearch  # Recherche incrémentale
+:set syntax on  # Coloration syntaxique
+:set tabstop=4  # Taille tabulation
+:set expandtab  # Espaces au lieu de tab</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>7. Sélection visuelle</h2>
 <h3>Mode Visuel</h3>
-<p><div class="code-block"><div class="code-line"><code>v           # Mode visuel (caractère)</p>
-<p>V           # Mode visuel (ligne)</p>
-<p>Ctrl + V    # Mode visuel (bloc)</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>v           # Mode visuel (caractère)
+V           # Mode visuel (ligne)
+Ctrl + V    # Mode visuel (bloc)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <h3>Avec sélection</h3>
-<p><div class="code-block"><div class="code-line"><code>y           # Copier (yank)</p>
-<p>d           # Supprimer</p>
-<p>c           # Supprimer et insérer</p>
-<p>&gt;           # Indenter à droite</p>
-<p>&lt;           # Indenter à gauche</p>
-<p>!           # Filtrer avec commande externe</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>y           # Copier (yank)
+d           # Supprimer
+c           # Supprimer et insérer
+&gt;           # Indenter à droite
+&lt;           # Indenter à gauche
+!           # Filtrer avec commande externe</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>8. Fenêtres et splits</h2>
 <h3>Splits horizontaux et verticaux</h3>
-<p><div class="code-block"><div class="code-line"><code>:split           # Split horizontal</p>
-<p>:vsplit          # Split vertical</p>
-<p>Ctrl + w + h     # Allergauche</p>
-<p>Ctrl + w + j     # Allerbas</p>
-<p>Ctrl + w + k     # Alleren haut</p>
-<p>Ctrl + w + l     # Allerdroite</p>
-<p>Ctrl + w + w     # Passer à la fenêtre suivante</p>
-<p>Ctrl + w + =     # Égaliser les fenêtres</p>
-<p>Ctrl + w + _     # Maximiser horizontale</p>
-<p>Ctrl + w + |    # Maximiser verticale</p>
-<p>:close           # Fermer la fenêtre</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>:split           # Split horizontal
+:vsplit          # Split vertical
+Ctrl + w + h     # Allergauche
+Ctrl + w + j     # Allerbas
+Ctrl + w + k     # Alleren haut
+Ctrl + w + l     # Allerdroite
+Ctrl + w + w     # Passer à la fenêtre suivante
+Ctrl + w + =     # Égaliser les fenêtres
+Ctrl + w + _     # Maximiser horizontale
+Ctrl + w + |    # Maximiser verticale
+:close           # Fermer la fenêtre</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>9. Macros</h2>
 <h3>Enregistrer et exécuter</h3>
-<p><div class="code-block"><div class="code-line"><code># Commencer l'enregistrement (registre a)</p>
-<p>qa</p>
-<p># Faire des actions</p>
-<p>I# &lt;Esc&gt;</p>
-<p># Arrêter l'enregistrement</p>
-<p>q</p>
-<p># Exécuter la macro</p>
-<p>@a</p>
-<p># Exécuter 5 fois</p>
-<p>5@a</code></div></div></p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Commencer l'enregistrement (registre a)
+qa
+
+# Faire des actions
+I# &lt;Esc&gt;
+
+# Arrêter l'enregistrement
+q
+
+# Exécuter la macro
+@a
+
+# Exécuter 5 fois
+5@a</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
 <hr/>
 <h2>10. Fichiers de configuration Vim</h2>
 <h3>~/.vimrc basique</h3>
@@ -302,16 +448,38 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p>" Divers</p>
 <p>set mouse=a        " Support souris</p>
 <p>set backspace=2    " Backspace fonctionne</p>
-<p><div class="code-block"><div class="code-line"><code>---</p>
-<h2>11. vimtutor - Le meilleur moyen d'apprendre</code></div></div>bash</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>---
+
+## 11. vimtutor - Le meilleur moyen d'apprendre</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Lancer le tutorial interactif</p>
 <p>vimtutor</p>
 <p># Version française (si disponible)</p>
 <p>vimtutor fr</p>
-<p><div class="code-block"><div class="code-line"><code>C'est un tutorial de 30 minutes directement dans le terminal. **FORTEMENT recommandé !**</p>
-<hr/>
-<h2>12. Exercices pratiques</h2>
-<h3>Exercice 1 : Nano basique</code></div></div>bash</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>C'est un tutorial de 30 minutes directement dans le terminal. **FORTEMENT recommandé !**
+
+---
+
+## 12. Exercices pratiques
+
+### Exercice 1 : Nano basique</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Créer un fichier</p>
 <p>nano test.txt</p>
 <p># Écrire du texte</p>
@@ -319,14 +487,32 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p># Utiliser Ctrl+X pour quitter</p>
 <p># Vérifier</p>
 <p>cat test.txt</p>
-<p><div class="code-block"><div class="code-line"><code>### Exercice 2 : Vim premier pas</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Exercice 2 : Vim premier pas</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Ouvrir vim</p>
 <p>vim</p>
 <p># Passer en mode insertion (i)</p>
 <p># Écrire "Bonjour"</p>
 <p># Échap pour revenir en mode normal</p>
 <p># :wq pour sauvegarder et quitter</p>
-<p><div class="code-block"><div class="code-line"><code>### Exercice 3 : Vim avancé</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Exercice 3 : Vim avancé</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Ouvrir un fichier</p>
 <p>vim fichier.txt</p>
 <p># Naviguer: gg (début), G (fin)</p>
@@ -334,7 +520,16 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <p># Copier/Coller: yy, p</p>
 <p># Rechercher: /motif</p>
 <p># Remplacer: :%s/old/new/g</p>
-<p><div class="code-block"><div class="code-line"><code>### Exercice 4 : vimtutor</code></div></div>bash</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>### Exercice 4 : vimtutor</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>bash</p>
 <p># Faire le tutorial</p>
 <p>vimtutor</p>
 <p># Faire les 2 premières leçons</p>
@@ -389,4 +584,8 @@ hr{border:none;border-top:1px solid #333;margin:20px 0}
 <nav>
 <a href="15-redirections-pipes.html">&larr; 15-redirections-pipes</a>
 <a href="17-logs-systeme.html">17-logs-systeme &rarr;</a>
-</nav></div></body></html>
+</nav></div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body></html>
