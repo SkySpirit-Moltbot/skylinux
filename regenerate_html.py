@@ -186,15 +186,16 @@ for m in all_md:
     items += f'<a href="{html_name}" class="item"><span class="num">{num}</span><span class="title">{title_short}</span><span class="arrow">-&gt;</span></a>\n'
 
 # Remplacer la liste dans l'index existant
-start_marker = '<p class="list-title">'
-end_marker = '<p class="footer">'
-idx_start = old_html.find(start_marker)
-idx_end = old_html.find(end_marker)
+# Chercher les marqueurs (flexible: avec ou sans < devant)
+import re
+idx_match_start = re.search(r'<p\s+class=["\']list-title["\']>', old_html)
+idx_match_end = re.search(r'<p\s+class=["\']footer["\']>', old_html)
 
-if idx_start != -1 and idx_end != -1:
-    header = old_html[:idx_start]
-    footer = old_html[idx_end:]
-    new_html = header + start_marker[1:] + '\n<div class="list">\n' + items + '</div>\n' + footer
+if idx_match_start and idx_match_end:
+    header = old_html[:idx_match_start.start()]
+    footer = old_html[idx_match_end.start():]
+    # Reconstruire avec le marqueur correct
+    new_html = header + '<p class="list-title">📖 Sommaire des leçons</p>\n<div class="list">\n' + items + '</div>\n' + footer
     # Mettre à jour compteurs
     new_html = re.sub(r'<span id="nb-lecons">\d+</span>', f'<span id="nb-lecons">{n}</span>', new_html)
     new_html = re.sub(r'<span id="nb-lecons2">\d+</span>', f'<span id="nb-lecons2">{n}</span>', new_html)
