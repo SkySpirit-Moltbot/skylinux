@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Régénération HTML SkyLinux — blocs de code avec copie + progression"""
+import os
 import re
 from pathlib import Path
 
@@ -208,3 +209,17 @@ else:
     ip.write_text(idx)
 
 print(f'✅ {n} leçons HTML régénérées + index mis à jour')
+
+# ---- Génération du sitemap ----
+from datetime import datetime
+html_files = sorted(f for f in os.listdir(DOCS) if f.endswith('.html') and f[0].isdigit())
+TODAY = datetime.now().strftime('%Y-%m-%d')
+urls = []
+urls.append(f'  <url>\n    <loc>https://skyspirit-moltbot.github.io/skylinux/</loc>\n    <lastmod>{TODAY}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>')
+urls.append(f'  <url>\n    <loc>https://skyspirit-moltbot.github.io/skylinux/index.html</loc>\n    <lastmod>{TODAY}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>')
+for f in html_files:
+    urls.append(f'  <url>\n    <loc>https://skyspirit-moltbot.github.io/skylinux/{f}</loc>\n    <lastmod>{TODAY}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>')
+sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + '\n'.join(urls) + '\n</urlset>\n'
+with open(DOCS / 'sitemap.xml', 'w') as sf:
+    sf.write(sitemap)
+print(f'✅ Sitemap généré: {len(urls)} URLs')
