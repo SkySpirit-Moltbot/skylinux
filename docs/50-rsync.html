@@ -44,27 +44,193 @@ p code,li code{background:rgba(0,217,255,.1);color:#00d9ff;padding:2px 6px;borde
 <a href="index.html" style="color:#666;text-decoration:none">&larr; Sommaire</a>
 <span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent">SkyLinux</span>
 </div><div class="container">
-<h1>Leçon 50 : Leçon 52 : rsync — Synchronisation de fichiers</h1>
-<h3>Objectif</h3>
-<p>Maîtriser rsync pour synchroniser efficacement des fichiers et répertoires en local ou à distance. C'est l'outil de référence pour les sauvegardes et la copie incrémentale.</p>
-<h3>Pourquoi rsync ?</h3>
-<p>Ne copie que les fichiers modifiés (transfert incrémental)</p>
-<p>Much faster than cp pour les gros transferts</p>
-<p>Compression intégrée pour réduire la bande passante</p>
-<p>Supporte SSH pour des transferts sécurisés</p>
-<p>Peut reprendre un transfert interrompu</p>
-<h3>Les slashs comptent !</h3>
-<p>Attention à la présence ou l'absence du / final :</p>
-<h3>Bonnes pratiques</h3>
-<p>Toujours faire un dry-run (-n) avant une première synchro</p>
-<p>Utiliser -P pour les gros transferts (reprise si coupure)</p>
-<p>Protéger les transferts distants avec SSH</p>
-<p>Utiliser --delete avec prudence en mode miroir</p>
-<h3>Exercices pratiques</h3>
-<p>Copie locale — Synchronise ton dossier ~/Documents vers /tmp/backup-documents/ en mode verbeux.</p>
-<p>Simulation — Utilise -n pour voir ce qui serait copié sans rien modifier.</p>
-<p>Exclusion — Synchronise un dossier en excluant tous les fichiers .log et le dossier .git.</p>
-<p>Sauvegarde distante — Si tu as accès SSH à une machine, synchronise un petit dossier via SSH.</p>
+<h1>Leçon 50 : rsync — Synchroniser des fichiers comme un pro</h1>
+<p>Dans cette leçon, tu vas apprendre à utiliser <code>rsync</code>, l'outil indispensable pour copier et synchroniser des fichiers rapidement, que ce soit en local ou entre deux machines.</p>
+<h2>1. C'est quoi rsync ?</h2>
+<p><code>rsync</code> est un outil de copie **intelligent**. Contrairement à <code>cp</code>, il ne copie que ce qui a changé. Résultat : la deuxième synchronisation est ultra-rapide.</p>
+<p>**Cas concret :** tu as un dossier de 10 Go. Tu modifies un seul fichier de 2 Ko. Avec <code>cp</code>, tu recopies tout (10 Go). Avec <code>rsync</code>, seuls les 2 Ko modifiés sont transférés.</p>
+<h2>2. rsync en local — la base</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Syntaxe de base
+rsync [options] SOURCE DESTINATION
+
+# Copier un dossier et tout son contenu
+rsync -av /home/david/Documents/ /tmp/sauvegarde/
+
+# Que signifient les options ?
+# -a : mode archive (garde les permissions, dates, propriétaire)
+# -v : verbeux (affiche ce qui est copié)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Le résultat ressemble à ça :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sending incremental file list
+./
+rapport.pdf
+photos/
+photos/vacances.jpg
+photos/portrait.jpg
+
+sent 2.45M bytes  received 68 bytes  4.90M bytes/sec</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>3. Le piège du slash final — ATTENTION !</h2>
+<p>C'est l'erreur la plus fréquente avec rsync. Le <code>/</code> à la fin de la source change tout :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># AVEC slash final → copie le CONTENU du dossier
+rsync -av /home/david/Documents/ /tmp/sauvegarde/
+# Résultat : /tmp/sauvegarde/rapport.pdf
+
+# SANS slash final → copie le DOSSIER lui-même
+rsync -av /home/david/Documents /tmp/sauvegarde/
+# Résultat : /tmp/sauvegarde/Documents/rapport.pdf</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>**Pense-bête :** slash à la fin = « ce qu'il y a dedans »</p>
+<h2>4. Mode simulation : voir avant d'agir</h2>
+<p>Toujours tester avant une synchro importante avec <code>-n</code> (dry-run) :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Simuler sans rien copier
+rsync -avn /home/david/Documents/ /tmp/sauvegarde/
+
+# Avec des statistiques détaillées
+rsync -avn --stats /home/david/Documents/ /tmp/sauvegarde/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>5. Synchroniser avec un serveur distant (via SSH)</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Envoyer un dossier local vers un serveur
+rsync -av /home/david/projet/ user@192.168.1.100:/home/user/projet/
+
+# Récupérer un dossier distant en local
+rsync -av user@192.168.1.100:/home/user/projet/ /home/david/projet/
+
+# Avec compression pour les connexions lentes (-z)
+rsync -avz /home/david/projet/ user@192.168.1.100:/home/user/projet/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>**Concrètement**, si tu veux sauvegarder tes documents sur ton PC Ubuntu (192.168.1.119) :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>rsync -avz ~/Documents/ aselophe@192.168.1.119:~/Sauvegardes/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>6. Reprendre un transfert coupé</h2>
+<p>L'option <code>-P</code> combine progression et reprise. Indispensable pour les gros fichiers :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Transfert avec barre de progression + reprise possible
+rsync -avP gros-fichier.iso user@serveur:/backup/
+
+# Si le transfert est coupé, relance la MÊME commande
+# rsync reprend là où il s'était arrêté</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>7. Exclure des fichiers</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Exclure un type de fichier
+rsync -av --exclude='*.log' /home/david/projet/ /tmp/sauvegarde/
+
+# Exclure plusieurs motifs
+rsync -av --exclude='*.log' --exclude='*.tmp' --exclude='.git/' source/ dest/
+
+# Utiliser un fichier d'exclusions
+echo "*.log" &gt; /tmp/exclusions.txt
+echo ".git/" &gt;&gt; /tmp/exclusions.txt
+echo "node_modules/" &gt;&gt; /tmp/exclusions.txt
+rsync -av --exclude-from=/tmp/exclusions.txt source/ dest/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>8. Mode miroir avec --delete</h2>
+<p>Supprime les fichiers qui n'existent plus dans la source. Pratique pour une copie parfaite :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># La destination devient un miroir exact de la source
+rsync -av --delete /home/david/Documents/ /tmp/miroir/
+
+# ⚠️ ATTENTION : --delete supprime des fichiers !
+# Toujours tester avec -n d'abord :
+rsync -avn --delete /home/david/Documents/ /tmp/miroir/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>9. Récapitulatif des options essentielles</h2>
+<table>
+<tr><th>Option</th><th>Action</th><th>Quand l'utiliser</th></tr>
+<tr><td><code>-a</code></td><td>Mode archive</td><td>Toujours (garde tout intact)</td></tr>
+<tr><td><code>-v</code></td><td>Verbeux</td><td>Pour voir ce qui se passe</td></tr>
+<tr><td><code>-n</code></td><td>Dry-run (simulation)</td><td>Avant toute première synchro</td></tr>
+<tr><td><code>-z</code></td><td>Compression</td><td>Transferts réseau lents</td></tr>
+<tr><td><code>-P</code></td><td>Progression + reprise</td><td>Gros fichiers</td></tr>
+<tr><td><code>--delete</code></td><td>Miroir (supprime l'extra)</td><td>Sauvegardes exactes, avec prudence</td></tr>
+<tr><td><code>--exclude</code></td><td>Ignorer des fichiers</td><td>Fichiers temporaires, logs, .git</td></tr>
+</table>
+<h2>10. Exemples concrets de tous les jours</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sauvegarde quotidienne de tes documents
+rsync -av ~/Documents/ /media/disque-usb/Sauvegarde/
+
+# Envoyer un site web sur ton serveur
+rsync -avz --delete ~/mon-site/ user@serveur:/var/www/mon-site/
+
+# Synchroniser deux dossiers en local (bidirectionnel… pas vraiment, rsync est unidirectionnel)
+# Pour comparer deux dossiers
+rsync -avn --delete dossier1/ dossier2/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<h2>11. Exercices pratiques</h2>
+<p>1. **Copie locale** — Synchronise ton dossier <code>~/Documents</code> vers <code>/tmp/backup-documents/</code> en mode verbeux.</p>
+<p>2. **Simulation** — Utilise <code>-n</code> pour voir ce qui serait copié sans rien modifier.</p>
+<p>3. **Exclusion** — Synchronise un dossier en excluant tous les fichiers <code>.log</code> et le dossier <code>.git</code>.</p>
+<p>4. **Sauvegarde distante** — Si tu as accès SSH à une machine, synchronise un petit dossier via SSH.</p>
+<hr/>
+<p>**Résumé :** La commande à retenir pour 90% des cas : <code>rsync -av source/ destination/</code>. Ajoute <code>-n</code> pour tester, <code>-z</code> si c'est à travers le réseau, <code>-P</code> pour les gros fichiers.</p>
 <nav>
 <a href="49-journalctl-logs-systemd.html">&larr; 49-journalctl-logs-systemd</a>
 <a href="51-cut.html">51-cut &rarr;</a>
