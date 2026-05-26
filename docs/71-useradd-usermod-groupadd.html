@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-block progress { width: 100%; height: 3px; appearance: none; border: none; display: block; }
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; }
+.code-line:hover { background: rgba(255,255,255,0.03); }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.copy-btn { background: none; border: none; cursor: pointer; padding: 4px; margin-left: 10px; opacity: 0.5; transition: opacity 0.2s; flex-shrink: 0; }
+.copy-btn:hover { opacity: 1; }
+.copy-btn svg { width: 16px; height: 16px; fill: #8b949e; }
+.copy-btn.copied svg { fill: #238636; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 71 : useradd, usermod et groupadd — Créer et gérer les comptes</h1>
+
+<h2>1. Introduction</h2>
+<p>Sous Linux, la gestion des utilisateurs et des groupes se fait principalement avec quelques commandes dédiées. <code>useradd</code> crée un compte utilisateur, <code>usermod</code> le modifie, et <code>groupadd</code> crée des groupes. Ces commandes sont les outils de base de tout administrateur système.</p>
+
+<blockquote><p>Ces commandes nécessitent les droits <strong>root</strong> (ou <code>sudo</code>). Une mauvaise manipulation peut verrouiller l'accès au système — teste toujours sur un compte secondaire avant de modifier root.</p></blockquote>
+
+<h2>2. Créer un utilisateur avec useradd</h2>
+<h3>Syntaxe de base</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo useradd [options] nom_utilisateur</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Exemple simple</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo useradd -m alice</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>L'option <code>-m</code> (ou <code>--create-home</code>) crée automatiquement le répertoire personnel <code>/home/alice</code>.</p>
+
+<h3>Options courantes</h3>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-m</code></td><td>Crée le répertoire personnel</td></tr>
+<tr><td><code>-d /chemin</code></td><td>Spécifie un répertoire personnel personnalisé</td></tr>
+<tr><td><code>-s /bin/bash</code></td><td>Définit le shell par défaut</td></tr>
+<tr><td><code>-c "Nom Complet"</code></td><td>Ajoute un commentaire (nom complet)</td></tr>
+<tr><td><code>-G groupes</code></td><td>Liste de groupes secondaires (séparés par des virgules)</td></tr>
+<tr><td><code>-e YYYY-MM-DD</code></td><td>Date d'expiration du compte</td></tr>
+<tr><td><code>-u UID</code></td><td>Force un UID spécifique</td></tr>
+<tr><td><code>-p motdepasse</code></td><td>Définit un mot de passe (déconseillé — utilise plutôt <code>passwd</code>)</td></tr>
+</table>
+
+<h3>Exemple complet</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo useradd -m -s /bin/bash -c "Alice Dupont" -G sudo,www-data alice</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Cet exemple crée l'utilisateur <code>alice</code> avec son home, bash, le commentaire "Alice Dupont", et les groupes secondaires <code>sudo</code> et <code>www-data</code>.</p>
+
+<h2>3. Définir ou changer le mot de passe</h2>
+<p>Après création, il faut assigner un mot de passe :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo passwd alice</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Le système demandera d'entrer et de confirmer le nouveau mot de passe.</p>
+
+<h2>4. Modifier un utilisateur avec usermod</h2>
+<h3>Syntaxe de base</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo usermod [options] nom_utilisateur</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Ajouter un utilisateur à un groupe</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo usermod -aG groupe nom_utilisateur</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<blockquote><p>L'option <code>-aG</code> (append + Group) ajoute l'utilisateur à un groupe <strong>sans</strong> le retirer des groupes auxquels il appartient déjà. Sans <code>-a</code>, l'utilisateur perdrait tous ses autres groupes.</p></blockquote>
+
+<h3>Autres options courantes</h3>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-l nouveau_nom</code></td><td>Renomme le compte utilisateur</td></tr>
+<tr><td><code>-d /nouveau/home</code></td><td>Change le répertoire personnel</td></tr>
+<tr><td><code>-m</code></td><td>Déplace le contenu de l'ancien home vers le nouveau (avec <code>-d</code>)</td></tr>
+<tr><td><code>-s /bin/nouveau_shell</code></td><td>Change le shell par défaut</td></tr>
+<tr><td><code>-L</code></td><td>Verrouille le compte (ajoute ! devant le mot de passe)</td></tr>
+<tr><td><code>-U</code></td><td>Déverrouille le compte</td></tr>
+<tr><td><code>-e YYYY-MM-DD</code></td><td>Modifie la date d'expiration</td></tr>
+<tr><td><code>-u UID</code></td><td>Change l'UID de l'utilisateur</td></tr>
+</table>
+
+<h3>Exemples pratiques</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Renommer un compte
+sudo usermod -l nouveau_nom ancien_nom
+
+# Changer le shell
+sudo usermod -s /bin/zsh alice
+
+# Ajouter un groupe (sans perdre les autres)
+sudo usermod -aG docker alice
+
+# Verrouiller un compte
+sudo usermod -L alice
+
+# Déverrouiller un compte
+sudo usermod -U alice</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>5. Créer et gérer des groupes avec groupadd</h2>
+<h3>Créer un groupe</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo groupadd nom_groupe</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Options utiles</h3>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-g GID</code></td><td>Force un GID spécifique</td></tr>
+<tr><td><code>-r</code></td><td>Créer un groupe système (GID < 1000)</td></tr>
+</table>
+
+<h3>Ajouter ou retirer des membres d'un groupe</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Ajouter un utilisateur à un groupe
+sudo gpasswd -a alice developpeurs
+
+# Retirer un utilisateur d'un groupe
+sudo gpasswd -d alice developpeurs
+
+# Définir l'administrateur d'un groupe
+sudo gpasswd -A alice developpeurs</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>6. Supprimer un utilisateur ou un groupe</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Supprimer un utilisateur (sans supprimer son home)
+sudo userdel alice
+
+# Supprimer un utilisateur ET son répertoire personnel
+sudo userdel -r alice
+
+# Supprimer un groupe
+sudo groupdel nom_groupe</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<blockquote><p>Avant de supprimer un utilisateur, pense à vérifier quels fichiers lui appartiennent et à les transférer ou les archiver. Utilise <code>find / -uid UID -ls</code> pour les retrouver.</p></blockquote>
+
+<h2>7. Vérifier et lister</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister tous les utilisateurs
+getent passwd
+
+# Lister tous les groupes
+getent group
+
+# Voir les groupes d'un utilisateur
+groups alice
+
+# Voir l'UID et les groupes d'un utilisateur
+id alice</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Sortie de <code>id alice</code></h3>
+<pre style="background:#111118;border-radius:8px;padding:12px;margin:10px 0;border:1px solid #30363d;overflow-x:auto;">
+uid=1001(alice) gid=1001(alice) groupes=1001(alice),27(sudo),33(www-data)
+</pre>
+<ul>
+<li><code>uid</code> : l'identifiant utilisateur</li>
+<li><code>gid</code> : le groupe primaire</li>
+<li><code>groupes</code> : le groupe primaire + les groupes secondaires</li>
+</ul>
+
+<h2>8. Fichiers de référence</h2>
+<p>Chaque commande modifie des fichiers système clés :</p>
+<table>
+<tr><th>Fichier</th><th>Rôle</th></tr>
+<tr><td><code>/etc/passwd</code></td><td>Informations sur les comptes (login, UID, GID, home, shell)</td></tr>
+<tr><td><code>/etc/shadow</code></td><td>Mots de passe chiffrés (accessible uniquement par root)</td></tr>
+<tr><td><code>/etc/group</code></td><td>Liste des groupes et de leurs membres</td></tr>
+<tr><td><code>/etc/gshadow</code></td><td>Mots de passe de groupes (rarement utilisé)</td></tr>
+</table>
+
+<h2>9. Script d'exemple : créer un compte utilisateur complet</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>#!/bin/bash
+# Créer un compte utilisateur avec Everything configuré
+
+NOM=$1
+if [ -z "$NOM" ]; then
+  echo "Usage: $0 nom_utilisateur [groupes,separés,par,virgules]"
+  exit 1
+fi
+
+GROUPES=${2:-""}
+
+echo "Création de l'utilisateur : $NOM"
+sudo useradd -m -s /bin/bash -c "$NOM" $NOM
+
+if [ -n "$GROUPES" ]; then
+  echo "Ajout aux groupes : $GROUPES"
+  sudo usermod -aG $GROUPES $NOM
+fi
+
+echo "Définition du mot de passe..."
+sudo passwd $NOM
+
+echo "Compte $NOM créé avec succès."
+echo " UID : $(id -u $NOM)"
+echo " Groupes : $(groups $NOM)"</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>10. Exercices pratiques</h2>
+<p>1. **Créer un utilisateur** — Crée un utilisateur <code>testuser</code> avec <code>-m -s /bin/bash</code>, puis définis-lui un mot de passe.</p>
+<p>2. **Groupes** — Crée un groupe <code>developpeurs</code> et ajoute <code>testuser</code> à ce groupe avec <code>-aG</code>.</p>
+<p>3. **Vérifier** — Utilise <code>id testuser</code> et <code>groups testuser</code> pour vérifier les groupes.</p>
+<p>4. **Modifier** — Change le shell de <code>testuser</code> en <code>/bin/zsh</code> avec <code>usermod</code>.</p>
+<p>5. **Nettoyer** — Supprime <code>testuser</code> et le groupe <code>developpeurs</code> que tu as créés.</p>
+
+<nav>
+<a href="70-comm-comparer-fichiers.html">&larr; 70 — comm</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body>
+</html>
