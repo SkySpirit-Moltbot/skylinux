@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-block progress { width: 100%; height: 3px; appearance: none; border: none; display: block; }
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; }
+.code-line:hover { background: rgba(255,255,255,0.03); }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.copy-btn { background: none; border: none; cursor: pointer; padding: 4px; margin-left: 10px; opacity: 0.5; transition: opacity 0.2s; flex-shrink: 0; }
+.copy-btn:hover { opacity: 1; }
+.copy-btn svg { width: 16px; height: 16px; fill: #8b949e; }
+.copy-btn.copied svg { fill: #238636; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 72 : chmod et chown — Permissions avancées</h1>
+
+<h2>1. Introduction</h2>
+<p>Après avoir vu les bases des permissions dans la leçon 3, explorons maintenant les aspects avancés : la notation octale détaillée, les permissions spéciales (SUID, SGID, Sticky Bit), et l'utilisation approfondie de <code>chown</code> et <code>chgrp</code>.</p>
+
+<blockquote><p>Un mauvais <code>chmod</code> peut rendre un fichier inexploitable ou, pire, ouvrir des failles de sécurité. Toujours vérifier avant d'appliquer sur des fichiers critiques.</p></blockquote>
+
+<h2>2. Rappels : notation symbolique vs octale</h2>
+<p>Chaque fichier possède trois triplets de permissions :</p>
+<table>
+<tr><th>Triplet</th><th>Signification</th></tr>
+<tr><td><code>u</code> (user)</td><td>Propriétaire du fichier</td></tr>
+<tr><td><code>g</code> (group)</td><td>Groupe propriétaire</td></tr>
+<tr><td><code>o</code> (other)</td><td>Tous les autres utilisateurs</td></tr>
+<tr><td><code>a</code> (all)</td><td>Tout le monde (u + g + o)</td></tr>
+</table>
+
+<h3>Notation symbolique</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>chmod u+x fichier       # ajoute le droit execute au proprietaire
+chmod g-w fichier       # retire le droit ecriture au groupe
+chmod o=r fichier       # met lecture seule pour les autres
+chmod a+rw fichier      # lecture + ecriture pour tout le monde
+chmod u+rx,g+rx,o+r fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Notation octale</h3>
+<p>Chaque permission a une valeur numérique :</p>
+<table>
+<tr><th>Permission</th><th>Valeur</th></tr>
+<tr><td><code>r</code> (lecture)</td><td>4</td></tr>
+<tr><td><code>w</code> (ecriture)</td><td>2</td></tr>
+<tr><td><code>x</code> (execution)</td><td>1</td></tr>
+<tr><td><code>-</code> (aucun)</td><td>0</td></tr>
+</table>
+<p>On additionne les valeurs pour chaque triplet :</p>
+<table>
+<tr><th>Octal</th><th>Symbolique</th><th>Description</th></tr>
+<tr><td><code>7</code></td><td><code>rwx</code></td><td>Lecture + ecriture + execution</td></tr>
+<tr><td><code>6</code></td><td><code>rw-</code></td><td>Lecture + ecriture</td></tr>
+<tr><td><code>5</code></td><td><code>r-x</code></td><td>Lecture + execution</td></tr>
+<tr><td><code>4</code></td><td><code>r--</code></td><td>Lecture seule</td></tr>
+<tr><td><code>0</code></td><td><code>---</code></td><td>Aucune permission</td></tr>
+</table>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Exemples pratiques
+chmod 755 fichier   # rwxr-xr-x  (proprietaire: tout, groupe: rx, autres: rx)
+chmod 644 fichier   # rw-r--r-- (proprietaire: rw, groupe: r, autres: r)
+chmod 700 fichier   # rwx------ (proprietaire: tout, groupe: rien, autres: rien)
+chmod 775 fichier   # rwxrwxr-x (tout le monde lit/execute, seuls others n'ecrivent pas)
+chmod 600 fichier   # rw------- (seul le proprietaire lit et ecrit)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>3. Permissions speciales</h2>
+<p>Il existe trois permissions speciales qui s'ajoutent devant le triplet :</p>
+<table>
+<tr><th>Bit</th><th>Octal</th><th>Sur fichier</th><th>Sur repertoire</th></tr>
+<tr><td><code>SUID</code></td><td><code>4</code></td><td>Execute avec les droits du proprietaire</td><td>-</td></tr>
+<tr><td><code>SGID</code></td><td><code>2</code></td><td>Execute avec les droits du groupe</td><td>Les fichiers heritent du groupe</td></tr>
+<tr><td><code>Sticky Bit</code></td><td><code>1</code></td><td>-</td><td>Seul le proprietaire peut supprimer</td></tr>
+</table>
+
+<h3>SUID (Set User ID)</h3>
+<p>Quand un fichier a le SUID positionne, il s'execute avec l'UID de son proprietaire, pas celui de l'utilisateur qui le lance. L'exemple classique est <code>/usr/bin/passwd</code> :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ls -l /usr/bin/passwd
+# -rwsr-xr-x 1 root root ... /usr/bin/passwd
+#         ^ le 's' au lieu de 'x' signifie SUID actif</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Activer le SUID sur un script
+chmod 4755 /chemin/vers/script    # 4 = SUID
+# ou en notation symbolique
+chmod u+s /chemin/vers/script
+
+# Retirer le SUID
+chmod u-s /chemin/vers/script</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<blockquote><p>Le SUID est un risque de securite si tu l'appliques a un shell ou un script qui permet l'acces a root. Ne l'utilise que sur des programmes西亚 specifiques et bloques.</p></blockquote>
+
+<h3>SGID (Set Group ID)</h3>
+<p>Sur un fichier, il fonctionne comme le SUID mais pour le groupe. Sur un repertoire, tous les fichiers crees heritent automatiquement du groupe du repertoire :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Activer SGID sur un repertoire (partage de groupe)
+chmod 2775 /var/projet
+# Les fichiers crees ici appartiendront automatiquement au groupe du repertoire
+
+# Notation symbolique
+chmod g+s /var/projet
+
+# Verifier
+ls -ld /var/projet
+# drwxrwsr-x ... /var/projet
+#         ^ le 's' au lieu de 'x' pour le groupe = SGID actif</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Sticky Bit</h3>
+<p>Sur un repertoire, seul le proprietaire d'un fichier peut le supprimer (meme si les autres ont les droits d'ecriture sur le repertoire). L'exemple classique est <code>/tmp</code> :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>ls -ld /tmp
+# drwxrwxrwt ... /tmp
+#         ^ le 't' = sticky bit actif
+
+# Activer le sticky bit sur un repertoire
+chmod 1777 /var/shared
+# ou
+chmod +t /var/shared
+
+# Notation symbolique pour retirer
+chmod -t /var/shared</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>4. Tableau recapitulatif des combinaisons octales</h2>
+<table>
+<tr><th>Octal</th><th>Permissions</th><th>Description</th></tr>
+<tr><td><code>4775</code></td><td><code>rwsrwxr-x</code></td><td>SUID + rwxrwxr-x</td></tr>
+<tr><td><code>2775</code></td><td><code>rwxrwsr-x</code></td><td>SGID + rwxrwxr-x (repertoire partage)</td></tr>
+<tr><td><code>1777</code></td><td><code>rwxrwxrwt</code></td><td>Sticky bit + rwxrwxrwx (/tmp)</td></tr>
+<tr><td><code>4755</code></td><td><code>rwsr-xr-x</code></td><td>SUID (executable pour tous)</td></tr>
+<tr><td><code>2755</code></td><td><code>rwxr-sr-x</code></td><td>SGID (heritage groupe)</td></tr>
+<tr><td><code>4750</code></td><td><code>rwsr-x---</code></td><td>SUID, accessible au groupe uniquement</td></tr>
+</table>
+
+<h2>5. chown — Changer le proprietaire</h2>
+<h3>Syntaxe de base</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>sudo chown [options] proprietaire[:groupe] fichier</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Exemples</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Changer le proprietaire
+sudo chown alice fichier.txt
+
+# Changer proprietaire ET groupe
+sudo chown alice:developpeurs fichier.txt
+
+# Changer uniquement le groupe (deux facons equivalentes)
+sudo chown :developpeurs fichier.txt
+sudo chgrp developpeurs fichier.txt
+
+# Changer le groupe sans toucher au proprietaire
+sudo chgrp nouveau_groupe fichier.txt
+
+# Appliquer recursivement a un repertoire
+sudo chown -R alice:developpeurs /home/alice/projet
+
+# Ne changer que le proprietaire d'un lien symbolique (pas la cible)
+sudo chown -h alice lien_symbolique
+
+# Verifier apres modification
+ls -l fichier.txt</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>6. Copier et transferer les permissions</h2>
+<h3>Copier les permissions d'un fichier vers un autre</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Copier les permissions de fichierA vers fichierB
+chmod --reference=fichierA fichierB
+
+# Appliquer a tout un repertoire
+chmod --reference=fichierA -R repertoire/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Copier proprietaire et groupe d'un fichier vers un autre</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Copier le proprietaire:groupe de fichierA vers fichierB
+sudo chown --reference=fichierA fichierB
+
+# Appliquer recursivement sur un repertoire
+sudo chown -R --reference=fichierA repertoire/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>7. Masques de permissions (umask)</h2>
+<p>Le <code>umask</code> definit quelles permissions sont <em>retirees</em> par defaut lors de la creation d'un fichier ou repertoire. C'est un masque : les bits a 1 sont supprimes.</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir le umask actuel
+umask
+
+# En notation symbolique
+umask -S
+# u=rwx,g=rwx,o=rx
+
+# Definir un umask pour la session
+umask 022     # Retire 022 -> 755 par defaut pour les repertoires
+umask 077     # Retire 077 -> 700 par defaut (tres restrictif)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+<p>Pour rendre le umask permanent, ajoute-le dans <code>~/.bashrc</code> ou <code>/etc/profile</code>.</p>
+
+<h2>8. Cas pratiques</h2>
+<h3>Securiser un script pour qu'il s'execute avec les droits root</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Creer le script
+sudo nano /usr/local/bin/mon-script.sh
+
+# 2. Rendre executable et activer SUID root
+sudo chmod 750 /usr/local/bin/mon-script.sh
+sudo chown root:root /usr/local/bin/mon-script.sh
+sudo chmod u+s /usr/local/bin/mon-script.sh
+
+# Verifier
+ls -l /usr/local/bin/mon-script.sh
+# -rwsr-x--- 1 root root ... /usr/local/bin/mon-script.sh</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Creer un repertoire partage entre plusieurs utilisateurs</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Creer le groupe
+sudo groupadd projet_equipe
+
+# 2. Ajouter les utilisateurs
+sudo usermod -aG projet_equipe alice
+sudo usermod -aG projet_equipe bob
+
+# 3. Creer le repertoire et appliquer les droits
+sudo mkdir /var/projet
+sudo chown root:projet_equipe /var/projet
+sudo chmod 2775 /var/projet
+
+# Resultat :
+# - SGID = tous les fichiers heritent du groupe projet_equipe
+# - Sticky bit = chacun peut ecrire mais ne peut pas supprimer les fichiers des autres</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>9. Visualiser rapidement les permissions</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Voir les permissions detaillees
+stat fichier.txt
+# File: fichier.txt
+# Access: (0644/-rw-r--r--)  Uid: (1000/alice)   Gid: (1000/alice)
+
+# Notation numerique uniquement
+stat -c "%a %n" fichier.txt
+# 644 fichier.txt
+
+# Notation symbolique
+stat -c "%A %n" fichier.txt
+# rw-r--r-- fichier.txt
+
+# Tous les fichiers d'un repertoire avec permissions
+ls -la /var/projet</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>10. Exercices pratiques</h2>
+<p>1. **Notation** — Quelle est la signification de `chmod 2755 fichier` ? Explique chaque chiffre.</p>
+<p>2. **SUID** — Trouve les fichiers avec SUID active sur ton systeme avec <code>find / -perm /4000 2>/dev/null</code>.</p>
+<p>3. **Repertoire partage** — Cree un groupe <code>equipe_test</code>, ajoute ton utilisateur, puis cree un repertoire <code>/tmp/test_partage</code> avec SGID et sticky bit.</p>
+<p>4. **umask** — Quelle sera la permission par defaut d'un nouveau repertoire si le umask est `027` ? Calcule et verifie avec <code>umask 027 && mkdir test_umask && ls -ld test_umask</code>.</p>
+<p>5. **Securite** — Explique pourquoi <code>chmod 777 /</code> serait catastrophique. Cite au moins trois raisons.</p>
+
+<nav>
+<a href="71-useradd-usermod-groupadd.html">&larr; 71 — useradd, usermod, groupadd</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>'},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body>
+</html>
