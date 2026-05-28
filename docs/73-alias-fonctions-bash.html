@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+blockquote { border-left: 3px solid #a855f7; padding: 10px 15px; margin: 15px 0; background: rgba(168,85,247,0.1); border-radius: 0 8px 8px 0; }
+blockquote p { color: #ddd; margin: 5px 0; }
+p code, li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-block progress { width: 100%; height: 3px; appearance: none; border: none; display: block; }
+.code-block progress::-webkit-progress-bar { background: #238636; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; }
+.code-line:hover { background: rgba(255,255,255,0.03); }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.copy-btn { background: none; border: none; cursor: pointer; padding: 4px; margin-left: 10px; opacity: 0.5; transition: opacity 0.2s; flex-shrink: 0; }
+.copy-btn:hover { opacity: 1; }
+.copy-btn svg { width: 16px; height: 16px; fill: #8b949e; }
+.copy-btn.copied svg { fill: #238636; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 73 : alias et fonctions Bash — Personnalisez votre terminal</h1>
+
+<h2>1. Introduction</h2>
+<p>Vous tapez les mêmes commandes chaque jour ? <code>ls -la</code>, <code>grep -r</code>, <code>git status</code> ? Les alias et fonctions Bash sont là pour vous simplifier la vie en créant vos propres raccourcis et commandes personnalisées.</p>
+
+<blockquote><p>Les alias transforment les commandes complexes en frappes simples. Les fonctions Bash vont plus loin : elles permettent de créer de véritables programmes en ligne de commande.</p></blockquote>
+
+<h2>2. Les alias — Raccourcis simples</h2>
+<h3>Créer un alias</h3>
+<p>Un alias est simplement un nom qui remplace une commande (ou plusieurs commandes chainées).</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Syntaxe de base
+alias nom='commande'</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Exemples classiques</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Raccourcis pour ls
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Raccourcis pour grep
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Mise à jour du système
+alias update='sudo apt update && sudo apt upgrade -y'
+
+# Afficher les ports en écoute
+alias ports='sudo lsof -i -P -n | grep LISTEN'
+
+# Accéder rapidement à mon projet
+alias proj='cd ~/projets/monapp && ls'</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Alias avec paramètres</h3>
+<p>Un alias ne peut pas accepter d'arguments directement dans la definition. Pour cela, utilisez des fonctions Bash (section 4). Mais voici une astuce :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Utiliser les arguments avec alias (via expansion de position)
+alias mongrep='grep'
+# Ensuite: mongrep "terme" fichier.txt — fonctionne mais limitatif
+
+# Pour desAlias qui acceptent des arguments, preferer les fonctions</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>3. Alias de sécurité et protection</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Protection contre les accidents
+alias rm='rm -i'           # Confirmation avant suppression
+alias cp='cp -i'           # Confirmation avant copie
+alias mv='mv -i'           # Confirmation avant déplacement
+
+# Demande de confirmation pour détruire
+alias rmdir='rmdir -v'
+
+# Se protéger de soi-même
+alias shred='shred -uvz'   # Effacement sécurisé avec verbose et zéro</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>4. Alias temporaires vs permanents</h2>
+<h3>Alias temporaire (session actuelle)</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un alias — fonctionne dans la session courante
+alias gs='git status'
+
+# Lister tous les alias actifs
+alias
+
+# Supprimer un alias (unexport)
+unalias gs
+
+# Supprimer tous les alias
+unalias -a</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Alias permanent (fichier de configuration)</h3>
+<p>Ajoutez vos alias dans un fichier de démarrage pour qu'ils soient disponibles à chaque session :</p>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># 1. Éditer le fichier .bashrc (valable pour Bash)
+nano ~/.bashrc
+
+# 2. Ajouter vos alias à la fin du fichier
+alias ll='ls -la'
+alias update='sudo apt update && sudo apt upgrade -y'
+alias grepc='grep --color=auto'
+
+# 3. Recharger sans redémarrer le terminal
+source ~/.bashrc
+# ou
+. ~/.bashrc
+
+# Pour Zsh (alternative à Bash)
+nano ~/.zshrc
+source ~/.zshrc</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<blockquote><p>Pour les alias systeme (pour tous les utilisateurs), modifiez <code>/etc/bash.bashrc</code> ou créez un fichier dans <code>/etc/profile.d/</code>.</p></blockquote>
+
+<h2>5. Fonctions Bash — Au-delà des alias</h2>
+<p>Les fonctions sont plus puissantes que les alias : elles peuvent accepter des arguments, contenir de la logique (boucles, conditions), et返回值.</p>
+<h3>Syntaxe de base</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Méthode 1 — mot-clé function (recommandé pour Bash moderne)
+function nom_fonction {
+    # commandes
+    return valeur  # code de retour (0 = succès)
+}
+
+# Méthode 2 — syntaxe POSIX (compatible ksh, sh)
+nom_fonction() {
+    # commandes
+}
+
+# Méthode 3 — sur une seule ligne (peu lisible)
+nom_fonction() { echo "Salut $1"; }</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Arguments et variables spéciales</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># VariablesSpeciales Bash
+# $1, $2, ...    — Arguments positions (1er, 2e, etc.)
+# $@             — Tous les arguments comme liste
+# $#             — Nombre d'arguments
+# $0             — Nom de la fonction ou du script
+# $?             — Code de retour de la dernière commande
+
+function saluer {
+    echo "Bonjour $1 ! Vous avez fourni $# arguments."
+}
+saluer Pierre
+# -> Bonjour Pierre ! Vous avez fourni 1 arguments.
+
+# Avec plusieurs arguments
+function afficher {
+    echo "Args: $@"
+    echo "Nombre: $#"
+}
+afficher un deux trois quatre
+# -> Args: un deux trois quatre
+# -> Nombre: 4</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>6. Exemples de fonctions pratiques</h2>
+<h3>Créer un dossier et y entrer directement</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Sans cd dans la fonction, cd serait local à la fonction
+function mkcd {
+    mkdir -p "$1"
+    cd "$1"
+}
+
+# Utilisation :
+mkcd mon_projet
+# -> crée le dossier ET vous y place</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Rechercher dans l'historique Git</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>function gch {
+    if [ -z "$1" ]; then
+        echo "Usage: gch <message> (recherche dans les commits)"
+    else
+        git log --oneline --all --grep="$1" -n 20
+    fi
+}
+
+# Utilisation :
+gch "fix bug"
+# -> affiche les commits contenant "fix bug"</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Extraire n'importe quelle archive</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>function extraire {
+    if [ -f "$1" ]; then
+        case "$1" in
+            *.tar.bz2) tar xjf "$1" ;;
+            *.tar.gz)  tar xzf "$1" ;;
+            *.tar.xz)  tar xJf "$1" ;;
+            *.bz2)     bunzip2 "$1" ;;
+            *.rar)     unrar x "$1" ;;
+            *.gz)      gunzip "$1" ;;
+            *.zip)     unzip "$1" ;;
+            *.7z)      7z x "$1" ;;
+            *)         echo "Format non supporté: $1" ;;
+        esac
+    else
+        echo "Fichier non trouvé: $1"
+    fi
+}
+
+# Utilisation :
+extraire archive.tar.gz
+extraire document.zip</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Backup rapide avec timestamp</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>function backup {
+    if [ -z "$1" ]; then
+        echo "Usage: backup <fichier_ou_dossier>"
+        return 1
+    fi
+    if [ -e "$1" ]; then
+        cp -r "$1" "${1}.bak-$(date +%Y%m%d-%H%M%S)"
+        echo "Backup créé: ${1}.bak-$(date +%Y%m%d-%H%M%S)"
+    else
+        echo "Erreur: '$1' n'existe pas"
+        return 1
+    fi
+}
+
+# Utilisation :
+backup projet/
+# -> projet.bak-20260528-143052/</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h3>Vérifier si un port est ouvert</h3>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code>function port_check {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        echo "Usage: port_check <adresse> <port>"
+        return 1
+    fi
+    if timeout 2 bash -c "echo >/dev/tcp/$1/$2" 2>/dev/null; then
+        echo "Port $2 sur $1 : OUVERT ✓"
+    else
+        echo "Port $2 sur $1 : FERMÉ ✗"
+    fi
+}
+
+# Utilisation :
+port_check localhost 22
+port_check example.com 443</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>7. Valeurs de retour et erreurs</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># return — code de sortie (0 = succès, non-zero = erreur)
+function verifier_fichier {
+    if [ -f "$1" ]; then
+        echo "OK: $1 existe"
+        return 0
+    else
+        echo "ERREUR: $1 introuvable"
+        return 1
+    fi
+}
+
+verifier_fichier /etc/passwd
+echo "Code retour: $?"  # -> 0
+
+verifier_fichier /inconnu.txt
+echo "Code retour: $?"  # -> 1
+
+# Tester le code de retour pour une condition
+if verifier_fichier /tmp/test.txt; then
+    echo "Le fichier existe, on continue..."
+fi</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>8. Portée des variables</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Par défaut, les variables sont GLOBALES dans la fonction
+function test_portee {
+    var_locale="je suis locale"
+    var_globale="je suis globale"
+}
+test_portee
+echo $var_globale    # -> je suis globale
+echo $var_locale     # -> je suis locale (accessible!)
+
+# Pour une vraie variable locale :
+function test_local {
+    local ma_variable="seulement dans cette fonction"
+    echo $ma_variable
+}
+test_local
+echo $ma_variable    # -> vide ! (n'existe pas en dehors)</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>9. Organiser vos fonctions dans des fichiers</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Créer un fichier de fonctions
+mkdir -p ~/.bash_functions
+
+# Ajouter dans ~/.bashrc :
+if [ -f ~/.bash_functions ]; then
+    source ~/.bash_functions
+fi
+
+# Exemple: ~/.bash_functions/git-functions
+# -----
+function gs  { git status "$@"; }
+function ga  { git add "$@"; }
+function gc  { git commit -m "$1"; }
+function gp  { git push "$@"; }
+function gl  { git log --oneline -n 15; }
+function gco { git checkout "$1"; }
+function gstash { git stash "$@"; }
+# -----</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<blockquote><p>Cette approche modulaire facilite la maintenance et le partage de vos fonctions entre machines.</p></blockquote>
+
+<h2>10. Commandes utiles pour gérer alias et fonctions</h2>
+<div class="code-block">
+  <progress value="0" max="100"></progress>
+  <div class="code-line" onclick="copyCode(this)">
+    <code># Lister tous les alias définis
+alias
+
+# Lister tous les alias contenant "git"
+alias | grep git
+
+# Voir le contenu d'une fonction (si définie)
+declare -f nom_fonction
+type nom_fonction
+
+# Lister toutes les fonctions définies
+declare -F
+
+# Supprimer un alias
+unalias nom_alias
+
+# Supprimer une fonction
+unset -f nom_fonction</code>
+    <button class="copy-btn" aria-label="Copier">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    </button>
+  </div>
+</div>
+
+<h2>11. Tableau récapitulatif</h2>
+<table>
+<tr><th>Caractéristique</th><th>Alias</th><th>Fonction</th></tr>
+<tr><td>Arguments</td><td>Limité (utiliser $1 dans la définition)</td><td>Oui ($1, $2, $@)</td></tr>
+<tr><td>Logique conditionnelle</td><td>Non</td><td>Oui (if, case, while)</td></tr>
+<tr><td>Valeur de retour</td><td>Non</td><td>Oui (return)</td></tr>
+<tr><td>Variables locales</td><td>Non</td><td>Oui (local)</td></tr>
+<tr><td>Complexité</td><td>Simple / une commande</td><td>Complexe / plusieurs commandes</td></tr>
+<tr><td>Performance</td><td>Rapide</td><td>Rapide</td></tr>
+</table>
+
+<h2>12. Exercices pratiques</h2>
+<p>1. **Alias de base** — Créez un alias <code>home</code> qui vous ramène dans votre home et un alias <code>..</code> pour aller au dossier parent.</p>
+<p>2. **Fonction mkcd** — Ajoutez la fonction <code>mkcd</code> dans votre <code>~/.bashrc</code>, rechargez le fichier, et testez.</p>
+<p>3. **Fonction extraire** — Implémentez la fonction d'extraction d'archives dans votre <code>~/.bash_functions</code>.</p>
+<p>4. **Alias de sécurité** — Ajoutez les alias de protection <code>rm -i</code>, <code>cp -i</code>, <code>mv -i</code> dans votre <code>~/.bashrc</code>.</p>
+<p>5. **Fonction utile** — Créez une fonction <code>size</code> qui affiche la taille d'un dossier : <code>size /var/log</code>.</p>
+
+<nav>
+<a href="72-chmod-chown-permissions-avancees.html">&larr; 72 — chmod et chown</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+<script>
+function copyCode(el){var container=el.closest(".code-block");var code=el.querySelector("code");var btn=el.querySelector(".copy-btn");var progress=container.querySelector("progress");if(!code||!btn)return;var text=code.textContent;navigator.clipboard.writeText(text).then(function(){btn.classList.add("copied");btn.querySelector("svg").innerHTML='<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>';setTimeout(function(){btn.classList.remove("copied");btn.querySelector("svg").innerHTML='<path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>';},2000);var val=0;progress.value=0;progress.classList.remove("loaded");var interval=setInterval(function(){val+=5;progress.value=val;if(val>=100){clearInterval(interval);setTimeout(function(){progress.classList.add("loaded")},300)}},20)}).catch(function(){var ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta)})}
+</script>
+</body>
+</html>
