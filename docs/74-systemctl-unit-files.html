@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 74 : Les fichiers unit systemd</h1>
+
+<h2>Introduction</h2>
+<p>Dans la leçon 21, vous avez appris à démarrer, arrêter et gérer les services avec <code>systemctl</code>. Mais savez-vous ce qui se cache derrière chaque service ? Chaque service systemd est défini par un <strong>fichier unit</strong> — un simple fichier texte qui indique au système comment démarrer, exécuter et surveiller votre programme.</p>
+
+<p>Comprendre les fichiers unit vous permet de :</p>
+<ul>
+<li>Créer vos propres services personnalisés</li>
+<li>Configurer le redémarrage automatique en cas de plantage</li>
+<li>Définir des dépendances entre services</li>
+<li>Contrôler quand et comment un service démarre</li>
+</ul>
+
+<h2>Types de fichiers unit</h2>
+<p>Il existe plusieurs types de fichiers unit. Les plus courants :</p>
+<ul>
+<li><code>.service</code> — Un processus ou un daemon (le plus fréquent)</li>
+<li><code>.socket</code> — Un socket réseau ou IPC pour activer un service à la demande</li>
+<li><code>.timer</code> — Une planification (cron alternatif, vu en leçon 40)</li>
+<li><code>.path</code> — Surveiller un fichier/répertoire pour activer un service</li>
+<li><code>.mount</code> — Gérer un point de montage</li>
+<li><code>.target</code> — Grouper plusieurs units (comme un groupe de services)</li>
+</ul>
+
+<h2>Emplacement des fichiers unit</h2>
+<p>Les fichiers unit se trouvent à trois endroits, par ordre de priorité :</p>
+
+<div class="code-block"><div class="code-line"><code>/etc/systemd/system/   → Fichiers créés par l'administrateur (priorité最高)</code></div></div>
+<div class="code-block"><div class="code-line"><code>/run/systemd/system/  → Fichiers temporaires créés à runtime</code></div></div>
+<div class="code-block"><div class="code-line"><code>/usr/lib/systemd/system/ → Fichiers installés par les paquets (par défaut)</code></div></div>
+
+<p><strong>Règle simple</strong> : écrivez vos fichiers personnalisés dans <code>/etc/systemd/system/</code>. Ils ne seront jamais écrasés par les mises à jour.</p>
+
+<h2>Structure d'un fichier .service</h2>
+
+<h3>Les sections principales</h3>
+<table>
+<tr><th>Section</th><th>Contenu</th></tr>
+<tr><td><code>[Unit]</code></td><td>Métadonnées et dépendances</td></tr>
+<tr><td><code>[Service]</code></td><td>Comment exécuter le service</td></tr>
+<tr><td><code>[Install]</code></td><td>Comment activer le service (startup)</td></tr>
+</table>
+
+<h3>Exemple complet : un service simple</h3>
+<div class="code-block"><div class="code-line"><code>[Unit]</code></div></div>
+<div class="code-block"><div class="code-line"><code>Description=Mon serveur web Python</code></div></div>
+<div class="code-block"><div class="code-line"><code>After=network.target</code></div></div>
+<div class="code-block"><div class="code-line"><code></code></div></div>
+<div class="code-block"><div class="code-line"><code>[Service]</code></div></div>
+<div class="code-block"><div class="code-line"><code>Type=simple</code></div></div>
+<div class="code-block"><div class="code-line"><code>ExecStart=/usr/bin/python3 /opt/webserver/app.py</code></div></div>
+<div class="code-block"><div class="code-line"><code>Restart=on-failure</code></div></div>
+<div class="code-block"><div class="code-line"><code>RestartSec=5</code></div></div>
+<div class="code-block"><div class="code-line"><code>User=www-data</code></div></div>
+<div class="code-block"><div class="code-line"><code>WorkingDirectory=/opt/webserver</code></div></div>
+<div class="code-block"><div class="code-line"><code></code></div></div>
+<div class="code-block"><div class="code-line"><code>[Install]</code></div></div>
+<div class="code-block"><div class="code-line"><code>WantedBy=multi-user.target</code></div></div>
+
+<h2>详解 [Unit]</h2>
+
+<h3>Description</h3>
+<p>Une texte descriptif qui apparaît dans les logs et via <code>systemctl status</code>.</p>
+<div class="code-block"><div class="code-line"><code>Description=Service de backup automatique</code></div></div>
+
+<h3>After / Before</h3>
+<p>Définissent l'ordre de démarrage. Le service attend que les autres soient prêts.</p>
+<div class="code-block"><div class="code-line"><code>After=network.target  # Démarre APRÈS que le réseau soit prêt</code></div></div>
+<div class="code-block"><div class="code-line"><code>After=network-online.target  # Attend que le réseau soit vraiment fonctionnel</code></div></div>
+<div class="code-block"><div class="code-line"><code>Before=time-sync.target  # Démarre AVANT la synchronisation du temps</code></div></div>
+
+<h3>Wants / Requires</h3>
+<p>Définissent les dépendances (liens faibles ou forts).</p>
+<div class="code-block"><div class="code-line"><code>Wants=network-online.target  # Essaie de démarrer, mais continue même si ça échoue</code></div></div>
+<div class="code-block"><div class="code-line"><code>Requires=network.target  # ÉCHOUE si la dépendance n'est pas disponible</code></div></div>
+
+<h2>详解 [Service]</h2>
+
+<h3>Type</h3>
+<table>
+<tr><th>Type</th><th>Comportement</th><th>Quand utiliser</th></tr>
+<tr><td><code>simple</code></td><td>Le processus principal est le service</td><td>Daemon qui tourne en foreground</td></tr>
+<tr><td><code>forking</code></td><td>Le processus fork et le parent meurt</td><td>Daemon classique (comme Apache)</td></tr>
+<tr><td><code>oneshot</code></td><td>Exécute une tâche puis s'arrête</td><td>Tâches uniques (ex: setup)</td></tr>
+<tr><td><code>exec</code></td><td>Similar à simple, mais attend que l'ExecStart soit prêt</td><td>Recommandé pour les services modernes</td></tr>
+<tr><td><code>notify</code></td><td>Le service envoie un signal quand prêt</td><td>Daemon qui supporte systemd notifications</td></tr>
+<tr><td><code>dbus</code></td><td>Attend qu'un nom D-Bus soit enregistré</td><td>Services avec nom D-Bus</td></tr>
+</table>
+
+<p>Pour la plupart des services modernes, <code>Type=exec</code> ou <code>Type=simple</code> convient.</p>
+
+<h3>ExecStart, ExecStop, ExecReload</h3>
+<p>Les commandes à exécuter.</p>
+<div class="code-block"><div class="code-line"><code>ExecStart=/usr/bin/mon_service --config /etc/mon_service.conf</code></div></div>
+<div class="code-block"><div class="code-line"><code>ExecStop=/usr/bin/mon_service --stop</code></div></div>
+<div class="code-block"><div class="code-line"><code>ExecReload=/bin/kill -HUP $MAINPID  # Redémarrage without arrêt</code></div></div>
+
+<h3>Restart</h3>
+<p>Contrôle le redémarrage automatique.</p>
+<div class="code-block"><div class="code-line"><code>Restart=no           # Jamais (par défaut)</code></div></div>
+<div class="code-block"><div class="code-line"><code>Restart=on-success   # Redémarre si exit code = 0</code></div></div>
+<div class="code-block"><div class="code-line"><code>Restart=on-failure   # Redémarre si exit code != 0</code></div></div>
+<div class="code-block"><div class="code-line"><code>Restart=on-abnormal   # Redémarre sur signal anormaux (kill, crash)</code></div></div>
+<div class="code-block"><div class="code-line"><code>Restart=always       # Redémarre toujours</code></div></div>
+
+<h3>RestartSec</h3>
+<p>Temps d'attente avant de redémarrer (en secondes).</p>
+<div class="code-block"><div class="code-line"><code>RestartSec=10  # Attend 10 secondes avant de redémarrer</code></div></div>
+
+<h3>User / Group</h3>
+<p>Exécuter le service sous un utilisateur spécifique.</p>
+<div class="code-block"><div class="code-line"><code>User=www-data</code></div></div>
+<div class="code-block"><div class="code-line"><code>Group=www-data</code></div></div>
+
+<h3>WorkingDirectory</h3>
+<p>Répertoire de travail du service.</p>
+<div class="code-block"><div class="code-line"><code>WorkingDirectory=/var/lib/mon_service</code></div></div>
+
+<h3>Environment</h3>
+<p>Définir des variables d'environnement.</p>
+<div class="code-block"><div class="code-line"><code>Environment=PORT=8080</code></div></div>
+<div class="code-block"><div class="code-line"><code>Environment=DB_HOST=localhost</code></div></div>
+<div class="code-block"><div class="code-line"><code>EnvironmentFile=/etc/mon_service/env  # Charger depuis un fichier</code></div></div>
+
+<h3>TimeoutStartSec / TimeoutStopSec</h3>
+<p>Temps maximal pour démarrer ou arrêter.</p>
+<div class="code-block"><div class="code-line"><code>TimeoutStartSec=60   # 60 secondes max pour démarrer</code></div></div>
+<div class="code-block"><div class="code-line"><code>TimeoutStopSec=30    # 30 secondes max pour arrêter</code></div></div>
+
+<h3>RestartPrevent / RestartForceExitStatus</h3>
+<p>Cas spéciaux de restart.</p>
+<div class="code-block"><div class="code-line"><code>RestartForceExitStatus=SIGTERM  # Redémarre si tué par SIGTERM</code></div></div>
+
+<h2>详解 [Install]</h2>
+
+<h3>WantedBy / RequiredBy</h3>
+<p>Indique dans quel target le service doit démarrer.</p>
+<div class="code-block"><div class="code-line"><code>WantedBy=multi-user.target   # Active au démarrage en mode texte</code></div></div>
+<div class="code-block"><div class="code-line"><code>WantedBy=graphical.target    # Active au démarrage en mode graphique</code></div></div>
+
+<h3>Also</h3>
+<p>Installe/désinstalle d'autres units ensemble.</p>
+<div class="code-block"><div class="code-line"><code>Also=myservice.timer  # Installe aussi le timer correspondant</code></div></div>
+
+<h2>Exemple : Service de backup</h2>
+<p>Créons un service qui exécute un script de backup toutes les nuits.</p>
+
+<h3>1. Créez le fichier unit</h3>
+<div class="code-block"><div class="code-line"><code>sudo nano /etc/systemd/system/backup.service</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>[Unit]</code></div></div>
+<div class="code-block"><div class="code-line"><code>Description=Backup quotidien du serveur</code></div></div>
+<div class="code-block"><div class="code-line"><code>After=network.target</code></div></div>
+<div class="code-block"><div class="code-line"><code></code></div></div>
+<div class="code-block"><div class="code-line"><code>[Service]</code></div></div>
+<div class="code-block"><div class="code-line"><code>Type=oneshot</code></div></div>
+<div class="code-block"><div class="code-line"><code>ExecStart=/opt/scripts/backup.sh</code></div></div>
+<div class="code-block"><div class="code-line"><code>User=backupuser</code></div></div>
+<div class="code-block"><div class="code-line"><code>EnvironmentFile=/etc/backup/env</code></div></div>
+<div class="code-block"><div class="code-line"><code></code></div></div>
+<div class="code-block"><div class="code-line"><code>[Install]</code></div></div>
+<div class="code-block"><div class="code-line"><code>WantedBy=multi-user.target</code></div></div>
+
+<h3>2. Rechargez systemd</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl daemon-reload</code></div></div>
+
+<h3>3. Activez et démarrez</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl enable backup.service</code></div></div>
+<div class="code-block"><div class="code-line"><code>sudo systemctl start backup.service</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<h3>Sécurité</h3>
+<ul>
+<li>Toujours exécuter les services avec un utilisateur non-root via <code>User=</code></li>
+<li>限制 LimitNOFILE pour éviter que le service mange tous les descripteurs</li>
+<li>Utiliser <code>ProtectSystem=strict</code> pour limiter les accès aux fichiers</li>
+<li>Utiliser <code>NoNewPrivileges=true</code> pour éviter l'escalade de privilèges</li>
+</ul>
+
+<div class="code-block"><div class="code-line"><code>[Service]</code></div></div>
+<div class="code-block"><div class="code-line"><code>User=www-data</code></div></div>
+<div class="code-block"><div class="code-line"><code>ProtectSystem=strict</code></div></div>
+<div class="code-block"><div class="code-line"><code>ProtectHome=true</code></div></div>
+<div class="code-block"><div class="code-line"><code>NoNewPrivileges=true</code></div></div>
+<div class="code-block"><div class="code-line"><code>PrivateTmp=true</code></div></div>
+
+<h3>Logging</h3>
+<p>Redirigez la sortie vers le journal systemd avec <code>StandardOutput=journal</code>.</p>
+
+<div class="code-block"><div class="code-line"><code>StandardOutput=journal</code></div></div>
+<div class="code-block"><div class="code-line"><code>StandardError=journal</code></div></div>
+
+<h2>Commandes utiles</h2>
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>systemctl cat mon_service</code></td><td>Affiche le contenu du fichier unit</td></tr>
+<tr><td><code>systemctl edit mon_service</code></td><td>Ouvre l'éditeur pour modifier le service</td></tr>
+<tr><td><code>systemctl show mon_service</code></td><td>Affiche toutes les propriétés du service</td></tr>
+<tr><td><code>systemctl list-dependencies mon_service</code></td><td>Montre les dépendances du service</td></tr>
+<tr><td><code>journalctl -u mon_service</code></td><td>Voir les logs du service</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+<p>Créez un service systemd qui :</p>
+<ol>
+<li>Démarre un script Python toutes les 5 secondes en mode boucle</li>
+<li>Redémarre automatiquement en cas de crash</li>
+<li>S'exécute sous l'utilisateur <code>nobody</code></li>
+<li>Démarre après le réseau</li>
+</ol>
+
+<h3>Correction</h3>
+<div class="code-block"><div class="code-line"><code># /etc/systemd/system/mon_script.service</code></div></div>
+<div class="code-block"><div class="code-line"><code>[Unit]</code></div></div>
+<div class="code-block"><div class="code-line"><code>Description=Mon script Python en boucle</code></div></div>
+<div class="code-block"><div class="code-line"><code>After=network.target</code></div></div>
+<div class="code-block"><div class="code-line"><code></code></div></div>
+<div class="code-block"><div class="code-line"><code>[Service]</code></div></div>
+<div class="code-block"><div class="code-line"><code>Type=simple</code></div></div>
+<div class="code-block"><div class="code-line"><code>ExecStart=/usr/bin/python3 /opt/mon_script.py</code></div></div>
+<div class="code-block"><div class="code-line"><code>Restart=on-failure</code></div></div>
+<div class="code-block"><div class="code-line"><code>RestartSec=5</code></div></div>
+<div class="code-block"><div class="code-line"><code>User=nobody</code></div></div>
+<div class="code-block"><div class="code-line"><code></code></div></div>
+<div class="code-block"><div class="code-line"><code>[Install]</code></div></div>
+<div class="code-block"><div class="code-line"><code>WantedBy=multi-user.target</code></div></div>
+
+<h2>Conclusion</h2>
+<p>Les fichiers unit systemd sont au cœur de l'administration Linux moderne. Maîtriser leur syntaxe vous permet de créer des services robustes, avec redémarrage automatique, gestion des dépendances et sécurité intégrée. C'est une compétence essentielle pour tout administrateur Linux.</p>
+
+<nav>
+<a href="73-alias-fonctions-bash.html">&larr; alias et fonctions Bash</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
