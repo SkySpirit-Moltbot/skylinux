@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 75 : watch — Exécuter une commande périodiquement</h1>
+
+<p>La commande <code>watch</code> permet d'exécuter n'importe quelle commande Linux et d'afficher automatiquement son résultat à intervalle régulier. C'est l'outil idéal pour surveiller des processus, observer des changements en temps réel, ou surveiller l'état de votre système sans avoir à répéter manuellement les mêmes commandes.</p>
+
+<h2>Principe de base</h2>
+
+<p><code>watch</code> fonctionne de manière simple : il lance une commande, affiche le résultat dans votre terminal, attend un certain temps (par défaut 2 secondes), puis recommence. L'écran est actualisé à chaque intervalle, vous permettant de voir les changements en direct.</p>
+
+<h2>Syntaxe fondamentale</h2>
+
+<div class="code-block"><div class="code-line"><code>watch [options] commande</code></div></div>
+
+<p>La forme la plus simple utilise uniquement le nom de la commande à répéter :</p>
+
+<div class="code-block"><div class="code-line"><code>watch date</code></div></div>
+
+<p>Cet exemple affiche l'heure actuelle et l'actualise toutes les 2 secondes. Vous verrez l'heure changer en temps réel dans votre terminal.</p>
+
+<h2>Les options principales</h2>
+
+<h3>-n (intervalle en secondes)</h3>
+
+<p>Par défaut, <code>watch</code> actualise toutes les 2 secondes. L'option <code>-n</code> permet de modifier cet intervalle selon vos besoins :</p>
+
+<div class="code-block"><div class="code-line"><code>watch -n 5 date  # Actualisation toutes les 5 secondes</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>watch -n 1 ps aux | grep nginx  # Vérifier chaque seconde si nginx tourne</code></div></div>
+
+<p>Un intervalle de 1 seconde est utile pour surveiller des processus qui démarrent ou s'arrêtent rapidement. Un intervalle plus long (60 secondes ou plus) convient pour des監視 qui ne nécessitent pas une actualisation fréquente.</p>
+
+<h3>-d (surligner les différences)</h3>
+
+<p>L'option <code>-d</code> surligne les parties de la sortie qui ont changé depuis la dernière exécution. C'est extrêmement utile pour identifier rapidement ce qui a été modifié :</p>
+
+<div class="code-block"><div class="code-line"><code>watch -d df -h</code></div></div>
+
+<p>Ainsi, si l'espace disque change, les valeurs modifiées seront surlignées en surbrillance. La syntaxe <code>-d=cumulative</code> conserve les surlignages cumulativement :</p>
+
+<div class="code-block"><div class="code-line"><code>watch -d=cumulative free -m</code></div></div>
+
+<h3>-t (supprimer l'en-tête)</h3>
+
+<p>Par défaut, <code>watch</code> affiche un en-tête avec le nom de la commande et l'intervalle. L'option <code>-t</code> supprime cet en-tête pour un affichage plus compact :</p>
+
+<div class="code-block"><div class="code-line"><code>watch -t nproc</code></div></div>
+
+<h2>Exemples pratiques concrets</h2>
+
+<h3>Surveiller la mémoire disponible</h3>
+
+<div class="code-block"><div class="code-line"><code>watch -n 2 free -h</code></div></div>
+
+<p>Cet exemple affiche l'état de la mémoire (utilisée, libre, cache) et actualise toutes les 2 secondes. Vous pouvez observer comment votre système utilise la mémoire au fil du temps.</p>
+
+<h3>Surveiller les processus les plus consommateurs</h3>
+
+<div class="code-block"><div class="code-line"><code>watch -n 3 'ps aux --sort=-%cpu | head -10'</code></div></div>
+
+<p>Cet exemple affiche les 10 processus les plus consommateurs en CPU, triés par utilisation décroissante. L'option <code>-n 3</code> actualise toutes les 3 secondes.</p>
+
+<h3>Surveiller les connexions réseau actives</h3>
+
+<div class="code-block"><div class="code-line"><code>watch -n 5 ss -tlnp</code></div></div>
+
+<p>Cet exemple affiche les ports TCP en écoute (équivalent moderne de <code>netstat</code>) et actualise toutes les 5 secondes. Utile pour vérifier que vos services sont bien en écoute.</p>
+
+<h3>Surveiller l'espace disque</h3>
+
+<div class="code-block"><div class="code-line"><code>watch -d df -h</code></div></div>
+
+<p>Cet exemple affiche l'espace disque de toutes les partitions avec les différences surlignées. Parfait pour surveiller le remplissage progressif d'un disque.</p>
+
+<h3>Surveiller un fichier qui change</h3>
+
+<div class="code-block"><div class="code-line"><code>watch -n 1 cat /proc/meminfo | head -5</code></div></div>
+
+<p>Cet exemple surveille les premières lignes de <code>/proc/meminfo</code>, actualisées chaque seconde. Idéal pour observer l'évolution des compteurs mémoire du système.</p>
+
+<h3>Surveiller le contenu d'un répertoire</h3>
+
+<div class="code-block"><div class="code-line"><code>watch -n 5 ls -la /var/log/</code></div></div>
+
+<p>Cet exemple affiche le contenu du répertoire <code>/var/log/</code> toutes les 5 secondes. Vous pouvez ainsi voir apparaître de nouveaux fichiers de log en temps réel.</p>
+
+<h2>Combiner avec des pipes</h2>
+
+<p><code>watch</code> fonctionne parfaitement avec les pipes et les redirections. Vous pouvez ainsi construire des监视 très spécifiques :</p>
+
+<div class="code-block"><div class="code-line"><code># Surveiller le nombre de connexions SSH actives
+watch -n 5 'ss -t | grep -c ssh'</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Surveiller les connexions établies vers un serveur
+watch -n 3 'ss -tn | grep :443 | grep ESTAB'</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Surveiller la température du CPU (si disponible)
+watch -n 2 'cat /sys/class/thermal/thermal_zone0/temp'</code></div></div>
+
+<h2>Utiliser avec des scripts</h2>
+
+<p><code>watch</code> peut exécuter des scripts complets ou des séquences de commandes complexes en les entourant de guillemets :</p>
+
+<div class="code-block"><div class="code-line"><code># Surveillance avec condition
+watch -n 10 'echo "Charge système:"; uptime | cut -d"," -f4; echo "Mémoire:"; free -h | grep Mem'</code></div></div>
+
+<h2>Quitter watch</h2>
+
+<p>Pour quitter <code>watch</code>, appuyez sur <code>Ctrl+C</code>. Vous revenez ainsi à votre shell normal. L'option <code>-p</code> (precision) permet d'avoir des intervalles plus précis :</p>
+
+<div class="code-block"><div class="code-line"><code>watch -p date  # Intervalles plus précis</code></div></div>
+
+<h2>Limites de watch</h2>
+
+<p><code>watch</code> est simple et efficace, mais il a ses limites :</p>
+
+<ul>
+<li>Il ne stocke pas l'historique des résultats</li>
+<li>Il ne peut pas envoyer d'alertes par email ou notification</li>
+<li>Il ne fonctionne pas bien avec des commandes qui nécessitent une interaction utilisateur</li>
+</ul>
+
+<p>Pour des監視 plus sophistiquées avec historique et alertes, vous devrez utiliser des outils comme <code>top</code>, <code>htop</code>, ou des scripts Bash avec <code>cron</code>.</p>
+
+<h2>Récapitulatif des options</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n secondes</code></td><td>Intervalle entre les actualisations (défaut : 2)</td></tr>
+<tr><td><code>-d</code></td><td>Surligne les différences depuis la dernière exécution</td></tr>
+<tr><td><code>-d=cumulative</code></td><td>Surligne cumulativement toutes les différences</td></tr>
+<tr><td><code>-t</code></td><td>Supprime l'en-tête avec la commande et l'intervalle</td></tr>
+<tr><td><code>-p</code></td><td>Mode haute précision pour les intervalles</td></tr>
+<tr><td><code>-b</code></td><td>Émet un beep quand la sortie change</td></tr>
+<tr><td><code>-e</code></td><td>Arrête watch si la commande échoue</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<p>Complétez ces exercices pour maîtriser <code>watch</code> :</p>
+
+<ol>
+<li><strong>Surveillance mémoire :</strong> Affichez l'utilisation de la mémoire avec <code>free -h</code>, actualisé toutes les 3 secondes avec surlignage des différences.</li>
+
+<li><strong>Surveillance disque :</strong> Utilisez <code>df -h</code> pour surveiller l'espace disque, avec surlignage cumulatif des changements.</li>
+
+<li><strong>Surveillance réseau :</strong> Affichez les connexions TCP établies avec <code>ss -tn</code> toutes les 5 secondes.</li>
+
+<li><strong>Compteur personnalisé :</strong> Créez une监视 qui compte le nombre de fichiers dans <code>/tmp</code> toutes les 10 secondes.</li>
+</ol>
+
+<p><strong>Solution :</strong></p>
+
+<div class="code-block"><div class="code-line"><code># Exercice 1
+watch -n 3 -d free -h</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Exercice 2
+watch -d=cumulative df -h</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Exercice 3
+watch -n 5 ss -tn | grep ESTAB</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Exercice 4
+watch -n 10 'echo "Fichiers dans /tmp: $(ls -1 /tmp | wc -l)"'</code></div></div>
+
+<h2>Conclusion</h2>
+
+<p><code>watch</code> est un outil simple mais puissant pour surveiller votre système Linux en temps réel. Il transforme n'importe quelle commande statique en un outil de監視 dynamique. Que vous surveilliez des ressources, des connexions réseau, ou simplement l'heure, <code>watch</code> rend cette tâche simple et visuelle. Combinez-le avec les options <code>-d</code> et <code>-n</code> pour adapter la監視 à vos besoins spécifiques.</p>
+
+<nav>
+<a href="74-systemctl-unit-files.html">&larr; Les fichiers unit systemd</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
