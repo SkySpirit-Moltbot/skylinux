@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>UFW — Le pare-feu simple sous Linux</h1>
+
+<h2>Introduction</h2>
+
+<p>Un pare-feu est votre première ligne de défense sur un système Linux. Il contrôle quels paquets réseau peuvent entrer ou sortir de votre machine. <code>ufw</code> (Uncomplicated Firewall) est l'outil simplifié fourni par défaut sur Ubuntu et de nombreuses distributions Linux pour gérer <code>iptables</code> sans complexité.</p>
+
+<p>Si <code>iptables</code> est puissant mais difficile à maîtriser, <code>ufw</code> offre une interface simple et lisible pour configurer votre pare-feu en quelques minutes.</p>
+
+<h2>Vérifier et installer UFW</h2>
+
+<h3>Vérifier le statut</h3>
+
+<p>Pour voir si UFW est installé et son état actuel :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw status</code></div></div>
+
+<p>Si UFW n'est pas installé, installez-le avec :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo apt update
+sudo apt install ufw</code></div></div>
+
+<h2>Activer et désactiver le pare-feu</h2>
+
+<h3>Activer UFW</h3>
+
+<p>Pour activer le pare-feu (bloquera tout le trafic entrant non autorisé) :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw enable</code></div></div>
+
+<p>Un message d'avertissement peut apparaître, indiquant que cela pourrait perturber les connexions SSH existantes. Si vous êtes connecté en SSH, pensez à autoriser ce trafic avant d'activer !</p>
+
+<h3>Désactiver UFW</h3>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw disable</code></div></div>
+
+<p>Cette commande désactive complètement le pare-feu. À utiliser avec précaution sur un serveur exposé.</p>
+
+<h3>Réinitialiser UFW</h3>
+
+<p>Si vous avez fait une erreur de configuration et voulez recommencer à zéro :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw reset</code></div></div>
+
+<p>Cela réinitialise UFW à son état par défaut (inactif, avec les règles par défaut).</p>
+
+<h2>Autoriser et bloquer le trafic</h2>
+
+<h3>Règles de base</h3>
+
+<h3>Autoriser le trafic SSH</h3>
+
+<p><strong>TRÈS IMPORTANT</strong> : avant d'activer UFW sur un serveur avec SSH, assurez-vous d'autoriser SSH sous peine de vous verrouiller dehors !</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow ssh</code></div></div>
+
+<p>Ou en spécifiant le port directement :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow 22/tcp</code></div></div>
+
+<h3>Autoriser le trafic HTTP et HTTPS</h3>
+
+<p>Pour un serveur web, autorisez les ports 80 (HTTP) et 443 (HTTPS) :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow http
+sudo ufw allow https</code></div></div>
+
+<p>Ou en utilisant les ports directement :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp</code></div></div>
+
+<h3>Autoriser un port spécifique</h3>
+
+<p>Pour autoriser le trafic sur un port donné :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow 8080</code></div></div>
+
+<h3>Bloquer le trafic entrant</h3>
+
+<p>Pour bloquer tout le trafic entrant (par défaut, UFW bloque tout sauf le trafic autorisé explicitement) :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw default deny incoming</code></div></div>
+
+<h3>Autoriser tout le trafic sortant</h3>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw default allow outgoing</code></div></div>
+
+<h2>Créer des règles plus spécifiques</h2>
+
+<h3>Autoriser depuis une adresse IP spécifique</h3>
+
+<p>Pour autoriser les connexions entrantes depuis une adresse IP précise :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow from 192.168.1.100</code></div></div>
+
+<h3>Autoriser depuis une IP vers un port spécifique</h3>
+
+<p>Autoriser l'accès au port 3306 (MySQL) uniquement depuis le réseau local :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow from 192.168.1.0/24 to any port 3306</code></div></div>
+
+<h3>Bloquer une IP ou un réseau</h3>
+
+<p>Pour bloquer une adresse IP spécifique :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw deny from 192.168.1.50</code></div></div>
+
+<p>Pour bloquer tout un réseau :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw deny from 192.168.0.0/24</code></div></div>
+
+<h3>Autoriser une plage de ports</h3>
+
+<p>Pour autoriser une plage de ports (par exemple 6000-6010) :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow 6000:6010/tcp</code></div></div>
+
+<h3>Règles pour les applications nommées</h3>
+
+<p>Certaines applications enregistrement leur profil UFW. Vous pouvez les autoriser par nom :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw app list</code></div></div>
+
+<p>Par exemple, pour Nginx :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow 'Nginx Full'</code></div></div>
+
+<h2>Supprimer des règles</h2>
+
+<h3>Afficher les règles avec leurs numéros</h3>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw status numbered</code></div></div>
+
+<p>Vous verrez une liste numérotée des règles actives :</p>
+
+<div class="code-block"><div class="code-line"><code>Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    Anywhere
+[ 2] 80/tcp                     ALLOW IN    Anywhere
+[ 3] 443/tcp                    ALLOW IN    Anywhere</code></div></div>
+
+<h3>Supprimer une règle par numéro</h3>
+
+<p>Pour supprimer la règle numéro 2 :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw delete 2</code></div></div>
+
+<h3>Supprimer une règle par sa définition</h3>
+
+<p>Pour supprimer une règle comme "allow http" :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw delete allow http</code></div></div>
+
+<h2>Gérer les connexions établies</h2>
+
+<h3>Autoriser les connexions sortantes correspondantes</h3>
+
+<p>Pour que UFW suive automatiquement les connexions établies (pour que les réponses aux requêtes sortantes soient autorisées) :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw allow out state ESTABLISHED,RELATED</code></div></div>
+
+<h2>Logging</h2>
+
+<h3>Activer ou désactiver les logs</h3>
+
+<p>Pour activer les logs de pare-feu (niveau basique) :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw logging on</code></div></div>
+
+<p>Pour un niveau plus détaillé :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw logging low     # Faible volume de logs
+sudo ufw logging medium  # Volume moyen
+sudo ufw logging high     # Volume élevé (avec détails de chaque paquet)</code></div></div>
+
+<p>Pour désactiver les logs :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw logging off</code></div></div>
+
+<p>Les logs sont écrits dans <code>/var/log/ufw.log</code>. Vous pouvez les consulter avec :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo tail -f /var/log/ufw.log</code></div></div>
+
+<h2>Configuration pour des cas courants</h2>
+
+<h3>Serveur web (Apache/Nginx)</h3>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw default deny incoming
+sudo ufw allow ssh
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable</code></div></div>
+
+<h3>Serveur mail (SMTP, IMAP, POP3)</h3>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw default deny incoming
+sudo ufw allow ssh
+sudo ufw allow 25/tcp   # SMTP
+sudo ufw allow 465/tcp  # SMTPS
+sudo ufw allow 587/tcp  # Submission
+sudo ufw allow 993/tcp  # IMAPS
+sudo ufw allow 995/tcp  # POP3S
+sudo ufw enable</code></div></div>
+
+<h3>PostgreSQL</h3>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw default deny incoming
+sudo ufw allow ssh
+sudo ufw allow from 192.168.1.0/24 to any port 5432
+sudo ufw enable</code></div></div>
+
+<h2>Vérifier la configuration complète</h2>
+
+<h3>Voir toutes les règles</h3>
+
+<div class="code-block"><div class="code-line"><code>sudo ufw status verbose</code></div></div>
+
+<p>Ce mode affiche des détails supplémentaires comme les politiques par défaut, les logs actifs, et l'interface par laquelle UFW surveille le trafic.</p>
+
+<h2>Créer un fichier de configuration</h2>
+
+<p>UFW peut être configuré via un fichier texte situé en <code>/etc/ufw/ufw.conf</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo nano /etc/ufw/ufw.conf</code></div></div>
+
+<p>Contenu typique :</p>
+
+<div class="code-block"><div class="code-line"><code># Configure UFW
+ENABLED=yes
+DEFAULT_INPUT_POLICY="DROP"
+DEFAULT_OUTPUT_POLICY="ACCEPT"
+DEFAULT_FORWARD_POLICY="DROP"
+DEFAULT_APPLICATION_POLICY="SKIP"
+MANAGE_BUILTINS=no
+IPT_MODULES="nf_conntrack_ftp nf_nat_ftp nf_conntrack_netbios_ns"</code></div></div>
+
+<h2>Récapitulatif des commandes principales</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>sudo ufw status</code></td><td>Afficher l'état et les règles</td></tr>
+<tr><td><code>sudo ufw status numbered</code></td><td>Afficher les règles numérotées</td></tr>
+<tr><td><code>sudo ufw enable</code></td><td>Activer le pare-feu</td></tr>
+<tr><td><code>sudo ufw disable</code></td><td>Désactiver le pare-feu</td></tr>
+<tr><td><code>sudo ufw allow port</code></td><td>Autoriser le trafic sur un port</td></tr>
+<tr><td><code>sudo ufw deny from IP</code></td><td>Bloquer le trafic depuis une IP</td></tr>
+<tr><td><code>sudo ufw delete N</code></td><td>Supprimer la règle N</td></tr>
+<tr><td><code>sudo ufw reset</code></td><td>Réinitialiser UFW</td></tr>
+<tr><td><code>sudo ufw logging on/off</code></td><td>Activer/désactiver les logs</td></tr>
+<tr><td><code>sudo ufw app list</code></td><td>Lister les applications profils</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li><strong>Vérifiez l'état de UFW</strong> : lancez <code>sudo ufw status verbose</code> pour voir la configuration actuelle.</li>
+
+<li><strong>Créez une configuration serveur SSH</strong> : activez UFW, bloquez tout le trafic entrant par défaut, autorisez SSH uniquement.</li>
+
+<li><strong>Testez le blocage</strong> : ajoutez une règle pour bloquer une IP de test (la vôtre ou une IP de votre réseau local) et vérifiez le comportement.</li>
+
+<li><strong>Configurez pour un serveur web complet</strong> : activez UFW, bloquez le trafic entrant non explicite, et configurez-le pour un serveur Nginx avec SSH.</li>
+
+<li><strong>Supprimez une règle</strong> : utilisez <code>sudo ufw status numbered</code>, puis supprimez une règle par son numéro.</li>
+
+<li><strong>Consultation des logs</strong> : activez le logging et examinez <code>/var/log/ufw.log</code> pour voir les paquets bloqués.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><code>ufw</code> est l'outil idéal pour sécuriser votre système Linux sans affronter la complexité de <code>iptables</code>. En quelques commandes, vous pouvez configurer un pare-feu fonctionnel qui bloquera le trafic non autorisé tout en laissant passer vos services légitimes. N'oubliez jamais d'autoriser SSH avant d'activer le pare-feu sur un serveur distant, sous peine de perdre l'accès à votre machine !</p>
+
+<nav>
+<a href="75-watch.html">&larr; watch — Exécuter une commande périodiquement</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
