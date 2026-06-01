@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>ssh-keygen et ssh-agent — Clés SSH et agent d'authentification</h1>
+
+<h2>Introduction</h2>
+
+<p>Vous en avez assez de taper votre mot de passe à chaque connexion SSH ? Les clés SSH offrent une alternative plus sécurisée et plus pratique. <code>ssh-keygen</code> crée des paires de clés (publique/privée), et <code>ssh-agent</code> garde vos clés déchiffrées en mémoire pour éviter de retaper votre phrase secrète à chaque connexion.</p>
+
+<p>Dans cette leçon, vous apprendrez à générer des clés SSH robustes, à les déployer sur des serveurs distants, et à utiliser ssh-agent pour une expérience sans friction.</p>
+
+<h2>Générer une paire de clés SSH</h2>
+
+<h3>Commande de base</h3>
+
+<p>La commande <code>ssh-keygen</code> crée une paire de clés RSA, ED25519 ou ECDSA. ED25519 est recommandé car plus sécurisé et plus rapide :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-keygen -t ed25519 -C "mon_email@exemple.com"</code></div></div>
+
+<p>Explications des options :</p>
+<ul>
+<li><code>-t ed25519</code> : type de clé (ED25519, RSA, ECDSA)</li>
+<li><code>-C "commentaire"</code> : un label pour identifier la clé (souvent un email)</li>
+</ul>
+
+<h3>Spécifier un emplacement personnalisé</h3>
+
+<p>Par défaut, la clé est enregistrée dans <code>~/.ssh/</code>. Pour changer l'emplacement :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-keygen -t ed25519 -f ~/.ssh/cle_serveur -C "serveur-maison"</code></div></div>
+
+<h3>Protéger la clé par une phrase secrète</h3>
+
+<p>Lors de la génération, un message vous demande une phrase secrète (passphrase). Utilisez-en une forte :</p>
+
+<div class="code-block"><div class="code-line"><code>Generating public/private ed25519 key pair.
+Enter file in which to save the key (/home/user/.ssh/id_ed25519): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/user/.ssh/cle_serveur
+Your public key has been saved in /home/user/.ssh/cle_serveur.pub</code></div></div>
+
+<h3>Types de clés disponibles</h3>
+
+<table>
+<tr><th>Type</th><th>Commande</th><th>Recommandation</th></tr>
+<tr><td>ED25519</td><td><code>ssh-keygen -t ed25519</code></td><td>⭐ Recommandé — moderne et rapide</td></tr>
+<tr><td>ECDSA</td><td><code>ssh-keygen -t ecdsa</code></td><td>Bon — standard NIST</td></tr>
+<tr><td>RSA</td><td><code>ssh-keygen -t rsa -b 4096</code></td><td>Compatible — legacy systems</td></tr>
+</table>
+
+<h2>Comprendre la différence entre clé publique et clé privée</h2>
+
+<h3>Clé privée (<code>cle_serveur</code>)</h3>
+
+<p>C'est votre secret. <strong>Ne la partagez jamais.</strong> Elle reste sur votre machine locale et vous devez la protéger (chmod 600) :</p>
+
+<div class="code-block"><div class="code-line"><code>chmod 600 ~/.ssh/cle_serveur</code></div></div>
+
+<h3>Clé publique (<code>cle_serveur.pub</code>)</h3>
+
+<p>C'est la partie que vous envoyez sur les serveurs distants. Elle peut être partagée librement. Son contenu ressemble à :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILb6tLQx8tGjW4gP5kHx7nYV/3xQmK9dN2pQrX8B4x6Z serveur-maison</code></div></div>
+
+<h2>Déployer la clé publique sur un serveur distant</h2>
+
+<h3>Méthode 1 : ssh-copy-id</h3>
+
+<p>L'outil le plus simple pour copier votre clé publique sur un serveur :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-copy-id -i ~/.ssh/cle_serveur.pub user@adresse-serveur</code></div></div>
+
+<p>Il vous demandera le mot de passe du serveur une dernière fois, puis ajoutera automatiquement votre clé publique dans <code>~/.ssh/authorized_keys</code> du serveur.</p>
+
+<h3>Méthode 2 : copie manuelle</h3>
+
+<p>Si <code>ssh-copy-id</code> n'est pas disponible, faites-le manuellement :</p>
+
+<div class="code-block"><div class="code-line"><code># Afficher votre clé publique
+cat ~/.ssh/cle_serveur.pub</code></div></div>
+
+<p>Connectez-vous au serveur et ajoutez le contenu dans <code>~/.ssh/authorized_keys</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+echo "ssh-ed25519 AAAAC3Nza..." >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys</code></div></div>
+
+<h2>Se connecter avec une clé SSH spécifique</h2>
+
+<p>Si vous avez plusieurs clés (une pour le travail, une pour GitHub, une pour votre serveur perso), spécifiez laquelle utiliser :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh -i ~/.ssh/cle_serveur user@adresse-serveur</code></div></div>
+
+<h2>Configuration SSH pour éviter de retaper les options</h2>
+
+<p>Le fichier <code>~/.ssh/config</code> permet de stocker vos préférences par hôte :</p>
+
+<div class="code-block"><div class="code-line"><code>nano ~/.ssh/config</code></div></div>
+
+<p>Exemple de configuration :</p>
+
+<div class="code-block"><div class="code-line"><code>Host serveur-maison
+    HostName 192.168.1.100
+    User david
+    IdentityFile ~/.ssh/cle_serveur
+    Port 22
+
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/cle_github
+
+Host *
+    AddKeysToAgent yes
+    UseKeychain yes</code></div></div>
+
+<p>Après cela, connectez-vous simplement avec :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh serveur-maison</code></div></div>
+
+<h2>ssh-agent — Ne plus retaper sa phrase secrète</h2>
+
+<h3>Démarrer ssh-agent</h3>
+
+<p><code>ssh-agent</code> est un processus qui stocke vos clés déchiffrées en mémoire. Pour le démarrer :</p>
+
+<div class="code-block"><div class="code-line"><code>eval "$(ssh-agent -s)"</code></div></div>
+
+<p>Cela configure les variables d'environnement <code>SSH_AUTH_SOCK</code> et <code>SSH_AGENT_PID</code>.</p>
+
+<h3>Ajouter une clé à l'agent</h3>
+
+<p>Pour qu ssh-agent connaisse votre clé :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-add ~/.ssh/cle_serveur</code></div></div>
+
+<p>Il vous demandera la phrase secrète (une seule fois). L'agent la gardera en mémoire.</p>
+
+<h3>Lister les clés chargées</h3>
+
+<div class="code-block"><div class="code-line"><code>ssh-add -l</code></div></div>
+
+<p>Ou voir les détails complets avec :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-add -l</code></div></div>
+
+<h3>Supprimer une clé de l'agent</h3>
+
+<div class="code-block"><div class="code-line"><code>ssh-add -d ~/.ssh/cle_serveur</code></div></div>
+
+<p>Pour supprimer toutes les clés :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-add -D</code></div></div>
+
+<h2>Configurer le déverrouillage automatique sur macOS et Linux</h2>
+
+<h3>macOS : utiliser le Keychain</h3>
+
+<p>Sur macOS, vous pouvez intégrer ssh-agent au Keychain pour ne jamais retaper votre phrase secrète :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-add --apple-use-keychain ~/.ssh/cle_serveur</code></div></div>
+
+<p>Ajoutez ceci à votre <code>~/.ssh/config</code> pour macOS :</p>
+
+<div class="code-block"><div class="code-line"><code>Host *
+    AddKeysToAgent yes
+    UseKeychain yes
+    IdentityFile ~/.ssh/cle_serveur</code></div></div>
+
+<h3>Linux : agent avec persistence via keychain</h3>
+
+<p>Sur Ubuntu/Debian, installez <code>keychain</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo apt install keychain</code></div></div>
+
+<p>Ajoutez ceci à votre <code>~/.bashrc</code> ou <code>~/.zshrc</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>/usr/bin/keychain ~/.ssh/cle_serveur
+source ~/.keychain/$HOSTNAME-sh</code></div></div>
+
+<p>Ainsi, l'agent persiste entre les sessions de terminal.</p>
+
+<h2>Bonnes pratiques de sécurité</h2>
+
+<h3>Protéger le répertoire .ssh</h3>
+
+<div class="code-block"><div class="code-line"><code>chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_ed25519
+chmod 644 ~/.ssh/id_ed25519.pub</code></div></div>
+
+<h3>Utiliser des clés différentes pour chaque usage</h3>
+
+<p>Créez des clés séparées pour :</p>
+<ul>
+<li>Votre serveur personnel</li>
+<li>GitHub / GitLab</li>
+<li>Serveurs de travail</li>
+</ul>
+
+<h3>Ne jamais stocker de clés privées sur des serveurs distants</h3>
+
+<p>Utilisez toujours une clé locale et copiez la clé publique sur le serveur.</p>
+
+<h3>Définir une phrase secrete forte</h3>
+
+<p>Votre clé privée est aussi sécurisée que votre phrase secrète. Utilisez au moins 20 caractères avec des mots aléatoires ou générés.</p>
+
+<h3>Mettre une expiration sur vos clés (optionnel)</h3>
+
+<p>Pour les clés temporaires sur un serveur, vous pouvez ajouter une date d'expiration :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh-keygen -t ed25519 -V +90d -C "acces-temporaire"</code></div></div>
+
+<p>Cette clé sera inutilisable après 90 jours.</p>
+
+<h2>Vérifier et débugger une connexion SSH</h2>
+
+<h3>Mode verbose</h3>
+
+<p>Pour voir exactement ce qui se passe lors de la connexion :</p>
+
+<div class="code-block"><div class="code-line"><code>ssh -vvv user@serveur</code></div></div>
+
+<p>Triple <code>v</code> pour le niveau maximum de debug.</p>
+
+<h3>Vérifier que la clé est bien chargée</h3>
+
+<div class="code-block"><div class="code-line"><code># Vérifier que l'agent tourne
+echo $SSH_AUTH_SOCK
+
+# Lister les clés chargées
+ssh-add -l
+
+# Voir quelle clé est utilisée (avec debug)
+ssh -v user@serveur 2>&1 | grep "Offering public key"</code></div></div>
+
+<h2>Récapitulatif des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>ssh-keygen -t ed25519</code></td><td>Générer une clé ED25519</td></tr>
+<tr><td><code>ssh-keygen -t rsa -b 4096</code></td><td>Générer une clé RSA 4096 bits</td></tr>
+<tr><td><code>ssh-copy-id user@serveur</code></td><td>Copier la clé publique sur le serveur</td></tr>
+<tr><td><code>ssh -i ~/.ssh/cle user@serveur</code></td><td>Se connecter avec une clé spécifique</td></tr>
+<tr><td><code>eval "$(ssh-agent -s)"</code></td><td>Démarrer ssh-agent</td></tr>
+<tr><td><code>ssh-add ~/.ssh/cle</code></td><td>Ajouter une clé à l'agent</td></tr>
+<tr><td><code>ssh-add -l</code></td><td>Lister les clés dans l'agent</td></tr>
+<tr><td><code>ssh-add -D</code></td><td>Supprimer toutes les clés de l'agent</td></tr>
+<tr><td><code>ssh -vvv user@serveur</code></td><td>Connexion en mode debug</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li><strong>Générez une clé ED25519</strong> : lancez <code>ssh-keygen -t ed25519 -f ~/.ssh/cle_test -C "test-cle"</code>, sans phrase secrète pour cet exercice (en usage réel, utilisez-en une).</li>
+
+<li><strong>Protégez le répertoire SSH</strong> : faites <code>chmod 700 ~/.ssh && chmod 600 ~/.ssh/cle_test</code>.</li>
+
+<li><strong>Affichez votre clé publique</strong> : <code>cat ~/.ssh/cle_test.pub</code> et notez son contenu.</li>
+
+<li><strong>Démarrez ssh-agent</strong> : <code>eval "$(ssh-agent -s)"</code>, puis <code>ssh-add ~/.ssh/cle_test</code>.</li>
+
+<li><strong>Vérifiez que la clé est chargée</strong> : <code>ssh-add -l</code>.</li>
+
+<li><strong>Créez un fichier ~/.ssh/config</strong> avec un Host personnalisé utilisant votre clé.</li>
+
+<li><strong>Connectez-vous</strong> (si vous avez accès à un serveur de test) en utilisant cette configuration.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p>Les clés SSH avec ssh-agent transforment votre workflow quotidien : plus besoin de retaper des mots de passe, vos connexions sont plus sécurisées, et vous pouvez gérer plusieurs clés pour différents contextes. ssh-keygen crée la paire de clés, ssh-copy-id déploie la clé publique, ssh-agent garde vos clés déchiffrées en mémoire, et <code>~/.ssh/config</code> simplifie les connexions futures. Une fois configuré, SSH devient transparent et fiable.</p>
+
+<nav>
+<a href="76-firewall-ufw.html">&larr; UFW — Le pare-feu simple sous Linux</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
