@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>ln — Liens symboliques et liens durs</h1>
+
+<h2>Introduction</h2>
+
+<p>Vous avez probablement déjà rencontré ces petits raccourcis avec une flèche sur Linux sans vraiment comprendre ce que c'était. Les liens sous Linux permettent de créer des références vers des fichiers ou dossiers, un peu comme les raccourcis sous Windows, mais en bien plus puissant.</p>
+
+<p>Il existe deux types de liens : les <strong>liens durs</strong> (hard links) et les <strong>liens symboliques</strong> (symbolic links ou symlinks). Chaque type a ses propres usages et particularités. Dans cette leçon, vous allez comprendre la différence et savoir quand utiliser chacun.</p>
+
+<h2>Comprendre le système de fichiers Linux</h2>
+
+<h3>Chaque fichier a un inode</h3>
+
+<p>Pour comprendre les liens, il faut d'abord savoir comment Linux stocke les fichiers. Chaque fichier sur le disque possède un numéro unique appelé <strong>inode</strong>. L'inode contient les métadonnées du fichier (permissions, dates, emplacement des données) mais pas le nom du fichier.</p>
+
+<div class="code-block"><div class="code-line"><code># Voir le numéro d'inode d'un fichier
+ls -li fichier.txt</code></div></div>
+
+<p>La première colonne affiche le numéro d'inode.</p>
+
+<h3>Un nom de fichier pointe vers un inode</h3>
+
+<p>Quand vous créez un fichier, vous créez en réalité un nom qui pointe vers un inode. Le nom est stocké dans un répertoire, qui est lui-même une liste de noms pointant vers des inodes.</p>
+
+<div class="code-block"><div class="code-line"><code># Créer un fichier
+echo "Bonjour" > fichier.txt
+
+# Vérifier son inode
+ls -li fichier.txt</code></div></div>
+
+<h2>Les liens duros (Hard Links)</h2>
+
+<h3>Qu'est-ce qu'un lien dur ?</h3>
+
+<p>Un lien dur est un nom supplémentaire qui pointe vers le même inode qu'un fichier existant. Les deux noms sont parfaitement égaux — supprimer l'un ne supprime pas l'autre tant qu'il reste au moins un lien.</p>
+
+<h3>Créer un lien dur</h3>
+
+<div class="code-block"><div class="code-line"><code>ln fichier.txt lien_dur.txt</code></div></div>
+
+<p>Après cette commande, <code>fichier.txt</code> et <code>lien_dur.txt</code> pointent vers le même contenu.</p>
+
+<h3>Vérifier que ça fonctionne</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir les deux fichiers avec leurs inodes
+ls -li</code></div></div>
+
+<p>Vous remarquerez que les deux noms ont le même numéro d'inode. Le compteur de liens (deuxième colonne) passe à 2.</p>
+
+<h3>Modifier un lien dur</h3>
+
+<div class="code-block"><div class="code-line"><code># Modifier via un lien
+echo "Nouveau contenu" > lien_dur.txt
+
+# Lire via l'autre lien
+cat fichier.txt</code></div></div>
+
+<p>Les deux noms voient le même contenu car ils pointent vers le même inode.</p>
+
+<h3>Supprimer un lien dur</h3>
+
+<div class="code-block"><div class="code-line"><code># Supprimer le lien dur
+rm lien_dur.txt
+
+# Le fichier original existe toujours
+cat fichier.txt</code></div></div>
+
+<h3>Limitations des liens duros</h3>
+
+<ul>
+<li><strong>Même système de fichiers</strong> : un lien dur ne peut pointer que vers un fichier du même système de fichiers (même partition).</li>
+<li><strong>Pas de liens vers des répertoires</strong> : vous ne pouvez pas créer de lien dur vers un répertoire.</li>
+<li><strong>Pas de liens vers des fichiers specials</strong> (devices, sockets).</li>
+</ul>
+
+<h2>Les liens symboliques (Symbolic Links)</h2>
+
+<h3>Qu'est-ce qu'un lien symbolique ?</h3>
+
+<p>Un lien symbolique est un fichier spécial qui contient le chemin vers un autre fichier ou répertoire. C'est comme un raccourci : le lien symbolique pointe vers la cible, et quand vous ouvrez le lien, Linux vous redirige vers le fichier réel.</p>
+
+<h3>Créer un lien symbolique</h3>
+
+<div class="code-block"><div class="code-line"><code># Syntaxe : ln -s fichier_original lien_symbolique
+ln -s fichier.txt lien_sym.txt</code></div></div>
+
+<h3>Identifier un lien symbolique</h3>
+
+<div class="code-block"><div class="code-line"><code># Les liens symboliques sont reconnaissables par la flèche ->
+ls -la</code></div></div>
+
+<p>La sortie montre quelque chose comme :</p>
+
+<div class="code-block"><div class="code-line"><code>lrwxrwxrwx 1 user user 12 jun  2 lien_sym.txt -> fichier.txt</code></div></div>
+
+<p>Le <code>l</code> au début indique que c'est un lien (pas un fichier ordinaire <code>-</code>).</p>
+
+<h3>Suivre un lien symbolique</h3>
+
+<div class="code-block"><div class="code-line"><code># Lire le contenu via le lien
+cat lien_sym.txt
+
+# Le lien symbolique pointe vers le fichier original
+# Si le fichier original est supprimé, le lien devient "orphelin"</code></div></div>
+
+<h3>Créer un lien vers un répertoire</h3>
+
+<div class="code-block"><div class="code-line"><code># Les liens symboliques peuvent pointer vers des répertoires
+ln -s /var/log logs</code></div></div>
+
+<h3>Liens symboliques vers des chemins absolus ou relatifs</h3>
+
+<div class="code-block"><div class="code-line"><code># Absolu (recommandé) : fonctionne où que soit le lien
+ln -s /home/user/documents/docs mes_docs
+
+# Relatif : fonctionne seulement si le lien est dans le bon contexte
+ln -s ../autre_dossier/file.txt lien.txt</code></div></div>
+
+<h3>Liens symboliques cassés</h3>
+
+<div class="code-block"><div class="code-line"><code># Un lien symbolique vers un fichier inexistant
+ls -la lien_casse
+# Affiche : lien_casse -> fichier_inexistant (clignotant en rouge sur certains terminaux)</code></div></div>
+
+<p>Pour vérifier si un lien symbolique est valide :</p>
+
+<div class="code-block"><div class="code-line"><code>test -e lien_sym && echo "Valide" || echo "Cassé"</code></div></div>
+
+<h2>Comparaison : liens duros vs liens symboliques</h2>
+
+<table>
+<tr><th>Caractéristique</th><th>Lien dur</th><th>Lien symbolique</th></tr>
+<tr><td>Syntaxe</td><td><code>ln original lien</code></td><td><code>ln -s original lien</code></td></tr>
+<tr><td> Pointeur</td><td>Même inode que le fichier original</td><td>Chemin vers le fichier original</td></tr>
+<tr><td>Système de fichiers</td><td>Même partition obligatoire</td><td>Peut traverser les partitions</td></tr>
+<tr><td>Répertoires</td><td>Interdit</td><td>Autorisé</td></tr>
+<tr><td>Si cible supprimée</td><td>Le fichier reste (autres liens gardant l'inode)</td><td>Lien devient orphelin (cassé)</td></tr>
+<tr><td>Espace disque</td><td>Très faible (juste un nom dans l'inode)</td><td>Faible (stocke le chemin)</td></tr>
+<tr><td>Performance</td><td>Très rapide, pas de redirection</td><td>Légère redirection lors de l'accès</td></tr>
+</table>
+
+<h2>Cas d'usage courants des liens symboliques</h2>
+
+<h3>Créer des raccourcis pour des chemins longs</h3>
+
+<div class="code-block"><div class="code-line"><code># Raccourcir un chemin fréquemment utilisé
+ln -s /var/log/apache2 logs-apache
+
+# Utiliser le raccourci
+cd logs-apache
+ls /var/log/apache2  # équivalent</code></div></div>
+
+<h3>Versions multiples d'un logiciel</h3>
+
+<div class="code-block"><div class="code-line"><code># Gérer plusieurs versions d'un logiciel
+ln -s /opt/python-3.9.7 python
+ln -s /opt/python-3.11.2 python3
+
+#切换 de version en changeant le lien
+rm python
+ln -s /opt/python-3.10.4 python</code></div></div>
+
+<h3>Configuration centralisée</h3>
+
+<div class="code-block"><div class="code-line"><code># Pointer vers un fichier de config dans un autre emplacement
+ln -s /mnt/config/git/config ~/.gitconfig</code></div></div>
+
+<h3>Répertoires de données partagés</h3>
+
+<div class="code-block"><div class="code-line"><code># Partager un dossier entre plusieurs utilisateurs
+ln -s /srv/donnees_partagees /home/user/documents/data</code></div></div>
+
+<h2>Gérer les liens symboliques</h2>
+
+<h3>Voir tous les liens vers un inode</h3>
+
+<p>Pour trouver tous les noms pointant vers un même inode :</p>
+
+<div class="code-block"><div class="code-line"><code># Trouver tous les liens duros (via l'inode)
+find /chemin -samefile fichier.txt</code></div></div>
+
+<h3>Trouver tous les liens symboliques dans un répertoire</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver les liens symboliques
+find /chemin -type l
+
+# Trouver les liens symboliques cassés
+find /chemin -type l ! -e</code></div></div>
+
+<h3>Modifier un lien symbolique</h3>
+
+<p>Pour changer la cible d'un lien symbolique, supprimez-le et recréez-le :</p>
+
+<div class="code-block"><div class="code-line"><code># Supprimer et recréer
+rm ancien_lien
+ln -s /nouveau/chemin ancien_lien</code></div></div>
+
+<h3>Connaître la cible d'un lien</h3>
+
+<div class="code-block"><div class="code-line"><code># Lire le lien (résolution)
+readlink lien_sym
+
+# Résoudre complètement le chemin
+readlink -f lien_sym</code></div></div>
+
+<h2>Dépanner les liens symboliques</h2>
+
+<h3>Le lien ne fonctionne plus</h3>
+
+<p>Si un lien symbolique est cassé, vérifiez d'abord que la cible existe :</p>
+
+<div class="code-block"><div class="code-line"><code># Vérifier la cible
+ls -l lien_sym
+
+# Lister le contenu du répertoire parent
+ls -la /chemin/parent/</code></div></div>
+
+<h3>Lien relatif vs absolu</h3>
+
+<p>Si vous déplacez un lien symbolique qui utilise un chemin relatif, il peut se casser. Préférez les chemins absolus pour les liens permanents :</p>
+
+<div class="code-block"><div class="code-line"><code># Bon : chemin absolu
+ln -s /home/user/projets/mon_projet projet
+
+# Risqué : chemin relatif (cassé si déplacé)
+ln -s ../../projets/mon_projet projet</code></div></div>
+
+<h3>Permissions des liens symboliques</h3>
+
+<p>Les liens symboliques ont toujours les permissions <code>lrwxrwxrwx</code> — ces permissions n'ont pas de sens car le lien suit toujours les permissions du fichier cible.</p>
+
+<h2>Récapitulatif des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>ln original lien</code></td><td>Créer un lien dur</td></tr>
+<tr><td><code>ln -s original lien</code></td><td>Créer un lien symbolique</td></tr>
+<tr><td><code>ln -s /absolu/lien</code></td><td>Lien avec chemin absolu</td></tr>
+<tr><td><code>ls -la</code></td><td>Afficher les liens (flèche après le nom)</td></tr>
+<tr><td><code>readlink lien</code></td><td>Voir la cible d'un lien symbolique</td></tr>
+<tr><td><code>readlink -f lien</code></td><td>Résoudre le chemin complet</td></tr>
+<tr><td><code>find . -type l</code></td><td>Trouver tous les liens symboliques</td></tr>
+<tr><td><code>find . -type l ! -e</code></td><td>Trouver les liens cassés</td></tr>
+<tr><td><code>find . -samefile fichier</code></td><td>Trouver tous les liens vers un fichier</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li><strong>Créer un fichier texte</strong> : écrivez du texte dans <code>fichier_test.txt</code>.</li>
+
+<li><strong>Vérifier son inode</strong> : faites <code>ls -li fichier_test.txt</code> et notez le numéro d'inode.</li>
+
+<li><strong>Créer un lien dur</strong> : <code>ln fichier_test.txt lien_dur_test.txt</code>.</li>
+
+<li><strong>Vérifier</strong> : <code>ls -li</code> montre que les deux ont le même inode.</li>
+
+<li><strong>Créer un lien symbolique</strong> : <code>ln -s fichier_test.txt lien_sym_test.txt</code>.</li>
+
+<li><strong>Vérifier</strong> : <code>ls -la</code> montre la flèche vers la cible.</li>
+
+<li><strong>Modifier via le lien dur</strong> : <code>echo "modifié" > lien_dur_test.txt</code>, puis <code>cat fichier_test.txt</code>.</li>
+
+<li><strong>Modifier via le lien symbolique</strong> : <code>echo "via sym" > lien_sym_test.txt</code>, puis <code>cat fichier_test.txt</code>.</li>
+
+<li><strong>Supprimer le fichier original</strong> : <code>rm fichier_test.txt</code>.</li>
+
+<li><strong>Vérifier le lien dur</strong> : <code>cat lien_dur_test.txt</code> — il fonctionne encore !</li>
+
+<li><strong>Vérifier le lien symbolique</strong> : <code>cat lien_sym_test.txt</code> — message d'erreur (lien cassé).</li>
+
+<li><strong>Créer un lien vers /var/log</strong> : <code>ln -s /var/log mes_logs</code> et explorez-le.</li>
+
+<li><strong>Nettoyer</strong> : <code>rm lien_dur_test.txt lien_sym_test.txt fichier_test.txt mes_logs</code> (si créé).</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p>Les liens Linux sont un outil puissant pour organiser vos fichiers et créer des raccourcis intelligents. Utilisez les <strong>liens duros</strong> quand vous avez besoin de partager un même fichier sous plusieurs noms sur la même partition — par exemple pour des sauvegardes rapides. Utilisez les <strong>liens symboliques</strong> pour créer des raccourcis vers des chemins longs, gérer plusieurs versions d'un logiciel, ou pointer vers des fichiers sur d'autres partitions. La commande <code>ln</code> crée des liens durs, et <code>ln -s</code> crée des liens symboliques. Avec l'habitude, vous utiliserez ces deux outils quotidiennement pour garder votre système organisé.</p>
+
+<nav>
+<a href="77-ssh-keygen-ssh-agent.html">&larr; ssh-keygen et ssh-agent — Clés SSH et agent d'authentification</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
