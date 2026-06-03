@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Cron — Planification avancée et bonnes pratiques</h1>
+
+<h2>Introduction</h2>
+
+<p>Si la leçon 13 vous a donné les bases de cron, cette leçon vous pousse plus loin. Vous allez maîtriser la syntaxe cron avancée, comprendre les pièges courants, organiser vos tâches avec les répertoires spécialisés, et sécuriser vos scripts planifiés. Quand vous aurez terminé, cron n'aura plus aucun secret pour vous.</p>
+
+<h2>Syntaxe cron détaillée</h2>
+
+<h3>Les 5 champs</h3>
+
+<p>Chaque ligne cron contient 5 champs séparés par des espaces :</p>
+
+<div class="code-block"><div class="code-line"><code>┌───────────── minute (0-59)
+│ ┌───────────── heure (0-23)
+│ │ ┌───────────── jour du mois (1-31)
+│ │ │ ┌───────────── mois (1-12)
+│ │ │ │ ┌───────────── jour de la semaine (0-6, 0 = dimanche)
+│ │ │ │ │
+* * * * * commande</code></div></div>
+
+<h3>Symboles spéciaux</h3>
+
+<table>
+<tr><th>Symbole</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>*</code></td><td>Chaque valeur</td><td><code>* * * * *</code> = chaque minute</td></tr>
+<tr><td><code>,</code></td><td>Liste de valeurs</td><td><code>0,30 * * * *</code> = à chaque heure pile et demi</td></tr>
+<tr><td><code>-</code></td><td>Plage de valeurs</td><td><code>9-17 * * * *</code> = chaque minute entre 9h et 17h</td></tr>
+<tr><td><code>/</code></td><td>Intervalle / pas</td><td><code>*/5 * * * *</code> = toutes les 5 minutes</td></tr>
+<tr><td><code>L</code></td><td>Dernier jour (jour/mois)</td><td><code>0 0 L * *</code> = dernier jour du mois à minuit</td></tr>
+<tr><td><code>W</code></td><td>Jour ouvré le plus proche</td><td><code>0 9 15W * *</code> = 15 du mois ou jour ouvré le + proche</td></tr>
+<tr><td><code>#</code></td><td>N-ième du jour/semaine</td><td><code>0 0 * * 2#3</code> = 3e mardi du mois</td></tr>
+</table>
+
+<h3>Exemples avancés</h3>
+
+<div class="code-block"><div class="code-line"><code># Toutes les 5 minutes
+*/5 * * * *
+
+# Chaque 15 minutes (notation alternative)
+0,15,30,45 * * * *
+
+# Heures impairs (1, 3, 5, ...)
+0 1-23/2 * * *
+
+# Du lundi au vendredi à 8h30
+30 8 * * 1-5
+
+# Tous les 2 heures pendant les heures ouvrées
+0 9-17/2 * * 1-5
+
+# 3e lundi du mois à 10h
+0 10 * * 1#3
+
+# Dernier vendredi du mois à 14h
+0 14 * * 5L
+
+# Minutes 10 à 20 toutes les 5 minutes
+10-20/5 * * * *</code></div></div>
+
+<h2>Répertoires cron spécialisées</h2>
+
+<p>Cron recherche automatiquement des scripts dans quatre répertoires. Plus besoin de syntaxe compliquée — mettez juste un script exécutable au bon endroit.</p>
+
+<div class="code-block"><div class="code-line"><code>/etc/cron.d/      # Scripts système (format complet avec utilisateur)
+# Exemple de fichier :
+# PATH=/usr/local/bin:/usr/bin:/bin
+# 0 3 * * * root /opt/scripts/sauvegarde.sh
+
+/etc/cron.hourly/  # Exécuté chaque heure
+/etc/cron.daily/   # Exécuté chaque jour à 6h25
+/etc/cron.weekly/  # Exécuté chaque semaine le dimanche à 6h47
+/etc/cron.monthly/ # Exécuté le 1er du mois à 6h52</code></div></div>
+
+<p>Pour ajouter une tâche dans un répertoire horaire, copiez simplement votre script :</p>
+
+<div class="code-block"><div class="code-line"><code># Rendre le script exécutable
+sudo chmod +x /opt/scripts/nettoyage_logs.sh
+
+# Copier dans le répertoire quotidien
+sudo cp /opt/scripts/nettoyage_logs.sh /etc/cron.daily/
+
+# Vérifier que le nom ne contient pas de point (sinon ignoré)
+sudo mv netcost.sh netcost  # pas .sh sinon ignoré</code></div></div>
+
+<h3>Ordre d'exécution</h3>
+
+<p>Les répertoires <code>cron.hourly</code>, <code>cron.daily</code>, etc. sont exécutés par <code>run-parts</code> qui les lance dans l'ordre alphabétique. L'heure précise est définie dans <code>/etc/crontab</code>.</p>
+
+<div class="code-block"><div class="code-line"><code># Voir les heures d'exécution (fichier système)
+/etc/crontab</code></div></div>
+
+<h2>Environment et sécurité</h2>
+
+<h3>Le problème de l'environnement</h3>
+
+<p>Cron exécute les scripts avec un environnement très limité — variables PATH minimales, aucun terminal. Un script qui fonctionne en interactif peut échouer dans cron.</p>
+
+<div class="code-block"><div class="code-line"><code># Debug : voir l'environnement cron
+crontab -e
+
+# Ajouter cette ligne temporaire pour tester :
+# * * * * * env > /tmp/cron_env.txt
+
+# Puis vérifier le contenu
+cat /tmp/cron_env.txt</code></div></div>
+
+<h3>Solutions pour l'environnement</h3>
+
+<p>Dans votre crontab, rechargez votre profil bash :</p>
+
+<div class="code-block"><div class="code-line"><code># Charger le profil bash avant chaque commande
+SHELL=/bin/bash
+BASH_ENV=/home/user/.bashrc
+PATH=/usr/local/bin:/usr/bin:/bin
+MAILTO=user@example.com
+
+# Ou lancez via bash -l :
+* * * * * /bin/bash -l /home/user/script.sh</code></div></div>
+
+<h3>Redirection des sorties</h3>
+
+<p>Par défaut, cron envoie la sortie par email. Si vous ne voulez pas d'email, redirigez stdout et stderr :</p>
+
+<div class="code-block"><div class="code-line"><code># Ignorer toute sortie (recommande)
+* * * * * /opt/scripts/backup.sh > /dev/null 2>&1
+
+# Logger dans un fichier (avec rotation)
+0 3 * * * /opt/scripts/backup.sh >> /var/log/backup.log 2>&1
+
+# Logger stdout et stderr séparément
+0 3 * * * /opt/scripts/backup.sh > /var/log/backup.log 2>/var/log/backup.err
+
+# Conserver seulement les erreurs
+0 3 * * * /opt/scripts/backup.sh 2>&1 > /dev/null || /opt/scripts/backup.sh > /dev/null</code></div></div>
+
+<h2>Utilisateurs et permissions</h2>
+
+<h3>Cron par utilisateur</h3>
+
+<div class="code-block"><div class="code-line"><code># Éditer sa propre crontab
+crontab -e
+
+# Lister ses tâches
+crontab -l
+
+# Supprimer toute la crontab
+crontab -r
+
+# Lister les crontabs d'un autre utilisateur (root)
+sudo crontab -l -u david
+
+# Éditer la crontab d'un autre utilisateur (root)
+sudo crontab -e -u david</code></div></div>
+
+<h3>Fichier /etc/cron.d/ pour les utilisateurs</h3>
+
+<div class="code-block"><div class="code-line"><code># Format complet : utilisateur + commande
+# /etc/cron.d/script-quotidien
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+0 2 * * * david /home/david/scripts/sauvegarde.sh</code></div></div>
+
+<h3>Restreindre l'accès à cron</h3>
+
+<div class="code-block"><div class="code-line"><code># Interdire cron pour un utilisateur
+echo "alice" | sudo tee /etc/cron.deny
+
+# Autoriser seulement certains utilisateurs
+echo "alice" | sudo tee /etc/cron.allow
+
+# Si cron.allow existe, seuls les utilisateurs listés peuvent l'utiliser
+# Si seul cron.deny existe, les utilisateurs listés sont interdits</code></div></div>
+
+<h2>Systemd timers — Alternative moderne</h2>
+
+<p>systemd timers sont une alternative à cron recommandée sur les systèmes modernes. Ils offrent plus de contrôle et sont plus faciles à débugger.</p>
+
+<h3>Créer un timer</h3>
+
+<div class="code-block"><div class="code-line"><code># Unit service : /etc/systemd/system/nettoyage.service
+[Unit]
+Description=Nettoyage des logs
+
+[Service]
+Type=oneshot
+ExecStart=/opt/scripts/nettoyage.sh
+
+# Unit timer : /etc/systemd/system/nettoyage.timer
+[Unit]
+Description=Nettoyage quotidien
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Activer et démarrer
+sudo systemctl enable --now nettoyage.timer
+
+# Lister les timers actifs
+systemctl list-timers
+
+# Statut du timer
+systemctl status nettoyage.timer
+
+# Statut du service
+systemctl status nettoyage.service</code></div></div>
+
+<h3>Timer avec condition</h3>
+
+<div class="code-block"><div class="code-line"><code># Exécuter seulement si le réseau est accessible
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+
+# Ajouter dans le service :
+[Unit]
+ConditionPathExists=/run/systemd/network/
+
+# Ou attendre le réseau
+After=network-online.target
+Wants=network-online.target</code></div></div>
+
+<h2>Techniques de debugging</h2>
+
+<h3>Tester avant de déployer</h3>
+
+<p>Avant de mettre dans cron, testez manuellement avec le même environnement :</p>
+
+<div class="code-block"><div class="code-line"><code># Simuler l'environnement cron
+/usr/bin/env -i HOME=/home/user PATH=/usr/local/bin:/usr/bin:/bin /bin/bash -l -c '/opt/scripts/monscript.sh'
+
+# Vérifier les codes de sortie
+/opt/scripts/monscript.sh
+echo "Code de retour: $?"</code></div></div>
+
+<h3>Logger dans le script</h3>
+
+<p>Ajoutez du logging dans vos scripts pour Faciliter le dépannage :</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+LOGFILE="/var/log/monscript.log"
+
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOGFILE"
+}
+
+log "Démarrage du script"
+log "Utilisateur: $USER"
+log "HOME: $HOME"
+
+# Vos commandes ici
+log "Traitement terminé"</code></div></div>
+
+<h3>Commandes de debug cron</h3>
+
+<div class="code-block"><div class="code-line"><code># Vérifier que cron tourne
+systemctl status cron   # Debian/Ubuntu
+systemctl status crond  # RHEL/CentOS
+
+# Voir les logs cron
+journalctl -u cron -f
+grep CRON /var/log/syslog  # Debian
+
+# Lister les tâches système
+cat /etc/crontab
+ls -la /etc/cron.d/
+ls -la /etc/cron.hourly/ /etc/cron.daily/ /etc/cron.weekly/ /etc/cron.monthly/</code></div></div>
+
+<h3>Planifier une exécution immédiate pour tester</h3>
+
+<div class="code-block"><div class="code-line"><code># Ajouter une tâche qui s'exécute dans 1 minute pour tester
+crontab -e
+# Tapez : * * * * * /opt/scripts/test.sh > /tmp/test_cron.log 2>&1
+
+# Attendre 1 minute
+sleep 60
+
+# Vérifier le résultat
+cat /tmp/test_cron.log
+
+# Supprimer la ligne de test quand validé</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<h3>Organisation des scripts</h3>
+
+<div class="code-block"><div class="code-line"><code># Structure recommandée
+/opt/
+├── scripts/
+│   ├── daily/       # scripts quotidiens
+│   ├── hourly/      # scripts horaires
+│   ├── weekly/      # scripts hebdomadaires
+│   └── common/      # fonctions partagées
+└── logs/            # logs des scripts cron
+
+# Exemple de script bien structuré
+#!/bin/bash
+# /opt/scripts/daily/backup.sh
+set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/common/functions.sh"
+
+log "Démarrage backup"
+
+# ... reste du script
+
+log "Backup terminé"</code></div></div>
+
+<h3>Règles de sécurité</h3>
+
+<ul>
+<li><strong>Ne jamais mettre de mots de passe en clair</strong> dans les scripts cron — utilisez des variables d'environnement ou des fichiers .env avec permissions restrictives.</li>
+<li><strong>Vérifier les permissions</strong> : <code>chmod 700 /opt/scripts/sensibles.sh</code></li>
+<li><strong>Utiliser des chemins absolus</strong> dans les scripts (cron n'a pas de répertoire de travail).</li>
+<li><strong>Préférer sudo -u</strong> pour les tâches devant tourner sous un autre utilisateur.</li>
+<li><strong>Logger tout</strong> — les scripts cron silencieux sont difficiles à débugger.</li>
+<li><strong>Vérifier l'espace disque</strong> avant d'écrire des logs volumineux.</li>
+</ul>
+
+<h3>Rotation des logs</h3>
+
+<p>Configurez logrotate pour vos logs cron :</p>
+
+<div class="code-block"><div class="code-line"><code># /etc/logrotate.d/mes-scripts
+/var/log/monscript.log {
+    daily
+    rotate 7
+    compress
+    missingok
+    notifempty
+    create 0640 root root
+    sharedscripts
+}</code></div></div>
+
+<h2>Cas d'usage courants</h2>
+
+<h3>Nettoyage des fichiers temporaires</h3>
+
+<div class="code-block"><div class="code-line"><code># /etc/cron.daily/cleanup-temp
+# Nettoyer /tmp tous les jours à 3h
+0 3 * * * root find /tmp -type f -atime +7 -delete 2>/dev/null
+
+# Nettoyer les logs de plus de 30 jours
+0 4 * * * root find /var/log -name "*.log" -mtime +30 -compress</code></div></div>
+
+<h3>Sauvegardes automatiques</h3>
+
+<div class="code-block"><div class="code-line"><code># /etc/cron.daily/backup-db
+0 2 * * * root /opt/scripts/backup-db.sh >> /var/log/backup-db.log 2>&1
+
+# Backup avec rétention (garder 7 jours)
+#!/bin/bash
+BACKUP_DIR="/backup"
+DATE=$(date +%Y%m%d_%H%M%S)
+mysqldump -u backup_user -p"$MYSQL_PASSWORD" all_databases | gzip > "$BACKUP_DIR/db_$DATE.sql.gz"
+
+# Supprimer les backups de plus de 7 jours
+find "$BACKUP_DIR" -name "db_*.sql.gz" -mtime +7 -delete</code></div></div>
+
+<h3>Monitoring et alertes</h3>
+
+<div class="code-block"><div class="code-line"><code># Vérifier l'espace disque chaque heure etalerert si < 10%
+0 * * * * root df -h / | awk 'NR==2 {if($5+0<10) print "Disque bas: "$5}' | wall
+
+# Vérifier les services critiques
+*/5 * * * * root systemctl is-active --quiet apache2 || systemctl restart apache2</code></div></div>
+
+<h2>Erreurs courantes</h2>
+
+<table>
+<tr><th>Erreur</th><th>Solution</th></tr>
+<tr><td>Script ne fonctionne que manuellement</td><td>Vérifier les chemins absolus et l'environnement. Utiliser <code>-l</code> avec bash.</td></tr>
+<tr><td>Pas de sortie / pas de log</td><td>Rediriger stdout/stderr vers un fichier. Ajouter du logging.</td></tr>
+<tr><td>Exécution trop fréquente</td><td>Utiliser un fichier lock pour éviter les doublons (<code>flock</code>).</td></tr>
+<tr><td>Tâche ignorée silencieusement</td><td>Vérifier le nom du fichier dans <code>/etc/cron.d/</code> (pas de point).</td></tr>
+<tr><td>Fuseau horaire non respecté</td><td>Vérifier que le système est dans le bon fuseau : <code>timedatectl</code>.</td></tr>
+<tr><td>Dépassement de temps</td><td>Utiliser <code>timeout</code> ou un script wrapper avec <code>set -m</code>.</td></tr>
+</table>
+
+<h3>Éviter les doublons avec flock</h3>
+
+<div class="code-block"><div class="code-line"><code># Empêcher l'exécution si une instance tourne déjà
+0 * * * * flock -n /var/lock/monscript.lock /opt/scripts/monscript.sh</code></div></div>
+
+<h2>Récapitulatif des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>crontab -e</code></td><td>Éditer sa crontab</td></tr>
+<tr><td><code>crontab -l</code></td><td>Lister ses tâches cron</td></tr>
+<tr><td><code>crontab -r</code></td><td>Supprimer sa crontab</td></tr>
+<tr><td><code>sudo crontab -e -u user</code></td><td>Éditer la crontab d'un autre utilisateur</td></tr>
+<tr><td><code>systemctl list-timers</code></td><td>Lister les timers systemd</td></tr>
+<tr><td><code>grep CRON /var/log/syslog</code></td><td>Voir les logs cron</td></tr>
+<tr><td><code>flock -n /lock/file cmd</code></td><td>Exécuter avec verrou pour éviter les doublons</td></tr>
+<tr><td><code>run-parts --test /etc/cron.hourly</code></td><td>Tester les scripts d'un répertoire</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li><strong>Configurer un script de monitoring</strong> : créez un script <code>~/scripts/check_disk.sh</code> qui affiche l'espace disque et enregistre la sortie dans <code>/var/log/disk_check.log</code>. Rendez-le exécutable.</li>
+
+<li><strong>Planifier l'exécution</strong> : avec <code>crontab -e</code>, exécutez ce script toutes les heures. Ajoutez la redirection vers un fichier de log.</li>
+
+<li><strong>Tester immédiatement</strong> : exécutez le script manuellement et vérifiez le log.</li>
+
+<li><strong>Ajouter une tâche système</strong> : copiez votre script dans <code>/etc/cron.hourly/</code> (sans extension) et vérifiez qu'il s'exécute.</li>
+
+<li><strong>Créer un timer systemd</strong> : au lieu de cron, créez un service et timer systemd pour exécuter votre script quotidiennement à 9h.</li>
+
+<li><strong>Ajouter une protection contre les doublons</strong> : utilisez <code>flock</code> dans votre crontab pour éviter que le script ne s'exécute plusieurs fois simultanément.</li>
+
+<li><strong>Vérifier le bon fonctionnement</strong> : consultez <code>systemctl list-timers</code> ou <code>grep CRON /var/log/syslog</code> pour confirmer l'exécution.</li>
+
+<li><strong>Nettoyer</strong> : supprimez vos entrées de test de crontab et les fichiers de test.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p>Cron est un outil puissant, mais ses pièges sont nombreux. Avec cette leçon, vous savez maintenant maîtriser la syntaxe avancée, utiliser les répertoires spécialisés, sécuriser vos scripts, et débugger efficacement. Les timers systemd offrent une alternative moderne mérite d'être envisagée sur les systèmes récents — ils sont plus facile à监控 et offrent plus de fonctionnalités. Quel que soit votre choix, n'oubliez jamais les bases : chemins absolus, logging, et tests avant déploiement. Un script cron mal testé peut causer des problèmes silencieux que vous ne remarquerez qu'au moment où vous en aurez le plus besoin.</p>
+
+<nav>
+<a href="78-liens-symboliques.html">&larr; ln — Liens symboliques et liens durs</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
