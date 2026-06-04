@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>sort, uniq et wc — Trier, dédoublonner et compter</h1>
+
+<h2>Introduction</h2>
+
+<p>Trois commandes simples mais extraordinaires pour traiter du texte. <code>sort</code> trie les lignes, <code>uniq</code> supprime les doublons (à condition que les identiques soient adjacents), et <code>wc</code> compte lignes, mots et caractères. Individuellement elles sont utiles, mais combinées elles deviennent un outil de'analyse de données extrêmement puissant.</p>
+
+<h2>sort — Trier les lignes</h2>
+
+<h3>Utilisation de base</h3>
+
+<div class="code-block"><div class="code-line"><code># Trier alphabetically (par défaut)
+sort fichier.txt
+
+# Trier numeriquement
+sort -n nombres.txt
+
+# Trier en sens inverse
+sort -r fichier.txt
+
+# Trier par colonne (ici la 3e)
+sort -k3 fichier.csv</code></div></div>
+
+<h3>Options principales</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n</code></td><td>Trier numériquement (pas alphabétiquement)</td></tr>
+<tr><td><code>-r</code></td><td>Ordre inverse (descendant)</td></tr>
+<tr><td><code>-u</code></td><td>Supprimer les doublons (unique)</td></tr>
+<tr><td><code>-k</code></td><td>Trier par colonne spécifique</td></tr>
+<tr><td><code>-t</code></td><td>Spécifier le séparateur de champs</td></tr>
+<tr><td><code>-f</code></td><td>Ignorer la casse (FOLD)</td></tr>
+<tr><td><code>-b</code></td><td>Ignorer les espaces au début</td></tr>
+<tr><td><code>-h</code></td><td>Trier des tailles humaines (1K, 2M, 3G)</td></tr>
+<tr><td><code>-M</code></td><td>Trier par mois (JAN, FEB, etc.)</td></tr>
+</table>
+
+<h3>Exemples pratiques</h3>
+
+<div class="code-block"><div class="code-line"><code># Trier les tailles de fichiers (notation humaine)
+ls -la | sort -h -k5
+
+# Trier par taille de fichier (plus grand en premier)
+ls -laS | sort -k5 -r
+
+# Trier un fichier CSV par la 2e colonne
+sort -t',' -k2 data.csv
+
+# Trier numériquement par la 3e colonne
+sort -t',' -k3n rapport.csv
+
+# Supprimer les doublons en triant
+sort fichier.txt | uniq
+
+# Garder la première occurrence de chaque ligne
+sort -u fichier.txt</code></div></div>
+
+<h3>Trier avec ignore-case</h3>
+
+<div class="code-block"><div class="code-line"><code># Trier sans distinction majuscules/minuscules
+sort -f utilisateurs.txt
+
+# Combiner plusieurs options
+sort -ufr fichier.log</code></div></div>
+
+<h3>Trier par date</h3>
+
+<div class="code-block"><div class="code-line"><code># Trier par date (format JJ/MM/AAAA)
+sort -t'/' -k3n -k2n -k1n dates.txt
+
+# Trie d'abord par année, puis mois, puis jour
+# 25/12/2023
+# 01/01/2024
+# 15/06/2024
+
+# Avec ls -lt (date de modification)
+ls -lt | sort -k6 -M  # trie par mois</code></div></div>
+
+<h2>uniq — Supprimer les doublons adjacents</h2>
+
+<p><strong>Point crucial :</strong> <code>uniq</code> ne fonctionne que sur des lignes adjacentes identiques. Si vous voulez supprimer tous les doublons, vous <em>devez</em> d'abord trier avec <code>sort</code>. C'est une erreur classique.</p>
+
+<div class="code-block"><div class="code-line"><code># Ne supprime que les doublons adjacents (déjà triés requis)
+uniq fichier.txt
+
+# D'abord trier, puis supprimer les doublons
+sort fichier.txt | uniq
+
+# counts only: affiche le nombre d'occurrences
+sort fichier.txt | uniq -c
+
+# Affiche seulement les lignes uniques (apparaissant une seule fois)
+sort fichier.txt | uniq -u
+
+# Affiche seulement les lignes dupliquées
+sort fichier.txt | uniq -d</code></div></div>
+
+<h3>Options avancées</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-c</code></td><td>Compter les occurrences de chaque ligne</td></tr>
+<tr><td><code>-d</code></td><td>Afficher seulement les lignes dupliquées</td></tr>
+<tr><td><code>-u</code></td><td>Afficher seulement les lignes uniques</td></tr>
+<tr><td><code>-i</code></td><td>Ignorer la casse</td></tr>
+<tr><td><code>-f N</code></td><td>Ignorer les N premiers champs</td></tr>
+<tr><td><code>-s N</code></td><td>Ignorer les N premiers caractères</td></tr>
+<tr><td><code>-w N</code></td><td>Comparer seulement les N premiers caractères</td></tr>
+</table>
+
+<h3>Exemples pratiques</h3>
+
+<div class="code-block"><div class="code-line"><code># Compter les occurrences (tri obligatoire)
+sort access.log | uniq -c | sort -rn
+
+# Les 10 lignes les plus fréquentes
+sort access.log | uniq -c | sort -rn | head -10
+
+# Lignes unique uniquement
+sort data.txt | uniq -u
+
+# Lignes dupliquées uniquement
+sort data.txt | uniq -d
+
+# Ignorer les 2 premiers champs
+sort fichier.txt | uniq -f 2</code></div></div>
+
+<h3>Cas d'usage courants</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver les IPs les plus fréquentes dans un log
+cat access.log | awk '{print $1}' | sort | uniq -c | sort -rn | head -5
+
+# Trouver les erreurs uniques
+grep "ERROR" app.log | sort | uniq
+
+# Trouver les utilisateurs connectés (sans doublons)
+who | awk '{print $1}' | sort | uniq
+
+# Comparer deux listes : voir les différences
+sort liste1.txt liste2.txt | uniq -d  # элементы в обоих
+sort liste1.txt liste2.txt | uniq -u  # только в одном из списков</code></div></div>
+
+<h2>wc — Compter lignes, mots et caractères</h2>
+
+<div class="code-block"><div class="code-line"><code># Comptage basique
+wc fichier.txt
+# 125  892 5124 fichier.txt
+# lignes mots caractères
+
+# Compter seulement les lignes
+wc -l fichier.txt
+
+# Compter seulement les mots
+wc -w fichier.txt
+
+# Compter seulement les caractères
+wc -c fichier.txt
+
+# Afficher lesBytes (même chose que -c pourASCII)
+wc --bytes fichier.txt</code></div></div>
+
+<h3>Options</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-l</code></td><td>Nombre de lignes</td></tr>
+<tr><td><code>-w</code></td><td>Nombre de mots</td></tr>
+<tr><td><code>-c</code></td><td>Nombre d'octets (bytes)</td></tr>
+<tr><td><code>-m</code></td><td>Nombre de caractères (multi-byte aware)</td></tr>
+<tr><td><code>-L</code></td><td>Longueur de la ligne la plus longue</td></tr>
+</table>
+
+<h3>Combiner avec d'autres commandes</h3>
+
+<div class="code-block"><div class="code-line"><code># Compter le nombre de fichiers
+ls | wc -l
+
+# Compter le nombre de lignes dans plusieurs fichiers
+wc -l *.log
+
+# Compter le nombre de fonctions dans un script
+grep -c "^function" script.sh
+
+# Utilisation typique : vérifier si un fichier est vide
+if [ $(wc -l < fichier.txt) -eq 0 ]; then
+    echo "Fichier vide"
+fi
+
+# Compter le nombre de lignes de code (excluant commentaires et vides)
+grep -v '^\s*#' *.sh | grep -v '^\s*$' | wc -l</code></div></div>
+
+<h2>Combiner les trois commandes</h2>
+
+<p>La vraie puissance apparaît quand on combine ces commandes ensemble. Voici des exemples réels.</p>
+
+<h3>Analyser un log Apache</h3>
+
+<div class="code-block"><div class="code-line"><code># Top 10 des IPs les plus actives
+cat access.log | awk '{print $1}' | sort | uniq -c | sort -rn | head -10
+
+# Top 10 des pages les plus consultées
+cat access.log | awk '{print $7}' | sort | uniq -c | sort -rn | head -10
+
+# Nombre de requêtes par jour
+cat access.log | awk '{print $4}' | cut -d: -f1 | sort | uniq -c | sort -rn</code></div></div>
+
+<h3>Analyser des données CSV</h3>
+
+<div class="code-block"><div class="code-line"><code># Compter les occurrences par catégorie
+tail -n +2 data.csv | cut -d',' -f3 | sort | uniq -c | sort -rn
+
+# Top 5 des produits vendus
+tail -n +2 sales.csv | awk -F',' '{print $2}' | sort | uniq -c | sort -rn | head -5
+
+# Trouver les clients uniques
+cut -d',' -f1 clients.csv | sort | uniq | wc -l</code></div></div>
+
+<h3>Statistiques système</h3>
+
+<div class="code-block"><div class="code-line"><code># Nombre de processus par utilisateur
+ps aux | awk '{print $1}' | sort | uniq -c | sort -rn
+
+# Nombre de fichiers par extension
+find . -type f | sed 's/.*\.//' | sort | uniq -c | sort -rn
+
+# Packages installés par origine
+dpkg -l | awk '{print $3}' | sed 's/:.*$//' | sort | uniq -c | sort -rn
+
+# Nombre de connexions par port
+netstat -tna | awk '{print $4}' | sed 's/.*://' | sort | uniq -c | sort -rn | head -10</code></div></div>
+
+<h3>Analyse de code</h3>
+
+<div class="code-block"><div class="code-line"><code># Nombre de lignes par fichier (triées)
+wc -l *.c | sort -n
+
+# Top 10 des fichiers les plus volumineux
+ls -la | sort -k5 -rn | head -10
+
+# Compter les functions par fichier
+grep "^[[:space:]]*function" *.php | sort | uniq -c | sort -rn
+
+# Nombre de commits par utilisateur (version simplifiée)
+git log --format='%ae' | sort | uniq -c | sort -rn</code></div></div>
+
+<h2>Trucs et astuces</h2>
+
+<h3>Trier selon un critère personnalisé</h3>
+
+<div class="code-block"><div class="code-line"><code># Trier par longueur de ligne
+awk '{print length($0) " " $0}' fichier.txt | sort -n | cut -d' ' -f2-
+
+# Trier alphanumériquement avec des zéros
+sort -V versions.txt  # 1.2, 1.10, 1.10.1, 2.0
+
+# Trier selon l.random (mélanger)
+shuf fichier.txt
+
+# Garder l'ordre original mais supprimer les doublons
+sort -u --stable fichier.txt</code></div></div>
+
+<h3>Cas où uniq ne marche pas comme attendu</h3>
+
+<div class="code-block"><div class="code-line"><code># Données NON triées - uniq ne marchera pas correctement
+echo -e "pomme\nbanane\npomme\ncerise" | uniq
+# Sortie : pomme, banane, pomme, cerise (pomme apparaît deux fois !)
+
+# Toujours trier avant uniq
+echo -e "pomme\nbanane\npomme\ncerise" | sort | uniq
+# Sortie : banane, cerise, pomme (correct)</code></div></div>
+
+<h3>Performance sur de gros fichiers</h3>
+
+<div class="code-block"><div class="code-line"><code># Pour les gros fichiers, utiliser --parallel
+sort --parallel=8 grosfichier.txt > sorted.txt
+
+# Compression pendant le tri (économie d'espace)
+sort -z fichier.txt | uniq -z > resultat.txt
+
+# Afficher les différences entre deux fichiers
+comm -12 <(sort fichier1.txt) <(sort fichier2.txt)
+
+# Garder seulement les lignes uniques à fichier1
+comm -23 <(sort fichier1.txt) <(sort fichier2.txt)</code></div></div>
+
+<h3>Tri stable</h3>
+
+<p>Par défaut, <code>sort</code> n'est pas stable — si deux lignes sont égales, leur ordre original peut être modifié. Pour un tri stable :</p>
+
+<div class="code-block"><div class="code-line"><code># Tri stable : préserve l'ordre original des lignes équivalentes
+sort -s -k2,2 fichier.txt
+
+# Combiner tri stable et tri par clé secondaire
+sort -k3n -k2n fichier.csv</code></div></div>
+
+<h2>Récapitulatif des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>sort fichier.txt</code></td><td>Trier les lignes alphabétiquement</td></tr>
+<tr><td><code>sort -n fichier.txt</code></td><td>Trier numériquement</td></tr>
+<tr><td><code>sort -u fichier.txt</code></td><td>Trier et supprimer les doublons</td></tr>
+<tr><td><code>sort -r fichier.txt</code></td><td>Trier en ordre inverse</td></tr>
+<tr><td><code>sort -k3 fichier.txt</code></td><td>Trier par la 3e colonne</td></tr>
+<tr><td><code>sort -t',' fichier.csv</code></td><td>Trier avec séparateur virgule</td></tr>
+<tr><td><code>uniq fichier.txt</code></td><td>Supprimer les doublons adjacents</td></tr>
+<tr><td><code>sort fichier.txt | uniq</code></td><td>Trier puis supprimer les doublons</td></tr>
+<tr><td><code>sort fichier.txt | uniq -c</code></td><td>Compter les occurrences</td></tr>
+<tr><td><code>sort fichier.txt | uniq -d</code></td><td>Afficher les lignes dupliquées</td></tr>
+<tr><td><code>wc fichier.txt</code></td><td>Compter lignes, mots, caractères</td></tr>
+<tr><td><code>wc -l fichier.txt</code></td><td>Compter seulement les lignes</td></tr>
+<tr><td><code>wc -w fichier.txt</code></td><td>Compter seulement les mots</td></tr>
+<tr><td><code>ls | wc -l</code></td><td>Compter les fichiers dans un répertoire</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li><strong>Créer un fichier de test</strong> : Créez un fichier <code>notes.txt</code> avec 20 lignes contenant des mots aléatoires (avec quelques doublons).</li>
+
+<li><strong>Trier le fichier</strong> : Triez le fichier alphabétiquement et redirigez le résultat vers <code>notes_trie.txt</code>.</li>
+
+<li><strong>Compter les lignes</strong> : Utilisez <code>wc</code> pour afficher le nombre de lignes, mots et caractères du fichier.</li>
+
+<li><strong>Supprimer les doublons</strong> : Enchaînez <code>sort</code> et <code>uniq</code> pour créer une version sans doublons.</li>
+
+<li><strong>Compter les occurrences</strong> : Utilisez <code>uniq -c</code> pour afficher combien de fois chaque mot apparaît.</li>
+
+<li><strong>Trier par fréquence</strong> : Combinez les commandes pour afficher les mots du plus fréquent au moins fréquent.</li>
+
+<li><strong>Analyser un vrai log</strong> : Si vous avez accès à un fichier log, affichez les 5 lignes les plus fréquentes.</li>
+
+<li><strong>Défi bonus</strong> : Trouvez le nombre de fichiers <code>.sh</code> dans votre répertoire home, triés par nombre de lignes.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><code>sort</code>, <code>uniq</code> et <code>wc</code> sont des outils simples mais indispensables. Ils fonctionnent parfaitement ensemble et avec d'autres commandes Unix. La clé est de comprendre que <code>uniq</code> nécessite un tri préalable pour fonctionner correctement. Quand vous combinez ces trois commandes avec <code>grep</code>, <code>awk</code> et les pipes, vous avez un système d'analyse de texte remarquablement puissant accessible directement depuis votre terminal. Practiquez ces combinaisons — elles vous feront gagner énormément de temps au quotidien.</p>
+
+<nav>
+<a href="79-cron-avance.html">&larr; Cron — Planification avancée et bonnes pratiques</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
