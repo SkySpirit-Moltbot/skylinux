@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>find — Rechercher des fichiers comme un détective</h1>
+
+<h2>Introduction</h2>
+
+<p><code>find</code> est l'un des outils les plus puissants sous Linux. Il permet de rechercher des fichiers et répertoires selon de nombreux critères : nom, type, taille, date de modification, permissions, propriétaire, et bien plus encore. Contrairement à <code>locate</code> qui utilise une base de données pré-construite, <code>find</code> explore le système de fichiers en temps réel — ce qui le rend précis mais potentiellement plus lent sur de grands volumes.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block"><div class="code-line"><code>find [répertoire] [critères] [actions]</code></div></div>
+
+<ul>
+<li><code>répertoire</code> : où commencer la recherche (par défaut : répertoire courant)</li>
+<li><code>critères</code> : les conditions de recherche</li>
+<li><code>actions</code> : que faire avec les résultats</li>
+</ul>
+
+<h2>Recherche par nom</h2>
+
+<h3>Recherche simple</h3>
+
+<div class="code-block"><div class="code-line"><code># Rechercher un fichier par son nom exact
+find . -name "rapport.txt"
+
+# Rechercher sans distinction majuscules/minuscules
+find . -iname "Rapport.txt"
+
+# Rechercher tous les fichiers .txt
+find . -name "*.txt"
+
+# Rechercher tous les fichiers .txt (sans casse)
+find . -iname "*.txt"
+
+# Rechercher dans un répertoire spécifique
+find /home/david -name "*.pdf"</code></div></div>
+
+<h3>Utilisation de regex</h3>
+
+<div class="code-block"><div class="code-line"><code># Utiliser des expressions régulières
+find . -regex ".*\.\(txt\|csv\)"
+
+# Regex insensible à la casse
+find . -iregex ".*\.\(txt\|csv\)"
+
+# Chercher des fichiers commençant par "config"
+find . -regex ".*/config[^/]*$"</code></div></div>
+
+<h2>Recherche par type</h2>
+
+<div class="code-block"><div class="code-line"><code># Rechercher des fichiers réguliers (-type f)
+find . -type f -name "*.log"
+
+# Rechercher des répertoires (-type d)
+find . -type d -name "backup"
+
+# Rechercher des liens symboliques (-type l)
+find . -type l
+
+# Rechercher des fichiers spéciaux (blocs, caractères)
+find /dev -type b  # périphériques bloc
+find /dev -type c  # périphériques caractère</code></div></div>
+
+<h3>Types disponibles</h3>
+
+<table>
+<tr><th>Type</th><th>Description</th></tr>
+<tr><td><code>f</code></td><td>Fichier régulier</td></tr>
+<tr><td><code>d</code></td><td>Répertoire</td></tr>
+<tr><td><code>l</code></td><td>Lien symbolique</td></tr>
+<tr><td><code>b</code></td><td>Périphérique bloc</td></tr>
+<tr><td><code>c</code></td><td>Périphérique caractère</td></tr>
+<tr><td><code>p</code></td><td>Tube nommé (FIFO)</td></tr>
+<tr><td><code>s</code></td><td>Socket</td></tr>
+</table>
+
+<h2>Recherche par taille</h2>
+
+<div class="code-block"><div class="code-line"><code># Fichiers de plus de 100 Mo
+find . -type f -size +100M
+
+# Fichiers de moins de 1 Ko
+find . -type f -size -1k
+
+# Fichiers de taille exacte (ici 512 octets)
+find . -type f -size 512c
+
+# Fichiers entre 10 et 100 Mo
+find . -type f -size +10M -size -100M</code></div></div>
+
+<h3>Unités de taille</h3>
+
+<table>
+<tr><th>Unité</th><th>Signification</th></tr>
+<tr><td><code>b</code></td><td>Blocs de 512 octets (par défaut)</td></tr>
+<tr><td><code>c</code></td><td>Octets (bytes)</td></tr>
+<tr><td><code>k</code></td><td>Kilooctets</td></tr>
+<tr><td><code>M</code></td><td>Megaoctets</td></tr>
+<tr><td><code>G</code></td><td>Gigaoctets</td></tr>
+</table>
+
+<h2>Recherche par date</h2>
+
+<h3>Date de modification (-mtime)</h3>
+
+<div class="code-block"><div class="code-line"><code># Modifiés il y a exactement 2 jours
+find . -type f -mtime 2
+
+# Modifiés il y a moins de 7 jours
+find . -type f -mtime -7
+
+# Modifiés il y a plus de 30 jours
+find . -type f -mtime +30
+
+# Dans les 24 dernières heures
+find . -type f -mtime 0
+
+# Dans les 5 dernières minutes
+find . -type f -mmin -5</code></div></div>
+
+<h3>Date d'accès (-atime)</h3>
+
+<div class="code-block"><div class="code-line"><code># Accédés il y a moins de 7 jours
+find . -type f -atime -7
+
+# Jamais accédés depuis 90 jours
+find . -type f -atime +90
+
+# Accédés dans les 10 dernières minutes
+find . -type f -amin -10</code></div></div>
+
+<h3>Date de changement de statut (-ctime)</h3>
+
+<div class="code-block"><div class="code-line"><code># Propriétés modifiées il y a plus de 7 jours
+find . -type f -ctime +7
+
+# Combiner avec taille pour trouver gros fichiers récents
+find . -type f -mtime -7 -size +100M</code></div></div>
+
+<h2>Recherche par permissions</h2>
+
+<div class="code-block"><div class="code-line"><code># Fichiers权限 777
+find . -type f -perm 777
+
+# Fichiers exécutables
+find . -type f -perm /111
+
+# Fichiers writable par tous
+find . -type f -perm -002
+
+# Fichiers SETUID
+find /usr -type f -perm -4000
+
+# Fichiers SETGID
+find /usr -type f -perm -2000</code></div></div>
+
+<h2>Recherche par propriétaire</h2>
+
+<div class="code-block"><div class="code-line"><code># Fichiers appartenant à root
+find . -type f -user root
+
+# Fichiers belonging à l'utilisateur david
+find /home -type f -user david
+
+# Répertoires belonging au groupe www-data
+find . -type d -group www-data
+
+# Fichiers ni belonging à root ni à david
+find . -type f ! -user root ! -user david</code></div></div>
+
+<h2>Actions sur les résultats</h2>
+
+<h3>-print (action par défaut)</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher les chemins complets
+find . -name "*.txt" -print
+
+# Supprimer le -print (c'est la valeur par défaut)
+find . -name "*.txt"</code></div></div>
+
+<h3>-ls (afficher comme ls -l)</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher les détails des fichiers trouvés
+find . -name "*.log" -ls
+
+# Exemple de sortie :
+# 4194305  124 -rw-r--r--  1 david   staff   63421 Jun  5 08:00 app.log</code></div></div>
+
+<h3>-exec (exécuter une commande)</h3>
+
+<div class="code-block"><div class="code-line"><code># Exécuter une commande pour chaque résultat
+find . -name "*.bak" -exec rm {} \;
+
+# Utiliser + pour grouper les appels (plus efficace)
+find . -name "*.bak" -exec rm {} +
+
+# Confirmer avant suppression
+find . -name "*.bak" -exec rm -i {} \;
+
+# Afficher les permissions avec ls
+find . -type f -perm -4000 -exec ls -l {} \;</code></div></div>
+
+<h3>-delete (supprimer directement)</h3>
+
+<div class="code-block"><div class="code-line"><code># Supprimer directement les fichiers trouvés
+find . -name "*.tmp" -delete
+
+# ATTENTION : tester d'abord avec -print
+find . -name "*.tmp" -print  # voir ce qui serait supprimé
+find . -name "*.tmp" -delete # puis supprimer</code></div></div>
+
+<h3>Combiner avec xargs</h3>
+
+<div class="code-block"><div class="code-line"><code># Utiliser xargs pour traiter les résultats
+find . -name "*.log" | xargs wc -l
+
+# Avec xargs et delimiteur nul (gestion des noms spéciaux)
+find . -name "*.txt" -print0 | xargs -0 rm
+
+# Limiter le nombre d'arguments par commande
+find . -name "*.log" | xargs -n 5 rm</code></div></div>
+
+<h2>Exclure des répertoires</h2>
+
+<div class="code-block"><div class="code-line"><code># Ignorer un répertoire spécifique
+find . -path "./node_modules" -prune -o -name "*.js" -print
+
+# Ignorer plusieurs répertoires
+find . \( -path "./node_modules" -o -path "./.git" \) -prune -o -name "*.js" -print
+
+# Exclure par type (plus simple)
+find . -name "*.js" ! -path "./node_modules/*"
+
+# Exclure plusieurs patterns
+find . -name "*.log" ! -path "./var/log/*"</code></div></div>
+
+<h2>Limiter la profondeur</h2>
+
+<div class="code-block"><div class="code-line"><code># Limiter à 2 niveaux de profondeur
+find . -maxdepth 2 -name "*.txt"
+
+# Commencer la recherche à partir du 2e niveau
+find . -mindepth 2 -type f
+
+# Chercher exactement à 3 niveaux de profondeur
+find . -mindepth 3 -maxdepth 3 -name "*.conf"
+
+# Trouver les fichiers dans les 3 premiers niveaux
+find . -maxdepth 3 -type f</code></div></div>
+
+<h2>Recherches avancées combinées</h2>
+
+<h3>Trouver les gros fichiers recently modifiés</h3>
+
+<div class="code-block"><div class="code-line"><code># Fichiers > 100 Mo modifiés il y a moins de 7 jours
+find . -type f -size +100M -mtime -7
+
+# Logs de plus de 1 Go
+find /var/log -type f -size +1G -name "*.log"
+
+# Images modifiées récemment
+find . -type f \( -iname "*.jpg" -o -iname "*.png" \) -mtime -30</code></div></div>
+
+<h3>Trouver des fichiers par extension et agir</h3>
+
+<div class="code-block"><div class="code-line"><code># Compter les fichiers par type
+find . -type f -name "*.py" | wc -l
+find . -type f -name "*.js" | wc -l
+
+# Trouver et archiver
+find /backup -name "*.tar.gz" -mtime +30 -exec tar -czf old_backups.tar.gz {} +
+
+# Trouver et compresser
+find /var/log -type f -name "*.log" -mtime +7 -exec gzip {} \;</code></div></div>
+
+<h3>Nettoyage intelligent</h3>
+
+<div class="code-block"><div class="code-line"><code># Supprimer les fichiers vides
+find . -type f -empty -delete
+
+# Supprimer les fichiers temporaires de plus de 7 jours
+find /tmp -type f -name "*.tmp" -mtime +7 -delete
+
+# Trouver les doublons (par taille et nom)
+find . -type f -name "*.jpg" -exec ls -l {} \; | sort -k5 -n
+
+# Lister les 10 plus gros fichiers
+find . -type f -exec du -h {} + | sort -rh | head -10</code></div></div>
+
+<h2>Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-name</code></td><td>Recherche par nom de fichier</td></tr>
+<tr><td><code>-iname</code></td><td>Recherche insensible à la casse</td></tr>
+<tr><td><code>-path</code></td><td>Recherche dans le chemin complet</td></tr>
+<tr><td><code>-regex</code></td><td>Expression régulière sur le chemin</td></tr>
+<tr><td><code>-type</code></td><td>Type de fichier (f, d, l, ...)</td></tr>
+<tr><td><code>-size</code></td><td>Taille du fichier</td></tr>
+<tr><td><code>-mtime</code></td><td>Date de modification (jours)</td></tr>
+<tr><td><code>-mmin</code></td><td>Date de modification (minutes)</td></tr>
+<tr><td><code>-atime</code></td><td>Date d'accès (jours)</td></tr>
+<tr><td><code>-amin</code></td><td>Date d'accès (minutes)</td></tr>
+<tr><td><code>-ctime</code></td><td>Date de changement (jours)</td></tr>
+<tr><td><code>-user</code></td><td>Propriétaire du fichier</td></tr>
+<tr><td><code>-group</code></td><td>Groupe du fichier</td></tr>
+<tr><td><code>-perm</code></td><td>Permissions du fichier</td></tr>
+<tr><td><code>-maxdepth</code></td><td>Profondeur maximale</td></tr>
+<tr><td><code>-mindepth</code></td><td>Profondeur minimale</td></tr>
+<tr><td><code>-prune</code></td><td>Exclure un répertoire</td></tr>
+<tr><td><code>-o</code></td><td>Opérateur OR (OU)</td></tr>
+<tr><td><code>-not</code></td><td>Négation (!)</td></tr>
+<tr><td><code>-exec</code></td><td>Exécuter une commande</td></tr>
+<tr><td><code>-delete</code></td><td>Supprimer les fichiers</td></tr>
+<tr><td><code>-ls</code></td><td>Afficher comme ls -l</td></tr>
+<tr><td><code>-print0</code></td><td>Afficher avec séparateur nul</td></tr>
+</table>
+
+<h2>Exemples pratiques du quotidien</h2>
+
+<h3>Gestion des logs</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver tous les fichiers .log
+find /var/log -name "*.log"
+
+# Fichiers log de plus de 100 Mo
+find /var/log -type f -name "*.log" -size +100M
+
+# Nettoyer les vieux logs (> 30 jours)
+find /var/log -name "*.log" -mtime +30 -delete
+
+# Lister les logs par date de modification
+find /var/log -name "*.log" -mtime -7 -ls</code></div></div>
+
+<h3>Gestion des sauvegardes</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver les sauvegardes récentes
+find /backup -name "*.tar.gz" -mtime -7
+
+# Trouver les anciennes sauvegardes (> 90 jours)
+find /backup -name "*.bak" -mtime +90
+
+# Lister les sauvegardes triées par taille
+find /backup -type f -name "*.gz" -exec du -h {} \; | sort -h</code></div></div>
+
+<h3>Recherche de code</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver tous les fichiers Python
+find . -name "*.py"
+
+# Trouver les fichiers avec un nom précis
+find . -name "config*" -type f
+
+# Exclure node_modules et .git
+find . -name "*.js" ! -path "*/node_modules/*" ! -path "*/.git/*"
+
+# Trouver les fonctions dans des fichiers
+find . -name "*.sh" -exec grep -l "^function" {} \;</code></div></div>
+
+<h3>Sécurité système</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver les fichiers SETUID
+find /usr -type f -perm -4000 2>/dev/null
+
+# Trouver les fichiers world-writable
+find / -type f -perm -002 ! -path "/proc/*" 2>/dev/null
+
+# Trouver les fichiers sans propriétaire
+find /home -type f -nouser 2>/dev/null
+
+# Trouver les fichiers sans groupe
+find /home -type f -nogroup 2>/dev/null</code></div></div>
+
+<h2>Erreurs communes à éviter</h2>
+
+<h3>Toujours tester avant de supprimer</h3>
+
+<div class="code-block"><div class="code-line"><code># AVANT de supprimer : toujours faire un -print d'abord
+find /tmp -name "*.tmp" -mtime +7 -print  # montre ce qui serait supprimé
+find /tmp -name "*.tmp" -mtime +7 -delete # puis supprimer
+
+# Utiliser -ok pour confirmer chaque action
+find . -name "*.bak" -ok rm {} \;
+# Répondra y/n pour chaque fichier</code></div></div>
+
+<h3>Gestion des noms avec espaces</h3>
+
+<div class="code-block"><div class="code-line"><code># Utiliser -print0 avec xargs -0 pour gérer les espaces
+find . -name "*.txt" -print0 | xargs -0 wc -l
+
+# Ou utiliser -exec avec {} \;
+find . -name "*.txt" -exec wc -l "{}" \;</code></div></div>
+
+<h3>Attention aux guillemets</h3>
+
+<div class="code-block"><div class="code-line"><code># Les guillemets protègent les wildcards du shell
+find . -name "*.txt"    # correct : cherche *.txt
+find . -name *.txt      # FAUX : le shell expansion
+
+# Pour les variables, utiliser les guillemets
+extension=".txt"
+find . -name "$extension"  # correct</code></div></div>
+
+<h2>Récapitulatif des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>find . -name "fichier.txt"</code></td><td>Rechercher par nom exact</td></tr>
+<tr><td><code>find . -name "*.txt"</code></td><td>Rechercher par extension</td></tr>
+<tr><td><code>find . -iname "*.TXT"</code></td><td>Recherche insensible à la casse</td></tr>
+<tr><td><code>find . -type f</code></td><td>Tous les fichiers</td></tr>
+<tr><td><code>find . -type d</code></td><td>Tous les répertoires</td></tr>
+<tr><td><code>find . -size +100M</code></td><td>Fichiers de plus de 100 Mo</td></tr>
+<tr><td><code>find . -mtime -7</code></td><td>Modifiés dans les 7 derniers jours</td></tr>
+<tr><td><code>find . -user david</code></td><td>Fichiers belonging à david</td></tr>
+<tr><td><code>find . -perm 777</code></td><td>Fichiers avec permissions 777</td></tr>
+<tr><td><code>find . -maxdepth 2</code></td><td>Limiter à 2 niveaux</td></tr>
+<tr><td><code>find . -exec rm {} \;</code></td><td>Supprimer chaque résultat</td></tr>
+<tr><td><code>find . -delete</code></td><td>Supprimer directement</td></tr>
+<tr><td><code>find . -path "*/exclude/*" -prune</code></td><td>Exclure un répertoire</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li><strong>Recherche basique</strong> : Trouvez tous les fichiers <code>.conf</code> dans le répertoire <code>/etc</code>.</li>
+
+<li><strong>Par taille</strong> : Trouvez les fichiers de plus de 50 Mo dans votre répertoire personnel.</li>
+
+<li><strong>Par date</strong> : Listez les fichiers modifiés dans les 7 derniers jours dans <code>/var/log</code>.</li>
+
+<li><strong>Nettoyage</strong> : Créez une commande pour trouver et lister (sans supprimer) tous les fichiers <code>.tmp</code> de plus de 7 jours dans <code>/tmp</code>.</li>
+
+<li><strong>Actions</strong> : Utilisez <code>-exec</code> pour afficher les permissions de tous les fichiers exécutables dans <code>/usr/bin</code>.</li>
+
+<li><strong>Exclusion</strong> : Trouvez tous les fichiers <code>.py</code> en excluant le répertoire <code>node_modules</code> et <code>__pycache__</code>.</li>
+
+<li><strong>Profondeur</strong> : Listez les fichiers à exactement 3 niveaux de profondeur dans votre home directory.</li>
+
+<li><strong>Défi</strong> : Créez une commande pour trouver tous les fichiers <code>.log</code> de plus de 100 Mo, modifiés il y a plus de 30 jours, et affichez-les avec <code>-ls</code>.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><code>find</code> est un outil extrêément puissant et flexible. Sa syntaxe peut sembler complexe au début, mais une fois comprise, elle devient indispensable au quotidien. La clé est de commencer par des recherches simples et d'ajouter progressivement des critères. N'oubliez jamais de tester avec <code>-print</code> avant d'utiliser <code>-delete</code> ou <code>-exec rm</code> — la prudence est votre meilleure alliée. Avec <code>find</code>, vous avez littéralement le pouvoir de retrouver n'importe quel fichier sur votre système Linux.</p>
+
+<nav>
+<a href="80-sort-uniq-wc.html">&larr; sort, uniq et wc — Trier, dédoublonner et compter</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
