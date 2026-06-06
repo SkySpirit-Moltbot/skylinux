@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>timeout — Limiter le temps d'exécution d'une commande</h1>
+
+<h2>Introduction</h2>
+
+<p>Vous êtes-vous déjà retrouvé avec un programme qui ne finit jamais ? Un script qui bloque ? Une commande réseau qui attend indéfiniment ? <code>timeout</code> est là pour ça : il permet de limiter le temps d'exécution d'une commande. Si elle dépasse la limite, <code>timeout</code> la termine automatiquement. C'est un outil indispensable pour éviter les blocages et gérer les processus qui prennent trop de temps.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block"><div class="code-line"><code>timeout [OPTIONS] DURÉE COMMANDE [ARGUMENTS]</code></div></div>
+
+<ul>
+<li><code>DURÉE</code> : temps maximum avant termination (en secondes par défaut)</li>
+<li><code>COMMANDE</code> : la commande à exécuter</li>
+<li><code>ARGUMENTS</code> : les arguments de la commande</li>
+</ul>
+
+<h2>Utilisation basique</h2>
+
+<h3>Limiter à quelques secondes</h3>
+
+<div class="code-block"><div class="code-line"><code># Timeout de 5 secondes sur une commande
+timeout 5 sleep 10
+# sleep 10 sera arrêté après 5 secondes</code></div></div>
+
+<h3>Utiliser des unités de temps variées</h3>
+
+<div class="code-block"><div class="code-line"><code># 2 minutes (2m)
+timeout 2m ma_commande
+
+# 1 heure (1h)
+timeout 1h script_long.sh
+
+# 30 secondes (par défaut, 30s ou 30)
+timeout 30 ping 192.168.1.1
+
+# 1.5 secondes (avec décimales)
+timeout 1.5 curl http://example.com</code></div></div>
+
+<h3>Unités de temps disponibles</h3>
+
+<table>
+<tr><th>Unité</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>s</code></td><td>Secondes (défaut)</td><td><code>timeout 30s</code></td></tr>
+<tr><td><code>m</code></td><td>Minutes</td><td><code>timeout 5m</code></td></tr>
+<tr><td><code>h</code></td><td>Heures</td><td><code>timeout 2h</code></td></tr>
+<tr><td><code>d</code></td><td>Jours</td><td><code>timeout 1d</code></td></tr>
+</table>
+
+<h2>Signaux et comportement</h2>
+
+<h3>Signal par défaut : SIGTERM</h3>
+
+<p>Par défaut, <code>timeout</code> envoie le signal <code>SIGTERM</code> pour terminer le processus. Si le processus ne s'arrête pas, il attend un court instant puis envoie <code>SIGKILL</code> pour forcer la termination.</p>
+
+<div class="code-block"><div class="code-line"><code># SIGTERM d'abord, puis SIGKILL si nécessaire
+timeout 5 curl http://example.com
+# Si curl ne répond pas en 5s → terminate</code></div></div>
+
+<h3>Envoyer un signal personnalisé</h3>
+
+<div class="code-block"><div class="code-line"><code># Envoyer SIGINT (comme Ctrl+C)
+timeout -s INT 10 commande
+
+# Envoyer SIGKILL directement (plus brutal)
+timeout -s KILL 5 commande
+
+# Utiliser un signal par son nom
+timeout -s SIGUSR1 30 processus</code></div></div>
+
+<h3>Signaux courants</h3>
+
+<table>
+<tr><th>Signal</th><th>Numéro</th><th>Description</th></tr>
+<tr><td><code>SIGTERM</code></td><td>15</td><td>Termination élégante (par défaut)</td></tr>
+<tr><td><code>SIGINT</code></td><td>2</td><td>Interruption (comme Ctrl+C)</td></tr>
+<tr><td><code>SIGKILL</code></td><td>9</td><td>Force kill - impossible à ignorer</td></tr>
+<tr><td><code>SIGHUP</code></td><td>1</td><td>Hang up</td></tr>
+<tr><td><code>SIGUSR1</code></td><td>10</td><td>Signal utilisateur 1</td></tr>
+<tr><td><code>SIGUSR2</code></td><td>12</td><td>Signal utilisateur 2</td></tr>
+</table>
+
+<h2>Options utiles</h2>
+
+<h3>--preserve-status</h3>
+
+<p>Retourne le code de sortie de la commande terminée par timeout comme code de sortie de <code>timeout</code> lui-même. Utile dans les scripts.</p>
+
+<div class="code-block"><div class="code-line"><code># Sans --preserve-status (par défaut)
+timeout 2 sleep 10
+echo $?  # Affiche 124 (timeout)
+
+# Avec --preserve-status
+timeout --preserve-status 2 sleep 10
+echo $?  # Affiche le code de sleep (124 ou 0)</code></div></div>
+
+<h3>--signal ou -s</h3>
+
+<p>Spécifie le signal à envoyer après la durée limite.</p>
+
+<div class="code-block"><div class="code-line"><code># Envoyer SIGKILL après 3 secondes
+timeout -s KILL 3 processus
+
+# Envoyer SIGINT après 10 secondes
+timeout -s INT 10 wget http://example.com</code></div></div>
+
+<h3>--kill-after ou -k</h3>
+
+<p>Définit un délai entre l'envoi du signal initial et SIGKILL. Le processus a ainsi le temps de s'arrêter proprement.</p>
+
+<div class="code-block"><div class="code-line"><code># Envoie SIGTERM, puis attend 2s, puis SIGKILL
+timeout -k 2 5 processus
+
+# Utile pour les scripts qui doivent nettoyer avant de mourir
+timeout -k 3 10 ./script_cleanup.sh</code></div></div>
+
+<h3>Afficher les détails avec --foreground</h3>
+
+<div class="code-block"><div class="code-line"><code># Permet à timeout de fonctionner en premier plan
+timeout --foreground 5 curl http://example.com</code></div></div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Limiter les requêtes réseau</h3>
+
+<div class="code-block"><div class="code-line"><code># Timeout sur curl (10 secondes max)
+timeout 10 curl -O http://example.com/largefile.zip
+
+# Ping avec timeout
+timeout 5 ping -c 4 192.168.1.1
+
+# SSH avec timeout
+timeout 30 ssh user@serveur "commande_lente"</code></div></div>
+
+<h3>Scripts et automation</h3>
+
+<div class="code-block"><div class="code-line"><code># Dans un script : exécuter avec timeout
+#!/bin/bash
+if timeout 60 ./mon_script.sh; then
+    echo "Script terminé avec succès"
+else
+    code=$?
+    if [ $code -eq 124 ]; then
+        echo "Script trop long - timeout!"
+    else
+        echo "Script échoué avec code: $code"
+    fi
+fi</code></div></div>
+
+<h3>Tests et débogage</h3>
+
+<div class="code-block"><div class="code-line"><code># Tester si un service répond dans les 3 secondes
+timeout 3 nc -zv serveur:5432 && echo "Service accessible"
+
+# Tester une connexion avec timeout
+timeout 5 bash -c 'cat < /dev/null > /dev/tcp/serveur/port' && echo "Ouvert"</code></div></div>
+
+<h3>Loop avec timeout</h3>
+
+<div class="code-block"><div class="code-line"><code># Réessayer une commande jusqu'à 3 fois, 10s par tentative
+for i in 1 2 3; do
+    echo "Tentative $i..."
+    if timeout 10 curl -s http://api.example.com/health; then
+        echo "OK"
+        break
+    fi
+    echo "Échec, nouvelle tentative..."
+    sleep 5
+done</code></div></div>
+
+<h2>Codes de sortie</h2>
+
+<table>
+<tr><th>Code</th><th>Signification</th></tr>
+<tr><td><code>0</code></td><td>Commande terminée avant le timeout</td></tr>
+<tr><td><code>124</code></td><td>Commande terminée par timeout (SIGTERM)</td></tr>
+<tr><td><code>125</code></td><td>Erreur interne de timeout</td></tr>
+<tr><td><code>126</code></td><td>Commande introuvable ou non exécutable</td></tr>
+<tr><td><code>127</code></td><td>Erreur lors de l'exécution de la commande</td></tr>
+<tr><td><code>137</code></td><td>Commande tuée par SIGKILL (128 + 9)</td></tr>
+</table>
+
+<h2>Combiner avec d'autres outils</h2>
+
+<h3>Avec xargs</h3>
+
+<div class="code-block"><div class="code-line"><code># Appliquer un timeout à chaque commande
+cat serveur_list.txt | xargs -I {} timeout 5 ping -c 1 {}
+
+# Timeout sur des tâches parallèles
+echo -e "cmd1\ncmd2\ncmd3" | xargs -P 3 timeout 10</code></div></div>
+
+<h3>Avec find -exec</h3>
+
+<div class="code-block"><div class="code-line"><code># Exécuter avec timeout via find
+find . -name "*.sh" -exec timeout 30 {} \;
+
+# Limiter le temps de chaque script
+find /scripts -type f -name "*.py" -exec timeout 60 python3 {} \;</code></div></div>
+
+<h3>Avec make</h3>
+
+<div class="code-block"><div class="code-line"><code># Compiler avec timeout (éviter les builds infinies)
+timeout 300 make
+
+# Limiter la durée d'un build complexe
+timeout 600 make -j4</code></div></div>
+
+<h2>Scripts de surveillance avec timeout</h2>
+
+<h3>Monitoring de service</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Vérifier si un service est joignable
+check_service() {
+    local host=$1
+    local port=$2
+    local timeout_sec=5
+    
+    timeout $timeout_sec bash -c "cat < /dev/null > /dev/tcp/$host/$port" 2>/dev/null
+    return $?
+}
+
+# Utilisation
+if check_service "192.168.1.100" 443; then
+    echo "Service UP"
+else
+    echo "Service DOWN ou timeout"
+fi</code></div></div>
+
+<h3>Tâche cron avec timeout</h3>
+
+<div class="code-block"><div class="code-line"><code># Dans /etc/crontab ou crontab -e
+# Exécuter un script toutes les heures avec timeout de 45 minutes
+
+0 * * * * root timeout 2700 /opt/scripts/sauvegarde.sh
+
+# Explication : 2700 secondes = 45 minutes
+# Si la sauvegarde prend plus de 45min, elle est killée</code></div></div>
+
+<h2>Usage avancé</h2>
+
+<h3>Timeout conditionnel</h3>
+
+<div class="code-block"><div class="code-line"><code># Timeout seulement si la variable est définie
+TIMEOUT_VAL=${TIMEOUT:-30}
+timeout $TIMEOUT_VAL commande
+
+# Timeout dynamique basé sur une condition
+[ "$ENV" = "production" ] && T=60 || T=10
+timeout $T ./deploy.sh</code></div></div>
+
+<h3>Pipeline avec timeout</h3>
+
+<div class="code-block"><div class="code-line"><code># Timeout sur un pipeline entier
+timeout 30 sh -c 'long_running_command | another_command'
+
+# Utiliser un subshell
+timeout 15 $(cat large_file.csv | sort | uniq)</code></div></div>
+
+<h3>Environment timeout</h3>
+
+<div class="code-block"><div class="code-line"><code># Définir un timeout par défaut via variable
+export COMMAND_TIMEOUT=60
+
+# Utiliser dans les scripts
+timeout ${COMMAND_TIMEOUT} ./mon_script.sh
+
+# Modifier selon l'environnement
+[ "$NODE_ENV" = "test" ] && export COMMAND_TIMEOUT=300</code></div></div>
+
+<h2>Différence avec d'autres approches</h2>
+
+<h3>timeout vs nohup</h3>
+
+<table>
+<tr><th>Caractéristique</th><th>timeout</th><th>nohup</th></tr>
+<tr><td>But principal</td><td>Limiter la durée</td><td>Rendre persistant après déconnexion</td></tr>
+<tr><td>Signal envoyé</td><td>SIGTERM puis SIGKILL</td><td>Ignorer SIGHUP</td></tr>
+<tr><td>Usage typique</td><td>Éviter les blocages</td><td>Lancer en arrière-plan</td></tr>
+</table>
+
+<h3>timeout vs wait</h3>
+
+<div class="code-block"><div class="code-line"><code># timeout : limite le temps d'une commande
+timeout 30 curl http://api.example.com
+
+# wait : attend qu'un processus enfant se termine
+wait $pid  # wait infini par défaut</code></div></div>
+
+<h2>Récapitulatif des options</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>--signal SIG</code> ou <code>-s SIG</code></td><td>Signal à envoyer (défaut: SIGTERM)</td></tr>
+<tr><td><code>--kill-after DURÉE</code> ou <code>-k DURÉE</code></td><td>Délai avant SIGKILL</td></tr>
+<tr><td><code>--preserve-status</code></td><td>Retourner le code de la commande terminée</td></tr>
+<tr><td><code>--foreground</code></td><td>Ne pas créer de processus fils</td></tr>
+<tr><td><code>--help</code></td><td>Afficher l'aide</td></tr>
+<tr><td><code>--version</code></td><td>Afficher la version</td></tr>
+</table>
+
+<h2>Exercices pratiques</h2>
+
+<ol>
+<li><strong>Basique</strong> : Utilisez <code>timeout</code> pour limiter un <code>sleep 20</code> à 3 secondes.</li>
+
+<li><strong>Unité de temps</strong> : Créez une commande avec un timeout de 2 minutes sur un ping.</li>
+
+<li><strong>Signal personnalisé</strong> : Utilisez <code>-s KILL</code> pour forcer l'arrêt d'une commande.</li>
+
+<li><strong>Script</strong> : Écrivez un script qui exécute une commande avec un timeout et affiche si elle a réussi, échoué, ou été interrompue par timeout.</li>
+
+<li><strong>Combinaison</strong> : Utilisez <code>find</code> avec <code>-exec</code> pour exécuter chaque script shell avec un timeout de 60 secondes.</li>
+
+<li><strong>Loop</strong> : Créez une boucle qui réessaye une commande 3 fois, avec un timeout de 10 secondes par tentative.</li>
+
+<li><strong>Monitoring</strong> : Créez un script de monitoring qui vérifie si un serveur est joignable dans les 5 secondes.</li>
+
+<li><strong>Défi</strong> : Combinez <code>timeout</code> avec <code>xargs</code> pour tester la connectivité vers plusieurs serveurs avec un timeout de 3 secondes chacun.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><code>timeout</code> est un outil simple mais puissant qui peut vous sauver de nombreuses situations embarrassantes. Que ce soit pour éviter qu'un script ne bloque votre système, pour tester des services avec un délai maximal, ou pour gérer des tâches cron qui ne doivent pas dépasser un certain temps, <code>timeout</code> est votre allié. Pensez à l'utiliser régulièrement dans vos scripts et vos automatisations — c'est une bonne pratique qui évite bien des problèmes. Comme toujours sous Linux, combinez-le avec d'autres outils comme <code>find</code>, <code>xargs</code> ou vos scripts shell pour des solutions élégantes et robustes.</p>
+
+<nav>
+<a href="81-find.html">&larr; find — Rechercher des fichiers comme un détective</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
