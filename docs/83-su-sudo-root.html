@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>su et sudo — Devenir root et exécuter avec privilèges</h1>
+
+<h2>Introduction</h2>
+
+<p>Sur Linux, certaines actions nécessitent des droits spéciaux. Installer un logiciel, modifier la configuration système, redémarrer un service… Tout cela exige d'être <strong>root</strong>, le超级 utilisateur qui a tous les droits. <code>su</code> et <code>sudo</code> sont les deux méthodes principales pour obtenir ces privilèges. Comprendre leur différence et savoir les utiliser est essentiel pour tout administrateur Linux.</p>
+
+<h2>Le compte root</h2>
+
+<h3>Qui est root ?</h3>
+
+<p>Le compte <strong>root</strong> (aussi appelé <em>superuser</em>) est l'administrateur du système. Il peut :</p>
+
+<ul>
+<li>Lire, modifier ou supprimer n'importe quel fichier</li>
+<li>Installer ou supprimer des logiciels</li>
+<li>Modifier les utilisateurs et les groupes</li>
+<li>Redémarrer des services ou le système</li>
+<li>Accéder à tous les périphériques</li>
+</ul>
+
+<div class="code-block"><div class="code-line"><code># Vérifier son identité
+whoami
+# root si vous êtes connecté en tant que root
+# david si vous êtes un utilisateur normal
+
+# Voir l'UID de root (toujours 0)
+id root
+# uid=0(root) gid=0(root) groupes=0(root)</code></div></div>
+
+<h3>Risques de l'utilisation root</h3>
+
+<p>Être root est puissant mais dangereux. Une erreur peut détruire le système. C'est pourquoi Linux recommande d'utiliser <strong>le principe du moindre privilège</strong> : utiliser root uniquement quand c'est nécessaire.</p>
+
+<h2>su — Switch User</h2>
+
+<h3>Basique : devenir root</h3>
+
+<div class="code-block"><div class="code-line"><code># Devenir root (demande le mot de passe root)
+su -
+
+# Les options :
+# su -          → root avec un shell de login (environnement propre)
+# su            → root sans changer d'environnement
+# su - user     → devenir "user" spécifique</code></div></div>
+
+<h3>Différence entre su et su -</h3>
+
+<div class="code-block"><div class="code-line"><code># sans "-" : conserve l'environnement de l'utilisateur actuel
+su
+echo $HOME          # Affiche /home/david
+pwd                # Reste dans /home/david
+
+# avec "-" : charge l'environnement de root comme un vrai login
+su -
+echo $HOME          # Affiche /root
+pwd                # change pour /root
+exit               # Retourne à l'utilisateur initial</code></div></div>
+
+<h3>Devenir un autre utilisateur</h3>
+
+<div class="code-block"><div class="code-line"><code># Devenir un autre utilisateur (sans être root)
+su - marie
+
+# Exécuter une commande unique en tant que autre utilisateur
+su - marie -c "ls /home/marie"
+
+# Devenir root et exécuter une commande précise
+su -c "apt update"</code></div></div>
+
+<h3>Comprendre le mécanisme de su</h3>
+
+<div class="code-block"><div class="code-line"><code># Ce qui se passe :
+# 1. Vous tapez "su -"
+# 2. Le système demande le mot de passe de root
+# 3. Un nouveau shell s'ouvre avec les droits root
+# 4. Vous avez un accès complet au système
+
+# Pour quitter le shell root :
+exit
+# ou Ctrl+D</code></div></div>
+
+<h2>sudo — Super User DO</h2>
+
+<h3>Principe de sudo</h3>
+
+<p><code>sudo</code> permet à un utilisateur autorisé d'exécuter des commandes <strong>en tant que root</strong> (ou un autre utilisateur), sans avoir besoin du mot de passe root. L'autorisation est gérée par le fichier <code>/etc/sudoers</code>.</p>
+
+<div class="code-block"><div class="code-line"><code># Exécuter une commande unique avec les droits root
+sudo apt update
+
+# Le système demande le MOT DE PASSE DE L'UTILISATEUR COURANT
+# (pas le mot de passe root !)</code></div></div>
+
+<h3>Pourquoi sudo plutôt que su ?</h3>
+
+<table>
+<tr><th>Aspect</th><th>su</th><th>sudo</th></tr>
+<tr><td>Mot de passe</td><td>Mot de passe root requis</td><td>Mot de passe de l'utilisateur courant</td></tr>
+<tr><td>Traçabilité</td><td>Aucune (tout est "root")</td><td>Chaque commande est logguée</td></tr>
+<tr><td>Granularité</td><td>Accès total ou rien</td><td>Permissions spécifiques par utilisateur</td></tr>
+<tr><td>Sécurité</td><td>Risque élevé si le mot de passe fuite</td><td>Meilleur contrôle, expiration du ticket</td></tr>
+<tr><td>Usage serveur</td><td>Déconseillé</td><td>Recommandé</td></tr>
+</table>
+
+<h3>Configuration de base</h3>
+
+<div class="code-block"><div class="code-line"><code># Ajouter un utilisateur au groupe sudo (Debian/Ubuntu)
+sudo usermod -aG sudo david
+
+# Sur CentOS/RHEL, le groupe s'appelle "wheel"
+sudo usermod -aG wheel david
+
+# Vérifier si un utilisateur est dans le groupe
+groups david
+# david : david sudo</code></div></div>
+
+<h3>La première utilisation de sudo</h3>
+
+<div class="code-block"><div class="code-line"><code># Après l'installation d'Ubuntu, le premier utilisateur est déjà sudoer
+# Sur certaines distributions, il faut configurer manuellement :
+
+# Se connecter en tant que root
+su -
+
+# Ajouter un utilisateur aux sudoers
+usermod -aG sudo nom_utilisateur
+
+# Ou modifier le fichier sudoers (méthode recommandée)
+visudo
+# Ajoute cette ligne :
+# nom_utilisateur ALL=(ALL:ALL) ALL</code></div></div>
+
+<h2>Le fichier /etc/sudoers</h2>
+
+<h3>Syntaxe de base</h3>
+
+<div class="code-block"><div class="code-line"><code># Format général :
+# qui    où=(qui:groupe)    quoi
+
+# Autoriser l'utilisateur david à exécuter tout
+david ALL=(ALL:ALL) ALL
+
+# Autoriser le groupe "developers" à exécuter apt
+%developers ALL=(ALL) /usr/bin/apt
+
+# Permettre à un utilisateur d'exécuter sans mot de passe
+david ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart apache2</code></div></div>
+
+<h3>Édition sécurisée avec visudo</h3>
+
+<div class="code-block"><div class="code-line"><code># TOUJOURS utiliser visudo pour éditer sudoers
+sudo visudo
+
+# Pourquoi ? visudo valide la syntaxe et bloque les erreurs
+# Une erreur de syntaxe peut vous verrouiller hors du système !
+
+# Si vous faites une erreur :
+# L'éditeur nano vous montre les erreurs
+#wq! pour forcer la sauvegarde (déconseillé en production)</code></div></div>
+
+<h3>Exemples de configurations</h3>
+
+<div class="code-block"><div class="code-line"><code># Autoriser un utilisateur à exécuter toutes les commandes
+alice ALL=(ALL:ALL) ALL
+
+# Autoriser un groupe à exécuter apt-get (installation)
+%installers ALL=(ALL) /usr/bin/apt-get, /usr/bin/dpkg
+
+# Permettre sudo sans mot de passe (WORKSPACE ONLY!)
+%admin ALL=NOPASSWD: ALL
+
+# Autoriser un utilisateur à redémarrer un service spécifique
+david ALL=(ALL) /usr/bin/systemctl restart nginx</code></div></div>
+
+<h2>Options utiles de sudo</h2>
+
+<h3>-i : Shell interactif</h3>
+
+<div class="code-block"><div class="code-line"><code># Ouvrir un shell root interactif (similaire à su -)
+sudo -i
+# Équivalent à : sudo su -
+# Vous êtes root sans connaître le mot de passe root
+
+# Pour un autre utilisateur :
+sudo -i -u marie
+# Équivalent à : su - marie (avec le mot de passe de l'utilisateur courant)</code></div></div>
+
+<h3>-s : Shell non interactif</h3>
+
+<div class="code-block"><div class="code-line"><code># Obtenir un shell root non interactif
+sudo -s
+# Pas de changement d'environnement, juste les privilèges
+
+# Comme utilisateur spécifique
+sudo -s -u www-data</code></div></div>
+
+<h3>-u : Exécuter en tant qu'utilisateur</h3>
+
+<div class="code-block"><div class="code-line"><code># Exécuter une commande en tant qu'un autre utilisateur
+sudo -u www-data whoami
+# Affiche : www-data
+
+# Utile pour les services web
+sudo -u apache /opt/scripts/backup.sh</code></div></div>
+
+<h3>-l : Lister les permissions</h3>
+
+<div class="code-block"><div class="code-line"><code># Lister mes permissions sudo
+sudo -l
+
+# Exemple de sortie :
+# User david may run the following commands on this host:
+#     (ALL : ALL) ALL
+#     (root) /usr/bin/systemctl restart apache2
+
+# Lister les permissions d'un autre utilisateur
+sudo -l -U marie</code></div></div>
+
+<h3>-k : Invalider le ticket</h3>
+
+<div class="code-block"><div class="code-line"><code># Forcer sudo à redemander le mot de passe
+sudo -k
+
+# Vérification : après -k, toute commande sudo redemande le mot de passe</code></div></div>
+
+<h2>Logs sudo</h2>
+
+<h3>Où sont stockés les logs ?</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir l'historique des commandes sudo (journalctl)
+sudo journalctl SYSLOGFacility=auth | grep sudo
+
+# Sur certaines distributions, dans /var/log/auth.log (Debian)
+cat /var/log/auth.log | grep sudo
+
+# Sur RHEL/CentOS :
+cat /var/log/secure | grep sudo</code></div></div>
+
+<h3>Analyser les logs</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver toutes les commandes sudo d'un utilisateur
+sudo journalctl _COMM=sudo | grep david
+
+# Voir les tentatives échouées
+sudo journalctl _COMM=sudo | grep "AUTH FAIL"
+
+# Afficher les commandes récentes (last hour)
+sudo journalctl -u sudo --since "1 hour ago"</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<h3>Règles de sécurité</h3>
+
+<ul>
+<li><strong>Ne jamais</strong> partager le mot de passe root</li>
+<li><strong>Utiliser sudo</strong> plutôt que su en production</li>
+<li><strong>Limiter les permissions</strong> au strict nécessaire</li>
+<li><strong>Toujours utiliser visudo</strong> pour modifier /etc/sudoers</li>
+<li><strong>Vérifier les logs</strong> régulièrement pour détecter des anomalies</li>
+<li><strong>Expirer les sessions</strong> sudo après quelques minutes</li>
+</ul>
+
+<h3>Configuration sécurisée</h3>
+
+<div class="code-block"><div class="code-line"><code># Exemple de configuration sudoers sécurisée
+# Limiter aux commandes nécessaires uniquement
+
+# L'utilisateur peut installer des logiciels
+alice ALL=(ALL) /usr/bin/apt-get, /usr/bin/dpkg
+
+# L'utilisateur peut redémarrer nginx
+alice ALL=(ALL) /usr/bin/systemctl restart nginx
+
+# L'utilisateur peut lire les logs mais pas les modifier
+alice ALL=(ALL) /usr/bin/tail /var/log/nginx/*.log</code></div></div>
+
+<h3>Timeout de session sudo</h3>
+
+<div class="code-block"><div class="code-line"><code># Par défaut, sudo mémorise le mot de passe pendant 15 minutes
+# Pour changer ce délai (dans /etc/sudoers) :
+
+# Timeout de 5 minutes (par défaut)
+Defaults    env_reset
+
+# Timeout de 30 minutes
+Defaults    env_reset, timestamp_timeout=30
+
+# Demander le mot de passe à chaque fois
+Defaults    timestamp_timeout=0</code></div></div>
+
+<h2>Erreurs courantes</h2>
+
+<h3>"User is not in the sudoers file"</h3>
+
+<div class="code-block"><div class="code-line"><code># Problème : l'utilisateur n'a pas les droits sudo
+# Solution : se connecter en root et ajouter l'utilisateur
+
+# Option 1 : utiliser su (si vous connaissez le mot de passe root)
+su -
+usermod -aG sudo nom_utilisateur
+exit
+
+# Option 2 : depuis un autre utilisateur avec sudo
+sudo usermod -aG sudo nom_utilisateur
+
+# Option 3 : éditer /etc/group directement (solution de secours)
+# Ajouter l'utilisateur au groupe sudo
+sudo usermod -aG sudo nom_utilisateur</code></div></div>
+
+<h3>"sudo: command not found"</h3>
+
+<div class="code-block"><div class="code-line"><code># sudo n'est pas installé
+# Solution : installer sudo
+su -
+apt install sudo
+
+# Ou sur CentOS/RHEL :
+yum install sudo</code></div></div>
+
+<h3>Trop de tentatives sudo</h3>
+
+<div class="code-block"><div class="code-line"><code># Le message "sudo: 3 incorrect password attempts"
+# Attend quelques minutes ou，出口，重新试试
+
+# Si vous êtes bloqué, utilisez su (si root connu)
+su -
+visudo  # Réparer la configuration</code></div></div>
+
+<h2>Cas pratiques</h2>
+
+<h3>Gestion des services</h3>
+
+<div class="code-block"><div class="code-line"><code># Redémarrer un service (sans être root directement)
+sudo systemctl restart nginx
+
+# Voir les logs d'un service (avec permissions)
+sudo journalctl -u nginx
+
+# Arrêter un service critique
+sudo systemctl stop mariadb</code></div></div>
+
+<h3>Installation de logiciels</h3>
+
+<div class="code-block"><div class="code-line"><code># Mettre à jour le système
+sudo apt update && sudo apt upgrade -y
+
+# Installer un nouveau paquet
+sudo apt install nginx
+
+# Supprimer un logiciel
+sudo apt remove --purge apache2</code></div></div>
+
+<h3>Modification de fichiers système</h3>
+
+<div class="code-block"><div class="code-line"><code># Éditer un fichier protégé
+sudo nano /etc/hosts
+
+# Lire un fichier root-only
+sudo cat /etc/shadow
+
+# Copier un fichier en root
+sudo cp /tmp/config.cfg /etc/app/config.cfg</code></div></div>
+
+<h3>Scripts d'automatisation</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Script avec sudo intégré
+if [ "$EUID" -ne 0 ]; then
+    exec sudo "$0" "$@"
+fi
+
+# Le script s'auto-exécute avec sudo si pas lancé en root
+apt update
+systemctl restart mon_service</code></div></div>
+
+<h2>Comparatif final</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th><th>Mot de passe</th><th>Quand l'utiliser</th></tr>
+<tr><td><code>su -</code></td><td>Devenir root temporairement</td><td>root</td><td>Administration complète, dépannage</td></tr>
+<tr><td><code>sudo cmd</code></td><td>Exécuter une commande root</td><td>utilisateur</td><td>Usage quotidien, scripts</td></tr>
+<tr><td><code>sudo -i</code></td><td>Shell root interactif</td><td>utilisateur</td><td>Quand su n'est pas disponible</td></tr>
+<tr><td><code>sudo -u user cmd</code></td><td>Exécuter comme autre utilisateur</td><td>utilisateur</td><td>Services, tâches spécifiques</td></tr>
+</table>
+
+<h2>Exercices pratiques</h2>
+
+<ol>
+<li><strong>Basique</strong> : Utilisez <code>sudo whoami</code> pour vérifier que vous avez les droits sudo.</li>
+
+<li><strong>Shell root</strong> : Ouvrez un shell root avec <code>sudo -i</code>, vérifiez avec <code>whoami</code>, puis tapez <code>exit</code>.</li>
+
+<li><strong>Lister les permissions</strong> : Exécutez <code>sudo -l</code> pour voir toutes vos permissions sudo.</li>
+
+<li><strong>Utilisateur alternatif</strong> : Utilisez <code>sudo -u www-data whoami</code> pour exécuter une commande en tant qu'utilisateur www-data.</li>
+
+<li><strong>Configuration</strong> : Ajoutez un nouvel utilisateur au groupe sudo avec <code>sudo usermod -aG sudo newuser</code>.</li>
+
+<li><strong>Logs</strong> : Consultez les logs sudo dans <code>/var/log/auth.log</code> (Debian) ou <code>/var/log/secure</code> (RHEL).</li>
+
+<li><strong>Script sécurisé</strong> : Créez un script qui s'auto-exécute avec sudo si lancé par un utilisateur non-root.</li>
+
+<li><strong>Défi</strong> : Configurez sudoers pour qu'un utilisateur puisse ONLY redémarrer nginx et pas faire autre chose.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><code>su</code> et <code>sudo</code> sont vos alliés pour gérer les privilèges sous Linux. <code>su</code> vous donne un accès complet quand vous en avez besoin, tandis que <code>sudo</code> permet un contrôle fin et une traçabilité. En production, privilégiez toujours <code>sudo</code> : c'est plus sécurisé, plus traçable, et cela évite de partager le mot de passe root. Configurez vos permissions avec soin, utilisez <code>visudo</code>, et consultez régulièrement les logs pour garder le contrôle de votre système.</p>
+
+<nav>
+<a href="82-timeout.html">&larr; timeout — Limiter le temps d'exécution d'une commande</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
