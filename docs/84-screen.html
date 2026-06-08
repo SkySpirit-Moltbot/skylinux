@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>screen — Gestionnaire de sessions terminal persistantes</h1>
+
+<h2>Introduction</h2>
+
+<p>Vous êtes connecté en SSH à un serveur et vous lancez un téléchargement qui prendra 2 heures. Que se passe-t-il si votre connexion coupe ? Le processus meurt. <strong>screen</strong> résout ce problème : c'est un multiplexeur de terminal qui garde vos sessions actives même si vous vous déconnectez. Vous pouvez vous reconnecter plus tard et retrouver votre session exactement où vous l'avez laissée.</p>
+
+<p>screen est préinstallé sur beaucoup de distributions Linux. Il est l'alternative historique à <code>tmux</code> (vu en leçon 27). Si tmux n'est pas disponible, screen reste un excellent choix.</p>
+
+<h2>Installation</h2>
+
+<div class="code-block"><div class="code-line"><code># Debian / Ubuntu
+sudo apt install screen
+
+# Fedora / CentOS / RHEL
+sudo dnf install screen
+
+# Arch Linux
+sudo pacman -S screen
+
+# Vérifier que screen est installé
+screen --version</code></div></div>
+
+<h2>Démarrer une session screen</h2>
+
+<h3>Créer une nouvelle session</h3>
+
+<div class="code-block"><div class="code-line"><code># Lancer screen (crée une nouvelle session)
+screen
+
+# Lancer screen avec un nom personnalisé
+screen -S mon_serveur
+
+# Lancer screen avec un titre descriptif
+screen -S "backup-server"
+
+# Le titre apparaît dans la liste des sessions</code></div></div>
+
+<h3>Comprendre screen dès le départ</h3>
+
+<div class="code-block"><div class="code-line"><code># Quand screen démarre, vous voyez un écran vide (ou un shell)
+# Tout semble normal... mais vous êtes dans une session screen !
+
+# Pour confirmer, faites :
+echo $TERM
+# Affiche : screen (indique que vous êtes dans screen)
+
+# ou tapez :
+screen -v
+# GNU Screen 4.08.00 (protocol version 4)</code></div></div>
+
+<h2>Les commandes de base dans screen</h2>
+
+<h3>Le préfixe Ctrl+A</h3>
+
+<p>Toutes les commandes de screen commencent par <code>Ctrl+A</code>, suivi d'une lettre ou d'une touche. Cela signifie : maintenez <code>Ctrl</code>, appuyez sur <code>A</code>, puis relâchez et tapez la commande.</p>
+
+<div class="code-block"><div class="code-line"><code># Syntaxe générale :
+# Ctrl+A puis d        → Détacher la session
+# Ctrl+A puis c        → Créer une nouvelle fenêtre
+# Ctrl+A puis n        → Fenêtre suivante
+# Ctrl+A puis p        → Fenêtre précédente
+# Ctrl+A puis "        → Liste des fenêtres
+# Ctrl+A puis k        → Tuer la fenêtre actuelle</code></div></div>
+
+<h3>Détacher et rattacher</h3>
+
+<div class="code-block"><div class="code-line"><code># Se détacher (sortir de screen sans fermer la session)
+# Depuis inside screen :
+Ctrl+A puis d
+# Vous revenez au terminal normal
+# La session screen continue en arrière-plan !
+
+# Rattacher à une session existante
+screen -r
+
+# Si plusieurs sessions existent, choisir laquelle
+screen -ls              # Lister les sessions
+# There are several suitable screens:
+#   1652.backup-server  (Detached)
+#   1687.monitor        (Attached)
+screen -r 1652           # Rattacher par PID
+screen -r backup-server  # Rattacher par nom
+
+# Rattacher en mode lecture seule (ne pas interferer)
+screen -r -d 1652        # Rattacher, détacher d'abord si quelqu'un d'autre est connecté</code></div></div>
+
+<h3>Créer plusieurs fenêtres</h3>
+
+<div class="code-block"><div class="code-line"><code># Depuis inside screen :
+# Créer une nouvelle fenêtre
+Ctrl+A puis c
+
+# Passer à la fenêtre suivante
+Ctrl+A puis n
+
+# Passer à la fenêtre précédente
+Ctrl+A puis p
+
+# Lister toutes les fenêtres (interface interactive)
+Ctrl+A puis "
+
+# Choisir une fenêtre par numéro
+Ctrl+A puis " puis 0, 1, 2...
+
+# Sauter à la fenêtre 3 directement
+Ctrl+A puis 3</code></div></div>
+
+<h3>Fenêtre historique (scrollback)</h3>
+
+<div class="code-block"><div class="code-line"><code># Activer le mode copie/scroll
+Ctrl+A puis [
+
+# Navigation en mode copie :
+# Flèches haut/bas    → Défiler
+# Page Up/Down        → Défiler par page
+# q                   → Quitter le mode copie
+
+# Chercher dans l'historique (mode copie)
+# /            → Rechercher vers le bas
+# ?            → Rechercher vers le haut
+# n            → Prochain résultat
+# N            → Résultat précédent</code></div></div>
+
+<h3>Copier-coller</h3>
+
+<div class="code-block"><div class="code-line"><code># Entrer en mode copie
+Ctrl+A puis [
+
+# Positionner le curseur, puis :
+# Espace            → Commencer la sélection
+# Entrer            → Finir la sélection (copie)
+
+# Coller le texte copié
+Ctrl+A puis ]
+
+# Alternative : sélection à la souris (si activé)</code></div></div>
+
+<h3>Fermer et tuer</h3>
+
+<div class="code-block"><div class="code-line"><code># Tuer la fenêtre actuelle (confirmation)
+Ctrl+A puis K
+# Puis taper "y" pour confirmer
+
+# Tuer toutes les fenêtres et quitter screen
+Ctrl+A puis \
+
+# Quitter screen normalement (ferme la session)
+exit
+# Quand la dernière fenêtre est fermée, screen se ferme</code></div></div>
+
+<h2>Gérer plusieurs sessions</h2>
+
+<h3>Lister les sessions</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir toutes les sessions screen
+screen -ls
+
+# Exemple de sortie :
+# There are screens on:
+#     1652.backup-server    (Detached)
+#     1687.monitor          (Attached)
+#     1892.download        (Detached)
+# 3 Sockets in /run/screens/S-david.
+
+# Chaque session a :
+# - Un PID (1652, 1687, 1892)
+# - Un nom (backup-server, monitor, download)
+# - Un état (Detached = inactive, Attached = en cours d'utilisation)</code></div></div>
+
+<h3>Créer une session nommée</h3>
+
+<div class="code-block"><div class="code-line"><code># Créer une session avec nom explicite
+screen -S travaux
+
+# Utile pour identifier rapidement :
+screen -S serveur-web
+screen -S backup-nocturne
+screen -S monitoring
+
+# Se rattacher plus tard par nom
+screen -r serveur-web</code></div></div>
+
+<h3>Partager une session (screen partagé)</h3>
+
+<div class="code-block"><div class="code-line"><code># Mode multi-utilisateur (avancé)
+# Activer le mode multi-display sur la session
+Ctrl+A puis :multiuser on
+
+# Donner l'accès à un autre utilisateur
+chmod 755 /run/screens/S-david
+
+# L'autre utilisateur peut se rattacher en lecture seule
+screen -r nom_session -t 0
+
+# Mode lecture seule (l'autre voit mais ne peut pas taper)
+screen -r -x
+
+# Session partagée (les deux voient et tapent)
+# Les deux utilisateurs font :
+screen -x nom_session
+# Les deux voient la même chose en temps réel</code></div></div>
+
+<h3>Envoyer des commandes à une session détachée</h3>
+
+<div class="code-block"><div class="code-line"><code># Envoyer une commande à une session screen sans s'attacher
+screen -S nom_session -X stuff 'ls -la\n'
+
+# Envoyer un texte brut (sans Enter)
+screen -S nom_session -X stuff 'echo test'
+
+# Plus complexe : utiliser -X eval
+screen -S nom_session -X eval "stuff 'exit'\n"
+
+# Alternative : créer un script pour envoyer des commandes
+# screen -S nom_session -X exec ...</code></div></div>
+
+<h2>Configuration de screen</h2>
+
+<h3>Le fichier ~/.screenrc</h3>
+
+<div class="code-block"><div class="code-line"><code># Créer ou éditer le fichier de configuration
+nano ~/.screenrc
+
+# Exemple de configuration basique :
+startup_message off        # Pas de message de bienvenue
+defscrollback 1000         # 1000 lignes d'historique
+hardstatus alwayslastline # Barre de statut en bas
+hardstatus string '%{= kG}%?%-Lw%?%{r}(%{g}%n%f %t%?}%?%{r})%?%{g}%?%+Lw%?%? %{g}%?%{y}:%{g} %c:%s %{g}'
+
+# Active les raccourcis Ctrl+L pour effacer l'écran
+bind l stuff ^L</code></div></div>
+
+<h3>Barre de statut (hardstatus)</h3>
+
+<div class="code-block"><div class="code-line"><code># ~/.screenrc avec barre de statut utile
+
+# Afficher la liste des fenêtres en bas
+hardstatus alwayslastline
+hardstatus string '%{= kW}%-Lw%{?nw}%?%{r}(%{g}%n%f %t%?}%?%{r})%{w}%?%{g}%+Lw%?%{w}%? %=%{g} %c:%s %d/%m'
+
+# Résultat visuel :
+# 0$bash  1$top  2$logs  3$vim   14:30: 08/06
+
+# another bar style :
+hardstatus string ' %`%{= kw}%-w+ %{= kw}%n*%t%{= kw}%+w %= %{= kR}%?%F%{.kw} [%?] %?%{.kw}%c:%s%?%?%{= kR} [%S] %?%?%{.kw}%-w%?%{r}%n%f %t%?%{w}%?%+w %='</code></div></div>
+
+<h3>Raccourcis personnalisés</h3>
+
+<div class="code-block"><div class="code-line"><code># ~/.screenrc
+
+# Définir F1 pour créer une nouvelle fenêtre
+bindkey "^[O5P" screen
+bindkey -k F1 screen
+
+# Définir F2 pour lister les fenêtres
+bindkey -k F2 windowlist
+
+# Raccourci pour se détacher rapidement
+bind d detach
+bind D lock
+
+# Split-screen (diviser l'écran)
+bind | split -v   # Split vertical
+bind S split      # Split horizontal
+bind Q only       # Fermer les splits
+bind Tab focus     # Basculer entre splits
+
+# Copier-coller
+bind ] paste .</code></div></div>
+
+<h3>Configuration avancée</h3>
+
+<div class="code-block"><div class="code-line"><code># ~/.screenrc - configuration complète
+
+# ---Général---
+startup_message off       # Pas de message au démarrage
+msgwait 2                 # Message de statut pendant 2 secondes
+nethack on                # Interface plus lisible (style jeu)
+
+# ---Apparence---
+shell -bash              # Utiliser bash
+defshell -bash
+caption always "%{= wb}%?%-Lw%?%{r}(%{g}%n%f %t%?}%?%{r})%?%{g}%+Lw%?%? %{g}%=%{y} %c:%s %{w}%?%?%{y}:%{g} %d/%m%?"
+
+# ---Comportement---
+autodetach on            # Détacher automatiquement à la déconnexion
+wrap on                  # Les lignes longues continuent sur la ligne suivante
+idle 300 lockscreen      # Verrouiller après 5 min d'inactivité</code></div></div>
+
+<h2>Split-screen dans screen</h2>
+
+<h3>Diviser l'écran</h3>
+
+<div class="code-block"><div class="code-line"><code># Depuis inside screen :
+# Diviser horizontalement (crée une région au-dessus)
+Ctrl+A puis S
+
+# Diviser verticalement (crée une région à gauche)
+Ctrl+A puis |
+
+# Basculer entre les régions
+Ctrl+A puis Tab
+
+# Fermer la région actuelle
+Ctrl+A puis X
+
+# Toutes les régions = splitter pour créer un layout
+# Commencer avec | (vertical)
+# Puis Tab puis créer une fenêtre dans la nouvelle région</code></div></div>
+
+<h3>Travailler avec les splits</h3>
+
+<div class="code-block"><div class="code-line"><code># Créer un layout à 3 panneaux :
+# 1. Ctrl+A |        → Split vertical
+# 2. Ctrl+A Tab      → Aller dans le nouveau panneau
+# 3. Ctrl+A c        → Créer une fenêtre dans ce panneau
+# 4. Ctrl+A Tab      → Revenir au panneau gauche
+# 5. Ctrl+A S        → Split horizontal
+# 6. Ctrl+A Tab      → Aller en bas
+# 7. Ctrl+A c        → Créer une fenêtre en bas
+
+# Naviguer entre les régions
+Ctrl+A Tab
+
+# Redimensionner une région
+Ctrl+A :resize 20   # Fixer la taille à 20 lignes
+Ctrl+A :resize +5   # Ajouter 5 lignes
+Ctrl+A :resize -5   # Retirer 5 lignes</code></div></div>
+
+<h3>Configuration des splits</h3>
+
+<div class="code-block"><div class="code-line"><code># ~/.screenrc pour les splits
+
+# Layout par défaut avec splits
+layout save default      # Sauvegarder le layout
+layout new               # Créer un nouveau layout
+layout select 0          # Utiliser le layout 0
+
+# Raccourcis pour les splits
+bind s split             # Split horizontal
+bind v split -v          # Split vertical
+bind t focus             # Aller à la région du haut
+bind b focus             # Aller à la région du bas</code></div></div>
+
+<h2>Utiliser screen dans un script</h2>
+
+<h3>Lancer une commande dans screen</h3>
+
+<div class="code-block"><div class="code-line"><code># Lancer une commande sans interaction (session detached)
+screen -dmS test_session "sleep 10; echo 'Terminé'"
+
+# -d : lancer en mode détaché
+# -m : forcer la création d'une nouvelle session
+# -S : nommer la session
+
+# Vérifier que la session existe
+screen -ls | grep test_session</code></div></div>
+
+<h3>Script de surveillance</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Script : lancer un processus en arrière-plan avec screen
+
+SESSION="backup-$(date +%Y%m%d-%H%M)"
+COMMAND="tar -czf /backup/data.tar.gz /home/data && echo 'Backup terminé' | mail admin@example.com"
+
+# Créer la session
+screen -dmS "$SESSION" bash -c "$COMMAND"
+
+# Attendre un peu et vérifier
+sleep 2
+screen -ls | grep "$SESSION"
+
+# Voir les logs en temps réel
+screen -r "$SESSION"</code></div></div>
+
+<h3>Démarrer plusieurs processus</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Lancer plusieurs services dans des sessions screen
+
+services=("apache" "mysql" "redis" "nginx")
+base_port=3000
+
+for i in "${!services[@]}"; do
+    name="${services[$i]}"
+    port=$((base_port + i))
+    
+    # Créer une session par service
+    screen -dmS "$name" bash -c "echo 'Démarrage $name sur port $port'; sleep infinity"
+done
+
+echo "Sessions créées :"
+screen -ls</code></div></div>
+
+<h2>Dépannage</h2>
+
+<h3>Session coincée ou écran noir</h3>
+
+<div class="code-block"><div class="code-line"><code># Si screen ne répond plus
+# Forcer la déconnexion
+Ctrl+A puis :quit
+
+# Ou depuis un autre terminal :
+screen -S nom_session -X quit
+
+# Si le terminal est coincé, forcer kill
+kill -9 $(screen -ls | grep nom_session | awk -F. '{print $1}')</code></div></div>
+
+<h3>Impossible de se rattacher</h3>
+
+<div class="code-block"><<div class="code-line"><code># Vérifier l'état de la session
+screen -ls
+
+# Si "Attached" mais personne n'est connecté :
+# Forcer le détachement
+screen -d nom_session
+
+# Puis se rattacher
+screen -r nom_session
+
+# Si la session est vraiment corrompue :
+# Rattacher en mode lecture seule
+screen -r -p 0 nom_session
+
+# Et tuer la session si nécessaire
+screen -S nom_session -X quit</code></div></div>
+
+<h3>screen ne répond plus au préfixe</h3>
+
+<div class="code-block"><div class="code-line"><code># Si Ctrl+A ne fonctionne pas :
+# 1. Vérifier que le terminal n'est pas en mode brut
+# Taper : exit (ou Ctrl+D) pour quitter
+
+# 2. Si screen est coincé, utiliser le fallback :
+# Ctrl+A puis Ctrl+\ (forcer quit)
+# Ou : Ctrl+Z (mettre en arrière-plan, puis kill)
+
+# 3. Depuis un autre terminal :
+screen -S nom_session -X quit
+
+# 4. Redémarrer une nouvelle session
+screen -R</code></div></div>
+
+<h3>Récupérer après une déconnexion SSH</h3>
+
+<div class="code-block"><div class="code-line"><code># Connexion a été coupée, sessions perdues ?
+# Vérifier si screen tourne encore
+ps aux | grep screen
+
+# Lister les sessions screen persistantes
+screen -ls
+
+# Si une session existe en état "Detached", se rattacher
+screen -r nom_session
+
+# Si l'état est "Dead" :
+# Nettoyer la session morte
+screen -wipe
+
+# Créer une nouvelle session et continuer
+screen -S nouvelle_session</code></div></div>
+
+<h2>Comparatif screen vs tmux</h2>
+
+<table>
+<tr><th>Fonctionnalité</th><th>screen</th><th>tmux</th></tr>
+<tr><td>Installation</td><td>Présent sur presque tous les systèmes</td><td>À installer (saufBSD)</td></tr>
+<tr><td>Split-screen</td><td>Disponible mais complexe</td><td>Plus intuitif</td></tr>
+<tr><td>Barre de statut</td><td>Basique</td><td>Très personnalisable</td></tr>
+<tr><td>Configuration</td><td>Fichier .screenrc</td><td>Fichier .tmux.conf</td></tr>
+<tr><td>Copier-coller</td><td>Mode copie basique</td><td>Mode copie avancé avec缓冲区</td></tr>
+<tr><td>Scripts</td><td>Bon support</td><td>Excellent support</td></tr>
+<tr><td>Historique</td><td>Limité par défaut</td><td>Illimité configurable</td></tr>
+<tr><td>Communication inter-sessions</td><td>Basique</td><td>Avancé (pubsub)</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Nommez vos sessions</strong> : <code>screen -S projet_x</code> pour les retrouver facilement</li>
+<li><strong>Vérifiez avant de fermer</strong> : <code>screen -ls</code> pour voir les sessions actives</li>
+<li><strong>Utilisez le scrollback</strong> : <code>Ctrl+A [</code> pour naviguer dans l'historique</li>
+<li><strong>Configurez ~/.screenrc</strong> : personalisez la barre de statut et les raccourcis</li>
+<li><strong>Intégration scripts</strong> : utilisez <code>screen -dmS</code> pour lancer des tâches en arrière-plan</li>
+<li><strong>Nettoyez les sessions mortes</strong> : <code>screen -wipe</code> régulièrement</li>
+</ul>
+
+<h2>Exercices pratiques</h2>
+
+<ol>
+<li><strong>Premier screen</strong> : Lancez <code>screen -S test</code>, tapez quelques commandes, puis détachez-vous avec <code>Ctrl+A d</code>. Rattachez-vous avec <code>screen -r test</code>.</li>
+
+<li><strong>Multi-fenêtres</strong> : Dans screen, créez 3 fenêtres avec <code>Ctrl+A c</code>. Naviguez entre elles avec <code>Ctrl+A n</code> et <code>Ctrl+A p</code>. Listez-les avec <code>Ctrl+A "</code>.</li>
+
+<li><strong>Scrollback</strong> : Lancez <code>history</code> ou <code>ls -la /</code>, puis utilisez <code>Ctrl+A [</code> pour naviguer dans l'historique. Quittez avec <code>q</code>.</li>
+
+<li><strong>Session persistente</strong> : Créez une session, lancez <code>sleep 60</code>, détachez, kill le terminal, rouvrez un terminal, et rattachez-vous. Le sleep devrait toujours tourner.</li>
+
+<li><strong>Script screen</strong> : Créez un script qui lance 3 sessions screen nommées (serveur1, serveur2, serveur3), chacune exécutant une commande différente.</li>
+
+<li><strong>Configuration</strong> : Créez un fichier <code>~/.screenrc</code> avec une barre de statut montrant l'heure et la date.</li>
+
+<li><strong>Défi</strong> : Créez un script de surveillance qui lance un processus long dans screen, et envoie un email quand il se termine.</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p><strong>screen</strong> est votre allié pour garder des sessions actives en permanence. Que vous bossiez sur un serveur distant, lanciez des processus longs, ou partagiez une session avec un collègue, screen assure la persistance. Combinez-le avec les autres leçons : <code>ssh</code> (leçon 12) pour la connexion distante, <code>cron</code> (leçon 13 ou 79) pour les tâches planifiées, et <code>tmux</code> (leçon 27) si vous préférez une alternative plus moderne. Une session screen bien gérée peut tourner des semaines, voire des mois, sans intervention.</p>
+
+<nav>
+<a href="83-su-sudo-root.html">&larr; su et sudo — Devenir root et exécuter avec privilèges</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
