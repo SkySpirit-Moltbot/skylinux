@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>ps, top et htop — Gestion et surveillance des processus</h1>
+
+<h2>Introduction</h2>
+
+<p>Chaque programme qui s'exécute sur votre système Linux est un <strong>processus</strong>. Le noyau leur attribue un numéro unique (PID), leur alloue de la mémoire, du temps CPU, et les organise en arbre hiérarchique. Savoir surveiller et gérer ces processus est une compétence essentielle pour tout administrateur ou utilisateur Linux.</p>
+
+<p>Dans cette leçon, nous allons voir trois outils complémentaires :</p>
+<ul>
+<li><strong>ps</strong> — l'outil statique pour lister les processus à un instant donné</li>
+<li><strong>top</strong> — le moniteur en temps réel, préinstallé partout</li>
+<li><strong>htop</strong> — l'alternative moderne, plus lisible et interactive</li>
+</ul>
+
+<h2>ps — Liste statique des processus</h2>
+
+<h3>Les bases de ps</h3>
+
+<p><code>ps</code> (process status) affiche un instantané des processus actifs. Sans选项, il ne montre que les processus du terminal courant.</p>
+
+<div class="code-block"><div class="code-line"><code># Voir les processus du terminal actuel
+ps
+
+# Résultat classique :
+#   PID TTY          TIME CMD
+#  1234 pts/0    00:00:00 bash
+#  5678 pts/0    00:00:00 ps
+
+# Format BSD (affichage complet)
+ps aux
+
+# a  → tous les processus de tous les utilisateurs
+# u  → format orienté utilisateur (colonnes détaillées)
+# x  → tous les processus, même ceux sans terminal</code></div></div>
+
+<h3>Format par défaut Linux (syntaxe UNIX)</h3>
+
+<div class="code-block"><div class="code-line"><code># Syntaxe style UNIX (moins lisible mais standard)
+ps -ef
+
+# -e → tous les processus
+# -f → format complet (full)
+
+# Syntaxe style Linux
+ps -eo pid,user,ppid,%cpu,%mem,cmd
+
+# Colonnes principales :
+# pid    → Numéro du processus
+# user   → Propriétaire
+# ppid   → PID du processus parent
+# %cpu   → Utilisation CPU en %
+# %mem   → Utilisation mémoire en %
+# cmd    → Ligne de commande complète
+# stat   → État du processus (R/S/Z...)</code></div></div>
+
+<h3>Filtrer les processus</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher un processus par son nom
+ps aux | grep nginx
+
+# Afficher les processus d'un utilisateur
+ps -u david
+
+# Afficher les processus d'un utilisateur (syntaxe UNIX)
+ps -U david
+
+# Afficher les processus d'un groupe
+ps -G nom_groupe
+
+# Afficher un processus par PID
+ps -p 1234
+
+# Afficher plusieurs PIDs
+ps -p 1234 5678 9012</code></div></div>
+
+<h3>Les états des processus</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir l'état (colonne STAT)
+ps aux | head -1 && ps aux | awk 'NR>1 {print $8}' | sort | uniq -c | sort -rn
+
+# États principaux :
+# R → Running (en cours d'exécution)
+# S → Sleeping (en attente, peut être réveillé)
+# D → Disk sleep (en attente E/S, non interruptible)
+# Z → Zombie (processus mort mais pas récupéré)
+# T → Stopped (stoppé, suspendé)
+# I → Idle (inactif, noyau)
+# s → Session leader (processus principal de session)
+# + → Foreground (en avant-plan)</code></div></div>
+
+<h3>Arbre des processus (hiérarchie)</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher l'arbre des processus
+ps -ejH
+
+# Format forest (arbre plus lisible)
+ps -eo pid,ppid,cmd --forest
+
+# Arbre d'un processus spécifique
+ps -eo pid,ppid,cmd --forest | grep -A 10 nginx
+
+# Trouver le parent d'un processus
+pstree -p 1234
+# systemd(1)───sshd(1234)───sshd(5678)───bash(9012)───ps(10000)
+
+# Voir les processus légers (threads)
+ps -eLf</code></div></div>
+
+<h3>Tri et colonnes personnalisées</h3>
+
+<div class="code-block"><div class="code-line"><code># Tri par utilisation CPU (du plus gourmand au moins)
+ps aux --sort=-%cpu
+
+# Tri par utilisation mémoire
+ps aux --sort=-%mem
+
+# Top 10 processus par CPU
+ps aux --sort=-%cpu | head -11
+
+# Colonnes personnalisées
+ps -eo pid,user,%cpu,%mem,etime,cmd --sort=-%cpu | head -20
+
+# etime → temps écoulé depuis le démarrage du processus
+# time  → temps CPU total utilisé</code></div></div>
+
+<h2>top — Moniteur en temps réel</h2>
+
+<h3>Démarrer top</h3>
+
+<div class="code-block"><div class="code-line"><code># Lancer top (rafraîchissement toutes les 3 secondes par défaut)
+top
+
+# Lancer top avec un rafraîchissement plus rapide
+top -d 1
+
+# Lancer top avec un nombre fixe de itérations
+top -n 5   # 5 rafraîchissements puis sort
+
+# Lancer top pour un utilisateur spécifique
+top -u david
+
+# Lancer top et immediately trier par mémoire
+top -o %MEM</code></div></div>
+
+<h3>Interface de top</h3>
+
+<div class="code-block"><div class="code-line"><code># Écran principal de top :
+# ----------------------------------------
+# top - 14:30:25 up 5 days,  2:15,  2 users,  load average: 0.52, 0.48, 0.41
+# Tasks: 142 total,   1 running, 141 sleeping,   0 stopped,   0 zombie
+# %Cpu(s):  5.2 us,  2.1 sy,  0.0 ni, 91.2 id,  1.5 wa,  0.0 hi,  0.0 si,  0.0 st
+# MiB Mem :  16384.4 total,   8192.2 free,   6144.0 used,   2048.2 buff/cache
+# MiB Swap:   2048.0 total,   2048.0 free,      0.0 used.   9216.3 avail Mem
+#
+#   PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+#  1234 www-data  20   0  512344  45212  12344 S   8.5   2.8   0:45.23 nginx
+#  5678 david     20   0  234112  34500   8900 S   3.2   2.1   0:12.45 firefox
+# ----------------------------------------
+
+# Signification des colonnes :
+# PR    → Priorité (plus bas = plus prioritaire)
+# NI    → Nice value (-20 à +19)
+# VIRT  → Mémoire virtuelle totale
+# RES   → Mémoire RAM physique utilisée
+# SHR   → Mémoire partagée
+# S     → État (R/S/D/Z/T/I)
+# TIME+ → Temps CPU (en centièmes de secondes)</code></div></div>
+
+<h3>Commandes interactives de top</h3>
+
+<div class="code-block"><div class="code-line"><code># Navigation et tri :
+# M          → Trier par mémoire (%MEM)
+# P          → Trier par CPU (%CPU)
+# N          → Trier par PID
+# T          → Trier par temps (TIME+)
+# R          → Inverser le tri
+
+# Filtres :
+# u          → Filtrer par utilisateur (tapez le nom)
+# o          → Ajouter un filtre (FIELD=value)
+# =          → Supprimer tous les filtres
+
+# Actions :
+# k          → Tuer un processus (demande le PID puis le signal)
+# r          → Changer la priorité (renice)
+# l          → Masquer/afficher la ligne de charge (load average)
+# t          → Masquer/afficher les lignes CPU
+# m          → Masquer/afficher les lignes mémoire
+# 1          → Afficher tous les CPUs individuellement
+
+# Affichage :
+# f          → Configurer les colonnes affichées
+# c          → Afficher/cacher le chemin complet des commandes
+# z          → Mode couleur (plus lisible)
+# x          → Surbriller la colonne de tri
+# y          → Surbriller les processus en cours (running)
+# W          → Sauvegarder la configuration dans ~/.toprc
+
+# Quitter :
+# q          → Quitter top
+# Ctrl+C     → Quitter top</code></div></div>
+
+<h3>Exemples pratiques avec top</h3>
+
+<div class="code-block"><div class="code-line"><code># Tuer un processus qui pose problème
+# Lancez top, puis :
+# 1. Tapez k
+# 2. Entrez le PID (ex: 5678)
+# 3. Entrez le signal (15 = SIGTERM, 9 = SIGKILL)
+# 15 est généralement suffisant, 9 en dernier recours
+
+# Changer la priorité (renice) d'un processus
+# 1. Tapez r
+# 2. Entrez le PID
+# 3. Entrez la nouvelle valeur nice (ex: 10)
+
+# Afficher les processus d'un utilisateur
+# 1. Tapez u
+# 2. Tapez le nom d'utilisateur (ex: www-data)
+
+# Mode batch (pour les scripts)
+top -b -n 1 -d 1 > rapport.txt
+
+# -b → mode batch (sortie texte)
+# -n 1 → une seule itération
+# -d 1 → délai de 1 seconde</code></div></div>
+
+<h3>Afficher les threads dans top</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir les threads (processus légers)
+top -H
+
+# Ou en mode interactif, tapez H
+
+# Chaque thread apparaît comme une ligne séparée
+# Le PID de la ligne correspond au TID (thread ID)
+
+# Pour voir les threads d'un processus spécifique
+top -p 1234 -H
+
+# Afficher les threads dans ps
+ps -eLf | grep 1234
+# -L → afficher les threads (LWP = light-weight process)
+# NLWP → nombre de threads par processus</code></div></div>
+
+<h2>htop — L'alternative moderne</h2>
+
+<h3>Installation</h3>
+
+<div class="code-block"><div class="code-line"><code># Debian / Ubuntu
+sudo apt install htop
+
+# Fedora / CentOS / RHEL
+sudo dnf install htop
+
+# Arch Linux
+sudo pacman -S htop
+
+# macOS (avec Homebrew)
+brew install htop
+
+# Vérifier l'installation
+htop --version</code></div></div>
+
+<h3>Interface de htop</h3>
+
+<div class="code-block"><div class="code-line"><code># Lancer htop
+htop
+
+# Lancer htop pour un utilisateur
+htop -u david
+
+# Lancer htop en mode compact (moins de lignes d'en-tête)
+htop -d
+
+# Lancer htop avec un filtre
+htop -d 10 -p 1234,5678
+
+# Interface principale :
+# ----------------------------------------
+# 0%|        | 0/8 CPU  1.0%  Mem: 2.1G/16G  Tasks: 142, 2 thr, 0 run
+# 1: cpu      2: cpu      3: cpu      4: cpu
+# 10%         5%          3%          2%
+#
+#   PID  USER   NI   CPU%   MEM%   TIME+   Command
+#  1234  root    0    8.5    2.8    45:23   nginx: worker process
+#  5678  david   0    3.2    2.1    12:45   firefox
+#  9012  root    0    1.0    0.5    1:23    [kworker/0:0]
+#
+#  F1Help  F2Setup  F3Search  F4Filter  F5Tree  F6Sort  F7Nice  F8Kill  F9Kill  F10Quit
+# ----------------------------------------
+
+# Signification :
+# NI → Nice value (priorité)
+# Les barres de CPU en haut montrent l'utilisation par cœur
+# La barre mémoire affiche l'usage RAM total</code></div></div>
+
+<h3>Navigation et interactions</h3>
+
+<div class="code-block"><div class="code-line"><code># Navigation :
+# Flèches ↑↓    → Sélectionner un processus
+# Flèches ←→    → Scroll horizontal
+# Enter         → Voir les détails du processus
+# Tab           → Alterner entre processus/threads
+
+# Commandes principales :
+# F1 / h        → Aide
+# F2 / S        → Configuration (colonnes, affichage)
+# F3 / /        → Rechercher un processus
+# F4 / \        → Filtrer par nom
+# F5 / t        → Toggle vue arbre (parent → enfants)
+# F6 / .        → Trier (menu de sélection)
+# F7 / ]        → Diminuer nice (augmenter priorité)
+# F8 / [        → Augmenter nice (diminuer priorité)
+# F9 / k        → Tuer le processus (menu de signaux)
+# F10 / q       → Quitter
+
+# Signaux courants :
+# 15 SIGTERM    → Terminaison normale (recommandé)
+# 9 SIGKILL     → Forcer l'arrêt (dernier recours)
+# 18 SIGCONT    → Reprendre si stoppé
+# 19 SIGSTOP    → Suspendre le processus</code></div></div>
+
+<h3>Vues et affichage</h3>
+
+<div class="code-block"><div class="code-line"><code># Vue arbre (parent → enfants)
+htop -t
+# Ou tapez F5 (t) dans htop
+
+# Afficher les couleurs selon le type de processus
+# Configuration → Colors → choisir un schéma
+
+# Masquer les threads noyau
+htop -H
+# Ou tapez H dans htop pour toggle
+
+# Afficher les processus d'un utilisateur
+htop -u david
+# Ou tapez u dans htop et sélectionnez l'utilisateur
+
+# Mode minimal (uniquement les barres)
+htop -s
+
+# Mode stats (pas d'interaction)
+htop -d 10 -t
+# Rafraîchit toutes les 10 secondes, pas d'interaction</code></div></div>
+
+<h3>Configuration de htop</h3>
+
+<div class="code-block"><div class="code-line"><code># Configuration via F2 / S :
+
+# Modifier les colonnes affichées
+# Columns → ajouter/supprimer/réorganiser
+# Colonnes utiles :
+# USER, PID, CPU%, MEM%, TIME, COMMAND
+# + PID, USER, PRIORITY (priorité noyau)
+# + PER_CPU_CPU (usage par cœur)
+# + M_UPSS (memory PSI)
+# + WCHAN (fonction noyau en attente)
+
+# Changer le tri par défaut
+# SortBy → choisir la colonne
+
+# Configurer les meters (barres du haut)
+# Meters → choisir ce qui s'affiche (CPU, Memory, Swap, Load...)
+
+# Sauvegarder la configuration
+# F2 → Setup → Save (ou F10 puis configuration sauvegardée)</code></div></div>
+
+<h3>Configuration via fichier (~/.config/htop/htoprc)</h3>
+
+<div class="code-block"><div class="code-line"><code># Fichier de configuration
+nano ~/.config/htop/htoprc
+
+# Exemple de configuration :
+# --- configuration ---
+# hide_kernel_threads=true
+# hide_userland_threads=false
+# tree_view=true
+# sort_key=PERCENT_CPU
+# sort_direction=1
+#
+# left_meters=CPU MainMemory Swap LoadAverage
+# left_meter_modes=1 1 1 2
+# right_meters=Tasks Running Clock Date String hostname
+# right_meter_modes=2 2 2 2 2 2 2</code></div></div>
+
+<h2>Comparatif ps, top et htop</h2>
+
+<table>
+<tr><th>Fonctionnalité</th><th>ps</th><th>top</th><th>htop</th></tr>
+<tr><td>Temps réel</td><td>❌ Statique</td><td>✅ Oui (3s)</td><td>✅ Oui (1s)</td></tr>
+<tr><td>Interactivité</td><td>❌ Non</td><td>✅ Basique</td><td>✅ Avanzée</td></tr>
+<tr><td>Vue arbre</td><td>✅ --forest</td><td>❌ Non</td><td>✅ F5/t</td></tr>
+<tr><td>Tri interactif</td><td>✅ --sort</td><td>✅ M/P/N/T/R</td><td>✅ F6</td></tr>
+<tr><td>Tuer processus</td><td>❌ kill manuel</td><td>✅ k</td><td>✅ F9</td></tr>
+<tr><td>Changer priorité</td><td>✅ renice</td><td>✅ r</td><td>✅ F7/F8</td></tr>
+<tr><td>Barres visuelles CPU</td><td>❌ Non</td><td>❌ Non</td><td>✅ Par cœur</td></tr>
+<tr><td>Recherche/filtre</td><td>✅ grep</td><td>✅ o/u</td><td>✅ F3/F4</td></tr>
+<tr><td>Installation</td><td>Préinstallé</td><td>Préinstallé</td><td>À installer</td></tr>
+<tr><td>Ressource utilisée</td><td>Nulle</td><td>Légère</td><td>Légère</td></tr>
+</table>
+
+<h2>Combiner les outils efficacement</h2>
+
+<h3>Trouver un processus qui pose problème</h3>
+
+<div class="code-block"><div class="code-line"><code># 1. Identifier les processus qui consomment le plus
+ps aux --sort=-%cpu | head -11
+
+# 2. Vérifier en temps réel avec top
+top -o %CPU
+# Observer pendant 30 secondes
+
+# 3. Avec htop (plus lisible)
+htop
+# Trier par CPU (F6), observer
+
+# 4. Trouver le processus exact
+ps -eo pid,user,%cpu,%mem,cmd --sort=-%cpu | grep -E "(nginx|apache|mysql)"</code></div></div>
+
+<h3>Trouver un processus par nom</h3>
+
+<div class="code-block"><div class="code-line"><code># Méthode 1 : pgrep (simple et rapide)
+pgrep -af nginx
+# -a : afficher la ligne complète
+# -f : chercher dans la ligne de commande
+
+# Méthode 2 : ps + grep
+ps aux | grep nginx
+
+# Méthode 3 : pgrep avec infos
+pgrep -l nginx
+# -l : afficher le nom en plus du PID
+
+# Méthode 4 : pidof (par nom du programme)
+pidof nginx
+# Retourne le(s) PID(s)
+
+# Trouver tous les processus d'un utilisateur
+pgrep -u david -a</code></div></div>
+
+<h3>Tuer un processus récalcitrant</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver le PID
+pgrep -f firefox
+# Exemple : 5678
+
+# Tuer avec signal normal (SIGTERM = 15)
+kill 5678
+
+# Si le processus ne s'arrête pas, forcer (SIGKILL = 9)
+kill -9 5678
+
+# Tuer tous les processus d'un nom
+killall firefox
+
+# Tuer par nom (autre méthode)
+pkill -f firefox
+
+# Tuer tous les processus d'un utilisateur (dangereux !)
+killall -u david
+
+# Forcer avec pkill
+pkill -9 -f firefox</code></div></div>
+
+<h3>Monitorer en batch (scripts)</h3>
+
+<div class="code-block"><div class="code-line"><code># Top en mode batch, 5 itérations
+top -b -n 5 -d 2 > top_log.txt
+
+# Script de surveillance CPU
+#!/bin/bash
+while true; do
+    cpu=$(ps -eo pcpu,pid,cmd --sort=-pcpu | head -2 | tail -1 | awk '{print $1}')
+    pid=$(ps -eo pcpu,pid,cmd --sort=-pcpu | head -2 | tail -1 | awk '{print $2}')
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - PID $pid : $cpu% CPU"
+    sleep 10
+done
+
+# Surveillance mémoire
+ps -eo pid,user,%mem,rss,cmd --sort=-%mem | head -11</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Utilisez ps pour les scripts</strong> : <code>pgrep</code> et <code>pidof</code> sont plus pratiques que parser <code>ps aux</code></li>
+<li><strong>Utilisez top pour une vue rapide</strong> : préinstallé, fonctionne partout, idéal pour un diagnostic rapide</li>
+<li><strong>Utilisez htop pour un travail prolongé</strong> : plus lisible, meilleur pour analyser et interagir</li>
+<li><strong>Toujours tuer avec SIGTERM d'abord</strong> : <code>kill 5678</code> avant <code>kill -9 5678</code></li>
+<li><strong>Utilisez killall et pkill avec prudence</strong> : ils affectent tous les processus du même nom</li>
+<li><strong>Combinez avec tree view</strong> : <code>ps -eo --forest</code> ou htop (F5) pour comprendre les relations parent-enfant</li>
+<li><strong>Surveillez les zombies</strong> : <code>ps aux | grep Z</code> ou la colonne <code>Z</code> dans top/htop</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>La surveillance des processus est une compétence quotidienne. <code>ps</code> est votre outil pour extraire des données dans des scripts ou avoir un instantané rapide. <code>top</code> offre une vue en temps réel sans installation supplémentaire. <code>htop</code> pousse l'expérience plus loin avec son interface interactive et ses barres de CPU par cœur. Maîtrisez ces trois outils et vous aurez une vue complète sur ce qui tourne sur votre système. Combinez-les avec <code>kill</code> et <code>renice</code> pour la gestion active des processus.</p>
+
+<nav>
+<a href="84-screen.html">&larr; screen — Gestionnaire de sessions terminal persistantes</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
