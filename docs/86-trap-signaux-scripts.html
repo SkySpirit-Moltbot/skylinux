@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>trap — Intercepter et gérer les signaux dans les scripts Bash</h1>
+
+<h2>Introduction</h2>
+
+<p>Quand vous exécutez un script Bash, le système peut à tout moment lui envoyer des <strong>signaux</strong> : interruption par <code>Ctrl+C</code>, fermeture du terminal, réception d'une requête d'arrêt... Sans gestion, le script s'interrompt brutalement et peut laisser des fichiers temporaires, des processus ou des connexions en état incohérent.</p>
+
+<p><code>trap</code> est la commande qui permet d'intercepter ces signaux et d'exécuter du code en réponse — nettoyer des fichiers, fermer des connexions, sauvegarder un état. C'est un outil indispensable pour écrire des scripts robustes et professionnels.</p>
+
+<h2>Comprendre les signaux</h2>
+
+<h3>Qu'est-ce qu'un signal ?</h3>
+
+<p>Un <strong>signal</strong> est un message envoyé par le noyau ou un autre processus à un processus. Il indique un événement — interruption, erreur, demande d'arrêt — et le processus peut choisir de l'ignorer, de le capturer ou de laisser le comportement par défaut s'appliquer.</p>
+
+<h3>Les signaux les plus courants</h3>
+
+<table>
+<tr><th>Signal</th><th>Numéro</th><th>Nom</th><th>Effet par défaut</th><th>Quand est-il envoyé ?</th></tr>
+<tr><td><code>SIGINT</code></td><td>2</td><td>Interrupt</td><td>Terminer le processus</td><td><code>Ctrl+C</code> dans le terminal</td></tr>
+<tr><td><code>SIGTERM</code></td><td>15</td><td>Terminate</td><td>Terminer le processus</td><td><code>kill</code> sans option (<code>kill 1234</code>)</td></tr>
+<tr><td><code>SIGKILL</code></td><td>9</td><td>Kill</td><td>Terminer immédiatement</td><td><code>kill -9 1234</code> — impossible à capturer</td></tr>
+<tr><td><code>SIGHUP</code></td><td>1</td><td>Hang Up</td><td>Terminer le processus</td><td>Terminal fermé, connexion SSH coupée</td></tr>
+<tr><td><code>SIGQUIT</code></td><td>3</td><td>Quit</td><td>Terminer + dump core</td><td><code>Ctrl+\</code> dans le terminal</td></tr>
+<tr><td><code>SIGSTOP</code></td><td>19</td><td>Stop</td><td>Suspendre le processus</td><td><code>Ctrl+Z</code>, <code>kill -STOP</code> — impossible à capturer</td></tr>
+<tr><td><code>SIGCONT</code></td><td>18</td><td>Continue</td><td>Reprendre le processus</td><td>Après SIGSTOP ou via <code>kill -CONT</code></td></tr>
+<tr><td><code>SIGTSTP</code></td><td>20</td><td>Terminal Stop</td><td>Suspendre le processus</td><td><code>Ctrl+Z</code> — capturable</td></tr>
+<tr><td><code>SIGUSR1</code></td><td>10</td><td>User 1</td><td>Personnalisé</td><td><code>kill -USR1 1234</code> — libre usage</td></tr>
+<tr><td><code>SIGUSR2</code></td><td>12</td><td>User 2</td><td>Personnalisé</td><td><code>kill -USR2 1234</code> — libre usage</td></tr>
+<tr><td><code>SIGEXIT</code></td><td>0</td><td>Exit</td><td>Appelé à la fin du script</td><td>Quand le script se termine normalement ou avec exit</td></tr>
+</table>
+
+<h3>Signaux capturables vs non capturables</h3>
+
+<div class="code-block"><div class="code-line"><code># Signaux que vous POUVEZ capturer avec trap :
+# SIGINT (2), SIGHUP (1), SIGTERM (15), SIGQUIT (3), SIGTSTP (20)
+# SIGUSR1 (10), SIGUSR2 (12), SIGEXIT (0)
+
+# Signaux que vous NE POUVEZ PAS capturer :
+# SIGKILL (9)  → tue immédiatement, aucun interception possible
+# SIGSTOP (19) → suspend immédiatement, aucun interception possible
+
+# En résumé : trap ne fonctionne pas avec les signaux qui forcent
+# l'arrêt ou la suspension immédiate du processus</code></div></div>
+
+<h2>La commande trap — Les bases</h2>
+
+<h3>Syntaxe fondamentale</h3>
+
+<div class="code-block"><div class="code-line"><code># Syntaxe de trap
+trap 'commandes' signaux
+
+# Exemple simple
+trap 'echo "Signal reçu !"' SIGINT
+
+# Signaux multiples
+trap 'cleanup' SIGINT SIGTERM SIGHUP
+
+# Exécuter plusieurs commandes
+trap 'echo "Interruption"; exit 1' SIGINT
+
+# Signaux nommés ou numériques (équivalents)
+trap 'echo "Ctrl+C"' 2      # 2 = SIGINT
+trap 'echo "Ctrl+C"' SIGINT # équivalent</code></div></div>
+
+<h3>Capturer un signal</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# script-test-trap.sh
+
+echo "Mon script est en cours... (Ctrl+C pour tester)"
+echo "PID : $$"
+
+# Intercepter SIGINT (Ctrl+C)
+trap 'echo ""; echo "Signal SIGINT capturé ! Le script continue..."' SIGINT
+
+# Intercepter la fin du script
+trap 'echo "Le script se termine."' EXIT
+
+# Boucle infinie pour garder le script actif
+while true; do
+    sleep 1
+done</code></div></div>
+
+<h3>Capturer plusieurs signaux</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# multi-signaux.sh
+
+# Capturer plusieurs signaux avec une seule commande
+trap 'echo "Signal capturé à $(date '+%H:%M:%S')"' SIGINT SIGTERM SIGHUP
+
+echo "En cours... PID : $$"
+echo "Testez :"
+echo "  Ctrl+C  → SIGINT"
+echo "  kill $$ → SIGTERM"
+echo "  kill -HUP $$ → SIGHUP"
+echo ""
+
+# Boucle de démonstration
+compteur=0
+while true; do
+    echo "Compteur : $compteur"
+    sleep 2
+    ((compteur++))
+done</code></div></div>
+
+<h3>Ignorer un signal</h3>
+
+<div class="code-block"><div class="code-line"><code># Ignorer un signal : utiliser '' (chaîne vide)
+trap '' SIGINT
+
+# Ce script ne peut PAS être interrompu par Ctrl+C
+echo "Ce script est protégé contre Ctrl+C"
+while true; do
+    sleep 1
+done
+
+# Pour protéger contre plusieurs signaux :
+trap '' SIGINT SIGTERM SIGHUP
+
+# ATTENTION : seul root ou le propriétaire du processus
+# peut envoyer un signal après l'avoir ignoré</code></div></div>
+
+<h2>trap pour le nettoyage (cleanup)</h2>
+
+<h3>Nettoyage de fichiers temporaires</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# cleanup-example.sh
+
+# Créer des fichiers temporaires
+TEMP_FILE1=$(mktemp)
+TEMP_FILE2=$(mktemp)
+TEMP_DIR=$(mktemp -d)
+
+echo "Fichiers temporaires créés."
+echo "TEMP_FILE1 : $TEMP_FILE1"
+echo "TEMP_FILE2 : $TEMP_FILE2"
+echo "TEMP_DIR    : $TEMP_DIR"
+
+# Fonction de nettoyage
+cleanup() {
+    echo ""
+    echo "=== Nettoyage en cours ==="
+    rm -f "$TEMP_FILE1" "$TEMP_FILE2"
+    rm -rf "$TEMP_DIR"
+    echo "Fichiers temporaires supprimés."
+}
+
+# Intercepter tous les signaux importants + sortie normale
+trap cleanup EXIT INT TERM HUP
+
+# Corps du script
+echo "Traitement en cours..."
+sleep 5
+echo "Traitement terminé."
+
+# Sortie normale (EXIT déclenchera cleanup)</code></div></div>
+
+<h3>Nettoyage avec message d'erreur</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# cleanup-error.sh
+
+TEMP_FILE=$(mktemp)
+
+# Fonction de nettoyage
+cleanup() {
+    local exit_code=$?
+    echo ""
+    echo "=== Nettoyage ==="
+    if [ -f "$TEMP_FILE" ]; then
+        rm -f "$TEMP_FILE"
+        echo "Fichier temporaire supprimé."
+    fi
+    if [ $exit_code -ne 0 ]; then
+        echo "Le script s'est terminé avec une erreur (code $exit_code)."
+    fi
+    echo "Nettoyage terminé."
+}
+
+trap cleanup EXIT
+
+# Exemple de travail
+echo "Travail en cours..."
+sleep 3
+
+# Décommenter pour simuler une erreur :
+# exit 1
+
+echo "Travail terminé avec succès."
+exit 0</code></div></div>
+
+<h2>trap pour la gestion des erreurs</h2>
+
+<h3>Arrêt automatique en cas d'erreur</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# erreur-auto.sh
+
+# Activer le mode erreur : exit immédiatement si une commande échoue
+set -e
+
+# Fonction appelée quand une commande échoue (ERR)
+handle_error() {
+    local line_no=$1
+    echo "ERREUR à la ligne $line_no. Commande échouée."
+    exit 1
+}
+
+# Intercepter le signal ERR (sortie sur erreur)
+trap 'handle_error $LINENO' ERR
+
+echo "Étape 1..."
+sleep 1
+
+echo "Étape 2..."
+sleep 1
+
+echo "Étape 3..."
+exit 1  # Ce script échouera ici
+
+echo "Cette ligne ne sera jamais atteinte."</code></div></div>
+
+<h3>Gestion centralisée des erreurs</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# gestion-erreurs.sh
+
+# Activer les options de sécurité
+set -euo pipefail
+
+# Variables pour le suivi
+ERROR_LOG="/tmp/script-errors.log"
+
+# Fonction de gestion d'erreur
+gestion_erreur() {
+    local exit_code=$?
+    local line=$1
+
+    echo "=================================="
+    echo "ERREUR détectée !"
+    echo "Date       : $(date)"
+    echo "Ligne      : $line"
+    echo "Code sortie: $exit_code"
+    echo "Commande   : ${BASH_COMMAND}"
+    echo "=================================="
+
+    # Logger l'erreur
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | Ligne $line | Code $exit_code | ${BASH_COMMAND}" >> "$ERROR_LOG"
+
+    # Nettoyage
+    rm -f /tmp/script-temp-*
+
+    exit $exit_code
+}
+
+# Intercepter ERR (commande échouée) et EXIT (fin du script)
+trap 'gestion_erreur $LINENO' ERR
+trap 'echo "Script terminé à $(date)." >> /tmp/script.log' EXIT
+
+# Corps du script
+echo "Début du traitement..."
+mkdir -p /tmp/script-temp-$$
+cd /tmp/script-temp-$$
+
+sleep 1
+echo "Étape 1 réussie."
+
+sleep 1
+echo "Étape 2 réussie."
+
+echo "Script terminé proprement."</code></div></div>
+
+<h3>Debugger avec trap</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# debug-trap.sh
+
+# Afficher chaque commande avant exécution
+set -x
+
+# Trap DEBUG : appelé avant chaque commande
+debug_trace() {
+    echo ">>> $(date '+%H:%M:%S') | Exécution : ${BASH_COMMAND}"
+}
+
+trap debug_trace DEBUG
+
+# Trap EXIT : à la fin
+trap 'echo "=== Fin du script ==="; echo "Lignes exécutées : $LINENO"' EXIT
+
+# Corps du script
+a=5
+b=3
+result=$((a + b))
+echo "Résultat : $result"
+
+sleep 1
+echo "Script terminé."</code></div></div>
+
+<h2>Signaux dans la pratique</h2>
+
+<h3>Script serveur basique avec trap</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# serveur.sh — Exemple de serveur avec gestion de signaux
+
+PID_FILE="/tmp/serveur.pid"
+LOG_FILE="/tmp/serveur.log"
+
+# Écrire le PID
+echo $$ > "$PID_FILE"
+
+# Fonction de démarrage (simulée)
+demarrer() {
+    echo "$(date) : Serveur démarré (PID $$)" >> "$LOG_FILE"
+    echo "Serveur en cours d'exécution..."
+}
+
+# Fonction d'arrêt propre
+arreter() {
+    echo ""
+    echo "Signal d'arrêt reçu. Arrêt en cours..."
+    echo "$(date) : Serveur arrêté" >> "$LOG_FILE"
+    rm -f "$PID_FILE"
+    exit 0
+}
+
+# Installer les handlers
+trap arreter SIGINT SIGTERM SIGHUP
+
+# Démarrer
+demarrer
+
+# Boucle principale
+while true; do
+    sleep 1
+done</code></div></div>
+
+<h3>Déployer et tester</h3>
+
+<div class="code-block"><div class="code-line"><code># Lancer le serveur en arrière-plan
+bash serveur.sh &
+SERVER_PID=$!
+echo "Serveur démarré avec PID : $SERVER_PID"
+
+sleep 2
+
+# Envoyer SIGTERM (équivalent à kill normal)
+kill $SERVER_PID
+sleep 1
+cat /tmp/serveur.log</code></div></div>
+
+<h3>Script de téléchargement avec trap</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# telechargement.sh — Téléchargement avec gestion d'interruption
+
+URL="${1:-}"
+OUTPUT="${2:-fichier.zip}"
+
+if [ -z "$URL" ]; then
+    echo "Usage : $0 <URL> <fichier_sortie>"
+    exit 1
+fi
+
+PARTIAL_FILE="${OUTPUT}.part"
+FINAL_FILE="$OUTPUT"
+
+# Fonction de nettoyage
+cleanup() {
+    echo ""
+    echo "=== Interruption détectée ==="
+    if [ -f "$PARTIAL_FILE" ]; then
+        echo "Fichier partiel conservé : $PARTIAL_FILE"
+        echo "Relancez pour reprendre le téléchargement."
+    fi
+}
+
+# Capturer les signaux
+trap cleanup EXIT INT TERM
+
+# Vérifier si le fichier existe déjà (reprise)
+if [ -f "$FINAL_FILE" ]; then
+    echo "Le fichier existe déjà. Utilisation de curl -C - pour reprendre..."
+    curl -L -C - -o "$FINAL_FILE" "$URL"
+else
+    curl -L -o "$PARTIAL_FILE" "$URL"
+    mv "$PARTIAL_FILE" "$FINAL_FILE"
+fi
+
+echo "Téléchargement terminé : $FINAL_FILE"</code></div></div>
+
+<h2>trap et fonctions</h2>
+
+<h3>Définir le trap dans une fonction</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# trap-dans-fonctions.sh
+
+# Fonction qui configure son propre trap
+operation_sensible() {
+    local temp_file=$(mktemp)
+
+    # Trap local à cette fonction
+    local_cleanup() {
+        echo "Nettoyage local..."
+        rm -f "$temp_file"
+    }
+
+    trap local_cleanup EXIT
+
+    echo "Opération en cours dans la fonction..."
+    sleep 3
+
+    # Si le fichier n'est plus nécessaire, on peut réinitialiser le trap
+    rm -f "$temp_file"
+    trap - EXIT  # Réinitialiser le trap
+}
+
+# Fonction principale
+main() {
+    echo "Début du programme."
+
+    # Configurer un trap global
+    global_cleanup() {
+        echo "Nettoyage global du programme."
+    }
+    trap global_cleanup EXIT
+
+    operation_sensible
+
+    echo "Suite du programme..."
+    sleep 2
+
+    echo "Fin du programme."
+}
+
+main</code></div></div>
+
+<h3>Passer des arguments à trap</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# trap-avec-args.sh
+
+# Fonction qui utilise une variable externe
+traitement() {
+    local nom_fichier="$1"
+
+    cleanup() {
+        echo "Nettoyage de $nom_fichier"
+        # Supprimer uniquement si le fichier est incomplet
+        [ -f "${nom_fichier}.tmp" ] && rm -f "${nom_fichier}.tmp"
+    }
+
+    trap cleanup EXIT INT TERM
+
+    echo "Traitement de $nom_fichier..."
+    touch "${nom_fichier}.tmp"
+    sleep 3
+    mv "${nom_fichier}.tmp" "$nom_fichier"
+    echo "Terminé."
+}
+
+# Traiter plusieurs fichiers
+for fichier in fichier1.txt fichier2.txt fichier3.txt; do
+    traitement "$fichier"
+done</code></div></div>
+
+<h2>Exemples concrets</h2>
+
+<h3>Base de données avec transactions</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# database-transaction.sh — Transactions avec trap
+
+DB_FILE="/tmp/mabase.db"
+BACKUP_FILE="/tmp/mabase.backup"
+TEMP_FILE="/tmp/mabase.tmp"
+
+# Initialiser la base
+init_db() {
+    echo "ID,NOM,EMAIL" > "$DB_FILE"
+    echo "1,Alice,alice@example.com" >> "$DB_FILE"
+    echo "2,Bob,bob@example.com" >> "$DB_FILE"
+}
+
+# Rollback en cas d'erreur
+rollback() {
+    echo ""
+    echo "=== ROLLBACK ==="
+    if [ -f "$BACKUP_FILE" ]; then
+        cp "$BACKUP_FILE" "$DB_FILE"
+        echo "Base restaurée depuis la sauvegarde."
+    fi
+    [ -f "$TEMP_FILE" ] && rm -f "$TEMP_FILE"
+    [ -f "$BACKUP_FILE" ] && rm -f "$BACKUP_FILE"
+}
+
+# Nettoyage final
+cleanup() {
+    [ -f "$TEMP_FILE" ] && rm -f "$TEMP_FILE"
+    echo "Nettoyage terminé."
+}
+
+# Installer les traps
+trap rollback EXIT
+trap 'rollback; exit 130' INT TERM
+trap cleanup EXIT
+
+# Corps du script
+init_db
+cp "$DB_FILE" "$BACKUP_FILE"
+
+echo "Base initiale :"
+cat "$DB_FILE"
+
+# Simuler une transaction
+echo "Ajout d'un nouvel enregistrement..."
+echo "3,Charlie,charlie@example.com" > "$TEMP_FILE"
+cat "$DB_FILE" >> "$TEMP_FILE"
+mv "$TEMP_FILE" "$DB_FILE"
+
+echo ""
+echo "Base après transaction :"
+cat "$DB_FILE"
+
+# Supprimer le backup si tout s'est bien passé
+rm -f "$BACKUP_FILE"
+echo "Transaction validée."</code></div></div>
+
+<h3>Installation avec rollback</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# installation.sh — Installation avec rollback
+
+INSTALL_DIR="/opt/monapp"
+CONFIG_FILE="/etc/monapp.conf"
+SERVICE_NAME="monapp"
+
+rollback() {
+    echo ""
+    echo "=== ROLLBACK - Annulation de l'installation ==="
+    [ -d "$INSTALL_DIR" ] && rm -rf "$INSTALL_DIR"
+    [ -f "$CONFIG_FILE" ] && rm -f "$CONFIG_FILE"
+    systemctl stop "$SERVICE_NAME" 2>/dev/null || true
+    systemctl disable "$SERVICE_NAME" 2>/dev/null || true
+    echo "Rollback terminé."
+}
+
+install() {
+    echo "Installation de MonApp..."
+    mkdir -p "$INSTALL_DIR"
+    echo "# Configuration" > "$CONFIG_FILE"
+    echo "version=1.0" >> "$CONFIG_FILE"
+    echo "Installation des fichiers..."
+    sleep 1
+    echo "Configuration du service..."
+    sleep 1
+    echo "Activation du service..."
+    sleep 1
+    echo "Installation terminée avec succès."
+}
+
+# Trap principal
+trap 'rollback; exit 1' ERR INT TERM HUP
+
+install</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Utilisez toujours EXIT pour le nettoyage</strong> : <code>trap cleanup EXIT</code> se déclenche à la fin du script, que l'arrêt soit normal ou anormal.</li>
+<li><strong>Combinez EXIT avec les signaux</strong> : <code>trap 'cleanup; exit 1' INT TERM</code> pour un nettoyage complet en cas d'interruption.</li>
+<li><strong>Ne capturez pas SIGKILL ni SIGSTOP</strong> : ces signaux ne peuvent pas être interceptés, c'est intentionnel.</li>
+<li><strong>Protégez les scripts critiques</strong> : <code>trap '' SIGINT SIGTERM</code> rend un script immunisé aux interruptions — à utiliser avec prudence.</li>
+<li><strong>Utilisez $LINENO pour le debugging</strong> : dans une fonction d'erreur, <code>$LINENO</code> indique la ligne exacte du problème.</li>
+<li><strong>Vérifiez l'état avant de nettoyer</strong> : dans les fonctions cleanup, vérifiez si les fichiers existent avant de les supprimer.</li>
+<li><strong>Configurez trap au début du script</strong> : avant toute opération qui pourrait être interrompue.</li>
+<li><strong>Documentez vos traps</strong> : un commentaire au-dessus de chaque <code>trap</code> explique son but.</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p><code>trap</code> est l'outil qui transforme un script fragile en un script robuste. Il permet de capturer les signaux système — <code>Ctrl+C</code>, <code>kill</code>, fermeture du terminal — et d'exécuter du code de nettoyage en réponse. Le pattern le plus courant combine <code>trap cleanup EXIT INT TERM</code> pour un nettoyage fiable quel que soit le mode de fin du script. Pour la gestion d'erreurs, <code>trap handle_error ERR</code> intercepte chaque commande qui échoue. Ces techniques sont la base des scripts professionnels en Bash.</p>
+
+<nav>
+<a href="85-ps-top-htop.html">&larr; ps, top et htop — Gestion et surveillance des processus</a>
+<a href="index.html">Somaire</a>
+</nav>
+</div>
+</body>
+</html>
