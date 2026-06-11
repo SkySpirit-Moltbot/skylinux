@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 87 : expr — Calcul et évaluation d'expressions</h1>
+
+<h2>Introduction</h2>
+<p><code>expr</code> est un outil polyvalent qui évalue des expressions en ligne de commande. Il peut effectuer des calculs arithmétiques sur des entiers, manipuler des chaînes de caractères, et tester des conditions. Bien que Bash dispose désormais de l'arithmétique intégrée (<code>$(( ))</code>), <code>expr</code> reste utile dans les scripts portables et pour la correspondance de motifs avec les expressions régulières.</p>
+
+<h2>Calculs arithmétiques</h2>
+
+<h3>Les quatre opérations de base</h3>
+<div class="code-block"><div class="code-line"><code>expr 10 + 5</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 10 - 5</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 10 \* 5</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 10 / 5</code></div></div>
+
+<p><strong>Attention</strong> : le signe <code>*</code> doit être échappé avec <code>\</code> car il a une signification spéciale dans le shell.</p>
+
+<h3>Exemple concret</h3>
+<div class="code-block"><div class="code-line"><code>expr 25 + 10    # → 35</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 100 - 37   # → 63</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 7 \* 8     # → 56</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 100 / 4    # → 25</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 10 % 3     # → 1  (modulo : reste de la division)</code></div></div>
+
+<h3>Dans un script Bash</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Calcul du périmètre et de l'aire d'un rectangle
+
+largeur=8
+hauteur=5
+
+perimetre=$(expr $largeur + $largeur + $hauteur + $hauteur)
+aire=$(expr $largeur \* $hauteur)
+
+echo "Rectangle : $largeur x $hauteur"
+echo "Périmètre : $perimetre"
+echo "Aire       : $aire"</code></div></div>
+
+<h3>Précautions avec les espaces</h3>
+<p><code>expr</code> nécessite des espaces entre les opérandes et les opérateurs. Ces commandes échoueront :</p>
+<div class="code-block"><div class="code-line"><code>expr 10+5       # ERREUR : 10+5 est interprété comme une chaîne</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 10 +5      # ERREUR : espace manquant</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 10 + 5     # OK : résultat = 15</code></div></div>
+
+<h2>Comparaisons et conditions</h2>
+
+<h3>Opérateurs de comparaison</h3>
+<table>
+<tr><th>Opérateur</th><th>Signification</th><th>Retourne</th></tr>
+<tr><td><code>=</code></td><td>Égal</td><td>1 si vrai, 0 si faux</td></tr>
+<tr><td><code>!=</code></td><td>Différent</td><td>1 si vrai, 0 si faux</td></tr>
+<tr><td><code>&gt;</code></td><td>Supérieur</td><td>1 si vrai, 0 si faux</td></tr>
+<tr><td><code>&gt;=</code></td><td>Supérieur ou égal</td><td>1 si vrai, 0 si faux</td></tr>
+<tr><td><code>&lt;</code></td><td>Inférieur</td><td>1 si vrai, 0 si faux</td></tr>
+<tr><td><code>&lt;=</code></td><td>Inférieur ou égal</td><td>1 si vrai, 0 si faux</td></tr>
+</table>
+
+<div class="code-block"><div class="code-line"><code>expr 10 = 10   # → 1 (vrai)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 10 != 5   # → 1 (vrai)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 7 \&gt; 3    # → 1 (vrai)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr 7 \&lt;= 3   # → 0 (faux)</code></div></div>
+
+<p><strong>Note</strong> : les signes <code>&gt;</code> et <code>&lt;</code> doivent être échappés dans le shell.</p>
+
+<h3>Exemple : tester une valeur</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+note=85
+
+if [ $(expr $note \&gt;= 60) -eq 1 ]; then
+    echo "Réussite ! Note : $note/100"
+else
+    echo "Échec. Note insuffisante : $note/100"
+fi</code></div></div>
+
+<h3>En combinant dans un test</h3>
+<p>Le résultat de <code>expr</code> peut servir dans un <code>test</code> :</p>
+<div class="code-block"><div class="code-line"><code>test $(expr 10 &gt; 5) -eq 1 && echo "Oui, 10 est plus grand que 5"</code></div></div>
+<div class="code-block"><div class="code-line"><code>if expr "$nom_utilisateur" = "admin" \&gt; /dev/null; then
+    echo "Bienvenue, administrateur !"
+fi</code></div></div>
+
+<h2>Manipulation de chaînes</h2>
+
+<h3>Longueur d'une chaîne</h3>
+<div class="code-block"><div class="code-line"><code>expr length "Bonjour"        # → 7</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr length "Linux c'est bien"  # → 16</code></div></div>
+
+<h3>Sous-chaîne (substr)</h3>
+<div class="code-block"><div class="code-line"><code>expr substr "Bonjour" 1 4   # → Bonj  (depuis position 1, 4 caractères)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr substr "Bonjour" 3 4   # → njou  (depuis position 3, 4 caractères)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr substr "Linux" 2 3    # → inu</code></div></div>
+
+<p>La position commence à <strong>1</strong>, pas à 0.</p>
+
+<h3>Index — Trouver un caractère</h3>
+<div class="code-block"><div class="code-line"><code>expr index "Linux" x       # → 3  (x trouvé en position 3)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr index "Bonjour" o    # → 2  (premier 'o' en position 2)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr index "Linux" z      # → 0  (non trouvé)</code></div></div>
+
+<h3>Extrait — Prendre des caractères depuis le début</h3>
+<div class="code-block"><div class="code-line"><code>expr match "Ubuntu" 'U.*'       # → 6  (toute la chaîne)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr match "Ubuntu" 'U'         # → 1  (le 'U' seul)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr match "Ubuntu" '[A-Z].*'   # → 6  (majuscule suivie de n'importe quoi)</code></div></div>
+
+<h3>Exemple : valider un nom d'utilisateur</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+nom="JeanDupont"
+
+# Vérifier que le nom contient uniquement des lettres
+if [ $(expr match "$nom" '^[A-Za-z]*$') -eq $(expr length "$nom") ]; then
+    echo "Nom valide : $nom"
+else
+    echo "Nom invalide : $nom (caractères non autorisés)"
+fi</code></div></div>
+
+<h2>Correspondance de motifs avec regex</h2>
+
+<h3>L'opérateur match</h3>
+<div class="code-block"><div class="code-line"><code>expr "bonjour" : 'bon'      # → 3  (longueur de la correspondance)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr "bonjour" : 'xxx'      # → 0  (pas de correspondance)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr "fichier.txt" : '.*\.txt'  # → 11 (correspondance de l'extension)</code></div></div>
+
+<h3>Capturer une partie du motif</h3>
+<p>Utilisez des parenthèses dans le motif pour capturer une partie :</p>
+<div class="code-block"><div class="code-line"><code>expr "ubuntu-22.04" : '\(ubuntu\)'
+# → ubuntu  (la partie entre parenthèses)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr "fichier.zip" : '\(.*\)\.zip'
+# → fichier  (tout avant .zip)</code></div></div>
+<div class="code-block"><div class="code-line"><code>expr "192.168.1.1" : '\([0-9]*\)\.[0-9]*\.[0-9]*\.[0-9]*'
+# → 192  (le premier nombre avant le premier point)</code></div></div>
+
+<h3>Exemple : vérifier un numéro de téléphone</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+tel="079 123 45 67"
+
+# Format suisse : 079 XXX XX XX
+if expr "$tel" : '^[0-9][0-9][0-9] [0-9][0-9][0-9] [0-9][0-9] [0-9][0-9]$' \&gt; /dev/null; then
+    echo "Numéro valide : $tel"
+else
+    echo "Format invalide"
+fi</code></div></div>
+
+<h3>Exemple : extraire l'extension d'un fichier</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+fichier="document.pdf"
+
+extension=$(expr "$fichier" : '.*\.\([a-zA-Z0-9]*\)')
+echo "Extension : $extension"  # → pdf</code></div></div>
+
+<h2>Utilisation dans des scripts</h2>
+
+<h3>Incrémenter une variable</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+compteur=0
+
+# Incrémenter
+compteur=$(expr $compteur + 1)
+echo "Compteur : $compteur"  # → 1
+
+compteur=$(expr $compteur + 1)
+echo "Compteur : $compteur"  # → 2
+
+compteur=$(expr $compteur + 1)
+echo "Compteur : $compteur"  # → 3</code></div></div>
+
+<h3>Calcul avec des variables</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+prix_unitaire=19.90
+quantite=3
+remise=10
+
+# Prix avant remise
+sous_total=$(expr $prix_unitaire \* $quantite)
+
+# Montant de la remise (en pourcents)
+montant_remise=$(expr $sous_total \* $remise / 100)
+
+# Prix final
+prix_final=$(expr $sous_total - $montant_remise)
+
+echo "Sous-total  : $sous_total"
+echo "Remise ($remise%) : -$montant_remise"
+echo "Prix final  : $prix_final"</code></div></div>
+
+<h3>Vérifier si un nombre est pair ou impair</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+nombre=${1:-42}
+
+if [ $(expr $nombre % 2) -eq 0 ]; then
+    echo "$nombre est pair"
+else
+    echo "$nombre est impair"
+fi</code></div></div>
+
+<h3>Calculer une factorielle</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Factorielle de n
+
+n=${1:-5}
+resultat=1
+
+while [ $n -gt 1 ]; do
+    resultat=$(expr $resultat \* $n)
+    n=$(expr $n - 1)
+done
+
+echo "Factorielle : $resultat"</code></div></div>
+
+<h3>Boucle avec expr pour l'itération</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Afficher les 5 premières puissances de 2
+
+i=0
+while [ $i -le 10 ]; do
+    puissance=$(expr 2 \*\* $i)
+    echo "2^$i = $puissance"
+    i=$(expr $i + 1)
+done</code></div></div>
+
+<h2>expr vs $(( )) — Quelle syntaxe choisir ?</h2>
+
+<table>
+<tr><th>Caractéristique</th><th><code>expr</code></th><th><code>$(( ))</code></th></tr>
+<tr><td>Arithmétique entière</td><td>Oui</td><td>Oui</td></tr>
+<tr><td>Nécessite des espaces</td><td>Oui</td><td>Non</td></tr>
+<tr><td>Opérateur <code>*</code></td><td>À échapper (<code>\*</code>)</td><td>Pas d'échappement</td></tr>
+<tr><td>Regex / motifs</td><td>Oui</td><td>Non</td></tr>
+<tr><td>Longueur de chaîne</td><tdtd>Oui</td><td>Non (<code>${#var}</code>)</td></tr>
+<tr><td>Sous-chaîne</td><td>Oui</td><td>Non (<code>${var:pos:len}</code>)</td></tr>
+<tr><td>Portabilité</td><td>Norme POSIX</td><td>Bash spécifique</td></tr>
+<tr><td>Performance</td><td>Plus lent (processus externe)</td><td>Plus rapide (interne)</td></tr>
+</table>
+
+<h3>Recommandation</h3>
+<ul>
+<li>Utilisez <code>$(( ))</code> pour l'arithmétique simple dans les scripts Bash.</li>
+<li>Utilisez <code>expr</code> pour les expressions régulières, la manipulation de chaînes, ou quand la portabilité POSIX est requise.</li>
+</ul>
+
+<h2>Commandes utiles</h2>
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>expr 10 + 5</code></td><td>Addition</td></tr>
+<tr><td><code>expr 10 - 5</code></td><td>Soustraction</td></tr>
+<tr><td><code>expr 10 \* 5</code></td><td>Multiplication</td></tr>
+<tr><td><code>expr 10 / 5</code></td><td>Division entière</td></tr>
+<tr><td><code>expr 10 % 3</code></td><td>Modulo (reste)</td></tr>
+<tr><td><code>expr length "texte"</code></td><td>Longueur d'une chaîne</td></tr>
+<tr><td><code>expr substr "texte" 2 3</code></td><td>Extraire une sous-chaîne</td></tr>
+<tr><td><code>expr index "texte" x</code></td><td>Position d'un caractère</td></tr>
+<tr><td><code>expr "chaîne" : 'regex'</code></td><td>Correspondance de motif</td></tr>
+<tr><td><code>expr match "chaîne" 'regex'</code></td><td>Correspondance (notation alternative)</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+<p>Créez un script qui :</p>
+<ol>
+<li>Demande à l'utilisateur de saisir son année de naissance</li>
+<li>Calcule son âge avec <code>expr</code></li>
+<li>Vérifie si l'âge est majeur (18 ans ou plus) avec <code>expr</code></li>
+<li>Affiche un message approprié</li>
+</ol>
+
+<h3>Correction</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Exercice : calcul de l'âge et vérification de majorité
+
+read -p "Votre année de naissance : " annee_naissance
+
+# Obtenir l'année courante
+annee_courante=$(date +%Y)
+
+# Calculer l'âge
+age=$(expr $annee_courante - $annee_naissance)
+
+# Vérifier la majorité (expr retourne 1 si la comparaison est vraie)
+est_majeur=$(expr $age \&gt;= 18)
+
+echo ""
+echo "Année de naissance : $annee_naissance"
+echo "Âge actuel         : $age ans"
+
+if [ $est_majeur -eq 1 ]; then
+    echo "Vous êtes majeur."
+else
+    echo "Vous êtes mineur."
+fi</code></div></div>
+
+<h2>Conclusion</h2>
+<p><code>expr</code> est un outil classique du monde Unix, à la fois calculatrice, manipulateur de chaînes et moteur d'expressions régulières. Si Bash moderne a rendu certaines de ses fonctionnalités redondantes (<code>$(( ))</code> pour l'arithmétique, <code>${#var}</code> pour la longueur), <code>expr</code> reste irremplaçable pour la correspondance de motifs POSIX et la manipulation de chaînes portable. Dans un script portable ou pour traiter des motifs complexes, <code>expr</code> reste un allié précieux.</p>
+
+<nav>
+<a href="86-trap-signaux-scripts.html">&larr; trap — Intercepter et gérer les signaux dans les scripts Bash</a>
+<a href="index.html">Sommaire</a>
+<a href="88-printf-formatage.html">printf — Formatage de sortie &rarr;</a>
+</nav>
+</div>
+</body>
+</html>
