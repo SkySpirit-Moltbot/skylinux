@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 88 : sed — Transformer du texte à la volée</h1>
+
+<h2>Introduction</h2>
+<p><code>sed</code> (Stream Editor) est un éditeur de texte non interactif qui permet de transformer du texte automatiquement. Il lit ligne par ligne, applique des transformations, et affiche le résultat. C'est l'outil idéal pour remplacer du texte dans des fichiers sans ouvrir d'éditeur.</p>
+
+<h2>Syntaxe de base</h2>
+<p>La syntaxe fondamentale de <code>sed</code> est simple :</p>
+<div class="code-block">
+<div class="code-line"><code>sed 's/ancien/nouveau/' fichier</code></div>
+</div>
+<p>Cette commande remplace la première occurrence de "ancien" par "nouveau" sur chaque ligne.</p>
+
+<h2>Remplacer du texte</h2>
+
+<h3>Remplacement simple</h3>
+<div class="code-block">
+<div class="code-line"><code># Remplacer "foo" par "bar" dans un fichier
+sed 's/foo/bar/' fichier.txt</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Afficher le résultat sans modifier le fichier original
+sed 's/foo/bar/' fichier.txt</code></div>
+</div>
+<p>Par défaut, <code>sed</code> affiche le résultat à l'écran. Le fichier original n'est pas modifié.</p>
+
+<h3>Remplacer toutes les occurrences</h3>
+<p>Pour remplacer toutes les occurrences d'une chaîne sur chaque ligne (pas seulement la première), utilisez le flag <code>g</code> (global) :</p>
+<div class="code-block">
+<div class="code-line"><code># Remplace TOUTES les occurrences de "foo" par "bar"
+sed 's/foo/bar/g' fichier.txt</code></div>
+</div>
+
+<h3>Remplacer uniquement la N-ième occurrence</h3>
+<div class="code-block">
+<div class="code-line"><code># Remplace seulement la 2ème occurrence de chaque ligne
+sed 's/foo/bar/2' fichier.txt</code></div>
+</div>
+
+<h2>Modifier le fichier directement</h2>
+<p>Pour enregistrer les modifications dans le fichier lui-même, utilisez l'option <code>-i</code> (in-place) :</p>
+<div class="code-block">
+<div class="code-line"><code># ATTENTION : modifie le fichier directement
+sed -i 's/ancien/nouveau/g' fichier.txt</code></div>
+</div>
+<p>Pour créer une sauvegarde avant modification, utilisez <code>-i.bak</code> :</p>
+<div class="code-block">
+<div class="code-line"><code># Crée fichier.txt.bak avant modification
+sed -i.bak 's/ancien/nouveau/g' fichier.txt</code></div>
+</div>
+
+<h2>Adresses et plage de lignes</h2>
+<p><code>sed</code> permet de n'appliquer une commande que sur certaines lignes :</p>
+
+<h3>Une ligne spécifique</h3>
+<div class="code-block">
+<div class="code-line"><code># Remplace seulement sur la ligne 5
+sed '5s/foo/bar/' fichier.txt</code></div>
+</div>
+
+<h3>Plage de lignes</h3>
+<div class="code-block">
+<div class="code-line"><code># Remplace de la ligne 10 à 20
+sed '10,20s/foo/bar/' fichier.txt</code></div>
+</div>
+
+<h3>Première et dernière ligne</h3>
+<div class="code-block">
+<div class="code-line"><code># Première ligne seulement
+sed '1s/foo/bar/' fichier.txt
+
+# Dernière ligne seulement
+sed '$s/foo/bar/' fichier.txt</code></div>
+</div>
+
+<h3>Modèles de lignes</h3>
+<div class="code-block">
+<div class="code-line"><code># Lignes contenant "erreur"
+sed '/erreur/s/foo/bar/' fichier.txt</code></div>
+</div>
+
+<h2>Supprimer des lignes</h2>
+<p>L'instruction <code>d</code> permet de supprimer des lignes :</p>
+<div class="code-block">
+<div class="code-line"><code># Supprimer la ligne 5
+sed '5d' fichier.txt
+
+# Supprimer les lignes 10 à 20
+sed '10,20d' fichier.txt
+
+# Supprimer les lignes vides
+sed '/^$/d' fichier.txt
+
+# Supprimer les lignes contenant "test"
+sed '/test/d' fichier.txt</code></div>
+</div>
+
+<h2>Regex : expressions régulières</h2>
+<p><code>sed</code> supporte les expressions régulières pour des remplacements puissants :</p>
+
+<h3>Caractères spéciaux</h3>
+<table>
+<tr><th>Regex</th><th>Signification</th></tr>
+<tr><td><code>.</code></td><td>N'importe quel caractère</td></tr>
+<tr><td><code>^</code></td><td>Début de ligne</td></tr>
+<tr><td><code>$</code></td><td>Fin de ligne</td></tr>
+<tr><td><code>[abc]</code></td><td>Un caractère parmi a, b ou c</td></tr>
+<tr><td><code>[0-9]</code></td><td>Un chiffre</td></tr>
+<tr><td><code>*</code></td><td>Zéro ou plusieurs occurrences</td></tr>
+<tr><td><code>\+</code></td><td>Une ou plusieurs occurrences</td></tr>
+</table>
+
+<h3>Exemples avec regex</h3>
+<div class="code-block">
+<div class="code-line"><code># Remplace les espaces multiples par un seul espace
+sed 's/  */ /g' fichier.txt
+
+# Supprime les espaces en fin de ligne
+sed 's/ *$//' fichier.txt
+
+# Ajoute "http://" au début des lignes sans protocole
+sed 's/^www\./http:\/\/www./' fichier.txt</code></div>
+</div>
+
+<h2>Groupes de capture</h2>
+<p>Les parenthèses capturent du texte pour le réutiliser :</p>
+<div class="code-block">
+<div class="code-line"><code># Capture et réutilise (syntaxe GNU sed)
+sed -E 's/(foo)/\1-bar/' fichier.txt
+
+# Inverse deux mots séparés par un tiret
+echo "Jean-Pierre" | sed -E 's/([A-Za-z]+)-([A-Za-z]+)/\2-\1/'</code></div>
+</div>
+<p><strong>Note :</strong> L'option <code>-E</code> active les regex étendues sur la plupart des systèmes.</p>
+
+<h2>Commandes multiples</h2>
+<p>Vous pouvez enchaîner plusieurs commandes avec <code>-e</code> :</p>
+<div class="code-block">
+<div class="code-line"><code># Enchaîne plusieurs substitutions
+sed -e 's/foo/bar/' -e 's/hello/world/' fichier.txt</code></div>
+</div>
+<p>Ou utiliser le point-virgule :</p>
+<div class="code-block">
+<div class="code-line"><code>sed 's/foo/bar/; s/hello/world/' fichier.txt</code></div>
+</div>
+
+<h2>Insertion et ajout</h2>
+<table>
+<tr><th>Commande</th><th>Action</th></tr>
+<tr><td><code>i\</code></td><td>Insérer avant la ligne</td></tr>
+<tr><td><code>a\</code></td><td>Ajouter après la ligne</td></tr>
+<tr><td><code>c\</code></td><td>Remplacer la ligne</td></tr>
+</table>
+<div class="code-block">
+<div class="code-line"><code># Insère "HEADER" avant la ligne 3
+sed '3i\HEADER' fichier.txt
+
+# Ajoute "FOOTER" après chaque ligne contenant "END"
+sed '/END/a\FOOTER' fichier.txt</code></div>
+</div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Modifier des configurations</h3>
+<div class="code-block">
+<div class="code-line"><code># Change le port dans un fichier de config
+sed -i 's/Port 22/Port 2222/' /etc/ssh/sshd_config
+
+# Active une ligne (décommente)
+sed -i 's/#ListenAddress/ListenAddress/' fichier.conf
+
+# Désactive une ligne (commente)
+sed -i 's/ListenAddress/#ListenAddress/' fichier.conf</code></div>
+</div>
+
+<h3>Nettoyer du texte</h3>
+<div class="code-block">
+<div class="code-line"><code># Supprime les lignes de commentaires
+sed '/^#/d' fichier.conf
+
+# Supprime les lignes vides
+sed '/^$/d' fichier.txt
+
+# Supprime les retours chariot Windows (^M)
+sed -i 's/\r$//' fichier.txt</code></div>
+</div>
+
+<h3>Rename massif de fichiers</h3>
+<div class="code-block">
+<div class="code-line"><code># Renomme tous les .txt en .md (via ls et sed)
+for f in *.txt; do
+    mv "$f" "$(echo $f | sed 's/.txt$/.md/')"
+done</code></div>
+</div>
+
+<h2>sed vs autres outils</h2>
+<table>
+<tr><th>Outil</th><th>Usage</th></tr>
+<tr><td><code>sed</code></td><td>Remplacement de texte, substitutions simples</td></tr>
+<tr><td><code>awk</code></td><td>Manipulation structurée, calcul, formatage</td></tr>
+<tr><td><code>tr</code></td><td>Traduire/remplacer des caractères individuels</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Testez toujours avec l'affichage standard avant d'utiliser <code>-i</code></li>
+<li>Utilisez <code>-i.bak</code> pour garder des sauvegardes</li>
+<li>Annoncez les regex complexes avec <code>-E</code> (regex étendues)</li>
+<li>Combinez avec <code>grep</code> pour traiter des lignes spécifiques</li>
+</ul>
+
+<h2>Exercice</h2>
+<p>Créez un fichier <code>liste.txt</code> avec plusieurs lignes contenant des adresses email. Utilisez <code>sed</code> pour :</p>
+<ol>
+<li>Remplacer "@domaine.com" par "@nouveau-domaine.com"</li>
+<li>Afficher seulement les lignes contenant "admin"</li>
+<li>Sauvegarder le résultat dans un nouveau fichier</li>
+</ol>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>sed 's/a/b/'</code></td><td>Remplace la première occurrence de a par b</td></tr>
+<tr><td><code>sed 's/a/b/g'</code></td><td>Remplace toutes les occurrences</td></tr>
+<tr><td><code>sed -i 's/a/b/'</code></td><td>Modifie le fichier directement</td></tr>
+<tr><td><code>sed '5s/a/b/'</code></td><td>Remplace seulement sur la ligne 5</td></tr>
+<tr><td><code>sed '/mot/d'</code></td><td>Supprime les lignes contenant "mot"</td></tr>
+<tr><td><code>sed -E 's/(a)/\1/'</code></td><td>Capture et réutilise</td></tr>
+</table>
+
+<p><code>sed</code> est un outil puissant pour automatiser les transformations de texte. Combiné avec des pipes, il devient un élément essentiel de votre boîte à outils Linux.</p>
+
+<nav>
+<a href="87-expr-calcul-evaluation.html">&larr; Leçon 87 : expr — Calcul et évaluation d'expressions</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
