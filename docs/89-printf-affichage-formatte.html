@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 89 : printf — Affichage formaté en Bash</h1>
+
+<h2>Qu'est-ce que printf ?</h2>
+<p><code>printf</code> est une commande qui permet d'afficher du texte formaté dans le terminal. Contrairement à <code>echo</code>, <code>printf</code> offre un contrôle précis sur le format d'affichage : nombres décimaux, zéros de remplissage, alignement, retour à la ligne, etc.</p>
+
+<p>Il fonctionne comme la fonction <code>printf()</code> du langage C, ce qui le rend très puissant pour les scripts Bash.</p>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block"><div class="code-line"><code>printf "format" [arguments...]</code></div></div>
+
+<p>Le <em>format</em> définit comment afficher les arguments. Les séquences les plus courantes :</p>
+
+<table>
+<tr><th>Séquence</th><th>Signification</th></tr>
+<tr><td><code>\n</code></td><td>Saut de ligne</td></tr>
+<tr><td><code>\t</code></td><td>Tabulation</td></tr>
+<tr><td><code>%s</code></td><td>Chaîne de caractères</td></tr>
+<tr><td><code>%d</code></td><td>Nombre entier (décimal)</td></tr>
+<tr><td><code>%f</code></td><td>Nombre à virgule flottante</td></tr>
+<tr><td><code>%02d</code></td><td>Entier sur 2 chiffres, avec zéros</td></tr>
+<tr><td><code>%-10s</code></td><td>Chaîne alignée à gauche sur 10 caractères</td></tr>
+<tr><td><code>%05.2f</code></td><td>Flottant sur 5 caractères, 2 décimales</td></tr>
+</table>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Affichage simple avec saut de ligne</h3>
+<div class="code-block"><div class="code-line"><code>printf "Bonjour le monde !\n"</code></div></div>
+<p>Contrairement à <code>echo</code>, <code>printf</code> n'ajoute pas de retour à la ligne automatique. Il faut le préciser avec <code>\n</code>.</p>
+
+<h3>2. Afficher des variables</h3>
+<div class="code-block"><div class="code-line"><code>nom="Alice"
+printf "Bienvenue, %s !\n" "$nom"</code></div></div>
+<p><strong>Résultat :</strong> <code>Bienvenue, Alice !</code></p>
+
+<h3>3. Formater des nombres</h3>
+<div class="code-block"><div class="code-line"><code>printf "Le résultat est : %d\n" 42
+printf "Pi vaut : %.4f\n" 3.14159265</code></div></div>
+<p><strong>Résultat :</strong></p>
+<div class="code-block"><div class="code-line"><code>Le résultat est : 42
+Pi vaut : 3.1416</code></div></div>
+
+<h3>4. Alignement et padding</h3>
+<div class="code-block"><div class="code-line"><code>printf "%-10s %05d\n" "Alice" 42
+printf "%-10s %05d\n" "Bob" 7</code></div></div>
+<p><strong>Résultat :</strong></p>
+<div class="code-block"><div class="code-line"><code>Alice      00042
+Bob        00007</code></div></div>
+<p><code>%-10s</code> = texte aligné à gauche sur 10 caractères. <code>%05d</code> = nombre sur 5 chiffres avec zéros de remplissage.</p>
+
+<h3>5. Tableau formaté</h3>
+<div class="code-block"><div class="code-line"><code>printf "%-15s %-10s %s\n" "Nom" "Statut" "Score"
+printf "%-15s %-10s %s\n" "Alice" "Actif" "1500"
+printf "%-15s %-10s %s\n" "Bob" "Inactif" "980"</code></div></div>
+<p>Idéal pour afficher des tableaux dans vos scripts.</p>
+
+<h2>Dans les scripts Bash</h2>
+<p><code>printf</code> est particulièrement utile dans les scripts pour créer des sorties formées et professionnelles.</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+
+nom=$1
+score=$2
+
+printf "══════════════════════════════\n"
+printf "  Rapport de l'utilisateur\n"
+printf "══════════════════════════════\n"
+printf "Nom    : %-20s\n" "$nom"
+printf "Score  : %05d points\n" "$score"
+printf "Date   : %s\n" "$(date '+%Y-%m-%d %H:%M:%S')"
+printf "══════════════════════════════\n"</code></div></div>
+
+<h2>Différence entre echo et printf</h2>
+
+<table>
+<tr><th>Caractéristique</th><th><code>echo</code></th><th><code>printf</code></th></tr>
+<tr><td>Retour à la ligne</td><td>Automatique</td><td>Manuel (\n)</td></tr>
+<tr><td>Formatage</td><td>Basique</td><td>Avancé et précis</td></tr>
+<tr><td>Nombres</td><td>Texte brut</td><td>Format décimal, flottant</td></tr>
+<tr><td>Portabilité</td><td>Moins portable</td><td>Très portable (style C)</td></tr>
+</table>
+
+<h2>Exercices pratiques</h2>
+
+<h3>Exercice 1</h3>
+<p>Utilisez <code>printf</code> pour afficher votre nom avec 20 caractères de large, aligné à droite.</p>
+
+<h3>Exercice 2</h3>
+<p>Créez un script qui affiche la date du jour au format <code>JJ/MM/AAAA</code> en utilisant <code>printf</code>.</p>
+
+<h3>Exercice 3</h3>
+<p>Affichez un tableau de 3 colonnes (Nom, Âge, Ville) avec 3 entrées, en alignant proprement les colonnes.</p>
+
+<h2>Résumé</h2>
+<ul>
+<li><code>printf</code> offre un contrôle précis du format d'affichage</li>
+<li>Les séquences comme <code>%s</code>, <code>%d</code>, <code>%f</code> remplacent les variables</li>
+<li><code>\n</code> est nécessaire pour le retour à la ligne</li>
+<li>Les options de padding (<code>%05d</code>, <code>%-10s</code>) permettent un alignement parfait</li>
+<li>Plus portable et puissant que <code>echo</code> pour les scripts professionnels</li>
+</ul>
+
+<nav>
+<a href="88-sed-manipulation-texte.html">&larr; Leçon 88 : sed — Transformer du texte à la volée</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
