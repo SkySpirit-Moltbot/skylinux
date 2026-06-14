@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 90 - comm — Comparer deux fichiers ligne par ligne</h1>
+
+<p>La commande <code>comm</code> permet de comparer deux fichiers texte ligne par ligne. Elle affiche le résultat en trois colonnes : les lignes présentes uniquement dans le premier fichier, celles présentes uniquement dans le second, et celles communes aux deux. C'est un outil précis et puissant pour analyser les différences entre fichiers.</p>
+
+<h2>Principe de fonctionnement</h2>
+
+<p> Contrairement à <code>diff</code> qui montre les modifications à effectuer pour rendre les fichiers identiques, <code>comm</code> effectue une comparaison triée ligne par ligne et organise le résultat en trois colonnes clairement séparées par des tabulations.</p>
+
+<p>Pour que <code>comm</code> fonctionne correctement, les deux fichiers <strong>doivent être triés</strong> au préalable. Si ce n'est pas le cas, vous pouvez utiliser l'option <code>--check-order</code> pour le détecter ou <code>--nocheck-order</code> pour ignorer ce requisito.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>comm [OPTIONS] FICHIER1 FICHIER2</code></div>
+</div>
+
+<h2>Les trois colonnes de sortie</h2>
+
+<ul>
+<li><strong>Colonne 1</strong> : lignes présentes uniquement dans <code>FICHIER1</code></li>
+<li><strong>Colonne 2</strong> : lignes présentes uniquement dans <code>FICHIER2</code></li>
+<li><strong>Colonne 3</strong> : lignes communes aux deux fichiers</li>
+</ul>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-1</code></td><td>Supprimer la colonne 1 (uniquement fichier 1)</td></tr>
+<tr><td><code>-2</code></td><td>Supprimer la colonne 2 (uniquement fichier 2)</td></tr>
+<tr><td><code>-3</code></td><td>Supprimer la colonne 3 (lignes communes)</td></tr>
+<tr><td><code>--check-order</code></td><td>Vérifier que les fichiers sont triés</td></tr>
+<tr><td><code>--nocheck-order</code></td><td>Ne pas vérifier l'ordre de tri</td></tr>
+<tr><td><code>--output-delimiter=STR</code></td><td>Utiliser STR comme séparateur de colonnes</td></tr>
+<tr><td><code>-z</code> / <code>--zero-terminated</code></td><td>Utiliser le caractère nul comme délimiteur de ligne</td></tr>
+</table>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Comparaison basique</h3>
+
+<p>Créons deux fichiers pour illustrer le fonctionnement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>echo -e "banane\npomme\nraisin" > fruits1.txt</code></div>
+<div class="code-line"><code>echo -e "banane\nfraise\npomme" > fruits2.txt</code></div>
+<div class="code-line"><code>comm fruits1.txt fruits2.txt</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># (colonne 1)	(colonne 2)	(colonne 3)</code></div>
+<div class="code-line"><code>			banane</code></div>
+<div class="code-line"><code>fraise</code></div>
+<div class="code-line"><code>pomme		pomme</code></div>
+<div class="code-line"><code>raisin</code></div>
+</div>
+
+<p>Ici, <code>banane</code> et <code>pomme</code> sont communes aux deux fichiers (colonne 3), <code>raisin</code> n'existe que dans <code>fruits1.txt</code> (colonne 1) et <code>fraise</code> n'existe que dans <code>fruits2.txt</code> (colonne 2).</p>
+
+<h3>2. Afficher uniquement les lignes communes</h3>
+
+<p>Pour ne voir que ce qui est partagé entre les deux fichiers, supprimez les colonnes 1 et 2 :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm -12 fruits1.txt fruits2.txt</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># banane</code></div>
+<div class="code-line"><code># pomme</code></div>
+</div>
+
+<h3>3. Trouver les différences uniquement</h3>
+
+<p>Pour visualiser ce qui diffère entre les deux fichiers (lignes uniques à chacun), supprimez la colonne 3 :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm -3 fruits1.txt fruits2.txt</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># raisin</code></div>
+<div class="code-line"><code># fraise</code></div>
+</div>
+
+<h3>4. Comparer des fichiers déjà triés</h3>
+
+<p>Si vos fichiers sont déjà triés alphabétiquement, <code>comm</code> fonctionne directement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm fichier_trié1.txt fichier_trié2.txt</code></div>
+</div>
+
+<h3>5. Comparer des fichiers non triés avec sort</h3>
+
+<p>Si vos fichiers ne sont pas triés, vous pouvez les trier à la volée avec un processus de substitution :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm <(sort fichier1.txt) <(sort fichier2.txt)</code></div>
+</div>
+
+<h2>Cas d'utilisation pratiques</h2>
+
+<h3>Comparer deux sorties de commande</h3>
+
+<p>Vous pouvez comparer directement la sortie de deux commandes grâce aux processus de substitution :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm <(ls /bin | sort) <(ls /usr/bin | sort)</code></div>
+</div>
+
+<p>Cela affiche les programmes présents uniquement dans <code>/bin</code>, ceux uniquement dans <code>/usr/bin</code>, et ceux présents dans les deux répertoires.</p>
+
+<h3>Trouver des utilisateurs uniques dans deux groupes</h3>
+
+<p>En combinant avec <code>getent</code> pour lister les utilisateurs de différents groupes :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm -23 <(getent group sudo | cut -d: -f4 | tr ',' '\n' | sort) \</code></div>
+<div class="code-line"><code>          <(getent group admin | cut -d: -f4 | tr ',' '\n' | sort)</code></div>
+</div>
+
+<p>Cette commande affiche les utilisateurs présents uniquement dans le groupe <code>sudo</code> mais pas dans le groupe <code>admin</code>.</p>
+
+<h3>Analyser un fichier de configuration modifié</h3>
+
+<p>Pour voir exactement ce qui a changé entre deux versions d'un fichier de configuration :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm -3 <(sort config.old) <(sort config.new)</code></div>
+</div>
+
+<p>Affiche chaque ligne qui diffère entre les deux versions, facilitant l'identification des modifications.</p>
+
+<h2>Format de sortie et séparateurs</h2>
+
+<p>Par défaut, <code>comm</code> utilise des tabulations pour séparer les colonnes. Vous pouvez personnaliser le séparateur avec l'option <code>--output-delimiter</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm --output-delimiter=" | " fichier1.txt fichier2.txt</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Toujours trier avant</strong> : <code>comm</code> suppose des fichiers triés. Des fichiers non triés produisent des résultats incompréhensibles.</li>
+<li><strong>Combiner avec sort</strong> : utilisez les processus de substitution <code>&lt;()</code> pour trier à la volée sans modifier les fichiers originaux.</li>
+<li><strong>Combiner les colonnes</strong> : les options <code>-1</code>, <code>-2</code> et <code>-3</code> peuvent se combiner pour ne garder que l'information qui vous intéresse.</li>
+<li><strong>Utiliser avec diff</strong> : <code>comm</code> montre les différences ligne par ligne, <code>diff</code> montre les modifications. Les deux sont complémentaires.</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>comm fichier1 fichier2</code></td><td>Comparaison complète en 3 colonnes</td></tr>
+<tr><td><code>comm -12 f1 f2</code></td><td>Lignes communes uniquement</td></tr>
+<tr><td><code>comm -3 f1 f2</code></td><td>Lignes différentes uniquement</td></tr>
+<tr><td><code>comm &lt;(sort f1) &lt;(sort f2)</code></td><td>Comparer des fichiers non triés</td></tr>
+</table>
+
+<p>La commande <code>comm</code> est un outil précis pour analyser les différences entre deux fichiers triés. Sa sortie en trois colonnes distinctes facilite l'identification rapide de ce qui est partagé ou propre à chaque fichier. Combinée avec <code>sort</code> et les processus de substitution, elle devient un outil très puissant pour comparer n'importe quels fichiers texte.</p>
+
+<nav>
+<a href="89-printf-affichage-formatte.html">&larr; Leçon 89 - printf — Affichage formaté en Bash</a>
+<a href="90-comm-comparer-fichiers.html">Leçon 90 - comm — Comparer deux fichiers &rarr;</a>
+</nav>
+</div>
+</body>
+</html>
