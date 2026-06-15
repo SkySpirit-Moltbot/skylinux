@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 91 — diff et patch — Comparer et appliquer des différences</h1>
+
+<h2>Qu'est-ce que diff et patch ?</h2>
+<p><code>diff</code> analyse deux fichiers et affiche les différences ligne par ligne. <code>patch</code> utilise le fichier de différences généré par <code>diff</code> pour reconstruire le fichier modifié à partir de l'original. Ce tandem est essentiel pour comparer des versions, appliquer des modifications et collaborer sur du code.</p>
+
+<h2>Syntaxe de base de diff</h2>
+<div class="code-block">
+<div class="code-line"><code>diff [OPTIONS] FICHIER1 FICHIER2</code></div>
+</div>
+
+<h2>Formats de sortie</h2>
+
+<h3>1. Format normal (par défaut)</h3>
+<p>Le format le plus simple, avec des symboles intuitifs :</p>
+<div class="code-block">
+<div class="code-line"><code>diff fichier_original.txt fichier_modifie.txt</code></div>
+</div>
+<table>
+<tr><th>Symbole</th><th>Signification</th></tr>
+<tr><td><code>&lt;</code></td><td>Ligne présente uniquement dans le premier fichier</td></tr>
+<tr><td><code>&gt;</code></td><td>Ligne présente uniquement dans le second fichier</td></tr>
+<tr><td><code>1c1</code></td><td>Ligne 1 du fichier 1 changée en ligne 1 du fichier 2</td></tr>
+<tr><td><code>3d2</code></td><td>Ligne 3 supprimée, il faudrait insérer ligne 2 après</td></tr>
+<tr><td><code>2a3</code></td><td>Ligne 2 ajoutée, correspond à la nouvelle ligne 3</td></tr>
+</table>
+
+<h3>2. Format unifié (le plus courant)</h3>
+<p>Le format recommandé pour la plupart des usages, avec le contexte visible :</p>
+<div class="code-block">
+<div class="code-line"><code>diff -u fichier_original.txt fichier_modifie.txt</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>--- fichier_original.txt	2026-06-15 10:00:00.000000000 +0200</code></div>
+<div class="code-line"><code>+++ fichier_modifie.txt	2026-06-15 10:05:00.000000000 +0200</code></div>
+<div class="code-line"><code>@@ -1,3 +1,4 @@</code></div>
+<div class="code-line"><code> ligneinchangée</code></div>
+<div class="code-line"><code>-ligne supprimée</code></div>
+<div class="code-line"><code>+nouvelle ligne ajoutée</code></div>
+<div class="code-line"><code> autre ligneinchangée</code></div>
+</div>
+
+<h3>3. Format side-by-side (côte à côte)</h3>
+<p>Pour une comparaison visuelle facilitée :</p>
+<div class="code-block">
+<div class="code-line"><code>diff -y fichier_original.txt fichier_modifie.txt</code></div>
+</div>
+<table>
+<tr><th>Symbole</th><th>Signification</th></tr>
+<tr><td><code>|</code></td><td>Ligne modifiée</td></tr>
+<tr><td><code>&lt;</code></td><td>Ligne uniquement dans le fichier de gauche</td></tr>
+<tr><td><code>&gt;</code></td><td>Ligne uniquement dans le fichier de droite</td></tr>
+</table>
+
+<h2>Options utiles de diff</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-u N</code></td><td>Afficher N lignes de contexte autour des modifications</td></tr>
+<tr><td><code>-r</code></td><td>Comparer les répertoires récursivement</td></tr>
+<tr><td><code>-i</code></td><td>Ignorer la casse (majuscules/minuscules)</td></tr>
+<tr><td><code>-w</code></td><td>Ignorer les espaces blancs</td></tr>
+<tr><td><code>-B</code></td><td>Ignorer les lignes vides</td></tr>
+<tr><td><code>-q</code></td><td>Afficher seulement si les fichiers diffèrent</td></tr>
+<tr><td><code>-s</code></td><td>Indiquer quand les fichiers sont identiques</td></tr>
+<tr><td><code>-N</code></td><td>Traiter les fichiers absents comme vides</td></tr>
+</table>
+
+<h2>Générer un fichier patch</h2>
+<p>Pour sauvegarder les différences dans un fichier (patch) :</p>
+<div class="code-block">
+<div class="code-line"><code>diff -u fichier_original.txt fichier_modifie.txt > modifications.patch</code></div>
+</div>
+<p>Pour comparer des répertoires entiers :</p>
+<div class="code-block">
+<div class="code-line"><code>diff -ruN repertoire_original/ repertoire_modifie/ > modifications.patch</code></div>
+</div>
+
+<h2>Appliquer un patch avec patch</h2>
+<p>La commande <code>patch</code> applique les modifications contenues dans un fichier patch :</p>
+<div class="code-block">
+<div class="code-line"><code>patch -p1 < modifications.patch</code></div>
+</div>
+<p>L'option <code>-p1</code> retire le premier niveau de répertoire des chemins du patch. Cela permet d'appliquer le patch depuis n'importe quel répertoire.</p>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Comparer deux fichiers texte</h3>
+<div class="code-block">
+<div class="code-line"><code># Fichier original</code></div>
+<div class="code-line"><code>echo -e "ligne 1\nligne 2\nligne 3" > original.txt</code></div>
+<div class="code-line"><code># Fichier modifié</code></div>
+<div class="code-line"><code>echo -e "ligne 1\nligne 2 modifié\nligne 3\nligne 4" > modifie.txt</code></div>
+<div class="code-line"><code># Comparer</code></div>
+<div class="code-line"><code>diff -u original.txt modifie.txt</code></div>
+</div>
+
+<h3>2. Générer un patch pour un projet</h3>
+<div class="code-block">
+<div class="code-line"><code># Depuis la racine du projet</code></div>
+<div class="code-line"><code>diff -ruN projet_v1/ projet_v2/ > corrections.patch</code></div>
+<div class="code-line"><code># Vérifier le contenu du patch</code></div>
+<div class="code-line"><code>cat corrections.patch</code></div>
+</div>
+
+<h3>3. Appliquer un patch</h3>
+<div class="code-block">
+<div class="code-line"><code># Depuis le répertoire contenant le projet</code></div>
+<div class="code-line"><code>patch -p1 < corrections.patch</code></div>
+<div class="code-line"><code># Vérifier que ça a fonctionné</code></div>
+<div class="code-line"><code>diff -rq projet_v1/ projet_v2/</code></div>
+</div>
+
+<h3>4. Annuler un patch (reverse)</h3>
+<p>Pour revenir en arrière et还原 le fichier original :</p>
+<div class="code-block">
+<div class="code-line"><code>patch -R < corrections.patch</code></div>
+</div>
+
+<h3>5. Comparer deux répertoires</h3>
+<div class="code-block">
+<div class="code-line"><code>diff -rq repertoire1/ repertoire2/</code></div>
+</div>
+<p>L'option <code>-q</code> affiche uniquement les fichiers qui diffèrent, sans le détail des modifications.</p>
+
+<h3>6. Ignorer les espaces et la casse</h3>
+<div class="code-block">
+<div class="code-line"><code>diff -uwB fichier1.txt fichier2.txt</code></div>
+</div>
+<p>Combine les options <code>-w</code> (espaces), <code>-u</code> (unifié) et <code>-B</code> (lignes vides) pour une comparaison plus souple.</p>
+
+<h2>Utiliser diff avec Git</h2>
+<p>Git utilise en interne un format similaire à <code>diff</code> pour afficher les modifications :</p>
+<div class="code-block">
+<div class="code-line"><code># Voir les modifications non commitées</code></div>
+<div class="code-line"><code>git diff</code></div>
+<div class="code-line"><code># Voir les modifications d'un fichier précis</code></div>
+<div class="code-line"><code>git diff -- fichier.txt</code></div>
+<div class="code-line"><code># Comparer avec une version antérieure</code></div>
+<div class="code-line"><code>git diff HEAD~3 -- fichier.txt</code></div>
+<div class="code-line"><code># Générer un patch à partir des modifications</code></div>
+<div class="code-line"><code>git diff > modifications.patch</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li><strong>Toujours utiliser le format unifié</strong> (<code>-u</code>) : plus lisible et standardisé</li>
+<li><strong>Inclure du contexte</strong> (<code>-u 3</code> ou plus) : facilite la compréhension des modifications</li>
+<li><strong>Vérifier avant d'appliquer</strong> : lisez le patch avant d'utiliser <code>patch</code></li>
+<li><strong>Sauvegarder</strong> : appliquez le patch sur une copie du projet d'abord</li>
+<li><strong>Utiliser <code>-N</code> pour les répertoires</code> : traite les fichiers absents comme vides, utile pour les nouveaux fichiers</li>
+<li><strong>Combiner avec git</strong> : Git facilite la gestion des patchs et l'historique</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>diff -u f1 f2</code></td><td>Comparer deux fichiers en format unifié</td></tr>
+<tr><td><code>diff -rq d1 d2</code></td><td>Comparer deux répertoires rapidement</td></tr>
+<tr><td><code>diff -ruN d1 d2 > patch.diff</code></td><td>Générer un patch pour un répertoire</td></tr>
+<tr><td><code>patch -p1 < patch.diff</code></td><td>Appliquer un patch</td></tr>
+<tr><td><code>patch -R < patch.diff</code></td><td>Annuler un patch</td></tr>
+</table>
+
+<p><code>diff</code> et <code>patch</code> forment un tandem puissant pour comparer des fichiers, suivre les modifications et partager des correctifs. Leur format unifié est devenu un standard dans le monde du développement logiciel.</p>
+
+<nav>
+<a href="90-comm-comparer-fichiers.html">&larr; Leçon 90 : comm — Comparer deux fichiers ligne par ligne</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
