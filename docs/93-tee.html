@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 93 — tee — Lire depuis l'entrée et écrire partout</h1>
+
+<h2>Qu'est-ce que tee ?</h2>
+<p><code>tee</code> est une commande qui lit les données depuis l'entrée standard (stdin) et les écrit simultanément dans un fichier ET vers la sortie standard (stdout). Son nom vient de la forme en "T" du tuyau de plomberie : les données rentrent d'un côté et sortent dans deux directions.</p>
+
+<h2>Pourquoi utiliser tee ?</h2>
+<ul>
+<li><strong>Voir la sortie tout en la sauvegardant</strong> : vous affiche le résultat dans le terminal ET l'enregistre dans un fichier</li>
+<li><strong>Pipeline transparent</strong> : permet d'inspecter des données qui transitent dans un pipe sans le perturber</li>
+<li><strong>Logs en temps réel</strong> : garder une trace de ce qui passe dans un管道 sans arrêter le flux</li>
+<li><strong>Écrire dans plusieurs fichiers</strong> : avec l'option <code>-a</code>, ajouter à plusieurs destinations</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block">
+<div class="code-line"><code>COMMANDE | tee [OPTIONS] FICHIER</code></div>
+</div>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Sauvegarder la sortie tout en l'affichant</h3>
+<div class="code-block">
+<div class="code-line"><code>echo "Bonjour le monde" | tee sortie.txt</code></div>
+<div class="code-line"><code># Affiche : Bonjour le monde</code></div>
+<div class="code-line"><code># ET écrit dans sortie.txt</code></div>
+<div class="code-line"><code>cat sortie.txt</code></div>
+<div class="code-line"><code># Affiche : Bonjour le monde</code></div>
+</div>
+
+<h3>2. Ajouter à un fichier (mode append) sans écraser</h3>
+<div class="code-block">
+<div class="code-line"><code>echo "Première ligne" | tee fichier.log</code></div>
+<div class="code-line"><code>echo "Deuxième ligne" | tee -a fichier.log</code></div>
+<div class="code-line"><code>cat fichier.log</code></div>
+<div class="code-line"><code># Première ligne</code></div>
+<div class="code-line"><code># Deuxième ligne</code></div>
+</div>
+
+<h3>3. Logger la sortie d'une commande longue</h3>
+<div class="code-block">
+<div class="code-line"><code>apt update 2>&1 | tee /var/log/mise-a-jour.log</code></div>
+<div class="code-line"><code># Vous voyez la progression ET le fichier est créé</code></div>
+</div>
+
+<h3>4. Inspecter un pipeline sans le casser</h3>
+<div class="code-block">
+<div class="code-line"><code># Voir ce qui circule entre deux commandes</code></div>
+<div class="code-line"><code>cat /etc/passwd | tee /dev/stderr | grep root</code></div>
+<div class="code-line"><code># Affiche le fichier entier (via /dev/stderr) ET filtre avec grep</code></div>
+</div>
+
+<h3>5. Écrire dans plusieurs fichiers à la fois</h3>
+<div class="code-block">
+<div class="code-line"><code>echo "Données sauvegardées" | tee fichier1.txt fichier2.txt fichier3.txt</code></div>
+<div class="code-line"><code># Écrit la même chose dans les 3 fichiers simultanément</code></div>
+</div>
+
+<h3>6. Tee dans un script Bash pour logger chaque étape</h3>
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code>LOG="/var/log/mon_script.log"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Démarrage du script" | tee -a "$LOG"</code></div>
+<div class="code-line"><code>echo "Traitement en cours..." | tee -a "$LOG"</code></div>
+<div class="code-line"><code>echo "Terminé avec succès" | tee -a "$LOG"</code></div>
+</div>
+
+<h3>7. Combiner tee avec sudo pour écrire dans un fichier protégé</h3>
+<div class="code-block">
+<div class="code-line"><code>echo "configuration=test" | sudo tee /etc/monapp.conf</code></div>
+<div class="code-line"><code># tee tourne en root, vous pouvez écrire dans /etc</code></div>
+</div>
+<p>Remarque : <code>| sudo tee</code> est souvent préféré à <code>sudo commande > fichier</code> car cela permet de visualiser la sortie ET d'écrire dans un fichier protégé.</p>
+
+<h2>Options principales</h2>
+<table>
+<tr><th>Option</th><th>Rôle</th></tr>
+<tr><td><code>-a, --append</code></td><td>Ajouter au fichier au lieu de l'écraser</td></tr>
+<tr><td><code>-i, --ignore-interrupts</code></td><td>Ignorer les signaux d'interruption (Ctrl+C)</td></tr>
+<tr><td><code>-p</code></td><td>Diagnostiquer les erreurs dans les tubes (pipe)</td></tr>
+<tr><td><code>--output-error[=MODE]</code></td><td>Comportement en cas d'erreur d'écriture (warn, exit, etc.)</td></tr>
+</table>
+
+<h2>Tee vs redirection classique</h2>
+<table>
+<tr><th>Méthode</th><th>Affichage terminal</th><th>Écriture fichier</th></tr>
+<tr><td><code>commande > fichier</code></td><td>❌ Non</td><td>✅ Oui (écrase)</td></tr>
+<tr><td><code>commande | tee fichier</code></td><td>✅ Oui</td><td>✅ Oui (écrase)</td></tr>
+<tr><td><code>commande >> fichier</code></td><td>❌ Non</td><td>✅ Oui (ajoute)</td></tr>
+<tr><td><code>commande | tee -a fichier</code></td><td>✅ Oui</td><td>✅ Oui (ajoute)</td></tr>
+</table>
+
+<h2>Cas d'usage pratiques</h2>
+
+<h3>Installer un logiciel en loguant tout</h3>
+<div class="code-block">
+<div class="code-line"><code>sudo apt install mon_logiciel 2>&1 | tee /var/log/install.log</code></div>
+<div class="code-line"><code># Vous voyez l'installation ET vous avez un log complet</code></div>
+</div>
+
+<h3>Créer un fichier avec des droits root via un pipeline</h3>
+<div class="code-block">
+<div class="code-line"><code>cat <<EOF | sudo tee /etc/sysctl.d/99-custom.conf</code></div>
+<div class="code-line"><code>net.ipv4.ip_forward=1</code></div>
+<div class="code-line"><code>net.core.somaxconn=1024</code></div>
+<div class="code-line"><code>EOF</code></div>
+</div>
+
+<h3>Dupliquer la sortie vers deux destinations</h3>
+<div class="code-block">
+<div class="code-line"><code>make 2>&1 | tee build.log | grep -E "(error|warning)"</code></div>
+<div class="code-line"><code>#tee capture tout dans build.log</code></div>
+<div class="code-line"><code>#grep filtre pour n'afficher que les erreurs/avertissements</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li><strong>Utilisez <code>-a</code> pour les logs</strong> : ajouter au lieu d'écraser permet de conserver l'historique</li>
+<li><strong>Combinez avec <code>2>&1</code></strong> pour capturer stdout ET stderr dans le même fichier</li>
+<li><strong>Pour les fichiers protégés</strong> : <code>| sudo tee</code> est plus sûr que <code>sudo sh -c 'commande > fichier'</code></li>
+<li><strong>Dans les scripts</strong> : <code>tee -a "$LOGFILE"</code> à chaque étape importante permet un débogage facile</li>
+<li><strong>Performance</strong> : <code>tee</code> ne ralentit pas le pipeline de manière significative pour des volumes normaux</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>cmd | tee fichier</code></td><td>Afficher ET sauvegarder la sortie</td></tr>
+<tr><td><code>cmd | tee -a fichier</code></td><td>Afficher ET ajouter au fichier</td></tr>
+<tr><td><code>cmd | tee f1 f2 f3</code></td><td>Afficher ET écrire dans plusieurs fichiers</td></tr>
+<tr><td><code>cmd | sudo tee fichier</code></td><td>Écrire dans un fichier protégé tout en affichant</td></tr>
+<tr><td><code>cmd 2>&1 | tee log.txt</code></td><td>Capturer stdout et stderr dans le log</td></tr>
+</table>
+
+<p><code>tee</code> est un outil simple mais puissant qui fait le pont entre l'affichage en temps réel et la sauvegarde sur disque. Il s'avère indispensable dans les scripts de déploiement, les logs de migration et tout管道 où vous souhaitez garder une trace de ce qui circule sans interrompre le flux de données.</p>
+
+<nav>
+<a href="92-nohup.html">&larr; Leçon 92 : nohup — Exécuter des commandes persistantes</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
