@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 95 — jq — Parser et manipuler du JSON en ligne de commande</h1>
+
+<h2>Qu'est-ce que jq ?</h2>
+<p><code>jq</code> est un processeur léger et flexible pour JSON en ligne de commande. Il permet de lire, filtrer, transformer et formater des données JSON directement dans le terminal, sans avoir besoin d'écrire un script dans un langage de programmation.</p>
+<p>JSON est omniprésent : APIs web, fichiers de configuration, logs structurés, output d'outils modernes. <code>jq</code> est devenu un outil indispensable pour tout administrateur ou développeur qui travaille avec ces données.</p>
+
+<h2>Installation</h2>
+<div class="code-block">
+<div class="code-line"><code># Ubuntu / Debian</code></div>
+<div class="code-line"><code>sudo apt install jq</code></div>
+<div class="code-line"><code># Fedora / RHEL / CentOS</code></div>
+<div class="code-line"><code>sudo dnf install jq</code></div>
+<div class="code-line"><code># Arch Linux</code></div>
+<div class="code-line"><code>sudo pacman -S jq</code></div>
+</div>
+<p>Vérifiez l'installation :</p>
+<div class="code-block">
+<div class="code-line"><code>jq --version</code></div>
+</div>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block">
+<div class="code-line"><code># Lire JSON depuis un fichier</code></div>
+<div class="code-line"><code>jq '.clé' fichier.json</code></div>
+<div class="code-line"><code># Lire depuis un pipe (très courant)</code></div>
+<div class="code-line"><code>curl -s https://api.exemple.com/data | jq '.'</code></div>
+<div class="code-line"><code># jq sans filtre affiche le JSON formaté</code></div>
+<div class="code-line"><code>cat donnees.json | jq</code></div>
+</div>
+
+<h2>Le filtre identity : <code>.</code></h2>
+<p>Le point <code>.</code> désigne le filtre identity qui retourne le document entier. Utilisé seul, il affiche le JSON joliment formaté.</p>
+<div class="code-block">
+<div class="code-line"><code>echo '{"nom": "Alice", "age": 30}' | jq .</code></div>
+</div>
+<p>Résultat :</p>
+<div class="code-block">
+<div class="code-line"><code>{
+code></div>
+<div class="code-line"><code>  "nom": "Alice",</code></div>
+<div class="code-line"><code>  "age": 30</code></div>
+<div class="code-line"><code>}</code></div>
+</div>
+
+<h2>Accéder aux propriétés d'un objet</h2>
+<p>Utilisez la notation pointée pour accéder aux clés d'un objet.</p>
+<div class="code-block">
+<div class="code-line"><code># Données de test</code></div>
+<div class="code-line"><code>echo '{"nom": "Bob", "email": "bob@exemple.com", "role": "admin"}' | jq '.nom'</code></div>
+</div>
+<p>Résultat :</p>
+<div class="code-block">
+<div class="code-line"><code>"Bob"</code></div>
+</div>
+
+<h3>Accéder à des propriétés imbriquées</h3>
+<div class="code-block">
+<div class="code-line"><code>echo '{"user": {"name": "Alice", "adress": {"city": "Genève"}}}}' | jq '.user.adress.city'</code></div>
+</div>
+<p>Résultat :</p>
+<div class="code-block">
+<div class="code-line"><code>"Genève"</code></div>
+</div>
+
+<h2>Accéder aux éléments d'un tableau</h2>
+<p>Les tableaux (arrays) s'indiquent avec <code>[]</code>. Chaque élément est accessible par son index (0-based).</p>
+<div class="code-block">
+<div class="code-line"><code>echo '["pomme", "banane", "cerise"]' | jq '.[0]'</code></div>
+</div>
+<p>Résultat :</p>
+<div class="code-block">
+<div class="code-line"><code>"pomme"</code></div>
+</div>
+
+<h3>Accéder à tous les éléments d'un tableau</h3>
+<div class="code-block">
+<div class="code-line"><code>echo '[1, 2, 3, 4, 5]' | jq '.[]'</code></div>
+</div>
+<p>Résultat :</p>
+<div class="code-block">
+<div class="code-line"><code>1</code></div>
+<div class="code-line"><code>2</code></div>
+<div class="code-line"><code>3</code></div>
+<div class="code-line"><code>4</code></div>
+<div class="code-line"><code>5</code></div>
+</div>
+
+<h3>Tranche de tableau</h3>
+<div class="code-block">
+<div class="code-line"><code>echo '[1, 2, 3, 4, 5]' | jq '.[1:3]'</code></div>
+</div>
+<p>Résultat : <code>[2, 3]</code> (éléments de l'index 1 à 3 exclus)</p>
+
+<h2>Exemples concrets avec des données réelles</h2>
+
+<h3>1. Parser la sortie d'une API</h3>
+<div class="code-block">
+<div class="code-line"><code># Requêter une API et extraire un champ</code></div>
+<div class="code-line"><code>curl -s https://api.github.com/users/octocat | jq '.name'</code></div>
+<div class="code-line"><code># Extraire plusieurs champs</code></div>
+<div class="code-line"><code>curl -s https://api.github.com/users/octocat | jq '{nom: .name, login: .login, followers: .followers}'</code></div>
+</div>
+
+<h3>2. Travailler avec un fichier JSON</h3>
+<div class="code-block">
+<div class="code-line"><code># fichier.json contient :</code></div>
+<div class="code-line"><code># {</code></div>
+<div class="code-line"><code>#   "employes": [</code></div>
+<div class="code-line"><code>#     {"nom": "Alice", "dept": "IT", "salaire": 75000},</code></div>
+<div class="code-line"><code>#     {"nom": "Bob", "dept": "RH", "salaire": 65000}</code></div>
+<div class="code-line"><code>#   ]</code></div>
+<div class="code-line"><code># }</code></div>
+<div class="code-line"><code># Extraire tous les noms</code></div>
+<div class="code-line"><code>jq '.employes[].nom' fichier.json</code></div>
+</div>
+
+<h3>3. Filtrer avec <code>select</code></h3>
+<p><code>select</code> permet de filtrer les éléments selon une condition.</p>
+<div class="code-block">
+<div class="code-line"><code>echo '{"employes": [{"nom": "Alice", "dept": "IT"}, {"nom": "Bob", "dept": "RH"}, {"nom": "Claire", "dept": "IT"}]}' | jq '.employes[] | select(.dept == "IT")'</code></div>
+</div>
+<p>Résultat : les objets des employés du département IT.</p>
+
+<h3>4. Compter et agréger</h3>
+<div class="code-block">
+<div class="code-line"><code># Compter le nombre d'éléments</code></div>
+<div class="code-line"><code>echo '{"employes": [1, 2, 3]}' | jq '.employes | length'</code></div>
+<div class="code-line"><code># Compter les clés d'un objet</code></div>
+<div class="code-line"><code>echo '{"a": 1, "b": 2}' | jq 'length'</code></div>
+<div class="code-line"><code># Additionner des valeurs</code></div>
+<div class="code-line"><code>echo '[10, 20, 30]' | jq 'add'</code></div>
+<div class="code-line"><code># Trouver le minimum / maximum</code></div>
+<div class="code-line"><code>echo '[3, 1, 4, 1, 5]' | jq 'min'</code></div>
+<div class="code-line"><code>echo '[3, 1, 4, 1, 5]' | jq 'max'</code></div>
+</div>
+
+<h2>Opérateurs utiles</h2>
+<table>
+<tr><th>Opérateur</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>+</code></td><td>Addition (nombres) ou concaténation (chaînes/tableaux)</td><td><code>'[1,2] + [3]'</code></td></tr>
+<tr><td><code>-</code></td><td>Soustraction</td><td><code>'[1,2,3] - [2]'</code></td></tr>
+<tr><td><code>|</code></td><td>Pipe : passer le résultat d'un filtre au suivant</td><td><code>'.employes[] | .nom'</code></td></tr>
+<tr><td><code>,</code></td><td>Multiple filters : appliquer plusieurs filtres</td><td><code>'.a, .b'</code></td></tr>
+<tr><td><code>?</code></td><td>Optionnel : ne pas échouer si la clé n'existe pas</td><td><code>'.champ?.optional'</code></td></tr>
+</table>
+
+<h2>Fonctions intégrées courantes</h2>
+<table>
+<tr><th>Fonction</th><th>Rôle</th></tr>
+<tr><td><code>keys</code></td><td>Lister les clés d'un objet</td></tr>
+<tr><td><code>values</code></td><td>Lister les valeurs d'un objet</td></tr>
+<tr><td><code>map(expr)</code></td><td>Appliquer une expression à chaque élément d'un tableau</td></tr>
+<tr><td><code>map_values(expr)</code></td><td>Appliquer une expression à chaque valeur d'un objet</td></tr>
+<tr><td><code>select(cond)</code></td><td>Filtrer selon une condition</td></tr>
+<tr><td><code>flatten</code></td><td>Aplatir les tableaux imbriqués</td></tr>
+<tr><td><code>unique</code></td><td>Retourner les éléments uniques</td></tr>
+<tr><td><code>sort</code></td><td>Trier un tableau</td></tr>
+<tr><td><code>reverse</code></td><td>Inverser l'ordre</td></tr>
+<tr><td><code>startswith(s)</code></td><td>Tester si une chaîne commence par s</td></tr>
+<tr><td><code>contains(s)</code></td><td>Tester si une valeur contient s</td></tr>
+<tr><td><code>split(c)</code></td><td>Découper une chaîne</td></tr>
+<tr><td><code>join(c)</code></td><td>Joindre un tableau de chaînes</td></tr>
+<tr><td><code>tonumber</code></td><td>Convertir en nombre</td></tr>
+<tr><td><code>tostring</code></td><td>Convertir en chaîne</td></tr>
+<tr><td><code>upcase / downcase</code></td><td>Mettre en majuscules / minuscules</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Transformer des données</h3>
+<div class="code-block">
+<div class="code-line"><code># Ajouter une clé dérivée</code></div>
+<div class="code-line"><code>echo '{"nom": "Alice", "age": 30}' | jq '. + {"majeur": (.age >= 18)}'</code></div>
+<div class="code-line"><code># Renommer une clé</code></div>
+<div class="code-line"><code>echo '{"name": "Bob"}' | jq '{(.name | @text): "Bob"}'</code></div>
+<div class="code-line"><code># Convertir en CSV (simplifié)</code></div>
+<div class="code-line"><code>echo '[{"nom": "Alice", "age": 30}, {"nom": "Bob", "age": 25}]' | jq -r '.[] | [.nom, .age] | @csv'</code></div>
+</div>
+
+<h3>Travailler avec des tableaux</h3>
+<div class="code-block">
+<div class="code-line"><code># Garder seulement les éléments qui satisfont une condition</code></div>
+<div class="code-line"><code>echo '[1, 2, 3, 4, 5, 6]' | jq 'map(select(. >= 3))'</code></div>
+<div class="code-line"><code># Appliquer une transformation à chaque élément</code></div>
+<div class="code-line"><code>echo '[1, 2, 3]' | jq 'map(. * 2)'</code></div>
+<div class="code-line"><code># Extraire une propriété de chaque élément</code></div>
+<div class="code-line"><code>echo '[{"nom": "Alice"}, {"nom": "Bob"}]' | jq 'map(.nom)'</code></div>
+</div>
+
+<h3>Travailler avec des chaînes</h3>
+<div class="code-block">
+<div class="code-line"><code># Concaténer</code></div>
+<div class="code-line"><code>echo '"Hello"' | jq '. + " World"'</code></div>
+<div class="code-line"><code># Mise en forme</code></div>
+<div class="code-line"><code>echo '"hello"' | jq 'upcase'</code></div>
+<div class="code-line"><code># Interpolation (équivalent f-string)</code></div>
+<div class="code-line"><code>echo '{"name": "Alice"}' | jq '"Bonjour \(.name) !"'</code></div>
+</div>
+
+<h2>Options utiles</h2>
+<table>
+<tr><th>Option</th><th>Rôle</th></tr>
+<tr><td><code>-r</code></td><td>Raw output : enlève les guillemets autour des chaînes</td></tr>
+<tr><td><code>-c</code></td><td>Compact : output sur une seule ligne (pas de formatage)</td></tr>
+<tr><td><code>-n</code></td><td>Null input : ne lit pas d'entrée, utile pour tester des expressions</td></tr>
+<tr><td><code>-f fichier</code></td><td>Lire le filtre depuis un fichier</td></tr>
+<tr><td><code>--arg k v</code></td><td>Passer une variable shell comme chaîne</td></tr>
+<tr><td><code>--argjson k v</code></td><td>Passer une variable shell comme valeur JSON</td></tr>
+</table>
+
+<h3>Exemple avec --arg</h3>
+<div class="code-block">
+<div class="code-line"><code># Utiliser une variable shell dans jq</code></div>
+<div class="code-line"><code>FILTRE="admin"</code></div>
+<div class="code-line"><code>cat users.json | jq --arg role "$FILTRE" '.users[] | select(.role == $role)'</code></div>
+</div>
+
+<h2>Combiner jq avec d'autres outils</h2>
+
+<h3>Avec curl et une API réelle</h3>
+<div class="code-block">
+<div class="code-line"><code># Récupérer la liste des conteneurs Docker au format JSON</code></div>
+<div class="code-line"><code>curl -s http://localhost:2375/containers/json | jq '.[].Names'</code></div>
+<div class="code-line"><code># Analyser des logs systemd au format JSON</code></div>
+<div class="code-line"><code>journalctl -o json | jq '.PRIORITY, .MESSAGE' | head -20</code></div>
+</div>
+
+<h3>Avec des fichiers de config</h3>
+<div class="code-block">
+<div class="code-line"><code># Vérifier une clé dans un config.json</code></div>
+<div class="code-line"><code>jq '.database.host' /etc/monapp/config.json</code></div>
+<div class="code-line"><code># Lister toutes les clés de premier niveau</code></div>
+<div class="code-line"><code>jq 'keys' /etc/monapp/config.json</code></div>
+</div>
+
+<h3>Avec grep et awk</h3>
+<div class="code-block">
+<div class="code-line"><code># Filtrer puis extraire un champ précis</code></div>
+<div class="code-line"><code>cat logs.json | jq -c '.[] | select(.niveau == "ERREUR")' | jq '.timestamp'</code></div>
+<div class="code-line"><code># Compter les occurrences</code></div>
+<div class="code-line"><code>cat events.json | jq '.type' | sort | uniq -c</code></div>
+</div>
+
+<h2>Mode interactif avec -n</h2>
+<p>Le mode <code>-n</code> (null input) permet de créer des données ou tester des expressions sans fichier d'entrée.</p>
+<div class="code-block">
+<div class="code-line"><code># Créer un objet</code></div>
+<div class="code-line"><code>jq -n '{nom: "Test", valeur: 42}'</code></div>
+<div class="code-line"><code># Générer une séquence</code></div>
+<div class="code-line"><code>jq -n 'range(5)'</code></div>
+<div class="code-line"><code># Calculer</code></div>
+<div class="code-line"><code>jq -n '10 + 5'</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li><strong>Toujours utiliser <code>-s</code> (slurp)</strong> si vous recevez un JSON par ligne et voulez le traiter comme un tableau : <code>curl -s api | jq -s '.'</code></li>
+<li><strong>Préférer <code>-r</code></strong> pour extraire des valeurs brutes quand le résultat est une chaîne ou un nombre simple</li>
+<li><strong>Vérifier le type</strong> avec <code>jq 'type'</code> pour调试 les erreurs de filtre</li>
+<li><strong>Utiliser des fichiers de filtre</strong> (<code>-f</code>) pour les filtres complexes réutilisables</li>
+<li><strong>Combiner avec <code>2>/dev/null</code></strong> pour supprimer les messages d'erreur de jq</li>
+</ul>
+
+<h2>Erreurs fréquentes</h2>
+<table>
+<tr><th>Erreur</th><th>Cause</th><th>Solution</th></tr>
+<tr><td><code>parse error: Unexpected...</code></td><td>Le JSON d'entrée est invalide</td><td>Vérifier le format avec <code>jq '.' fichier</code></td></tr>
+<tr><td><code>Cannot index array with string</code></td><td>Tentative d'accès à un champ sur un tableau</td><td>Utiliser <code>.[]</code> pour itérer</td></tr>
+<tr><td><code>Cannot iterate over null</code></td><td>La clé n'existe pas</td><td>Utiliser <code>.champ?</code> (optionnel)</td></tr>
+<tr><td><code>null</code> en sortie</td><td>Le filtre ne correspond à rien</td><td>Vérifier le chemin des données</td></tr>
+</table>
+
+<h2>Exemple complet : pipeline de traitement d'API</h2>
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Récupérer les 10 derniers commits d'un dépôt GitHub</code></div>
+<div class="code-line"><code>REPO="$1"</code></div>
+<div class="code-line"><code>curl -s "https://api.github.com/repos/$REPO/commits?per_page=10" | \</code></div>
+<div class="code-line"><code>  jq -r '.[] | "\(.commit.author.date | .[0:10]) - \(.commit.author.name) : \(.commit.message | split("\n")[0])"'</code></div>
+</div>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>jq '.' fichier.json</code></td><td>Afficher le JSON formaté</td></tr>
+<tr><td><code>jq '.clé' fichier.json</code></td><td>Extraire une propriété</td></tr>
+<tr><td><code>jq '.tableau[0]'</code></td><td>Extraire un élément de tableau</td></tr>
+<tr><td><code>jq '.[] | select(.x == 5)'</code></td><td>Filtrer avec condition</td></tr>
+<tr><td><code>jq -r '.clé' fichier.json</code></td><td>Output brut (sans guillemets)</td></tr>
+<tr><td><code>jq -c '.'</code></td><td>Output compact (une ligne)</td></tr>
+<tr><td><code>jq -s '.'</code></td><td>Slurp : lire tout en tableau</td></tr>
+<tr><td><code>jq --arg k v</code></td><td>Passer une variable shell</td></tr>
+<tr><td><code>jq 'keys'</code></td><td>Lister les clés d'un objet</td></tr>
+<tr><td><code>jq 'map(.x * 2)'</code></td><td>Transformer chaque élément</td></tr>
+</table>
+
+<p><code>jq</code> est l'outil de référence pour manipuler du JSON en ligne de commande. Que ce soit pour analyser des APIs, inspecter des fichiers de configuration au format JSON, ou traiter des logs structurés, il remplace avantageusement des combinations de <code>grep</code>, <code>awk</code> et <code>sed</code> pour tout ce qui touche au JSON.</p>
+
+<nav>
+<a href="94-at-taches-uniques.html">&larr; Leçon 94 : at</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
