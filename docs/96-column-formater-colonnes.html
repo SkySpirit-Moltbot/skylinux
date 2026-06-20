@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>column — Formater du texte en colonnes</h1>
+
+<h2>Introduction</h2>
+<p>La commande <code>column</code> est un outil puissant pour formater du texte en colonnes nettes et lisibles. Elle prend en entrée un texte tabulé ou délimité et le réorganise en colonnes bien alignées, comme un tableau.</p>
+<p>C'est particulièrement utile pour afficher des sorties de commandes comme <code>ls</code>, des fichiers CSV simples, ou toute donnée texte structurée.</p>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block">
+<div class="code-line"><code>column [OPTIONS] [FICHIER]</code></div>
+</div>
+
+<h2>Exemples fondamentaux</h2>
+
+<h3>1. Formater la sortie de ls</h3>
+<p>Quand vous listez des fichiers, la sortie peut être désordonnée. column l'organise :</p>
+<div class="code-block">
+<div class="code-line"><code>ls -l /etc | tail -n +2 | awk '{print $9, $5}' | column -t</code></div>
+</div>
+<p>Explication :</p>
+<ul>
+<li><code>ls -l</code> liste les fichiers avec détails</li>
+<li><code>awk '{print $9, $5}'</code> extrait le nom (colonne 9) et la taille (colonne 5)</li>
+<li><code>column -t</code> formate en colonnes alignées</li>
+</ul>
+
+<h3>2. Formater un fichier délimité par des tabs</h3>
+<div class="code-block">
+<div class="code-line"><code>cat fichier.txt | column -t</code></div>
+</div>
+
+<h3>3. Spécifier le séparateur</h3>
+<p>Par défaut, column utilise les tabs comme séparateurs. Pour un CSV (virgule) :</p>
+<div class="code-block">
+<div class="code-line"><code>column -t -s ',' fichier.csv</code></div>
+</div>
+<p>Le flag <code>-s</code> définit le séparateur de champs.</p>
+
+<h3>4. Spécifier les colonnes</h3>
+<p>Laisser column calculer automatiquement le nombre de colonnes :</p>
+<div class="code-block">
+<div class="code-line"><code>column -t -c 80 mon_fichier.txt</code></div>
+</div>
+<p>Le flag <code>-c</code> définit la largeur totale en caractères.</p>
+
+<h2>Options principales</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-t</code></td><td>Crée une table : détermine automatiquement le nombre de colonnes</td></tr>
+<tr><td><code>-s SEP</code></td><td>Spécifie le séparateur de colonnes (défaut : tab)</td></tr>
+<tr><td><code>-c N</code></td><td>Limite la sortie à N caractères de large</td></tr>
+<tr><td><code>-o SEP</code></td><td>Spécifie le séparateur de sortie entre colonnes</td></tr>
+<tr><td><code>-x</code></td><td>Remplit les colonnes horizontalement avant verticalement</td></tr>
+</table>
+
+<h2>Exemples pratiques détaillés</h2>
+
+<h3>Formater /etc/passwd</h3>
+<div class="code-block">
+<div class="code-line"><code>cat /etc/passwd | column -t -s ':'</code></div>
+</div>
+<p>Ceci affiche le fichier /etc/passwd avec les champs alignés par colonnes, en utilisant les deux-points comme séparateur.</p>
+
+<h3>Créer un tableau lisible depuis une sortie arbitraire</h3>
+<div class="code-block">
+<div class="code-line"><code>echo -e "Nom\tAge\tVille\nAlice\t30\tGenève\nBob\t25\tZurich" | column -t</code></div>
+</div>
+<p>Résultat :</p>
+<pre style="background:#111118;padding:15px;border-radius:8px;overflow-x:auto;">
+Nom    Age  Ville
+Alice  30   Genève
+Bob    25   Zurich
+</pre>
+
+<h3>Remplissage horizontal avec -x</h3>
+<div class="code-block">
+<div class="code-line"><code>seq 12 | column -x -t</code></div>
+</div>
+<p>Avec <code>-x</code>, les nombres sont d'abord remplis horizontalement (ligne par ligne), puis verticalement.</p>
+
+<h3>Utiliser un séparateur de sortie personnalisé</h3>
+<div class="code-block">
+<div class="code-line"><code>echo -e "a\tb\tc\n1\t2\t3" | column -t -o " | "</code></div>
+</div>
+<p>Les colonnes seront séparées par <code> | </code> au lieu d'espaces.</p>
+
+<h2>Combiner avec d'autres commandes</h2>
+
+<h3>Avec grep pour filtrer et formater</h3>
+<div class="code-block">
+<div class="code-line"><code>ps aux | grep python | column -t</code></div>
+</div>
+
+<h3>Avec find pour lister les fichiers</h3>
+<div class="code-block">
+<div class="code-line"><code>find . -type f -name "*.txt" -printf "%f\t%s\n" | column -t</code></div>
+</div>
+
+<h3>Avec df pour un affichage propre</h3>
+<div class="code-block">
+<div class="code-line"><code>df -h | tail -n +2 | awk '{print $1, $2, $5}' | column -t</code></div>
+</div>
+
+<h2>Formatage de fichiers CSV simples</h2>
+<p>Pour un fichier CSV avec des virgules comme séparateur :</p>
+<div class="code-block">
+<div class="code-line"><code>column -t -s ',' fichier.csv</code></div>
+</div>
+<p>Note : pour des CSV complexes avec des virgules dans les champs, utilisez plutôt <code>csvtool</code> ou <code>awk</code>.</p>
+
+<h2>Limites de column</h2>
+<ul>
+<li>Ne gère pas les données avec des séparateurs dans les champs (guillemets imbriqués)</li>
+<li>Le texte trop long est tronqué ou dépasse selon les cas</li>
+<li>Moins puissant que <code>awk</code> pour la transformation de données complexes</li>
+</ul>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Utilisez <code>-t</code> systématiquement pour obtenir un formatage en tableau</li>
+<li>Combinez avec <code>awk</code> pour préparer les données avant le formatage</li>
+<li>Pour des rapports plus complexes, pensez à <code>column</code> dans un script Bash avec redirection vers un fichier</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>column -t fichier</code></td><td>Formater en colonnes alignées</td></tr>
+<tr><td><code>column -t -s ',' fichier.csv</code></td><td>Formater un CSV avec virgule comme séparateur</td></tr>
+<tr><td><code>cat fichier | column -t</code></td><td>Formater depuis l'entrée standard</td></tr>
+<tr><td><code>column -x -t</code></td><td>Remplir horizontalement avant verticalement</td></tr>
+<tr><td><code>column -c 80</code></td><td>Limiter à 80 caractères de large</td></tr>
+</table>
+
+<p><code>column</code> est un outil simple mais efficace pour rendre n'importe quelle sortie texte lisible en quelques secondes. Ajoutez-le à votre boîte à outils pour formatter rapidement vos données !</p>
+
+<nav>
+<a href="95-jq-parser-json.html">&larr; jq — Parser et manipuler du JSON</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
