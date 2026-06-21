@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>97. hexdump et od — Affichez n'importe quel fichier en hexadécimal</h1>
+
+<p>Quand vous ouvrez un fichier binaire avec un éditeur de texte classique, vous ne voyez qu'un tas de caractères incompréhensibles. <code>hexdump</code> et <code>od</code> (octal dump) vous montrent exactement ce qu'il y a <em>réellement</em> dans le fichier — octet par octet. Indispensable pour comprendre les formats de fichiers, débugger, ou simplement curieux de voir ce qui se cache dans un fichier.</p>
+
+<h2>1. hexdump — Le visualiseur hexadécimal</h2>
+
+<h3>Installation</h3>
+<p><code>hexdump</code> fait partie du paquet <code>bsdmainutils</code> (souvent déjà installé). Sur certaines distributions, il s'appelle <code>hexdump</code> ou <code>hd</code>.</p>
+
+<div class="code-block"><div class="code-line"><code># Vérifier qu'il est disponible
+which hexdump
+# ou utiliser hd (alias de hexdump sur certain systèmes)
+which hd</code></div></div>
+
+<h3>Affichage basique</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher un fichier entier en hexadécimal
+hexdump -C monfichier.bin</code></div></div>
+
+<p>L'option <code>-C</code> est la plus lisible : elle montre l'adresse (offset) en hexadécimal, le contenu en hexadécimal (16 octets par ligne), et la représentation ASCII à droite.</p>
+
+<div class="code-block"><div class="code-line"><code># Exemple avec un fichier texte
+echo "Bonjour le monde !" > test.txt
+hexdump -C test.txt</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>00000000  42 6f 6e 6a 6f 75 72 20  6c 65 20 6d 6f 6e 64 65  |Bonjour le monde|
+00000010  20 21 0a                                       | !.|</code></div></div>
+
+<p>Vous voyez : chaque caractère a son code hexadécimal. <code>42</code> = B, <code>6f</code> = o, <code>0a</code> = newline (saut de ligne).</p>
+
+<h3>Options utiles</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-C</code></td><td>Format canonique : offset + hex + ASCII (le plus courant)</td></tr>
+<tr><td><code>-x</code></td><td>Afficher en mots de 2 octets (hexadécimal)</td></tr>
+<tr><td><code>-b</code></td><td>Afficher en octal (un octet par champ)</td></tr>
+<tr><td><code>-c</code></td><td>Afficher en caractères ASCII (avec interprétation)</td></tr>
+<tr><td><code>-n N</code></td><td>Limiter l'affichage aux N premiers octets</td></tr>
+<tr><td><code>-s N</code></td><td>Commencer l'affichage à l'offset N</td></tr>
+<tr><td><code>-v</code></td><td>Afficher <em>toutes</em> les lignes (sans remplacer les lignes identiques par *)</td></tr>
+</table>
+
+<h3>Exemples pratiques</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir les 32 premiers octets d'un fichier PNG (en-tête)
+hexdump -C image.png | head -5</code></div></div>
+
+<p>Un fichier PNG commence toujours par <code>89 50 4e 47</code> (soit \x89PNG en ASCII) — pratique pour identifier un type de fichier.</p>
+
+<div class="code-block"><div class="code-line"><code># Sauter les 16 premiers octets et afficher la suite
+hexdump -C -s 16 monfichier.bin | head -10</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Afficher seulement les 64 premiers octets
+hexdump -C -n 64 monfichier.bin</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Format caractère seul (comme strings mais avec codes)
+hexdump -C -n 100 /dev/urandom</code></div></div>
+
+<h2>2. od — Octal Dump (format original Unix)</h2>
+
+<p><code>od</code> est l'outil historique Unix pour visualiser des fichiers. Son nom signifie <em>octal dump</em>, mais il supporte aussi l'hexadécimal et d'autres formats.</p>
+
+<div class="code-block"><div class="code-line"><code># Format par défaut : octal (base 8)
+od test.txt</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>0000000 042111 06f156 075543 020152 066555 040040 066145 040412
+0000020 021012</code></div></div>
+
+<h3>Options principales</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-A x</code></td><td>Adresse en hexadécimal (au lieu de octal par défaut)</td></tr>
+<tr><td><code>-t x1</code></td><td>Type : hexadécimal, 1 octet</td></tr>
+<tr><td><code>-t x2</code></td><td>Type : hexadécimal, mots de 2 octets</td></tr>
+<tr><td><code>-t c</code></td><td>Caractères ASCII avec séquences d'échappement</td></tr>
+<tr><td><code>-t d1</code></td><td>Décimal, 1 octet par valeur</td></tr>
+<tr><td><code>-N N</code></td><td>Limiter aux N premiers octets</td></tr>
+<tr><td><code>-j N</code></td><td>Sauter les N premiers octets</td></tr>
+</table>
+
+<h3>Exemples pratiques</h3>
+
+<div class="code-block"><div class="code-line"><code># Format hexadécimal avec adresse hexadécimale (le plus lisible)
+od -A x -t x1z -v monfichier.bin</code></div></div>
+
+<p><code>-A x</code> = adresse en hexa, <code>-t x1z</code> = hexadécimal 1 octet + ASCII, <code>-v</code> = tout afficher.</p>
+
+<div class="code-block"><div class="code-line"><code># Voir les codes ASCII de caractères spéciaux
+echo -e "Tab:\tNouvelle ligne:\n" | od -A x -t x1z -c</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>00000000  54 61 62 3a 09 4e 6f 75 76 65 6c 6c 65 3a 0a        |Tab:.Nouvelle ligne:.|</code></div></div>
+
+<p>Ici <code>09</code> est la tabulation et <code>0a</code> est le newline.</p>
+
+<div class="code-block"><div class="code-line"><code># Combiner od avec un pipe pour analyser des données
+cat /proc/cpuinfo | od -A x -t x1z | head -10</code></div></div>
+
+<h2>3. Comparaison hexdump vs od</h2>
+
+<table>
+<tr><th>Critère</th><th>hexdump</th><th>od</th></tr>
+<tr><td>Portabilité</td><td>BSD/Linux (paquet bsdmainutils)</td><td>Tous les Unix (standard POSIX)</td></tr>
+<tr><td>Format par défaut</td><td>hexadécimal (avec -C)</td><td>octal</td></tr>
+<tr><td>Lisibilité</td><td>Plus lisible par défaut</td><td>Plus cryptique par défaut</td></tr>
+<tr><td>Option canonique</td><td><code>-C</code> (offset + hex + ASCII)</td><td><code>-A x -t x1z</code> (à mémoriser)</td></tr>
+<tr><td>Caractères affichés</td><td>ASCII uniquement</td><td>ASCII + séquences d'échappement</td></tr>
+</table>
+
+<p><strong>Recommandation :</strong> Utilisez <code>hexdump -C</code> pour une lecture rapide et lisible. Utilisez <code>od</code> quand vous avez besoin de formats spécifiques ou quand vous êtes sur un système sans <code>hexdump</code>.</p>
+
+<h2>4. Cas d'utilisation concrets</h2>
+
+<h3>Identifier un type de fichier</h3>
+
+<div class="code-block"><div class="code-line"><code># Vérifier les "magic bytes" d'un fichier
+hexdump -C monfichier | head -1</code></div></div>
+
+<p>Quelques signatures magiques courantes :</p>
+
+<table>
+<tr><th>Fichier</th><th>Signature (hex)</th><th>ASCII</th></tr>
+<tr><td>PNG</td><td><code>89 50 4e 47</code></td><td>\x89PNG</td></tr>
+<tr><td>JPEG</td><td><code>ff d8 ff</code></td><td>\xff\xd8\xff</td></tr>
+<tr><td>PDF</td><td><code>25 50 44 46</code></td><td>%PDF</td></tr>
+<tr><td>ZIP</td><td><code>50 4b 03 04</code></td><td>PK\x03\x04</td></tr>
+<tr><td>ELF (Linux)</td><td><code>7f 45 4c 46</code></td><td>\x7fELF</td></tr>
+</table>
+
+<h3>Analyser un fichier binaire inconnu</h3>
+
+<div class="code-block"><div class="code-line"><code># Première ligne : en-tête
+hexdump -C -n 16 fichier.bin</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Derniers octets : pied de page ou checksum
+hexdump -C -s -16 fichier.bin</code></div></div>
+
+<p>L'option <code>-s -16</code> signifie : partir de 16 octets avant la fin du fichier.</p>
+
+<h3>Comparer deux fichiers binaires</h3>
+
+<div class="code-block"><div class="code-line"><code># Extraire les différences entre deux fichiers
+diff <(hexdump -C fichier1.bin) <(hexdump -C fichier2.bin)</code></div></div>
+
+<h3>Vérifier l'intégrité d'un fichier après transfert</h3>
+
+<div class="code-block"><div class="code-line"><code># Comparer les premiers et derniers octets d'un fichier copié
+hexdump -C -n 16 fichier_copie.bin
+hexdump -C -s -16 fichier_copie.bin</code></div></div>
+
+<h2>5. Exercices pratiques</h2>
+
+<h3>Exercice 1 — Identifier un fichier mystery</h3>
+<p>Créez un fichier avec différents contenus et identifiez son type avec hexdump :</p>
+
+<div class="code-block"><div class="code-line"><code># Créer un fichier qui ressemble à un PNG
+printf '\x89PNG\r\n\x1a\n' > mystery.bin
+hexdump -C mystery.bin</code></div></div>
+
+<h3>Exercice 2 — Lire les premiers octets d'un exécutable</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir l'en-tête ELF d'un programme
+hexdump -C -n 64 /bin/ls</code></div></div>
+
+<h3>Exercice 3 — Analyser une image disque</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir le secteur de boot d'une clé USB (si vous avez les droits)
+# ATTENTION : ne faites pas ça sur un disque système !
+sudo hexdump -C -n 512 /dev/sdb | head -10</code></div></div>
+
+<h3>Exercice 4 — Comparer hexdump et od</h3>
+
+<div class="code-block"><div class="code-line"><code># Mêmes données, formats différents
+echo "Test 123" > demo.txt
+hexdump -C demo.txt
+od -A x -t x1z demo.txt</code></div></div>
+
+<h2>6. Astuces avancées</h2>
+
+<h3>Combiner avec grep pour rechercher des motifs</h3>
+
+<div class="code-block"><div class="code-line"><code># Rechercher une séquence hexadécimale dans un fichier
+# Par exemple, chercher "PDF" (50 44 46)
+hexdump -C fichier.bin | grep -i "50 44 46"</code></div></div>
+
+<h3>Extraire une portion précise</h3>
+
+<div class="code-block"><div class="code-line"><code># Extraire les octets 256 à 512 d'un fichier
+dd if=fichier.bin bs=1 skip=256 count=256 | hexdump -C</code></div></div>
+
+<h3>Créer un alias pratique</h3>
+
+<div class="code-block"><div class="code-line"><code># Ajouter dans ~/.bashrc pour un affichage par défaut plus lisible
+alias hdump='hexdump -C -v'</code></div></div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage principal</th></tr>
+<tr><td><code>hexdump -C fichier</code></td><td>Affichage hexadécimal canonique le plus courant</td></tr>
+<tr><td><code>hexdump -C -n 64 fichier</code></td><td>Limiter aux 64 premiers octets</td></tr>
+<tr><td><code>hexdump -C -s N fichier</code></td><td>Commencer à l'offset N</td></tr>
+<tr><td><code>od -A x -t x1z fichier</code></td><td>Format hex + ASCII avec od</td></tr>
+<tr><td><code>hexdump -C fichier | head</code></td><td>Voir seulement le début</td></tr>
+<tr><td><code>hexdump -C -s -N fichier</code></td><td>Voir les N derniers octets</td></tr>
+</table>
+
+<p><code>hexdump</code> et <code>od</code> sont vos yeux sur les fichiers binaires. Quand un fichier refuse de s'ouvrir ou que vous voulez comprendre pourquoi un programme lit mal des données, ces outils révèlent la vérité : ce qui est <em>vraiment</em> écrit sur le disque, octet par octet.</p>
+
+<nav>
+<a href="96-column-formater-colonnes.html">&larr; 96. column — Formater du texte en colonnes</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
