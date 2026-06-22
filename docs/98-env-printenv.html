@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>env et printenv — Explorer et manipuler les variables d'environnement</h1>
+
+<p>Linux utilise des <strong>variables d'environnement</strong> pour configurer le comportement du système et des applications. Les commandes <code>env</code> et <code>printenv</code> permettent de les afficher, tandis que <code>export</code> permet de les définir. Ce chapitre vous montre comment tirer pleinement parti de ces outils essentiels.</p>
+
+<h2>Afficher toutes les variables avec printenv</h2>
+
+<p>La commande <code>printenv</code> affiche toutes les variables d'environnement définies dans votre session courante.</p>
+
+<div class="code-block">
+<div class="code-line"><code>printenv | sort</code></div>
+</div>
+
+<p>Sans argument, <code>printenv</code> affiche l'ensemble de l'environnement. Le tri alphabétique rend la lecture plus confortable.</p>
+
+<h2>Afficher une variable précise</h2>
+
+<p>Pour visualiser une seule variable, précisez son nom en argument :</p>
+
+<div class="code-block">
+<div class="code-line"><code>printenv HOME</code></div>
+<div class="code-line"><code>printenv USER</code></div>
+<div class="code-line"><code>printenv PATH</code></div>
+</div>
+
+<p>Si la variable n'existe pas, aucune sortie n'est générée (pas d'erreur visible).</p>
+
+<h2>La commande env — Exécuter dans un environnement modifié</h2>
+
+<p>La commande <code>env</code> sans argument affiche également toutes les variables, mais elle brille surtout par sa capacité à <strong>lancer une commande dans un environnement personnalisé</strong>.</p>
+
+<h3>Afficher l'environnement complet</h3>
+
+<div class="code-block">
+<div class="code-line"><code>env | sort</code></div>
+</div>
+
+<h3>Lancer une commande avec un environnement vide</h3>
+
+<p>Utilisez <code>env -i</code> pour partir d'un environnement minimal (quasi vide) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>env -i /bin/bash -c 'echo "HOME=$HOME"'</code></div>
+</div>
+
+<p>Aucune variable n'est héritée — <code>HOME</code> est vide. Utile pour tester un programme dans un contexte propre.</p>
+
+<h3>Définir des variables pour une commande</h3>
+
+<p>Syntaxe : <code>env VAR=valeur commande</code></p>
+
+<div class="code-block">
+<div class="code-line"><code>env MA_VARIABLE="bonjour" printenv MA_VARIABLE</code></div>
+<div class="code-line"><code>env PATH="/opt/monprogramme:$PATH" mon_script.sh</code></div>
+</div>
+
+<h2>Définir des variables avec export</h2>
+
+<p>Pour créer ou modifier une variable d'environnement dans la session courante :</p>
+
+<div class="code-block">
+<div class="code-line"><code>export MA_VARIABLE="valeur"</code></div>
+<div class="code-line"><code>printenv MA_VARIABLE</code></div>
+</div>
+
+<p>Par défaut, les variables définies ainsi sont <strong>locales à la session shell</strong> et ne persistent pas après fermeture du terminal. Pour les rendre permanentes, ajoutez-les dans un fichier de configuration :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Dans ~/.bashrc ou ~/.profile
+export PATH="/opt/monprogramme/bin:$PATH"
+export EDITOR="nano"</code></div>
+</div>
+
+<h3>Exporter une variable existante</h3>
+
+<p>Si une variable est déjà définie (sans export), rendez-la accessible aux sous-processus :</p>
+
+<div class="code-block">
+<div class="code-line"><code>MA_VAR="test"
+export MA_VAR   # maintenant visible par les processus enfants</code></div>
+</div>
+
+<h2>Supprimer une variable</h2>
+
+<p>Utilisez <code>unset</code> pour supprimer une variable d'environnement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>unset MA_VARIABLE
+printenv MA_VARIABLE   # aucune sortie — la variable n'existe plus</code></div>
+</div>
+
+<h2>Variables d'environnement courantes</h2>
+
+<table>
+<tr><th>Variable</th><th>Rôle</th><th>Exemple</th></tr>
+<tr><td><code>HOME</code></td><td>Répertoire personnel de l'utilisateur</td><td><code>/home/david</code></td></tr>
+<tr><td><code>USER</code></td><td>Nom de l'utilisateur connecté</td><td><code>david</code></td></tr>
+<tr><td><code>PATH</code></td><td>Répertoires où chercher les exécutables</td><td><code>/usr/local/bin:/usr/bin:/bin</code></td></tr>
+<tr><td><code>SHELL</code></td><td>Shell par défaut</td><td><code>/bin/bash</code></td></tr>
+<tr><td><code>TERM</code></td><td>Type de terminal</td><td><code>xterm-256color</code></td></tr>
+<tr><td><code>PWD</code></td><td>Répertoire de travail courant</td><td><code>/home/david/projets</code></td></tr>
+<tr><td><code>LANG</code></td><td>Langue et encodage</td><td><code>fr_CH.UTF-8</code></td></tr>
+<tr><td><code>EDITOR</code></td><td>Éditeur de texte par défaut</td><td><code>nano</code></td></tr>
+<tr><td><code>VISUAL</code></td><td>Éditeur visuel (pour les programmes interactifs)</td><td><code>vim</code></td></tr>
+<tr><td><code>LOGNAME</code></td><td>Nom de connexion</td><td><code>david</code></td></tr>
+<tr><td><code>HOSTNAME</code></td><td>Nom de la machine</td><td><code>mon-serveur</code></td></tr>
+<tr><td><code>DISPLAY</code></td><td>Écran X11 utilisé</td><td><code>:0</code></td></tr>
+<tr><td><code>http_proxy</code></td><td>Proxy HTTP</td><td><code>http://proxy.local:8080</code></td></tr>
+</table>
+
+<h2>Modifier PATH — Ajouter des répertoires</h2>
+
+<p>La variable <code>PATH</code> détermine où le shell cherche les commandes. Pour ajouter un répertoire temporairement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter au début (priorité haute)
+export PATH="/opt/programmes/bin:$PATH"
+
+# Ajouter à la fin (priorité basse)
+export PATH="$PATH:/opt/programmes/bin"</code></div>
+</div>
+
+<p>Pour une modification permanente, ajoutez la ligne dans <code>~/.bashrc</code> (session interactive) ou <code>~/.profile</code> (session de connexion).</p>
+
+<h2>Différence entre env et printenv</h2>
+
+<table>
+<tr><th>Caractéristique</th><th><code>printenv</code></th><th><code>env</code></th></tr>
+<tr><td>Afficher toutes les variables</td><td>✅ Oui</td><td>✅ Oui</td></tr>
+<tr><td>Afficher une variable précise</td><td>✅ <code>printenv VAR</code></td><td>❌ Non (affiche toutes)</td></tr>
+<tr><td>Lancer commande avec env modifié</td><td>❌ Non</td><td>✅ <code>env VAR=valeur cmd</code></td></tr>
+<tr><td>Partir d'un env vide</td><td>❌ Non</td><td>✅ <code>env -i cmd</code></td></tr>
+<tr><td>Supprimer une variable</td><td>❌ Non</td><td>✅ <code>env -u VAR cmd</code></td></tr>
+</table>
+
+<h2>Cas d'usage pratiques</h2>
+
+<h3>1. Déboguer un script qui échoue silencieusement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier que les variables attendues sont bien définies
+env | grep -E '^(HOME|PATH|USER)='</code></div>
+</div>
+
+<h3>2. Exécuter un script avec un PATH limité</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sécurité : limiter la recherche de commandes
+env -i PATH=/usr/bin:/bin HOME="$HOME" /home/david/mon_script.sh</code></div>
+</div>
+
+<h3>3. Propager des variables à un service systemd</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Dans /etc/environment
+MA_BASE_URL="https://api.monsite.ch"
+API_KEY="secret123"</code></div>
+</div>
+
+<h3>4. Lancer un processus avec des credentials temporaires</h3>
+
+<div class="code-block">
+<div class="code-line"><code>env AWS_ACCESS_KEY_ID="..." AWS_SECRET_ACCESS_KEY="..." ./upload.sh</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Ne stockez jamais de secrets sensibles</strong> (mots de passe, clés API) dans des fichiers <code>.bashrc</code> versionnés sur Git.</li>
+<li>Utilisez des fichiers séparés ou des gestionnaires de secrets pour les credentials.</li>
+<li>Préférez les variables en <code>minuscules</code> pour vos variables personnelles afin d'éviter les collisions avec les variables système en <code>MAJUSCULES</code>.</li>
+<li>Testez toujours vos modifications dans un sous-shell avant de les rendre permanentes : <code>bash -c 'source ~/.bashrc; echo $MA_VARIABLE'</code></li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>printenv</code></td><td>Afficher toutes les variables (triées)</td></tr>
+<tr><td><code>printenv VAR</code></td><td>Afficher une variable précise</td></tr>
+<tr><td><code>env</code></td><td>Afficher l'environnement complet</td></tr>
+<tr><td><code>env VAR=valeur cmd</code></td><td>Exécuter une commande avec une variable modifiée</td></tr>
+<tr><td><code>env -i cmd</code></td><td>Exécuter avec un environnement vide</td></tr>
+<tr><td><code>env -u VAR cmd</code></td><td>Exécuter en supprimant une variable</td></tr>
+<tr><td><code>export VAR=valeur</code></td><td>Définir une variable dans la session courante</td></tr>
+<tr><td><code>unset VAR</code></td><td>Supprimer une variable</td></tr>
+</table>
+
+<nav>
+<a href="97-hexdump-od-fichiers-binaires.html">&larr; hexdump et od — Fichiers binaires</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
