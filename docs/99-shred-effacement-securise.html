@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.warning { background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); border-radius: 8px; padding: 12px 16px; margin: 15px 0; }
+.warning p { color: #ffa500; margin: 0; }
+.info { background: rgba(0,217,255,0.05); border-left: 3px solid #00d9ff; padding: 10px 15px; margin: 15px 0; }
+.info p { color: #aaa; margin: 0; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 99 : shred — L'effacement sécurisé de fichiers</h1>
+
+<p>Quand vous supprimez un fichier avec <code>rm</code>, les données restent physiquement sur le disque. N'importe qui avec un outil de récupération peut les retrouver. La commande <code>shred</code> écrase le contenu du fichier plusieurs fois avant de le supprimer, rendant les données quasi irrattrapables.</p>
+
+<h2>Principe fondamental</h2>
+
+<p><code>shred</code> fonctionne en écriture sur les données existantes du fichier. Il remplit le fichier avec des motifs de données aléatoires ou spécifiques, et répète cette opération plusieurs fois (par défaut 3 passes). C'est ce qu'on appelle le <strong>nettoyage sécurisé</strong> ou <em>secure wiping</em>.</p>
+
+<h2>Utilisation de base</h2>
+
+<h3>Effacement simple</h3>
+<div class="code-block"><div class="code-line"><code>shred monfichier.txt</code></div></div>
+
+<p>Cela effectue 3 passes d'écrasement puis supprime le fichier.</p>
+
+<h3>Spécifier le nombre de passes</h3>
+<div class="code-block"><div class="code-line"><code>shred -n 7 monfichier.txt</code></div></div>
+
+<p>Ici, 7 passes d'écrasement sont effectuées. Plus il y a de passes, plus l'effacement est sécurisé — mais c'est aussi plus long.</p>
+
+<h3>Voir la progression</h3>
+<div class="code-block"><div class="code-line"><code>shred -v monfichier.txt</code></div></div>
+
+<p>L'option <code>-v</code> (verbose) affiche chaque passe effectuée.</p>
+
+<h3>Effacer et supprimer</h3>
+<div class="code-block"><div class="code-line"><code>shred -u monfichier.txt</code></div></div>
+
+<p>L'option <code>-u</code> efface le fichier puis le supprime. C'est l'utilisation la plus courante.</p>
+
+<h3>Combiner les options les plus utiles</h3>
+<div class="code-block"><div class="code-line"><code>shred -n 25 -vu monfichier.txt</code></div></div>
+
+<p>25 passes, mode verbeux, puis suppression.</p>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n N</code></td><td>Nombre de passes (défaut : 3)</td></tr>
+<tr><td><code>-u</code></td><td>Supprime le fichier après l'effacement</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux (affiche la progression)</td></tr>
+<tr><td><code>-z</code></td><td>Ajoute une passe finale avec des zéros (pour masquer l'effacement)</td></tr>
+<tr><td><code>-f</code></td><td>Force l'effacement même si le fichier est en lecture seule</td></tr>
+<tr><td><code>-s N</code></td><td>Limite la taille à N octets (utile pour les fichiers spéciaux)</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Effacer un document sensible</h3>
+<div class="code-block"><div class="code-line"><code>shred -n 10 -vu ~/.ssh/id_rsa</code></div></div>
+
+<h3>Effacer plusieurs fichiers d'un coup</h3>
+<div class="code-block"><div class="code-line"><code>shred -n 5 -vu fichier1.txt fichier2.txt fichier3.txt</code></div></div>
+
+<h3>Effacer un disque ou une partition (DANGEREUX)</h3>
+<div class="code-block"><div class="code-line"><code>shred -n 3 -v /dev/sdb1</code></div></div>
+
+<div class="warning">
+<p><strong>⚠ Attention :</strong> Effacer une partition ou un disque est irréversible. Vérifiez thrice la cible avant d'exécuter cette commande !</p>
+</div>
+
+<h3>Masquer l'effacement avec des zéros</h3>
+<div class="code-block"><div class="code-line"><code>shred -n 7 -z -u fichier_confidentiel.txt</code></div></div>
+
+<p>La dernière passe avec des zéros rend l'effacement moins visible — comme si le fichier contenait des données normales.</p>
+
+<h2>Limites et pièges</h2>
+
+<h3>Les systèmes de fichiers modernes</h3>
+<div class="info">
+<p><strong>ℹ À savoir :</strong> Sur les systèmes avec journalisation (ext4, btrfs, XFS), les métadonnées peuvent créer des copies des données. <code>shred</code> ne peut pas garantir un effacement complet sur ces systèmes.</p>
+</div>
+
+<h3>SSD et TRIM</h3>
+<p>Les SSD utilisent une technique appelée <em>wear leveling</em> qui déplace les données physiquement. <code>shred</code> ne peut pas garantir l'effacement de toutes les cellules mémoire sur un SSD. Pour un effacement sécurisé sur SSD, utilisez plutôt les outils fournis par le fabricant (comme <code>hdparm</code> ou le secure erase du firmware).</p>
+
+<h3>Les fichiers copiés</h3>
+<p>Si vous avez copié un fichier avec <code>cp</code>, <code>shred</code> ne pourra pas effacer l'original à travers la copie. Effacez chaque copie séparément.</p>
+
+<h3>Les snapshots et backups</h3>
+<p>Si votre système fait des snapshots (comme avec LVM ou Btrfs), les données peuvent persister dans ces snapshots même après l'effacement.</p>
+
+<h2>Alternative : shred dans un tube</h2>
+
+<p>Vous pouvez aussi utiliser <code>shred</code> avec des données venues d'un tube :</p>
+
+<div class="code-block"><div class="code-line"><code>cat /dev/urandom | shred -n 5 -s 1M - > fichier_blindee.txt && shred -u fichier_blindee.txt</code></div></div>
+
+<h2>Récapitulatif</h2>
+
+<table>
+<tr><th>Commande</th><th>Effet</th></tr>
+<tr><td><code>shred fichier</code></td><td>3 passes, fichier non supprimé</td></tr>
+<tr><td><code>shred -u fichier</code></td><td>3 passes + suppression</td></tr>
+<tr><td><code>shred -n 25 -zu fichier</code></td><td>25 passes + zéros + suppression</td></tr>
+<tr><td><code>shred -vf fichier</code></td><td>3 passes, verbeux, forcé (fichiers protégés)</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez toujours <code>-u</code> si vous voulez que le fichier soit supprimé à la fin</li>
+<li>Pour les fichiers vraiment sensibles, utilisez au moins 7 passes</li>
+<li>Sur SSD, préférez les outils de secure erase du firmware</li>
+<li>Attention aux systèmes de fichiers journalisés — <code>shred</code> ne garantit pas un effacement à 100% dans tous les cas</li>
+<li>Sur un disque dur mécanique classique, 3 à 7 passes suffisent pour la plupart des usages</li>
+</ul>
+
+<p><code>shred</code> est un outil puissant pour protéger vos données sensibles avant suppression. Mais souvenez-vous : sur les systèmes modernes avec SSD et journalisation, ses garanties sont limitées. Pour un effacement vraiment sécurisé, des solutions matérielles ou de chiffrement complet du disque restent les options les plus fiables.</p>
+
+<nav>
+<a href="98-env-printenv.html">&larr; env et printenv — Variables d'environnement</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
