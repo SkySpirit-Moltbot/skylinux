@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 100 — make install : Compiler et installer depuis les sources</h1>
+
+<h2>📦 Introduction</h2>
+<p>
+Sous Linux, la plupart des logiciels sont disponibles via le gestionnaire de paquets de votre distribution
+(<code>apt</code>, <code>dnf</code>, <code>pacman</code>…). Mais parfois, le logiciel dont vous avez besoin
+n'est pas dans les dépôts, ou la version proposée est trop ancienne. Il faut alors compiler et installer
+depuis les sources.
+</p>
+<p>
+Cette leçon vous guide pas à pas : téléchargement des sources, compilation avec <code>make</code>,
+et installation propre sur votre système.
+</p>
+
+<h2>🔍 Prérequis</h2>
+<p>
+Avant de compiler, installez les outils essentiels :
+</p>
+<div class="code-block">
+<div class="code-line"><code># Debian / Ubuntu</code></div>
+<div class="code-line"><code>sudo apt install build-essential</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Fedora / RHEL / CentOS</code></div>
+<div class="code-line"><code>sudo dnf groupinstall "Development Tools"</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Arch Linux</code></div>
+<div class="code-line"><code>sudo pacman -S base-devel</code></div>
+</div>
+<p>
+Ces paquets fournissent <code>gcc</code> (compilateur C), <code>make</code>, et d'autres outils indispensables.
+</p>
+
+<h2>📥 Étape 1 — Télécharger les sources</h2>
+<p>
+Récupérez l'archive du logiciel. Elle se trouve généralement sur le site officiel ou un dépôt Git.
+Formats courants : <code>.tar.gz</code>, <code>.tar.xz</code>, <code>.zip</code>.
+</p>
+<div class="code-block">
+<div class="code-line"><code># Exemple : télécharger htop</code></div>
+<div class="code-line"><code>wget https://github.com/htop-dev/htop/releases/download/3.2.2/htop-3.2.2.tar.xz</code></div>
+</div>
+
+<h2>📂 Étape 2 — Extraire l'archive</h2>
+<div class="code-block">
+<div class="code-line"><code>tar -xvf htop-3.2.2.tar.xz</code></div>
+<div class="code-line"><code>cd htop-3.2.2</code></div>
+</div>
+
+<h2>⚙️ Étape 3 — Configurer le projet</h2>
+<p>
+La plupart des logiciels utilisent <code>configure</code> ou <code>cmake</code> pour détecter votre système
+et préparer la compilation.
+</p>
+<h3>Avec configure (projets plus anciens)</h3>
+<div class="code-block">
+<div class="code-line"><code>./configure</code></div>
+</div>
+<p>
+Vous pouvez ajouter des options pour personnaliser l'installation :
+</p>
+<ul>
+<li><code>--prefix=/usr/local</code> — où installer (défaut : <code>/usr/local</code>)</li>
+<li><code>--disable-dependency-tracking</code> — accélère la compilation</li>
+<li><code>--prefix=$HOME/.local</code> — installer dans votre dossier personnel</li>
+</ul>
+<div class="code-block">
+<div class="code-line"><code>./configure --prefix=$HOME/.local</code></div>
+</div>
+<h3>Avec cmake (projets modernes)</h3>
+<div class="code-block">
+<div class="code-line"><code>mkdir build && cd build</code></div>
+<div class="code-line"><code>cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/.local</code></div>
+</div>
+
+<h2>🔨 Étape 4 — Compiler</h2>
+<div class="code-block">
+<div class="code-line"><code>make</code></div>
+</div>
+<p>
+Cette étape transforme le code source en exécutables. Selon la taille du projet, cela peut prendre
+de quelques secondes à plusieurs minutes.
+</p>
+<p>
+Pour utiliser plusieurs cœurs (accélérer la compilation) :
+</p>
+<div class="code-block">
+<div class="code-line"><code>make -j$(nproc)</code></div>
+</div>
+
+<h2>📦 Étape 5 — Installer</h2>
+<div class="code-block">
+<div class="code-line"><code>sudo make install</code></div>
+</div>
+<p>
+Les fichiers sont copiés dans <code>--prefix</code>. Par défaut, les exécutables vont dans
+<code>/usr/local/bin</code>, accessible à tout le système.
+</p>
+
+<h2>🧹 Désinstaller proprement</h2>
+<p>
+Si le développeur a prévu un cible <code>uninstall</code> :
+</p>
+<div class="code-block">
+<div class="code-line"><code>sudo make uninstall</code></div>
+</div>
+<p>
+Sinon, la seule solution est de supprimer manuellement les fichiers installés.
+C'est pourquoi utiliser <code>--prefix=$HOME/.local</code> est recommandé : vous pouvez
+tout supprimer d'un seul <code>rm -rf ~/.local</code>.
+</p>
+<p>
+Autre alternative propre : utiliser <code>checkinstall</code> (Debian/Ubuntu) pour créer
+un paquet .deb et le désinstaller via le gestionnaire :
+</p>
+<div class="code-block">
+<div class="code-line"><code>sudo apt install checkinstall</code></div>
+<div class="code-line"><code>sudo checkinstall make install</code></div>
+</div>
+
+<h2>📋 Récapitulatif</h2>
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>./configure</code></td><td>Détecte l'environnement et prépare la compilation</td></tr>
+<tr><td><code>./configure --prefix=...</code></td><td>Personnalise le répertoire d'installation</td></tr>
+<tr><td><code>make</code></td><td>Compile le code source</td></tr>
+<tr><td><code>make -j$(nproc)</code></td><td>Compile en parallèle sur tous les cœurs</td></tr>
+<tr><td><code>make install</code></td><td>Installe les fichiers compilés</td></tr>
+<tr><td><code>make uninstall</code></td><td>Désinstalle (si prévu par le projet)</td></tr>
+</table>
+
+<h2>🗂️ Résumé des emplacements</h2>
+<table>
+<tr><th>Préfixe</th><th>Emplacement des exécutables</th><th>Notes</th></tr>
+<tr><td><code>/usr/local</code> (défaut)</td><td><code>/usr/local/bin</code></td><td> Système, nécessite sudo</td></tr>
+<tr><td><code>$HOME/.local</code></td><td><code>$HOME/.local/bin</code></td><td> Utilisateur, sans sudo</td></tr>
+<tr><td><code>/opt/monlogiciel</code></td><td><code>/opt/monlogiciel/bin</code></td><td> Applications autonomes</td></tr>
+</table>
+
+<h2>⚠️ Bonnes pratiques</h2>
+<ul>
+<li>**Toujours lire le fichier README ou INSTALL** — chaque projet peut avoir des spécificités</li>
+<li>**Vérifier les dépendances** — configure les listera souvent en cas d'absence</li>
+<li>**Utiliser checkinstall** — pour une désinstallation propre via le gestionnaire de paquets</li>
+<li>**Préférer --prefix=$HOME/.local** — pour les logiciels personnels, sans droits root</li>
+<li>**Compiler depuis un dossier secondaire avec cmake** — garde les sources propres</li>
+</ul>
+
+<h2>💡 Exemple concret : installer neofetch depuis les sources</h2>
+<div class="code-block">
+<div class="code-line"><code>git clone https://github.com/dylanaraps/neofetch.git</code></div>
+<div class="code-line"><code>cd neofetch</code></div>
+<div class="code-line"><code>make</code></div>
+<div class="code-line"><code>sudo make install</code></div>
+</div>
+
+<nav>
+<a href="99-shred-effacement-securise.html">&larr; Leçon 99 — shred</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
