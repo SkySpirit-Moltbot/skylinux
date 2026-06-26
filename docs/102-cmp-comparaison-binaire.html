@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>cmp — Comparaison binaire de fichiers octet par octet</h1>
+
+<p>La commande <code>cmp</code> est l'outil de comparaison de fichiers le plus fondamental sous Linux. Là où <code>diff</code> analyse le contenu textuel, <code>cmp</code> compare les fichiers octet par octet — sans se soucier du format. C'est l'outil idéal pour vérifier si deux fichiers sont strictement identiques, ou pour localiser la première différence entre deux fichiers binaires.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block"><div class="code-line"><code>cmp [OPTIONS] fichier1 fichier2</code></div></div>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-c</code></td><td>Affiche les octets qui diffèrent, en format texte (imprime le caractère)</td></tr>
+<tr><td><code>-l</code></td><td>Affiche tous les numéros d'octets et leurs valeurs qui diffèrent</td></tr>
+<tr><td><code>-i N</code></td><td>Ignore les N premiers octets de chaque fichier</td></tr>
+<tr><td><code>-i N:M</code></td><td>Ignore N octets dans fichier1 et M octets dans fichier2</td></tr>
+<tr><td><code>-n N</code></td><td>Ne compare que les N premiers octets</td></tr>
+<tr><td><code>-s</code></td><td>Mode silencieux : aucun affichage, code de retour seulement</td></tr>
+</table>
+
+<h2>Codes de retour</h2>
+
+<table>
+<tr><th>Code</th><th>Signification</th></tr>
+<tr><td><code>0</code></td><td>Les fichiers sont identiques</td></tr>
+<tr><td><code>1</code></td><td>Les fichiers diffèrent</td></tr>
+<tr><td><code>2</code></td><td>Erreur (fichier introuvable, permission refusée…)</td></tr>
+</table>
+
+<h2>Exemples concrets</h2>
+
+<h3>Vérifier si deux fichiers sont identiques</h3>
+
+<div class="code-block"><div class="code-line"><code>cmp fichier1.txt fichier2.txt</code></div></div>
+
+<p>Si les fichiers sont identiques, <code>cmp</code> ne renvoie rien (sortie silencieuse). Si des différences existent, la première est affichée :</p>
+
+<div class="code-block"><div class="code-line"><code>fichier1.txt fichier2.txt differ: byte 10, line 1</code></div></div>
+
+<h3>Mode silencieux avec code de retour</h3>
+
+<p>Utile dans les scripts pour tester l'égalité de fichiers :</p>
+
+<div class="code-block"><div class="code-line"><code>if cmp -s fichier1.txt fichier2.txt; then
+    echo "Les fichiers sont identiques"
+else
+    echo "Les fichiers diffèrent"
+fi</code></div></div>
+
+<h3>Lister toutes les différences avec -l</h3>
+
+<div class="code-block"><div class="code-line"><code>cmp -l fichier1.bin fichier2.bin</code></div></div>
+
+<p>Chaque ligne affiche : numéro d'octet, valeur octale dans fichier1, valeur octale dans fichier2.</p>
+
+<div class="code-block"><div class="code-line"><code>10 101 141
+11 102 142
+12 103 143</code></div></div>
+
+<h3>Ignorer les premiers octets</h3>
+
+<p>Pratique pour comparer des fichiers qui partagent un en-tête commun :</p>
+
+<div class="code-block"><div class="code-line"><code># Ignore les 64 premiers octets (en-tête) et compare le reste
+cmp -i 64 fichier1.bin fichier2.bin</code></div></div>
+
+<h3>Comparer seulement les N premiers octets</h3>
+
+<div class="code-block"><div class="code-line"><code># Compare uniquement les 128 premiers octets
+cmp -n 128 fichier1.bin fichier2.bin</code></div></div>
+
+<h3>Voir le caractère qui diffère avec -c</h3>
+
+<div class="code-block"><div class="code-line"><code>cmp -c image1.png image2.png</code></div></div>
+
+<p>Résultat possible :</p>
+
+<div class="code-block"><div class="code-line"><code>image1.png image2.png differ: byte 25, file1 is 137 octal, file2 is 136 octal</code></div></div>
+
+<h2>Comparaison avec d'autres outils</h2>
+
+<table>
+<tr><th>Outil</th><th>Usage idéal</th><th>Type de fichier</th></tr>
+<tr><td><code>cmp</code></td><td>Identité exacte, fichiers binaires, scripts</td><td>Binaire et texte</td></tr>
+<tr><td><code>diff</code></td><td>Voir les différences ligne par ligne</td><td>Texte uniquement</td></tr>
+<tr><td><code>comm</code></td><td>Trouver les lignes communes et uniques</td><td>Texte trié</td></tr>
+<tr><td><code>md5sum</code></td><td>Vérifier l'intégrité rapide (hash)</td><td>Tout fichier</td></tr>
+</table>
+
+<h2>Cas d'usage courants</h2>
+
+<h3>Vérifier l'intégrité après une copie</h3>
+
+<div class="code-block"><div class="code-line"><code># Comparer le fichier original et sa copie
+cmp -s document.pdf /mnt/backup/document.pdf && echo "Copie OK"</code></div></div>
+
+<h3>Détecter une corruption de fichier</h3>
+
+<div class="code-block"><div class="code-line"><code>cmp -l fichier.zip fichier.zip.corrompu | head -20</code></div></div>
+
+<h3>Comparer deux images ou fichiers binaires</h3>
+
+<div class="code-block"><div class="code-line"><code>cmp image1.png image2.png && echo "Images identiques" || echo "Images différentes"</code></div></div>
+
+<h3>Combiner avec find pour comparer un lot de fichiers</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver les fichiers qui different entre deux repertoires
+diff -rq dir1 dir2 | while read line; do
+    file1=$(echo "$line" | sed 's/Files \(.*\) and.*/\1/')
+    file2=$(echo "$line" | sed 's/.*and \(.*\) differ/\1/')
+    if [ -f "$file1" ] && [ -f "$file2" ]; then
+        cmp -s "$file1" "$file2" || echo "Différent: $file1"
+    fi
+done</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez <code>cmp -s</code> dans les scripts pour un comportement prévisible (pas de sortie, juste un code de retour).</li>
+<li>Pour les gros fichiers binaires, <code>cmp</code> est plus rapide que <code>diff</code> car il s'arrête à la première différence.</li>
+<li>Combinez avec <code>md5sum</code> pour un contrôle d'intégrité rapide, puis <code>cmp</code> pour localiser la différence exacte.</li>
+<li>L'option <code>-i</code> est très utile pour comparer des fichiers qui partagent un header (archives, images, exécutables).</li>
+</ul>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li>Créez deux fichiers texte et introduisez une petite différence dans le second :</li>
+</ol>
+
+<div class="code-block"><div class="code-line"><code>echo "Bonjour le monde" > f1.txt
+echo "Bonjour la monde" > f2.txt</code></div></div>
+
+<ol start="2">
+<li>Comparez-les avec <code>cmp</code> :</li>
+</ol>
+
+<div class="code-block"><div class="code-line"><code>cmp f1.txt f2.txt</code></div></div>
+
+<ol start="3">
+<li>Vérifiez avec l'option <code>-c</code> pour voir le caractère qui diffère :</li>
+</ol>
+
+<div class="code-block"><div class="code-line"><code>cmp -c f1.txt f2.txt</code></div></div>
+
+<ol start="4">
+<li>Vérifiez le code de retour :</li>
+</ol>
+
+<div class="code-block"><div class="code-line"><code>cmp -s f1.txt f2.txt; echo $?</code></div></div>
+
+<p>Le code <code>1</code> confirme que les fichiers diffèrent.</p>
+
+<ol start="5">
+<li>Créez une copie identique et vérifiez que <code>cmp</code> ne trouve aucune différence :</li>
+</ol>
+
+<div class="code-block"><div class="code-line"><code>cp f1.txt f3.txt
+cmp -s f1.txt f3.txt && echo "Fichiers identiques"</code></div></div>
+
+<h2>Résumé</h2>
+
+<p><code>cmp</code> est l'outil de comparaison binaire le plus simple et le plus efficace. Il compare deux fichiers octet par octet et s'arrête à la première différence trouvée. C'est l'outil de choix pour vérifier rapidement si deux fichiers sont strictement identiques, sans se préoccuper du format ou du contenu textuel.</p>
+
+<nav>
+<a href="101-dd-copie-fichiers.html">&larr; Leçon 101 : dd — Copie et conversion de fichiers de bas niveau</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
