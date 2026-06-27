@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 103 : realpath — Résoudre les chemins absolus</h1>
+
+<p>La commande <code>realpath</code> (ou <code>readlink -f</code> sur certains systèmes) convertit un chemin relatif ou avec des liens symboliques en chemin absolu canonique. C'est l'outil idéal pour obtenir le chemin "vrai" vers un fichier ou répertoire, en suivant tous les liens symboliques et en éliminant les <code>.</code> et <code>..</code>.</p>
+
+<h2>Pourquoi utiliser realpath ?</h2>
+
+<p>Quand vous travaillez avec des chemins relatifs ou des liens symboliques, il peut être difficile de savoir exactement où pointe un fichier. <code>realpath</code> résout tout ça :</p>
+
+<ul>
+<li>Convertit les chemins relatifs en absolus</li>
+<li>Suit tous les liens symboliques jusqu'au fichier final</li>
+<li>Supprime les références <code>.</code> (répertoire courant) et <code>..</code> (répertoire parent)</li>
+<li>Normalise les chemins en éliminant les parties redondantes</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>realpath [OPTIONS] CHEMIN</code></div>
+</div>
+
+<h2>Exemples fondamentaux</h2>
+
+<h3>1. Convertir un chemin relatif en absolu</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Depuis /home/david, résoudre ../documents/rapport.txt</code></div>
+<div class="code-line"><code>realpath ../documents/rapport.txt</code></div>
+<div class="code-line"><code># Résultat : /home/david/documents/rapport.txt</code></div>
+</div>
+
+<h3>2. Obtenir le chemin canonique depuis un lien symbolique</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Si mes_docs est un lien vers /home/david/documents</code></div>
+<div class="code-line"><code>realpath mes_docs</code></div>
+<div class="code-line"><code># Résultat : /home/david/documents</code></div>
+</div>
+
+<h3>3. Traiter plusieurs fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Résoudre plusieurs chemins d'un coup</code></div>
+<div class="code-line"><code>realpath fichier1.txt ../dossier/fichier2.txt ~/documents/fichier3.txt</code></div>
+</div>
+
+<h3>4. Vérifier l'existence silencieusement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># --quiet n'affiche pas d'erreur si le fichier n'existe pas</code></div>
+<div class="code-line"><code>realpath --quiet /aucun/fichier/ici</code></div>
+<div class="code-line"><code># (pas de sortie, juste un code de retour non nul)</code></div>
+</div>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-e, --canonicalize-existing</code></td><td>Le fichier DOIT exister (erreur sinon)</td></tr>
+<tr><td><code>-m, --no-symlinks</code></td><td>Ne pas suivre les liens symboliques (juste normalisation)</td></tr>
+<tr><td><code>-q, --quiet</code></td><td>Ne pas afficher les erreurs</td></tr>
+<tr><td><code>-z, --zero</code></td><td>Séparateur null au lieu de nouvelle ligne</td></tr>
+<tr><td><code>-L, --logical</code></td><td>Suivre les liens symboliques dans le chemin</td></tr>
+<tr><td><code>-P, --physical</code></td><td>Ne PAS suivre les liens symboliques (défaut)</td></tr>
+</table>
+
+<h2>Cas d'utilisation pratiques</h2>
+
+<h3>1. Scripts de déploiement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Obtenir le chemin absolu du script lui-même</code></div>
+<div class="code-line"><code>SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"</code></div>
+<div class="code-line"><code>echo "Script situé dans: $SCRIPT_DIR"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Version alternative avec realpath</code></div>
+<div class="code-line"><code>SCRIPT_DIR="$(realpath "$(dirname "$0")")"</code></div>
+</div>
+
+<h3>2. Vérifier l'emplacement réel d'un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Savoir exactement où pointe un lien</code></div>
+<div class="code-line"><code>realpath /etc/nginx/sites-enabled/default</code></div>
+<div class="code-line"><code># Affiche le chemin final après tous les liens</code></div>
+</div>
+
+<h3>3. Normaliser des chemins utilisateur</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Traiter un chemin saisi par l'utilisateur</code></div>
+<div class="code-line"><code># L'utilisateur entre: ~/documents/../documents/rapport.txt</code></div>
+<div class="code-line"><code>read -p "Chemin du fichier: " chemin</code></div>
+<div class="code-line"><code>CHEMIN_ABSOLU=$(realpath -m "$chemin")</code></div>
+<div class="code-line"><code>echo "Chemin normalisé: $CHEMIN_ABSOLU"</code></div>
+</div>
+
+<h3>4. Comparer deux chemins vers le même fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier si deux chemins pointent vers le même fichier</code></div>
+<div class="code-line"><code>if [ "$(realpath fichier1)" = "$(realpath fichier2)" ]; then</code></div>
+<div class="code-line"><code>    echo "Ce sont les mêmes fichiers!"</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h2>realpath vs readlink vs dirname/basename</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th><th>Exemple</th></tr>
+<tr><td><code>realpath</code></td><td>Chemin absolu complet</td><td><code>realpath ./docs/../file.txt</code> → <code>/home/user/file.txt</code></td></tr>
+<tr><td><code>readlink</code></td><td>Cible d'un lien symbolique</td><td><code>readlink mon_lien</code> → <code>/chemin/cible</code></td></tr>
+<tr><td><code>basename</code></td><td>Nom du fichier</td><td><code>basename /a/b/fichier.txt</code> → <code>fichier.txt</code></td></tr>
+<tr><td><code>dirname</code></td><td>Répertoire parent</td><td><code>dirname /a/b/fichier.txt</code> → <code>/a/b</code></td></tr>
+</table>
+
+<h2>Combinaison avec d'autres outils</h2>
+
+<h3>Avec ls pour voir les chemins réels</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister les fichiers avec leur chemin réel</code></div>
+<div class="code-line"><code>ls -la | tail -n +2 | awk '{print $NF}' | while read f; do realpath "$f" 2>/dev/null; done</code></div>
+</div>
+
+<h3>Avec find pour obtenir des chemins absolus</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver des fichiers et afficher leurs chemins absolus</code></div>
+<div class="code-line"><code>find . -name "*.conf" -exec realpath {} \;</code></div>
+</div>
+
+<h3>Avec xargs pour traiter des résultats</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Convertir une liste de chemins relatifs</code></div>
+<div class="code-line"><code>cat liste_chemins.txt | xargs realpath</code></div>
+</div>
+
+<h2>Scripts pratiques</h2>
+
+<h3>Script : Trouver le chemin absolu d'un projet</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Trouver le répertoire racine d'un projet</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>PROJECT_ROOT="$(realpath "$(dirname "$0")")"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Projet: $PROJECT_ROOT"</code></div>
+<div class="code-line"><code>echo "Config: $PROJECT_ROOT/config/settings.conf"</code></div>
+<div class="code-line"><code>echo "Logs: $PROJECT_ROOT/var/log/app.log"</code></div>
+</div>
+
+<h3>Script : Vérifier que deux fichiers sont identiques</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Vérifier si deux chemins pointent vers le même inode</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>chemin1=$(realpath "$1")</code></div>
+<div class="code-line"><code>chemin2=$(realpath "$2")</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ "$chemin1" = "$chemin2" ]; then</code></div>
+<div class="code-line"><code>    echo "✓ '$1' et '$2' pointent vers le même fichier"</code></div>
+<div class="code-line"><code>    echo "  Chemin canonique: $chemin1"</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "✗ Fichiers différents"</code></div>
+<div class="code-line"><code>    echo "  '$1' → $chemin1"</code></div>
+<div class="code-line"><code>    echo "  '$2' → $chemin2"</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<p><code>realpath</code> est un outil simple mais puissant pour normaliser et résoudre les chemins sous Linux. Il élimine les ambiguïtés liées aux chemins relatifs et aux liens symboliques.</p>
+
+<ul>
+<li><code>realpath chemin</code> — obtenir le chemin absolu canonique</li>
+<li><code>realpath -m chemin</code> — normalisation sans suivre les liens</li>
+<li><code>realpath -e fichier</code> — le fichier doit exister</li>
+<li><code>$(realpath "$0")</code> — chemin du script en cours</li>
+</ul>
+
+<p>C'est l'outil parfait pour les scripts qui ont besoin de chemins fiables et absolus.</p>
+
+<nav>
+<a href="102-cmp-comparaison-binaire.html">&larr; Leçon 102 : cmp — Comparaison binaire de fichiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
