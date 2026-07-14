@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 105 : zcat, bzcat et xzcat — Lire les fichiers compressés sans les décompresser</h1>
+
+<p>Vous avez un fichier compressé et vous voulez simplement voir son contenu, sans créer de copie décompressée sur le disque ? Les commandes <code>zcat</code>, <code>bzcat</code> et <code>xzcat</code> sont exactement faites pour cela. Elles lisent des fichiers compressés et sortent leur contenu décompressé sur la sortie standard — sans toucher au fichier original.</p>
+
+<h2>Pourquoi utiliser ces commandes ?</h2>
+
+<p>Les fichiers journaux Linux sont souvent compressés pour économiser de l'espace. Par exemple, les vieux logs dans <code>/var/log</code> se retrouvent compressés en <code>.gz</code>, <code>.bz2</code> ou <code>.xz</code>. Vous ne voulez pas les décompresser à chaque fois pour lire quelques lignes. Ces outils permettent de lire directement le contenu compressé.</p>
+
+<p>Autre cas courant : vous recevez un fichier de logs compressé par email ou téléchargement. Au lieu de le décompresser, de le lire, puis de le supprimer, vous pouvez simplement l'afficher directement.</p>
+
+<h2>Les trois variantes</h2>
+
+<table>
+<tr><th>Commande</th><th>Format compressé</th><th>Compression</th><th>Décompresse aussi</th></tr>
+<tr><td><code>zcat</code></td><td>.gz</td><td>gzip</td><td><code>zcat</code> = <code>gzcat</code></td></tr>
+<tr><td><code>bzcat</code></td><td>.bz2</td><td>bzip2</td><td><code>bzcat</code> = <code>bzless</code></td></tr>
+<tr><td><code>xzcat</code></td><td>.xz</td><td>xz</td><td><code>xzcat</code> = <code>unxz</code></td></tr>
+<tr><td><code>lzcat</code></td><td>.lz</td><td>lzma</td><td><code>lzcat</code> = <code>unlzma</code></td></tr>
+<tr><td><code>zstdcat</code></td><td>.zst</td><td>zstandard</td><td><code>unzstd</code></td></tr>
+</table>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>zcat [OPTIONS] fichier.gz</code></div>
+<div class="code-line"><code>bzcat [OPTIONS] fichier.bz2</code></div>
+<div class="code-line"><code>xzcat [OPTIONS] fichier.xz</code></div>
+</div>
+
+<p>Ces commandes n'ont pas besoin de l'option <code>-d</code> pour décompresser — elles décompressent par défaut quand le fichier a l'extension reconnue.</p>
+
+<h2>Exemples fondamentaux</h2>
+
+<h3>1. Lire un fichier .gz directement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire un journal compressé</code></div>
+<div class="code-line"><code>zcat /var/log/syslog.1.gz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lire un ancien log rotatif</code></div>
+<div class="code-line"><code>zcat /var/log/dmesg.0.gz</code></div>
+</div>
+
+<h3>2. Lire un fichier .bz2</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire un log compressé avec bzip2</code></div>
+<div class="="code-line"><code>bzcat /var/log/alternatives.log.2.bz2</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lire un fichier source compressé</code></div>
+<div class="code-line"><code>bzcat projet.tar.bz2 | tar -tvf -</code></div>
+</div>
+
+<h3>3. Lire un fichier .xz</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire un log compressé avec xz</code></div>
+<div class="code-line"><code>xzcat /var/log/journal/system.journal.1.xz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Extraire directement depuis un .tar.xz</code></div>
+<div class="code-line"><code>xzcat archive.tar.xz | tar -xvf -</code></div>
+</div>
+
+<h2>Combiner avec grep et less</h2>
+
+<h3>Rechercher dans un fichier compressé</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Chercher "erreur" dans un log compressé</code></div>
+<div class="code-line"><code>zcat fichier.log.gz | grep "erreur"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec awk, compter les occurrences</code></div>
+<div class="code-line"><code>zcat syslog.1.gz | awk '/ssh/ {count++} END {print count}'</code></div>
+</div>
+
+<h3>Voir les dernières lignes d'un fichier compressé</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Dernières 20 lignes d'un .gz</code></div>
+<div class="code-line"><code>zcat /var/log/auth.log.2.gz | tail -20</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># combiner avec head</code></div>
+<div class="code-line"><code>bzcat logs.tar.bz2 | tar -xOf - log.txt | head -50</code></div>
+</div>
+
+<h3>Utiliser avec less (version compressée)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># less pour naviguer dans un fichier compressé</code></div>
+<div class="code-line"><code>zless fichier.log.gz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Équivalent de less pour bzip2</code></div>
+<div class="code-line"><code>bzless fichier.log.bz2</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Équivalent de less pour xz</code></div>
+<div class="code-line"><code>xzless fichier.log.xz</code></div>
+</div>
+
+<h2>Utiliser avec les pipes</h2>
+
+<h3>Décompresser et compter les lignes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compter les lignes d'un fichier compressé</code></div>
+<div class="code-line"><code>zcat log.gz | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter les lignes avec bzip2</code></div>
+<div class="code-line"><code>bzcat log.bz2 | wc -l</code></div>
+</div>
+
+<h3>Combiner plusieurs fichiers compressés</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire plusieurs fichiers compressés à la suite</code></div>
+<div class="code-line"><code>zcat syslog.1.gz syslog.2.gz | grep "erreur"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec joker (tous les .gz)</code></div>
+<div class="code-line"><code>zcat /var/log/syslog*.gz | grep "echec"</code></div>
+</div>
+
+<h3>Décompresser et extraire depuis une archive tar compressée</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister le contenu d'un tar.gz sans extraire</code></div>
+<div class="code-line"><code>zcat archive.tar.gz | tar -tvf -</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Extraire un fichier précis d'un tar.bz2</code></div>
+<div class="code-line"><code>bzcat backup.tar.bz2 | tar -xvf - fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Extraire un fichier précis d'un tar.xz</code></div>
+<div class="code-line"><code>xzcat backup.tar.xz | tar -xvf - config.conf</code></div>
+</div>
+
+<h2>Options utiles</h2>
+
+<h3>-f : Forcer si le fichier n'a pas l'extension reconnue</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Décompresser même si le fichier n'a pas l'extension .gz</code></div>
+<div class="code-line"><code>zcat -f fichier_sans_extension</code></div>
+</div>
+
+<h3>-k : Garder le fichier compressé (mode cat)</h3>
+
+<p>Bien que <code>zcat</code> ne décompresse pas par défaut (il envoie vers stdout), cette option existe pour d'autres outils de décompression.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Décompresser en gardant l'original</code></div>
+<div class="code-line"><code>gunzip -k fichier.gz</code></div>
+<div class="code-line"><code>bzip2 -k fichier.bz2</code></div>
+<div class="code-line"><code>xz -k fichier.xz</code></div>
+</div>
+
+<h3>-N : Afficher le numéro de ligne</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Avec numérotation des lignes</code></div>
+<div class="code-line"><code>zcat log.gz | cat -n</code></div>
+</div>
+
+<h3>-h : Afficher l'aide</h3>
+
+<div class="code-block">
+<div class="code-line"><code>zcat -h</code></div>
+<div class="code-line"><code>bzcat --help</code></div>
+<div class="code-line"><code>xzcat --help</code></div>
+</div>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>1. Explorer les logs Apache/Nginx compressés</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les erreurs 500 dans les logs Apache</code></div>
+<div class="code-line"><code>zcat /var/log/apache2/access.log.1.gz | grep "500"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter les erreurs par IP</code></div>
+<div class="code-line"><code>zcat /var/log/apache2/error.log.1.gz | awk '{print $NF}' | sort | uniq -c</code></div>
+</div>
+
+<h3>2. Rechercher dans les logs système rotatifs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Chercher une connexion SSH échouée dans plusieurs logs</code></div>
+<div class="code-line"><code>zcat /var/log/auth.log*.gz | grep "Failed password"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir les connexions du jour dans tous les logs (compressés et non)</code></div>
+<div class="code-line"><code>zcat -f /var/log/auth.log.1.gz | grep "session opened"</code></div>
+</div>
+
+<h3>3. Analyser d'anciens logs compressés</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compter les lignes par jour dans un log compressé</code></div>
+<div class="code-line"><code>zcat syslog.2.gz | awk '{print $1, $2}' | sort | uniq -c</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Extraire les erreurs critiques</code></div>
+<div class="code-line"><code>bzcat messages.1.bz2 | grep -i "critical\|alert\|emergency"</code></div>
+</div>
+
+<h3>4. Transformer un fichier compressé en non-compressé</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Décompresser vers un nouveau fichier</code></div>
+<div class="code-line"><code>zcat fichier.gz > fichier_decompresse.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Alternative :</code></div>
+<div class="code-line"><code>gunzip -c fichier.gz > fichier_decompresse.txt</code></div>
+</div>
+
+<h2>Comparaison des taux de compression</h2>
+
+<table>
+<tr><th>Format</th><th>Commande compression</th><th>Taux typique</th><th>Vitesse</th><th>Usage courant</th></tr>
+<tr><td>gzip (.gz)</td><td>gzip</td><td>Bonne</td><td>rapide</td><td>Logs système, compatibilité maximale</td></tr>
+<tr><td>bzip2 (.bz2)</td><td>bzip2</td><td>Très bon</td><td>Moyenne</td><td>Fichiers sources, archives</td></tr>
+<tr><td>xz (.xz)</td><td>xz</td><td>Excellent</td><td>Lente</td><td>Paquets Linux, images Docker</td></tr>
+<tr><td>zstd (.zst)</td><td>zstd</td><td>Très bon</td><td>Très rapide</td><td>Logs haute performance, sauvegarde</td></tr>
+</table>
+
+<h2>Scripts pratiques</h2>
+
+<h3>Script : Rechercher dans tous les logs compressés</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Rechercher un motif dans tous les logs (compressés ou non)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ -z "$1" ]; then</code></div>
+<div class="code-line"><code>    echo "Usage: $0 <motif> [fichier.log*]"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>MOTIF="$1"</code></div>
+<div class="code-line"><code>shift</code></div>
+<div class="code-line"><code>LOG_PATTERN="${*:-/var/log/syslog*}"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>zcat -f $LOG_PATTERN | grep "$MOTIF"</code></div>
+</div>
+
+<h3>Script : Compter les lignes par type de compression</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Compter les lignes de plusieurs fichiers compressés</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>count_lines() {</code></div>
+<div class="code-line"><code>    local file="$1"</code></div>
+<div class="code-line"><code>    local count</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>    case "$file" in</code></div>
+<div class="code-line"><code>        *.gz)  count=$(zcat "$file" 2>/dev/null | wc -l);;</code></div>
+<div class="code-line"><code>        *.bz2) count=$(bzcat "$file" 2>/dev/null | wc -l);;</code></div>
+<div class="code-line"><code>        *.xz)  count=$(xzcat "$file" 2>/dev/null | wc -l);;</code></div>
+<div class="code-line"><code>        *.zst) count=$(zstdcat "$file" 2>/dev/null | wc -l);;</code></div>
+<div class="code-line"><code>        *)     count=$(wc -l < "$file");;</code></div>
+<div class="code-line"><code>    esac</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>    echo "$count $file"</code></div>
+<div class="code-line"><code>}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>export -f count_lines</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>ls /var/log/*.gz /var/log/*.bz2 /var/log/*.xz 2>/dev/null | \</code></div>
+<div class="code-line"><code>    xargs -I {} bash -c 'count_lines "{}"'</code></div>
+</div>
+
+<h3>Script : Lister le contenu d'archives compressées</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Lister le contenu d'une archive tar sans l'extraire</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>list_archive() {</code></div>
+<div class="code-line"><code>    local archive="$1"</code></div>
+<div class="code-line"><code>    echo "=== Contenu de $archive ==="</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>    case "$archive" in</code></div>
+<div class="code-line"><code>        *.tar.gz|*.tgz)</code></div>
+<div class="code-line"><code>            zcat "$archive" | tar -tvf -</code></div>
+<div class="code-line"><code>            ;;</code></div>
+<div class="code-line"><code>        *.tar.bz2)</code></div>
+<div class="code-line"><code>            bzcat "$archive" | tar -tvf -</code></div>
+<div class="code-line"><code>            ;;</code></div>
+<div class="code-line"><code>        *.tar.xz)</code></div>
+<div class="code-line"><code>            xzcat "$archive" | tar -tvf -</code></div>
+<div class="code-line"><code>            ;;</code></div>
+<div class="code-line"><code>        *.zip)</code></div>
+<div class="code-line"><code>            unzip -l "$archive"</code></div>
+<div class="code-line"><code>            ;;</code></div>
+<div class="code-line"><code>        *)</code></div>
+<div class="code-line"><code>            echo "Format non supporté"</code></div>
+<div class="code-line"><code>            ;;</code></div>
+<div class="code-line"><code>    esac</code></div>
+<div class="code-line"><code>}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>list_archive "$1"</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<p>Les commandes <code>zcat</code>, <code>bzcat</code> et <code>xzcat</code> permettent de lire le contenu de fichiers compressés sans les décompresser sur le disque. Elles sont indispensables pour analyser les logs système rotatifs et travailler avec des archives compressées.</p>
+
+<ul>
+<li><code>zcat fichier.gz</code> — lire un fichier gzip compressé</li>
+<li><code>bzcat fichier.bz2</code> — lire un fichier bzip2 compressé</li>
+<li><code>xzcat fichier.xz</code> — lire un fichier xz compressé</li>
+<li><code>zcat -f fichier</code> — forcer la décompression sans extension</li>
+<li><code>zcat fichier.gz | grep motif</code> — rechercher dans un log compressé</li>
+<li><code>zcat archive.tar.gz | tar -xvf -</code> — extraire depuis un tar.gz sans décompresser avant</li>
+<li><code>zless fichier.gz</code> — naviguer interactivement dans un fichier compressé</li>
+<li><code>zcat fichier.gz > nouveau.txt</code> — convertir en fichier non compressé</li>
+</ul>
+
+<p>Associées à <code>grep</code>, <code>awk</code>, <code>sort</code> ou <code>tar</code>, ces commandes permettent de traiter des téraoctets de logs compressés sans jamais toucher au fichier original.</p>
+
+<nav>
+<a href="104-xargs.html">&larr; Leçon 104 : xargs — Construire des commandes à partir de résultats</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
