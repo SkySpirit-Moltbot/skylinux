@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 106 : stat — Inspecter les fichiers en détail</h1>
+
+<p>La commande <code>stat</code> (pour <em>status</em>) affiche des informations complètes et détaillées sur un fichier ou un système de fichiers — bien plus que ce que <code>ls -l</code> ne montre. Elle révèle la taille exacte, les horodatages précis (accès, modification, changement), les permissions octopus, le numéro d'inode, et même le type de système de fichiers. C'est l'outil idéal quand vous avez besoin de détails forensiques sur un fichier.</p>
+
+<h2>Pourquoi utiliser stat plutôt que ls ?</h2>
+
+<p><code>ls -l</code> vous donne un résumé rapide. <code>stat</code> vous donne tout le reste :</p>
+
+<ul>
+<li>Les trois horodatages complets (accès, modification, changement)</li>
+<li>La taille en octets exacte (pas arrondie)</li>
+<li>Le numéro d'inode</li>
+<li>Le nombre de liens durs</li>
+<li>Le type de périphérique (pour les fichiers spéciaux)</li>
+<li>Le type de système de fichiers</li>
+<li>La taille de bloc utilisée</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>stat [OPTIONS] fichier</code></div>
+<div class="code-line"><code>stat [OPTIONS] fichier1 fichier2...</code></div>
+<div class="code-line"><code>stat -f fichier  # informations sur le système de fichiers (pas sur le fichier)</code></div>
+</div>
+
+<h2>Sortie par défaut</h2>
+
+<p>Sans aucune option, <code>stat</code> affiche toutes les informations disponibles sur un fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ stat mon_fichier.txt</code></div>
+<div class="code-line"><code>  File: mon_fichier.txt</code></div>
+<div class="code-line"><code>  Size: 4096            Blocks: 8          IO Block: 4096   regular file</code></div>
+<div class="code-line"><code>Device: 8h/8d         Inode: 131076      Links: 1</code></div>
+<div class="code-line"><code>Access: (0644/-rw-r--r--)  Uid: ( 1000/    david)   Gid: ( 1000/    david)</code></div>
+<div class="code-line"><code>Access: 2026-07-15 08:00:00.000000000 +0200</code></div>
+<div class="code-line"><code>Modify: 2026-07-10 14:30:00.000000000 +0200</code></div>
+<div class="code-line"><code>Change: 2026-07-10 14:30:00.000000000 +0200</code></div>
+<div class="code-line"><code> Birth: 2026-07-01 09:00:00.000000000 +0200</code></div>
+</div>
+
+<h3>Décryptage de la sortie</h3>
+
+<table>
+<tr><th>Champ</th><th>Signification</th></tr>
+<tr><td><code>Size</code></td><td>Taille du fichier en octets</td></tr>
+<tr><td><code>Blocks</code></td><td>Nombre de blocs de 512 octets alloués sur le disque</td></tr>
+<tr><td><code>IO Block</code></td><td>Taille du bloc d'entree-sortie du systeme de fichiers</td></tr>
+<tr><td><code>Device</code></td><td>Peripherique (majeur/mineur) contenant le fichier</td></tr>
+<tr><td><code>Inode</code></td><td>Numero d'inode unique du fichier</td></tr>
+<tr><td><code>Links</code></td><td>Nombre de liens durs pointant vers cet inode</td></tr>
+<tr><td><code>Access</code></td><td>Permissions (numerique et symbolique)</td></tr>
+<tr><td><code>Uid / Gid</code></td><td>Proprietaire numerique et nom</td></tr>
+<tr><td><code>Access</code> (timestamp)</td><td>Dernier acces au contenu du fichier (atime)</td></tr>
+<tr><td><code>Modify</code> (timestamp)</td><td>Derniere modification du contenu (mtime)</td></tr>
+<tr><td><code>Change</code> (timestamp)</td><td>Derniere modification des metadonnees - permissions, proprietaire, etc. (ctime)</td></tr>
+<tr><td><code>Birth</code> (timestamp)</td><td>Date de creation du fichier (creation time)</td></tr>
+</table>
+
+<h2>Les trois horodatages</h2>
+
+<p>Linux stocke trois dates pour chaque fichier. Comprendre la difference est essentiel :</p>
+
+<h3>atime — Access time</h3>
+
+<p>Dernier moment où le fichier a ete <strong>lu</strong> (acces au contenu). Se met a jour quand vous lisez le fichier avec <code>cat</code>, <code>less</code>, ou quand un programme y accede. Attention : sur certains systemes, l'acces au disque pour mettre a jour l'atime peut degrader les performances — c'est pourquoi <code>noatime</code> est souvent utilise sur les serveurs.</p>
+
+<h3>mtime — Modify time</h3>
+
+<p>Dernier moment où le <strong>contenu</strong> du fichier a ete modifie. Se met a jour quand vous editez et sauvegardez le fichier. C'est ce que <code>ls -l</code> affiche par defaut.</p>
+
+<h3>ctime — Change time</h3>
+
+<p>Dernier moment où les <strong>metadonnees</strong> du fichier ont change — c'est-a-dire tout sauf le contenu. Cela inclut les permissions, le proprietaire, le groupe, et aussi le fait de changer le contenu (car cela modifie aussi l'inode). Notez que <code>ctime</code> ne peut jamais reculer dans le temps — il ne fait que avancer.</p>
+
+<h3>Birth — Creation time</h3>
+
+<p>Date de creation du fichier. Cette information n'est pas toujours disponible — elle depend du systeme de fichiers. ext4 ne la stocke pas rellement (elle affiche "-" ou la repique du mtime), tandis que btrfs, XFS ou les systemes modernes la supportent correctement.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Voir les trois horodatages clairement</code></div>
+<div class="code-line"><code>stat -c "Access: %x | Modify: %y | Change: %z" fichier.txt</code></div>
+</div>
+
+<h2>Formats personnalises avec -c</h2>
+
+<p>L'option <code>-c</code> (ou <code>--format</code>) permet de specifier exactement quelles informations vous voulez, dans le format que vous souhaitez. C'est particulierement utile dans les scripts.</p>
+
+<h3>Caracteres de format pour les fichiers</h3>
+
+<table>
+<tr><th>Code</th><th>Signification</th></tr>
+<tr><td><code>%a</code></td><td>Permissions en numerique (octal)</td></tr>
+<tr><td><code>%A</code></td><td>Permissions en format lisible (rwxrwxrwx)</td></tr>
+<tr><td><code>%b</code></td><td>Nombre de blocs alloues</td></tr>
+<tr><td><code>%B</code></td><td>Taille de chaque bloc en octets</td></tr>
+<tr><td><code>%d</code></td><td>Numero de peripherique en decimal</td></tr>
+<tr><td><code>%D</code></td><td>Numero de peripherique en hexadecimal</td></tr>
+<tr><td><code>%f</code></td><td>Mode brut en hexadecimal</td></tr>
+<tr><td><code>%F</code></td><td>Type de fichier (regular file, directory, symbolic link...)</td></tr>
+<tr><td><code>%g</code></td><td>ID du groupe proprietaire</td></tr>
+<tr><td><code>%G</code></td><td>Nom du groupe proprietaire</td></tr>
+<tr><td><code>%h</code></td><td>Nombre de liens durs</td></tr>
+<tr><td><code>%i</code></td><td>Numero d'inode</td></tr>
+<tr><td><code>%m</code></td><td>Point de montage du systeme de fichiers</td></tr>
+<tr><td><code>%n</code></td><td>Nom du fichier (avec le chemin si present)</td></tr>
+<tr><td><code>%N</code></td><td>Nom du fichier (de-reference si lien symbolique)</td></tr>
+<tr><td><code>%o</code></td><td>Taille du bloc d'entree-sortie</td></tr>
+<tr><td><code>%s</code></td><td>Taille totale en octets</td></tr>
+<tr><td><code>%t</code></td><td>Type de peripherique majeur (caractere ou block)</td></tr>
+<tr><td><code>%T</code></td><td>Type de peripherique mineur</td></tr>
+<tr><td><code>%u</code></td><td>ID utilisateur proprietaire</td></tr>
+<tr><td><code>%U</code></td><td>Nom d'utilisateur proprietaire</td></tr>
+</table>
+
+<h3>Codes pour les horodatages</h3>
+
+<table>
+<tr><th>Code</th><th>Signification</th></tr>
+<tr><td><code>%x</code></td><td>Access time (lisible)</td></tr>
+<tr><td><code>%y</code></td><td>Modify time (lisible)</td></tr>
+<tr><td><code>%z</code></td><td>Change time (lisible)</td></tr>
+<tr><td><code>%X</code></td><td>Access time (epoch — secondes depuis 1970)</td></tr>
+<tr><td><code>%Y</code></td><td>Modify time (epoch)</td></tr>
+<tr><td><code>%Z</code></td><td>Change time (epoch)</td></tr>
+<tr><td><code>%W</code></td><td>Birth time (epoch, ou - si inconnu)</td></tr>
+<tr><td><code>%w</code></td><td>Birth time (lisible, ou - si inconnu)</td></tr>
+</table>
+
+<h3>Exemples pratiques de formats</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Taille en octets uniquement</code></div>
+<div class="code-line"><code>stat -c "%s" fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Permissions numeriques</code></div>
+<div class="code-line"><code>stat -c "%a" fichier.txt</code></div>
+<div class="code-line"><code># Exemple de sortie: 644</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Format compact: permissions | taille | date modification</code></div>
+<div class="code-line"><code>stat -c "%A %s %y" fichier.txt</code></div>
+<div class="code-line"><code># Exemple de sortie: -rw-r--r-- 4096 2026-07-10 14:30:00</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Nom et inode</code></div>
+<div class="code-line"><code>stat -c "Inode %i: %n" fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Horodatages en epoch (pour calcul)</code></div>
+<div class="code-line"><code>stat -c "%Y" fichier.txt   # mtime en epoch</code></div>
+<div class="code-line"><code>stat -c "%X" fichier.txt  # atime en epoch</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Format JSON (experimental,GNU stat)</code></div>
+<div class="code-line"><code>stat --printf '{"name":"%n","size":%s,"mtime":%Y}' fichier.txt</code></div>
+</div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>1. Comparer la taille reelle et l'espace disque utilise</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Taille reelle du fichier</code></div>
+<div class="code-line"><code>stat -c "%s" fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Taille sur le disque (blocs * taille de bloc)</code></div>
+<div class="code-line"><code>stat -c "%b * %B = %s octets sur le disque" fichier.txt</code></div>
+<div class="code-line"><code># Exemple: 8 * 512 = 4096 octets sur le disque</code></div>
+</div>
+
+<h3>2. Trouver les fichiers recemment modifies</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les fichiers modifies dans les 24 dernieres heures</code></div>
+<div class="code-line"><code>find . -type f -mtime 0 -exec stat --format="%Y %n" {} \; | \</code></div>
+<div class="code-line"><code>    awk '{if ($1 > systime() - 86400) print}'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lister par date de modification</code></div>
+<div class="code-line"><code>ls -lt *.log | head -10</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Fichiers modifies aujourd'hui</code></div>
+<div class="code-line"><code>find /var/log -type f -mtime 0 2>/dev/null</code></div>
+</div>
+
+<h3>3. Verifier les permissions et proprietaire</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher proprietaire et groupe</code></div>
+<div class="code-line"><code>stat -c "%U:%G" fichier</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Verifier si un fichier est executable</code></div>
+<div class="code-line"><code>[ $(stat -c "%a" script.sh) -ge 100 ] && echo "Executable" || echo "Non executable"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Extraire uniquement les permissions numeriques</code></div>
+<div class="code-line"><code>stat -c "%a" /etc/passwd</code></div>
+</div>
+
+<h3>4. Traquer un fichier par son inode</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver l'inode d'un fichier</code></div>
+<div class="code-line"><code>stat -c "%i" fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trouver tous les fichiers avec le meme inode (liens durs)</code></div>
+<div class="code-line"><code>find . -inum 131076</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter les liens durs</code></div>
+<div class="code-line"><code>stat -c "%h" fichier.txt</code></div>
+</div>
+
+<h3>5. Utiliser avec des scripts Bash</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier si un fichier a ete modifie depuis une date</code></div>
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>DATECIBLE="2026-07-01"  # Date souhaitee</code></div>
+<div class="code-line"><code>EPOCHCIBLE=$(date -d "$DATECIBLE" +%s)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>for fichier in *.txt; do</code></div>
+<div class="code-line"><code>    MTIME=$(stat -c "%Y" "$fichier")</code></div>
+<div class="code-line"><code>    if [ "$MTIME" -gt "$EPOCHCIBLE" ]; then</code></div>
+<div class="code-line"><code>        echo "$fichier est plus recent que $DATECIBLE"</code></div>
+<div class="code-line"><code>    fi</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>6. Verifier un fichier avant installation</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier un binaire avant de l'executer</code></div>
+<div class="code-line"><code>stat -c "Type: %F | Taille: %s octets | Inode: %i" /usr/bin/python3</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Verifier si c'est un lien symbolique</code></div>
+<div class="code-line"><code>stat -c "%F" /usr/bin/python3</code></div>
+<div class="code-line"><code># Si c'est un lien: symbolic link</code></div>
+<div class="code-line"><code># Sinon: regular file</code></div>
+</div>
+
+<h2>stat -f — Informations sur le systeme de fichiers</h2>
+
+<p>L'option <code>-f</code> (ou <code>--filesystem</code>) affiche des informations sur le systeme de fichiers contenant le fichier, plutot que sur le fichier lui-meme :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ stat -f /home</code></div>
+<div class="code-line"><code>  File: "/home"</code></div>
+<div class="code-line"><code>    ID: 0        Namelen: 255     Type: ext2/ext3</code></div>
+<div class="code-line"><code>Block size: 4096       Fundamental block size: 4096</code></div>
+<div class="code-line"><code>Blocks:       Total: 2457923    Free: 1245678    Available: 1145678</code></div>
+<div class="code-line"><code>Inodes:       Total: 629144     Free: 612345</code></div>
+</div>
+
+<h3>Formats pour -f</h3>
+
+<table>
+<tr><th>Code</th><th>Signification</th></tr>
+<tr><td><code>%a</code></td><td>Blocs libres disponibles pour les utilisateurs non privilegies</td></tr>
+<tr><td><code>%b</code></td><td>Total de blocs dans le systeme de fichiers</td></tr>
+<tr><td><code>%c</code></td><td>Total d'inodes dans le systeme de fichiers</td></tr>
+<tr><td><code>%d</code></td><td>Blocs libres (total)</td></tr>
+<tr><td><code>%f</code></td><td>Inodes libres</td></tr>
+<tr><td><code>%i</code></td><td>ID du systeme de fichiers en hexadecimal</td></tr>
+<tr><td><code>%l</code></td><td>Longueur maximale des noms de fichiers</td></tr>
+<tr><td><code>%n</code></td><td>Nom du fichier (ou point de montage)</td></tr>
+<tr><td><code>%s</code></td><td>Taille optimale des blocs de transfert (IO Block)</td></tr>
+<tr><td><code>%S</code></td><td>Taille fondamentale des blocs</td></tr>
+<tr><td><code>%t</code></td><td>Type de systeme de fichiers (en hexadecimal)</td></tr>
+<tr><td><code>%T</code></td><td>Type de systeme de fichiers (lisible)</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Voir le type de systeme de fichiers</code></div>
+<div class="code-line"><code>stat -f -c "%T" /</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Espace libre disponible (en blocs)</code></div>
+<div class="code-line"><code>stat -f -c "%a blocs disponibles" /</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Taille du systeme de fichiers entier</code></div>
+<div class="code-line"><code>stat -f -c "%b blocs au total, soit %S octets chacun" /</code></div>
+</div>
+
+<h2>Travailler avec plusieurs fichiers</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Stat sur plusieurs fichiers</code></div>
+<div class="code-line"><code>stat fichier1.txt fichier2.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Format compact pour plusieurs fichiers (script)</code></div>
+<div class="code-line"><code>stat -c "%n: %s octets" *.log</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Resumer la taille totale de tous les fichiers</code></div>
+<div class="code-line"><code>stat -c "%s" *.txt | awk '{s+=$1} END {print "Total:", s, "octets"}'</code></div>
+</div>
+
+<h2>Symbolic links (liens symboliques)</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Par defaut, stat suit le lien et affiche le fichier cible</code></div>
+<div class="code-line"><code>stat lien_symbolique</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Pour voir les infos DU LIEN (pas de la cible)</code></div>
+<div class="code-line"><code>stat -L lien_symbolique  # Suit le lien (comportement par defaut)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Verifier si un fichier est un lien symbolique</code></div>
+<div class="code-line"><code>[ -L "$fichier" ] && echo "C'est un lien symbolique"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Stat montre le type "symbolic link" si on ne dereference pas</code></div>
+<div class="code-line"><code>stat -c "%F" lien_symbolique</code></div>
+</div>
+
+<h2>Scripts pratiques</h2>
+
+<h3>Script : Surveillance de modifications de fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Surveiller si un fichier a ete modifie depuis la derniere verification</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>FICHIER="$1"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ -z "$FICHIER" ]; then</code></div>
+<div class="code-line"><code>    echo "Usage: $0 <fichier>"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>MTIME=$(stat -c "%Y" "$FICHIER")</code></div>
+<div class="code-line"><code>MTIME_HUMAIN=$(stat -c "%y" "$FICHIER")</code></div>
+<div class="code-line"><code>TAILLE=$(stat -c "%s" "$FICHIER")</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>EPOCH_AJOURD=HUI=$(date +%s)</code></div>
+<div class="code-line"><code>DIFF=$((EPOCH_AUJOURD'HUI - MTIME))</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Fichier: $FICHIER"</code></div>
+<div class="code-line"><code>echo "Taille: $TAILLE octets"</code></div>
+<div class="code-line"><code>echo "Modifie le: $MTIME_HUMAIN"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ "$DIFF" -lt 3600 ]; then</code></div>
+<div class="code-line"><code>    echo "MODIFIE IL Y A $((DIFF / 60)) MINUTES"</code></div>
+<div class="code-line"><code>elif [ "$DIFF" -lt 86400 ]; then</code></div>
+<div class="code-line"><code>    echo "Modifie il y a $((DIFF / 3600)) heures"</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Modifie il y a $((DIFF / 86400)) jours"</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h3>Script : Lister les fichiers par age</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Trier les fichiers par date de modification</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "=== Fichiers tries par modification (recent -> ancien) ==="</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>for fichier in *; do</code></div>
+<div class="code-line"><code>    [ -e "$fichier" ] || continue</code></div>
+<div class="code-line"><code>    MTIME=$(stat -c "%Y" "$fichier")</code></div>
+<div class="code-line"><code>    echo "$MTIME $fichier"</code></div>
+<div class="code-line"><code>done | sort -rn | while read epoch fichier; do</code></div>
+<div class="code-line"><code>    HUMAN=$(date -d "@$epoch" "+%Y-%m-%d %H:%M:%S")</code></div>
+<div class="code-line"><code>    printf "%-40s %s\n" "$fichier" "$HUMAN"</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>Script : Calculer l'espace total utilise par des fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Calculer l'espace reel et l'espace disque pour des fichiers</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>TOTAL_OCTETS=0</code></div>
+<div class="code-line"><code>TOTAL_BLOCS=0</code></div>
+<div class="code-line"><code>TAILLE_BLOC=$(stat -c "%B" "${1:-.}")  # Taille d'un bloc</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>for fichier in "$@"; do</code></div>
+<div class="code-line"><code>    if [ -e "$fichier" ]; then</code></div>
+<div class="code-line"><code>        OCTETS=$(stat -c "%s" "$fichier")</code></div>
+<div class="code-line"><code>        BLOCS=$(stat -c "%b" "$fichier")</code></div>
+<div class="code-line"><code>        TOTAL_OCTETS=$((TOTAL_OCTETS + OCTETS))</code></div>
+<div class="code-line"><code>        TOTAL_BLOCS=$((TOTAL_BLOCS + BLOCS))</code></div>
+<div class="code-line"><code>    fi</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>ESPACE_DISQUE=$((TOTAL_BLOCS * TAILLE_BLOC))</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Fichiers examines: $#"</code></div>
+<div class="code-line"><code>echo "Taille totale (octets): $TOTAL_OCTETS"</code></div>
+<div class="code-line"><code>echo "Espace sur disque: $ESPACE_DISQUE octets"</code></div>
+</div>
+
+<h2>stat vs file vs ls</h2>
+
+<table>
+<tr><th>Commande</th><th>Ce qu'elle montre</th><th>Quand l'utiliser</th></tr>
+<tr><td><code>ls -l</code></td><td>Permissions, proprietaire, taille, date, liens</td><td>Vue d'ensemble rapide</td></tr>
+<tr><td><code>file</code></td><td>Type de fichier (ASCII, image, binaire...)</td><td>Identifier le type de contenu</td></tr>
+<tr><td><code>stat</code></td><td>Tout: taille precise, 3 horodatages, inode, blocs, periph.</td><td>Details forensiques ou scripts</td></tr>
+<tr><td><code>ls -i</code></td><td>Numero d'inode uniquement</td><td>Trouver les liens durs</td></tr>
+<tr><td><code>stat -f</code></td><td>Systeme de fichiers (espaces, type, inodes)</td><td>Verifier l'espace disque</td></tr>
+</table>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>1. Verifier l'integrite d'un fichier de configuration</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarder l'etat avant modification</code></div>
+<div class="code-line"><code>stat -c "%Y %s %a" /etc/ssh/sshd_config > /root/sshd_config.avant</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Apres modification, comparer</code></div>
+<div class="code-line"><code>stat -c "%Y %s %a" /etc/ssh/sshd_config > /root/sshd_config.apres</code></div>
+<div class="code-line"><code>diff /root/sshd_config.avant /root/sshd_config.apres</code></div>
+</div>
+
+<h3>2. Trouver les fichiers qui n'ont pas ete accedes depuis longtemps</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Fichiers non accedes depuis plus de 30 jours</code></div>
+<div class="code-line"><code>find . -type f -atime +30 -exec stat --format="%n %x" {} \; | \</code></div>
+<div class="code-line"><code>    awk '{print $1, $2, $3}'</code></div>
+</div>
+
+<h3>3. Verifier l'espace reel utilise vs taille apparente</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Un fichier de 1 octet occupe quand meme un bloc sur le disque</code></div>
+<div class="code-line"><code>$ echo -n "a" > un_octet.txt</code></div>
+<div class="code-line"><code>$ stat -c "Taille: %s octets | Blocs: %b | Espace disque: %b*%B=%d octets" un_octet.txt</code></div>
+<div class="code-line"><code>Taille: 1 octets | Blocs: 8 | Espace disque: 8*512=4096 octets</code></div>
+</div>
+
+<h2>Resume</h2>
+
+<p>La commande <code>stat</code> est l'outil ultime pour obtenir tous les details sur un fichier ou un systeme de fichiers. Elle depasse largement ce que <code>ls</code> peut offrir :</p>
+
+<ul>
+<li><code>stat fichier</code> — Afficher toutes les informations disponibles</li>
+<li><code>stat -c "%s" fichier</code> — Taille en octets uniquement</li>
+<li><code>stat -c "%a" fichier</code> — Permissions numeriques</li>
+<li><code>stat -c "%Y" fichier</code> — Modification time en epoch</li>
+<li><code>stat -c "%i" fichier</code> — Numero d'inode</li>
+<li><code>stat -f fichier</code> — Informations sur le systeme de fichiers</li>
+<li><code>stat -c "%n: %s octets, modifie le %y" *.log</code> — Format personnalise pour plusieurs fichiers</li>
+<li><code>stat -c "%b * %B" fichier</code> — Espace disque reel utilise</li>
+</ul>
+
+<p>Dans les scripts de surveillance, de sauvegarde ou de diagnostic, <code>stat</code> est souvent preferable a parser la sortie de <code>ls</code>, car ses formats sont plus estables et plus facilement exploitables.</p>
+
+<nav>
+<a href="105-zcat-bzcat-xzcat.html">&larr; Leçon 105 : zcat, bzcat et xzcat — Lire les fichiers compressés</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
