@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 107 : lsof — Lister les fichiers ouverts</h1>
+
+<p>La commande <code>lsof</code> (List Open Files) est un outil essentiel pour comprendre ce que le système fait à tout moment. Elle affiche la liste de tous les fichiers ouverts par tous les processus en cours d'exécution. Sous Linux, presque tout est un fichier : les fichiers ordinaires, les répertoires, les tubes (pipes), les sockets réseau, et même les périphériques. <code>lsof</code> vous permet de répondre à des questions comme :</p>
+
+<ul>
+<li>Quel processus accède à un fichier précis ?</li>
+<li>Quel processus écoute sur un port réseau ?</li>
+<li>Pourquoi un système de fichiers ne peut-il pas être démonté ?</li>
+<li>Combien de fichiers un processus a-t-il ouverts ?</li>
+</ul>
+
+<h2>Installation</h2>
+
+<p><code>lsof</code> est généralement préinstallé sur la plupart des distributions Linux. S'il ne l'est pas :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ubuntu / Debian</code></div>
+<div class="code-line"><code>sudo apt install lsof</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Fedora / RHEL / CentOS</code></div>
+<div class="code-line"><code>sudo dnf install lsof</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Arch Linux</code></div>
+<div class="code-line"><code>sudo pacman -S lsof</code></div>
+</div>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>lsof [OPTIONS]</code></div>
+<div class="code-line"><code>lsof [OPTIONS] fichier        # fichiers ouverts par un fichier precis</code></div>
+<div class="code-line"><code>lsof -c processus            # fichiers ouverts par un processus</code></div>
+<div class="code-line"><code>lsof -i [protocole:port]     # fichiers ouverts reseau</code></div>
+<div class="code-line"><code>lsof -u utilisateur          # fichiers ouverts par un utilisateur</code></div>
+</div>
+
+<h2>Sortie par defaut</h2>
+
+<p>Lancez <code>lsof</code> sans arguments pour voir TOUS les fichiers ouverts par TOUS les processus (attention : liste très longue) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ lsof</code></div>
+<div class="code-line"><code>COMMAND    PID  USER   FD   TYPE DEVICE SIZE/OFF   NODE NAME</code></div>
+<div class="code-line"><code>systemd      1  root  cwd    DIR  253,1     4096  131073 /</code></div>
+<div class="code-line"><code>systemd      1  root  rtd    DIR  253,1     4096  131073 /</code></div>
+<div class="code-line"><code>systemd      1  root  txt    REG  253,1  1594480  526259 /lib/systemd/systemd</code></div>
+<div class="code-line"><code>systemd      1  root  mem    REG  253,1   226960  395949 /lib/x86_64-linux-gnu/libpthread.so.0</code></div>
+<div class="code-line"><code>systemd      1  root   0u   CHR    1,3      0t0   12736 /dev/null</code></div>
+<div class="code-line"><code>systemd      1  root   1u   CHR    1,3      0t0   12736 /dev/null</code></div>
+<div class="code-line"><code>systemd      1  root   2u   CHR    1,3      0t0   12736 /dev/null</code></div>
+<div class="code-line"><code>sshd      1234  root    3u  IPv4  18745      0t0    TCP *:22 (LISTEN)</code></div>
+<div class="code-line"><code>nginx     2345  root    6u  IPv4  23456      0t0    TCP *:80 (LISTEN)</code></div>
+</div>
+
+<h3>Decryptage des colonnes</h3>
+
+<table>
+<tr><th>Colonne</th><th>Signification</th></tr>
+<tr><td><code>COMMAND</code></td><td>Nom de la commande (processus)</td></tr>
+<tr><td><code>PID</code></td><td>Numero du processus (Process ID)</td></tr>
+<tr><td><code>USER</code></td><td>Proprietaire du processus</td></tr>
+<tr><td><code>FD</code></td><td>Descripteur de fichier (0=entree, 1=sortie, 2=erreur, etc.) + mode (r=read, w=write, u=rw)</td></tr>
+<tr><td><code>TYPE</code></td><td>Type du fichier (REG=fichier normal, DIR=repertoire, CHR=peripherique caractere, FIFO=tube, IPv4/IPv6=socket reseau)</td></tr>
+<tr><td><code>DEVICE</code></td><td>Peripherique (majeur/mineur)</td></tr>
+<tr><td><code>SIZE/OFF</code></td><td>Taille du fichier ou decalage</td></tr>
+<tr><td><code>NODE</code></td><td>Numero d'inode (ou protocole pour les sockets)</td></tr>
+<tr><td><code>NAME</code></td><td>Nom du fichier ou adresse reseau</td></tr>
+</table>
+
+<h2>Filtrer par fichier</h2>
+
+<h3>Trouver quel processus utilise un fichier</h3>
+
+<p>C'est l'utilisation la plus courante : vous voulez savoir quel processus empêche le démontage d'un système de fichiers ou bloque un fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les processus qui utilisent un fichier precis</code></div>
+<div class="code-line"><code>lsof /home/david/document.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trouver les processus qui utilisent un repertoire</code></div>
+<div class="code-line"><code>lsof /var/log</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trouver les processus qui utilisent un systeme de fichiers (pourquoi umount echoue)</code></div>
+<div class="code-line"><code>lsof +D /mnt/disque-externe</code></div>
+<div class="code-line"><code># +D explore recursivement tous les sous-repertoires</code></div>
+</div>
+
+<h3>Trouver tous les fichiers ouverts dans un repertoire</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister tous les fichiers ouverts dans un repertoire (sans recursion)</code></div>
+<div class="code-line"><code>lsof +d /var/log</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Tous les fichiers ouverts dans /home (recursif)</code></div>
+<div class="code-line"><code>lsof +D /home</code></div>
+<div class="code-line"><code># Attention: peut etre lent sur de gros repertoires</code></div>
+</div>
+
+<h2>Filtrer par processus</h2>
+
+<h3>Par nom de commande</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Tous les fichiers ouverts par nginx</code></div>
+<div class="code-line"><code>lsof -c nginx</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Par plusieurs commandes (commence par)</code></div>
+<div class="code-line"><code>lsof -c ssh</code></div>
+<div class="code-line"><code># Affiche ssh, sshd, ssh-agent...</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Exclure une commande</code></div>
+<div class="code-line"><code>lsof -c nginx -c ^systemd</code></div>
+</div>
+
+<h3>Par PID</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Fichiers ouverts par un processus precis</code></div>
+<div class="code-line"><code>lsof -p 1234</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Par plusieurs PIDs</code></div>
+<div class="code-line"><code>lsof -p 1234,5678,9012</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Exclure un processus</code></div>
+<div class="code-line"><code>lsof -p ^1234</code></div>
+<div class="code-line"><code># Affiche tout SAUF le processus 1234</code></div>
+</div>
+
+<h3>Compter les fichiers ouverts par processus</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compter combien de fichiers chaque processus a ouverts</code></div>
+<div class="code-line"><code>lsof -c nginx | awk 'NR>1 {print $1}' | sort | uniq -c | sort -rn</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Nombre total de fichiers ouverts par un processus</code></div>
+<div class="code-line"><code>lsof -c nginx | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Limiter la sortie aux fichiers reguliers (pas les sockets, pipes...)</code></div>
+<div class="code-line"><code>lsof -c nginx -a -d ^FD</code></div>
+</div>
+
+<h2>Filtrer par utilisateur</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Tous les fichiers ouverts par un utilisateur</code></div>
+<div class="code-line"><code>lsof -u david</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Plusieurs utilisateurs</code></div>
+<div class="code-line"><code>lsof -u david -u root</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Exclure un utilisateur</code></div>
+<div class="code-line"><code>lsof -u ^root</code></div>
+<div class="code-line"><code># Tous les fichiers ouverts SAUF par root</code></div>
+</div>
+
+<h2>lsof et le reseau</h2>
+
+<h3>Trouver les connexions reseau ouvertes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Toutes les connexions reseau actives</code></div>
+<div class="code-line"><code>lsof -i</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Simplement les ports en ecoute (LISTEN)</code></div>
+<div class="code-line"><code>lsof -i -sTCP:LISTEN</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Connexions etablies</code></div>
+<div class="code-line"><code>lsof -i -sTCP:ESTABLISHED</code></div>
+</div>
+
+<h3>Par protocole</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Uniquement IPv4</code></div>
+<div class="code-line"><code>lsof -i 4</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Uniquement IPv6</code></div>
+<div class="code-line"><code>lsof -i 6</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Par protocole TCP ou UDP</code></div>
+<div class="code-line"><code>lsof -i tcp</code></div>
+<div class="code-line"><code>lsof -i udp</code></div>
+</div>
+
+<h3>Par port ou plage de ports</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Qui ecoute sur le port 80 ?</code></div>
+<div class="code-line"><code>lsof -i :80</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Qui utilise le port 443 ?</code></div>
+<div class="code-line"><code>lsof -i :443</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Plusieurs ports</code></div>
+<div class="code-line"><code>lsof -i :80 -i :443 -i :22</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Plage de ports</code></div>
+<div class="code-line"><code>lsof -i :1-1024</code></div>
+</div>
+
+<h3>Par adresse</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Connexions vers un hote precis</code></div>
+<div class="code-line"><code>lsof -i @serveur.example.com</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Connexions depuis une IP locale</code></div>
+<div class="code-line"><code>lsof -i @192.168.1.10</code></div>
+</div>
+
+<h2>Combiner les filtres</h2>
+
+<h3>Utiliser -a pour combiner (AND)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Utilisateur ET port</code></div>
+<div class="code-line"><code>lsof -u david -a -i :80</code></div>
+<div class="code-line"><code># Affiche les fichiers reseau de david sur le port 80</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Commande ET fichier</code></div>
+<div class="code-line"><code>lsof -c nginx -a /var/log/nginx/access.log</code></div>
+<div class="code-line"><code># Quel processus nginx accede a ce log ?</code></div>
+</div>
+
+<h3>Exclure avec ^</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Tous les fichiers SAUF ceux de root</code></div>
+<div class="code-line"><code>lsof -u ^root</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Tous SAUF les processus root SUR le port 22</code></div>
+<div class="code-line"><code>lsof -u ^root -i :22</code></div>
+</div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>1. Pourquoi umount echoue ?</h3>
+
+<p>Le cas classique : vous voulez démonter un disque externe mais le système refuse :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ sudo umount /mnt/disque-externe</code></div>
+<div class="code-line"><code>umount: /mnt/disque-externe: target is busy.</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trouver ce qui utilise ce point de montage</code></div>
+<div class="code-line"><code>$ sudo lsof +D /mnt/disque-externe</code></div>
+<div class="code-line"><code>COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF  NODE NAME</code></div>
+<div class="code-line"><code>bash    1234  david  cwd    DIR  8,17     4096  1234 /mnt/disque-externe</code></div>
+<div class="code-line"><code>vim     2345  david    4r   REG  8,17     8192  2345 /mnt/disque-externe/notes.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vous pouvez maintenant tuer les processus ou fermer les fichiers</code></div>
+</div>
+
+<h3>2. Quel processus ecoute sur un port ?</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Equivalent de "quel process sur port 3306 ?"</code></div>
+<div class="code-line"><code>$ lsof -i :3306</code></div>
+<div class="code-line"><code>COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF  NODE NAME</code></div>
+<div class="code-line"><code>mysqld  2345  mysql    19u  IPv4  45678      0t0   TCP *:3306 (LISTEN)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Tous les services en ecoute</code></div>
+<div class="code-line"><code>lsof -i -sTCP:LISTEN</code></div>
+</div>
+
+<h3>3. Verifier les connexions d'un utilisateur</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Toutes les connexions reseau d'un utilisateur</code></div>
+<div class="code-line"><code>lsof -u david -i</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Connections SSH actives d'un utilisateur</code></div>
+<div class="code-line"><code>lsof -u david -i :22 -a -sTCP:ESTABLISHED</code></div>
+</div>
+
+<h3>4. Surveillance en temps reel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Actualiser toutes les 2 secondes</code></div>
+<div class="code-line"><code>watch -n 2 'lsof -i :80'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Surveiller les nouveaux fichiers ouverts par un processus</code></div>
+<div class="code-line"><code>lsof -c nginx -r 2</code></div>
+<div class="code-line"><code># -r : mode repeat toutes les 15s (par defaut)</code></div>
+<div class="code-line"><code># -r2 : toutes les 2 secondes</code></div>
+</div>
+
+<h3>5. Trouver les fichiers supprimes mais encore ouverts</h3>
+
+<p>Un cas très utile : un fichier supprimé mais toujours utilisé par un processus (souvent un logrotate qui a rotate mais pas reload) :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Fichiers supprimes (deleted) mais toujours ouverts</code></div>
+<div class="code-line"><code>lsof +L1</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Pour un processus precis</code></div>
+<div class="code-line"><code>lsof -p 1234 +L1</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Recuperer l'espace disque en relancant le service</code></div>
+<div class="code-line"><code># (ferme les fichiers supprimes encore ouverts)</code></div>
+</div>
+
+<h3>6. Voir les pipes et tubes nommes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Fichiers de type FIFO (tubes)</code></div>
+<div class="code-line"><code>lsof -F</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Tous les types de fichiers non-reguliers</code></div>
+<div class="code-line"><code>lsof -e /var/run</code></div>
+</div>
+
+<h2>Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n</code></td><td>Ne pas resolver les noms d'hotes (plus rapide)</td></tr>
+<tr><td><code>-P</code></td><td>Ne pas resolver les numeros de port en noms (http, ssh...)</td></tr>
+<tr><td><code>-F</code></td><td>Format de sortie machine (pour parser)</td></tr>
+<tr><td><code>+D</code> repertoire</td><td>Explorer recursivement un repertoire</td></tr>
+<tr><td><code>+d</code> repertoire</td><td>Lister les fichiers dans le repertoire (non recursif)</td></tr>
+<tr><td><code>-a</code></td><td>Combiner les criteres avec ET</td></tr>
+<tr><td><code>-c</code> cmd</td><td>Filtrer par commande (commencant par)</td></tr>
+<tr><td><code>-p</code> pid</td><td>Filtrer par PID</td></tr>
+<tr><td><code>-u</code> user</td><td>Filtrer par utilisateur</td></tr>
+<tr><td><code>-i</code> [criteria]</td><td>Filtrer par interface reseau</td></tr>
+<tr><td><code>+L1</code></td><td>Afficher les fichiers supprimes encore ouverts</td></tr>
+<tr><td><code>-N</code></td><td>Lister les fichiers NFS sans verifier le serveur</td></tr>
+<tr><td><code>-r[s]</code></td><td>Mode repeat toutes les s secondes (defaut 15)</td></tr>
+</table>
+
+<h2>Scripts pratiques</h2>
+
+<h3>Script : Alerte si un port est deja utilise</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Verifier si un port est deja en cours d'utilisation</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>PORT="${1:-8080}"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>RESULT=$(lsof -i :$PORT -sTCP:LISTEN 2>/dev/null)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ -n "$RESULT" ]; then</code></div>
+<div class="code-line"><code>    echo "ERREUR: Le port $PORT est deja utilise :"</code></div>
+<div class="code-line"><code>    echo "$RESULT"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Port $PORT est libre, vous pouvez demarrer votre service."</code></div>
+<div class="code-line"><code>    exit 0</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h3>Script : Liberer les fichiers supprimes encore ouverts</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Trouver et liberer l'espace des fichiers supprimes encore ouverts</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "=== Fichiers supprimes mais encore ouverts ==="</code></div>
+<div class="code-line"><code>lsof +L1</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo ""</code></div>
+<div class="code-line"><code>echo "Espace total bloques (octets):"</code></div>
+<div class="code-line"><code>lsof +L1 2>/dev/null | awk 'NR>1 {s+=$7} END {print s}'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo ""</code></div>
+<div class="code-line"><code>echo "Pour liberer: redemarrez le service concerne ou tuez le processus."</code></div>
+<div class="code-line"><code>echo "Exemple: sudo systemctl restart nginx"</code></div>
+</div>
+
+<h3>Script : Compteur de fichiers ouverts par utilisateur</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Compter les fichiers ouverts par chaque utilisateur</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "=== Fichiers ouverts par utilisateur ==="</code></div>
+<div class="code-line"><code>lsof -n -P | awk 'NR>1 {print $3}' | sort | uniq -c | sort -rn</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo ""</code></div>
+<div class="code-line"><code>echo "=== Limite utilisateur (ulimit -n) ==="</code></div>
+<div class="code-line"><code>for user in $(lsof -n -P | awk 'NR>1 {print $3}' | sort -u); do</code></div>
+<div class="code-line"><code>    limite=$(su -s /bin/bash "$user" -c "ulimit -n" 2>/dev/null)</code></div>
+<div class="code-line"><code>    echo "$user: $limite fichiers max"</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>Script : Surveillance d'acces a un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Surveiller qui accede a un fichier en temps reel</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>FILE="$1"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ -z "$FILE" ]; then</code></div>
+<div class="code-line"><code>    echo "Usage: $0 <fichier>"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Surveillance de $FILE (Ctrl+C pour arreter)..."</code></div>
+<div class="code-line"><code>while true; do</code></div>
+<div class="code-line"><code>    clear</code></div>
+<div class="code-line"><code>    date</code></div>
+<div class="code-line"><code>    lsof "$FILE"</code></div>
+<div class="code-line"><code>    sleep 2</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h2>lsof vs autres commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Ce qu'elle montre</th><th>Quand l'utiliser</th></tr>
+<tr><td><code>lsof</code></td><td>Tous les fichiers ouverts par tous les processus</td><td>Outil generaliste, diagnostic systeme</td></tr>
+<tr><td><code>ss</code></td><td>Sockets reseau (plus moderne que netstat)</td><td>Connexions reseau rapide</td></tr>
+<tr><td><code>netstat</code></td><td>Connexions reseau et tables de routage</td><td>Compatibilite, informations plus larges</td></tr>
+<tr><td><code>fuser</code></td><td>Processus utilisant un fichier ou point de montage</td><td>Identique mais plus leger</td></tr>
+<tr><td><code>/proc/*/fd</code></td><td>Descripteurs de fichiers par processus</td><td>Inspection directe sans lsof</td></tr>
+</table>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>1. Preparer une migration de service</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Identifier tous les fichiers ouverts par un service avant arret</code></div>
+<div class="code-line"><code>lsof -c nginx | awk '{print $NF}' | sort -u | grep -v '^$'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Verifier que le service a bien libere tous les fichiers</code></div>
+<div class="code-line"><code>systemctl stop nginx && sleep 2 && lsof -c nginx</code></div>
+</div>
+
+<h3>2. Diagnostic de performance</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier si un processus ouvre trop de fichiers</code></div>
+<div class="code-line"><code>lsof -p 1234 | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Comparer avec la limite syste</code></div>
+<div class="code-line"><code>cat /proc/sys/fs/file-max</code></div>
+<div class="code-line"><code>ulimit -n</code></div>
+</div>
+
+<h3>3. Securite : detection d'anomalies</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier les connexions depuis un compte utilisateur suspect</code></div>
+<div class="code-line"><code>lsof -u www-data -i</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trouver les processus qui ecoutent sur des ports non attendus</code></div>
+<div class="code-line"><code>lsof -i -sTCP:LISTEN | grep -v -E ':(22|80|443|25|53):'</code></div>
+</div>
+
+<h2>Resume</h2>
+
+<p><code>lsof</code> est un outil de diagnostic incontournable pour tout administrateur Linux. Il révèle tout ce qui est ouvert sur votre système :</p>
+
+<ul>
+<li><code>lsof</code> — Lister tous les fichiers ouverts (sortie très longue)</li>
+<li><code>lsof fichier</code> — Qui utilise ce fichier précis ?</li>
+<li><code>lsof +D /repertoire</code> — Tous les fichiers dans un répertoire (récursif)</li>
+<li><code>lsof -c nginx</code> — Tous les fichiers ouverts par nginx</li>
+<li><code>lsof -u david</code> — Tous les fichiers d'un utilisateur</li>
+<li><code>lsof -i :80</code> — Qui utilise le port 80 ?</li>
+<li><code>lsof -i -sTCP:LISTEN</code> — Tous les ports en écoute</li>
+<li><code>lsof +L1</code> — Fichiers supprimés mais encore ouverts</li>
+<li><code>lsof -p 1234</code> — Tous les fichiers d'un processus précis</li>
+<li><code>lsof -u david -a -i :443</code> — Combinaison de filtres (ET)</li>
+</ul>
+
+<p>Maitriser <code>lsof</code> vous permet de diagnostiquer rapidement les problèmes de fichiers verrouillés, les services qui ne s'arrêtent pas proprement, les démontages qui échouent, et les connexions réseau suspectes.</p>
+
+<nav>
+<a href="106-stat-inspecter-fichiers-details.html">&larr; Leçon 106 : stat — Inspecter les fichiers en détail</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
