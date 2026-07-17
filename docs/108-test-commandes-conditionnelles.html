@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 108 : test et [ ] — Commandes de test conditionnel</h1>
+
+<p>La commande <code>test</code> (et son alias <code>[ ]</code>) est l'outil fondamental pour évaluer des conditions dans les scripts Bash. Elle permet de vérifier si un fichier existe, si une variable est vide, si un nombre est supérieur à un autre, ou si deux chaînes sont identiques. Sans elle, aucun script Bash un tant soit peu intelligent ne pourrait prendre de décisions.</p>
+
+<h2>Syntaxe de base</h2>
+
+<p><code>test</code> et <code>[ ]</code> sont équivalentes. La forme <code>[ ]</code> est plus lisible et très largement utilisée :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe complete</code></div>
+<div class="code-line"><code>test expression</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Syntaxe avec crochets (la plus courante)</code></div>
+<div class="code-line"><code>[ expression ]</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Syntaxe avec [[ ]] (bash ameliore, voir plus bas)</code></div>
+<div class="code-line"><code>[[ expression ]]</code></div>
+</div>
+
+<p>Ces commandes retournent un code de sortie :</p>
+<ul>
+<li><code>0</code> (succès) — la condition est <strong>vraie</strong></li>
+<li><code>1</code> (échec) — la condition est <strong>false</strong></li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Si le test est vrai, $? = 0</code></div>
+<div class="code-line"><code>[ -f /etc/passwd ]</code></div>
+<div class="code-line"><code>echo "Code de sortie: $?"  # Affiche 0 si le fichier existe</code></div>
+</div>
+
+<h2>Test sur les fichiers</h2>
+
+<p>La catégorie la plus utilisée : vérifier l'état d'un fichier.</p>
+
+<table>
+<tr><th>Option</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>-e</code> ou <code>-a</code></td><td>Le fichier existe</td><td><code>[ -e fichier ]</code></td></tr>
+<tr><td><code>-f</code></td><td>Existe et est un fichier régulier</td><td><code>[ -f /etc/passwd ]</code></td></tr>
+<tr><td><code>-d</code></td><td>Existe et est un répertoire</td><td><code>[ -d /home/david ]</code></td></tr>
+<tr><td><code>-L</code> ou <code>-h</code></td><td>Existe et est un lien symbolique</td><td><code>[ -L lien ]</code></td></tr>
+<tr><td><code>-r</code></td><td>Le fichier est lisible (par l'utilisateur courant)</td><td><code>[ -r fichier ]</code></td></tr>
+<tr><td><code>-w</code></td><td>Le fichier est inscriptible</td><td><code>[ -w fichier ]</code></td></tr>
+<tr><td><code>-x</code></td><td>Le fichier est exécutable</td><td><code>[ -x script.sh ]</code></td></tr>
+<tr><td><code>-s</code></td><td>Existe et a une taille > 0</td><td><code>[ -s log.txt ]</code></td></tr>
+<tr><td><code>-O</code></td><td>Le fichier appartient à l'utilisateur courant</td><td><code>[ -O fichier ]</code></td></tr>
+<tr><td><code>-G</code></td><td>Le fichier appartient au groupe courant</td><td><code>[ -G fichier ]</code></td></tr>
+<tr><td><code>-nt</code></td><td>Premier fichier plus récent que le second</td><td><code>[ a -nt b ]</code></td></tr>
+<tr><td><code>-ot</code></td><td>Premier fichier plus ancien que le second</td><td><code>[ a -ot b ]</code></td></tr>
+<tr><td><code>-ef</code></td><td>Les deux fichiers sont le même (même inode)</td><td><code>[ a -ef b ]</code></td></tr>
+</table>
+
+<h3>Exemples concrets</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier si un fichier existe avant de le lire</code></div>
+<div class="code-line"><code>if [ -f "/chemin/vers/fichier.txt" ]; then</code></div>
+<div class="code-line"><code>    echo "Le fichier existe, lecture en cours..."</code></div>
+<div class="code-line"><code>    cat /chemin/vers/fichier.txt</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "ERREUR: Le fichier n'existe pas."</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Verifier si un repertoire existe, sinon le creer</code></div>
+<div class="code-line"><code>if [ ! -d "$HOME/mes-projets" ]; then</code></div>
+<div class="code-line"><code>    mkdir -p "$HOME/mes-projets"</code></div>
+<div class="code-line"><code>    echo "Repertoire cree."</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Verifier que deux fichiers sont a jour</code></div>
+<div class="code-line"><code>if [ "fichier-source" -nt "fichier-cible" ]; then</code></div>
+<div class="code-line"><code>    echo "La source est plus recente, recompilation recommandee."</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h2>Test sur les chaînes de caractères</h2>
+
+<table>
+<tr><th>Option</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>-z</code></td><td>La chaîne est vide (zero length)</td><td><code>[ -z "$var" ]</code></td></tr>
+<tr><td><code>-n</code></td><td>La chaîne n'est pas vide (non-zero)</td><td><code>[ -n "$var" ]</code></td></tr>
+<tr><td><code>=</code></td><td>Deux chaînes sont égales</td><td><code>[ "$a" = "$b" ]</code></td></tr>
+<tr><td><code>==</code></td><td>Deux chaînes sont égales (equivalent a =)</td><td><code>[ "$a" == "$b" ]</code></td></tr>
+<tr><td><code>!=</code></td><td>Deux chaînes sont différentes</td><td><code>[ "$a" != "$b" ]</code></td></tr>
+<tr><td><code>&lt;</code></td><td>Première chaîne triée avant la seconde (locale)</td><td><code>[[ "$a" < "$b" ]]</code></td></tr>
+<tr><td><code>&gt;</code></td><td>Première chaîne triée après la seconde (locale)</td><td><code>[[ "$a" > "$b" ]]</code></td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier si une variable est vide</code></div>
+<div class="code-line"><code>if [ -z "$nom_utilisateur" ]; then</code></div>
+<div class="code-line"><code>    echo "ERREUR: Le nom d'utilisateur est requis."</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Comparer deux chaines</code></div>
+<div class="code-line"><code>if [ "$reponse" = "oui" ]; then</code></div>
+<div class="code-line"><code>    echo "Vous avez confirme!"</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># IMPORTANT: toujours mettre entre guillemets !</code></div>
+<div class="code-line"><code>var=""</code></div>
+<div class="code-line"><code>[ $var = "" ]      # ERREUR: expands to [ = "" ]</code></div>
+<div class="code-line"><code>[ "$var" = "" ]    # CORRECT: [ "" = "" ]</code></div>
+</div>
+
+<h2>Test sur les nombres</h2>
+
+<table>
+<tr><th>Option</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>-eq</code></td><td>Égaux (equal)</td><td><code>[ "$a" -eq "$b" ]</code></td></tr>
+<tr><td><code>-ne</code></td><td>Différents (not equal)</td><td><code>[ "$a" -ne "$b" ]</code></td></tr>
+<tr><td><code>-lt</code></td><td>Plus petit (less than)</td><td><code>[ "$a" -lt "$b" ]</code></td></tr>
+<tr><td><code>-le</code></td><td>Plus petit ou égal (less or equal)</td><td><code>[ "$a" -le "$b" ]</code></td></tr>
+<tr><td><code>-gt</code></td><td>Plus grand (greater than)</td><td><code>[ "$a" -gt "$b" ]</code></td></tr>
+<tr><td><code>-ge</code></td><td>Plus grand ou égal (greater or equal)</td><td><code>[ "$a" -ge "$b" ]</code></td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Verifier l'age</code></div>
+<div class="code-line"><code>age=25</code></div>
+<div class="code-line"><code>if [ "$age" -ge 18 ]; then</code></div>
+<div class="code-line"><code>    echo "Majeur."</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Mineur."</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Verifier le nombre d'arguments</code></div>
+<div class="code-line"><code>if [ "$#" -ne 2 ]; then</code></div>
+<div class="code-line"><code>    echo "Usage: $0 <fichier> <option>"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Comparer des nombres (precision)</code></div>
+<div class="code-line"><code># ATTENTION: [ ] utilise des entiers, pour les decimals utilisez bc ou awk</code></div>
+<div class="code-line"><code>[ "3.14" = "3.14" ]    # Fonctionne pour des chaines</code></div>
+<div class="code-line"><code>echo "3.14 > 2.71" | bc -l  # Pour des comparaisons numeriques reelles</code></div>
+</div>
+
+<h2>Opérateurs logiques</h2>
+
+<h3>ET logique (<code>-a</code> ou &amp;&amp;)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Les deux conditions doivent etre vraies</code></div>
+<div class="code-line"><code>if [ -f "$fichier" ] && [ -r "$fichier" ]; then</code></div>
+<div class="code-line"><code>    echo "Le fichier existe et est lisible."</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec [ ], on peut utiliser -a (mais && est preferable)</code></div>
+<div class="code-line"><code>if [ -f "$fichier" -a -r "$fichier" ]; then</code></div>
+<div class="code-line"><code>    echo "Le fichier existe et est lisible."</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h3>OU logique (<code>-o</code> ou ||)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Au moins une condition doit etre vraie</code></div>
+<div class="code-line"><code>if [ "$statut" = "actif" ] || [ "$statut" = "en_cours" ]; then</code></div>
+<div class="code-line"><code>    echo "Le service est operationnel."</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h3>NEGATION (<code>!</code>)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Inverse le resultat du test</code></div>
+<div class="code-line"><code>if [ ! -f "$fichier" ]; then</code></div>
+<div class="code-line"><code>    echo "Le fichier n'existe PAS."</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h3>Combinaison complexe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Priorite: ! > -a > -o (mieux vaut utiliser des parentheses)</code></div>
+<div class="code-line"><code># Avec [[ ]], on peut utiliser ( ) pour grouper</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [[ ( "$age" -ge 18 && "$age" -le 65 ) || "$est_etudiant" = "oui" ]]; then</code></div>
+<div class="code-line"><code>    echo "Tarification adulte ou etudiant."</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h2>[ ] vs [[ ]] : quelle différence ?</h2>
+
+<p>Bash offre deux syntaxes pour les tests. <code>[[ ]]</code> est une extension Bash (non POSIX) plus puissante et généralement recommandée :</p>
+
+<table>
+<tr><th>Fonctionnalité</th><th><code>[ ]</code></th><th><code>[[ ]]</code></th></tr>
+<tr><td>Motifs (patterns)</td><td>Non</td><td>Oui (<code>[[ var == pattern ]]</code>)</td></tr>
+<tr><td>Guillemets optionnels</td><td>Obligatoires pour les variables</td><td>Optionnels</td></tr>
+<tr><td>Mot vide (word splitting)</td><td>Oui, peut causer des erreurs</td><td>Non</td></tr>
+<tr><td>Extention (globbing)</td><td>Non</td><td>Oui</td></tr>
+<tr><td>Portabilité POSIX</td><td>Oui</td><td>Non (Bash, zsh, ksh)</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Exemple de probleme avec [ ]</code></div>
+<div class="code-line"><code>fichier="mon fichier.txt"</code></div>
+<div class="code-line"><code>[ -f $fichier ]       # ERREUR: word splitting -> [ -f mon fichier.txt ]</code></div>
+<div class="code-line"><code>[ -f "$fichier" ]     # OK: les guillemets protegent</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec [[ ]], pas de probleme</code></div>
+<div class="code-line"><code>[[ -f $fichier ]]    # Fonctionne sans guillemets</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Patterns avec [[ ]]</code></div>
+<div class="code-line"><code>fichier="rapport-2024.pdf"</code></div>
+<div class="code-line"><code>[[ "$fichier" == *.pdf ]] && echo "C'est un PDF"</code></div>
+<div class="code-line"><code>[[ "$fichier" == rapport-* ]] && echo "C'est un rapport"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Expressions regulieres (Bash 3+)</code></div>
+<div class="code-line"><code>[[ "$email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]</code></div>
+</div>
+
+<h2>Exemples pratiques dans des scripts</h2>
+
+<h3>1. Vérifier les arguments d'un script</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Verification complete des arguments</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ "$#" -ne 2 ]; then</code></div>
+<div class="code-line"><code>    echo "Usage: $0 <source> <destination>"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>SOURCE="$1"</code></div>
+<div class="code-line"><code>DEST="$2"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ ! -f "$SOURCE" ]; then</code></div>
+<div class="code-line"><code>    echo "ERREUR: '$SOURCE' n'existe pas ou n'est pas un fichier."</code></div>
+<div class="code-line"><code>    exit 2</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ ! -r "$SOURCE" ]; then</code></div>
+<div class="code-line"><code>    echo "ERREUR: '$SOURCE' n'est pas lisible."</code></div>
+<div class="code-line"><code>    exit 3</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Copie de '$SOURCE' vers '$DEST'..."</code></div>
+</div>
+
+<h3>2. Menu interactif</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code>echo "Voulez-vous continuer ? (oui/non)"</code></div>
+<div class="code-line"><code>read reponse</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>case "$reponse" in</code></div>
+<div class="code-line"><code>    oui|o|y|yes)</code></div>
+<div class="code-line"><code>        echo "Continuons!"</code></div>
+<div class="code-line"><code>        ;;</code></div>
+<div class="code-line"><code>    non|n|no)</code></div>
+<div class="code-line"><code>        echo "Abandon."</code></div>
+<div class="code-line"><code>        exit 0</code></div>
+<div class="code-line"><code>        ;;</code></div>
+<div class="code-line"><code>    *)</code></div>
+<div class="code-line"><code>        echo "Reponse non reconnue."</code></div>
+<div class="code-line"><code>        exit 1</code></div>
+<div class="code-line"><code>        ;;</code></div>
+<div class="code-line"><code>esac</code></div>
+</div>
+
+<h3>3. Test de port réseau</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Verifier si un port est ouvert</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>HOST="${1:-localhost}"</code></div>
+<div class="code-line"><code>PORT="${2:-80}"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Methode simple avec timeout ( voir la commande timeout, lecon 82)</code></div>
+<div class="code-line"><code>if timeout 2 bash -c "cat < /dev/null > /dev/tcp/$HOST/$PORT" 2>/dev/null; then</code></div>
+<div class="code-line"><code>    echo "Le port $PORT sur $HOST est ouvert."</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Le port $PORT sur $HOST est ferme ou injoignable."</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h3>4. Validation d'adresse email</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Validation simple d'email avec [[ ]] et regex</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>valider_email() {</code></div>
+<div class="code-line"><code>    local email="$1"</code></div>
+<div class="code-line"><code>    </code></div>
+<div class="code-line"><code>    # Expression reguliere pour email basique</code></div>
+<div class="code-line"><code>    if [[ "$email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then</code></div>
+<div class="code-line"><code>        return 0  # Succes</code></div>
+<div class="code-line"><code>    else</code></div>
+<div class="code-line"><code>        return 1  # Echec</code></div>
+<div class="code-line"><code>    fi</code></div>
+<div class="code-line"><code>}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>read -p "Entrez votre email: " email</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if valider_email "$email"; then</code></div>
+<div class="code-line"><code>    echo "Email valide: $email"</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Email invalide."</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h3>5. Vérifier l'espace disque</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class name="code-line"><code># Alerte si l'espace disque est bas</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>SEUIL=90  # Pourcentage d'alerte</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lire l'utilisation (df -P donne une seule ligne par systeme de fichiers)</code></div>
+<div class="code-line"><code>utilisation=$(df -P / | awk 'NR==2 {print $5}' | sed 's/%//')</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ "$utilisation" -gt "$SEUIL" ]; then</code></div>
+<div class="code-line"><code>    echo "ATTENTION: Disque a ${utilisation}% (seuil: ${SEUIL}%)"</code></div>
+<div class="code-line"><code>    echo "Liberation d'espace recommandee."</code></div>
+<div class="code-line"><code>    df -h /</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Espace disque OK: ${utilisation}% utilise"</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h2>Erreurs fréquentes à éviter</h2>
+
+<h3>1. Oublier les guillemets</h3>
+
+<div class="code-block">
+<div class="code-line"><code># ERREUR: si var est vide, [ $var = "test" ] devient [ = "test" ]</code></div>
+<div class="code-line"><code>var=""</code></div>
+<div class="code-line"><code>[ $var = "" ]    # Syntax error!</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># CORRECT</code></div>
+<div class="code-line"><code>[ "$var" = "" ]  # Fonctionne</code></div>
+</div>
+
+<h3>2. Confondre = et -eq</h3>
+
+<div class="code-block">
+<div class="code-line"><code># = compare des CHAINES</code></div>
+<div class="code-line"><code>[ "3" = "03" ]    # Vrai: les chaines sont identiques</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># -eq compare des NOMBRES</code></div>
+<div class="code-line"><code>[ "3" -eq "03" ]  # Vrai: 3 et 03 sont egaux numeriquement</code></div>
+<div class="code-line"><code>[ "3" -eq "3.0" ] # ERREUR: 3.0 n'est pas un entier</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># ATTENTION aux comparaisons de versions</code></div>
+<div class="code-line"><code>[ "1.2.3" = "1.2.3" ]  # OK pour des chaines litterales</code></div>
+</div>
+
+<h3>3. Utiliser [ ] pour les patterns</h3>
+
+<div class="code-block">
+<div class="code-line"><code># ERREUR: [ ] ne supporte pas les patterns</code></div>
+<div class="code-line"><code>[ "$fichier" == "*.log" ]    # Teste si la variable egale litteralement "*.log"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># CORRECT: utiliser [[ ]] pour les patterns</code></div>
+<div class="code-line"><code>[[ "$fichier" == *.log ]]   # Teste si la variable correspond au pattern</code></div>
+</div>
+
+<h3>4. Mélanger les opérateurs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># ERREUR: ne melangez pas -a/-o avec &&/|| dans [ ]</code></div>
+<div class="code-line"><code>[ "$a" -eq 1 -a "$b" = "x" ]  # Comportement non defini dans certaines versions</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># CORRECT: separer en plusieurs tests</code></div>
+<div class="code-line"><code>[ "$a" -eq 1 ] && [ "$b" = "x" ]</code></div>
+</div>
+
+<h2>Récapitulatif</h2>
+
+<table>
+<tr><th>Catégorie</th><th>Options principales</th></tr>
+<tr><td>Fichiers</td><td><code>-e, -f, -d, -r, -w, -x, -s, -L</code></td></tr>
+<tr><td>Chaînes</td><td><code>-z, -n, =, !=</code></td></tr>
+<tr><td>Nombres</td><td><code>-eq, -ne, -lt, -le, -gt, -ge</code></td></tr>
+<tr><td>Logique</td><td><code>&amp;&amp;, ||, !</code></td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Patterns avances (uniquement avec [[ ]])</code></div>
+<div class="code-line"><code>[[ "$var" == pattern ]]    # Glob simple</code></div>
+<div class="code-line"><code>[[ "$var" =~ regex ]]       # Expression reguliere</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Meilleures pratiques</code></div>
+<div class="code-line"><code># 1. Toujours guillemetter les variables dans [ ]</code></div>
+<div class="code-line"><code># 2. Preferer [[ ]] pour les scripts Bash modernes</code></div>
+<div class="code-line"><code># 3. Utiliser = pour les chaines, -eq etc. pour les nombres</code></div>
+</div>
+
+<p>La commande <code>test</code> et ses variantes <code>[ ]</code> et <code>[[ ]]</code> sont le fondement de toute la logique conditionnelle dans les scripts Bash. Une maîtrise solide de ces commandes est indispensable pour écrire des scripts robustes et fiables.</p>
+
+<nav>
+<a href="107-lsof-liste-fichiers-ouverts.html">&larr; Leçon 107 : lsof — Lister les fichiers ouverts</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
