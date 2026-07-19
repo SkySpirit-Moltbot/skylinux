@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 110 : md5sum, sha256sum et les checksums — Vérifier l'intégrité des fichiers</h1>
+
+<p>Quand vous téléchargez un fichier sur Internet — une image ISO, un logiciel, une archive — comment être sûr qu'il n'a pas été corrompu pendant le téléchargement, ou pire, qu'il n'a pas été modifié par un attaquant ? La réponse se trouve dans les <strong>checksums</strong> (ou sommes de contrôle). Ce sont des empreintes numériques uniques générées à partir du contenu d'un fichier. Linux fournit plusieurs outils pour calculer et vérifier ces empreintes : <code>md5sum</code>, <code>sha256sum</code>, et d'autres. Dans cette leçon, vous apprendrez à les utiliser pour garantir l'intégrité de vos fichiers.</p>
+
+<h2>Qu'est-ce qu'un checksum ?</h2>
+
+<p>Un checksum est le résultat d'une fonction mathématique (algorithme de hachage) appliquée au contenu d'un fichier. Le même fichier produit toujours le même hash. Si le fichier change, même d'un seul bit, le hash change complètement. Cela permet de détecter n'importe quelle modification, corruption ou manipulation.</p>
+
+<p>Les algorithmes les plus courants :</p>
+
+<table>
+<tr><th>Algorithme</th><th>Longueur du hash</th><th>Usage recommandé</th></tr>
+<tr><td><code>md5sum</code></td><td>32 caractères hex</td><td>Legacy, vérifications rapides (non sécurisé)</td></tr>
+<tr><td><code>sha256sum</code></td><td>64 caractères hex</td><td>Recommandé pour la plupart des usages</td></tr>
+<tr><td><code>sha512sum</code></td><td>128 caractères hex</td><td>Haute sécurité</td></tr>
+<tr><td><code>b2sum</code></td><td>64 caractères hex</td><td>BLAKE2, rapide et sécurisé</td></tr>
+</table>
+
+<h2>Calculer un checksum</h2>
+
+<h3>md5sum</h3>
+
+<p>La commande <code>md5sum</code> calcule l'empreinte MD5 d'un fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Calculer le hash MD5 d'un fichier</code></div>
+<div class="code-line"><code>md5sum fichier.iso</code></div>
+<div class="code-line"><code>d41d8cd98f00b204e9800998ecf8427e  fichier.iso</code></div>
+</div>
+
+<p>Le format de sortie est simple : le hash suivi du nom du fichier.</p>
+
+<h3>sha256sum</h3>
+
+<p>Pour un hash plus fiable et sécurisé, utilisez <code>sha256sum</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Calculer le hash SHA-256 d'un fichier</code></div>
+<div class="code-line"><code>sha256sum fichier.iso</code></div>
+<div class="code-line"><code>e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  fichier.iso</code></div>
+</div>
+
+<h3>Vérifier plusieurs fichiers</h3>
+
+<p>Vous pouvez calculer le hash de plusieurs fichiers en une seule commande :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Hash de plusieurs fichiers</code></div>
+<div class="code-line"><code>sha256sum fichier1.txt fichier2.txt archive.tar.gz</code></div>
+<div class="code-line"><code>a1b2c3d4...  fichier1.txt</code></div>
+<div class="code-line"><code>e5f6g7h8...  fichier2.txt</code></div>
+<div class="code-line"><code>i9j0k1l2...  archive.tar.gz</code></div>
+</div>
+
+<h3>Calculer le hash depuis stdin</h3>
+
+<p>Vous pouvez aussi calculer le hash d'une chaîne de texte ou d'un flux :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Hash d'une chaîne de texte</code></div>
+<div class="code-line"><code>echo -n "Bonjour" | sha256sum</code></div>
+<div class="code-line"><code>18ea9307cf35c1e3dfa6f1a6e0c1e9f16c3e8a7d5b9f2c4e6a8d0c2b4e6f8a0c  -</code></div>
+</div>
+
+<p>L'argument <code>-n</code> est important : il retire le retour à la ligne ajouté par <code>echo</code>, sinon le hash serait différent.</p>
+
+<h2>Vérifier l'intégrité d'un fichier</h2>
+
+<h3>Comparaison manuelle</h3>
+
+<p>La méthode la plus simple est de comparer visuellement le hash calculé avec le hash attendu (publié sur le site de téléchargement) :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Vous calculez</code></div>
+<div class="code-line"><code>sha256sum ubuntu-22.04.iso</code></div>
+<div class="code-line"><code>b54e9e4c6e2a7f8d1c3b5a9e2d4f6a8b0c2e4f6a8b0c2e4f6a8b0c2e4f6a8b0  ubuntu-22.04.iso</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Sur le site officiel, vous lisez :</code></div>
+<div class="code-line"><code># SHA256: b54e9e4c6e2a7f8d1c3b5a9e2d4f6a8b0c2e4f6a8b0c2e4f6a8b0c2e4f6a8b0</code></div>
+</div>
+
+<p>Si les deux correspondent, le fichier est intact. Sinon, il a été corrompu ou modifié.</p>
+
+<h3>Vérification automatisée avec un fichier .sha256</h3>
+
+<p>Quand vous téléchargez un fichier, son hash officiel est souvent fourni dans un fichier séparé (par exemple <code>fichier.iso.sha256</code>). Pour vérifier automatiquement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un fichier de hash (exemple)</code></div>
+<div class="code-line"><code>sha256sum ubuntu-22.04.iso > ubuntu-22.04.iso.sha256</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vérifier à partir du fichier de hash</code></div>
+<div class="code-line"><code>sha256sum -c ubuntu-22.04.iso.sha256</code></div>
+<div class="code-line"><code>ubuntu-22.04.iso: OK</code></div>
+</div>
+
+<p>L'option <code>-c</code> (check) lit le fichier de hash et compare chaque hash avec le fichier correspondant. Si tout va bien, vous obtenez <code>OK</code>. Si le fichier a changé, vous verrez <code>ÉCHEC</code> ou <code>FAILED</code>.</p>
+
+<h3>Créer un fichier de hash pour plusieurs fichiers</h3>
+
+<p>Pour vérifier un ensemble de fichiers, vous pouvez créer un fichier listant tous les hashes :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Générer un fichier contenant les hashes de tous les fichiers du répertoire</code></div>
+<div class="code-line"><code>sha256sum * > checksums.sha256</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vérifier tous les fichiers d'un coup</code></div>
+<div class="code-line"><code>sha256sum -c checksums.sha256</code></div>
+<div class="code-line"><code>fichier1.txt: OK</code></div>
+<div class="code-line"><code>fichier2.txt: OK</code></div>
+<div class="code-line"><code>archive.tar.gz: OK</code></div>
+</div>
+
+<h2>Utiliser md5sum pour des проверки (legacy)</h2>
+
+<p>Bien que MD5 soit considéré comme cryptographiquement faible pour la sécurité, il reste utilisé pour des vérifications de corruption rapide. Le principe est identique :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un fichier de hash MD5</code></div>
+<div class="code-line"><code>md5sum photo.jpg musique.mp3 > backup.md5</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vérifier</code></div>
+<div class="code-line"><code>md5sum -c backup.md5</code></div>
+<div class="code-line"><code>photo.jpg: OK</code></div>
+<div class="code-line"><code>musique.mp3: OK</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<h3>Toujours vérifier après téléchargement</h3>
+
+<p>C'est une habitude essentielle, surtout pour les fichiers sensibles :</p>
+
+<ul>
+<li>Images ISO de systèmes d'exploitation</li>
+<li>Logiciels téléchargés depuis des sites tiers</li>
+<li>Archives contenant des données importantes</li>
+<li>Fichiers reçus par email ou transfert réseau</li>
+</ul>
+
+<h3>Utiliser SHA-256 de préférence</h3>
+
+<p>Bien que <code>md5sum</code> soit plus rapide, <code>sha256sum</code> offre une bien meilleure garantie de sécurité. Pour les fichiers importants, SHA-256 ou SHA-512 sont recommandés.</p>
+
+<h3>Protéger le fichier de hash</h3>
+
+<p>Si vous publiez un hash, faites-le sur le même canal que le fichier ou via un canal sécurisé (HTTPS). Sinon, un attaquant pourrait modifier le fichier ET le hash.</p>
+
+<h3>Combiner avec GPG pour une sécurité maximale</h3>
+
+<p>Les checksums garantissent l'intégrité, mais pas l'authenticité. Pour vérifier que c'est bien l'auteur officiel qui a signé le fichier, utilisez GPG avec une signature numérique.</p>
+
+<h2>Résumé des commandes principales</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>md5sum fichier</code></td><td>Calculer le hash MD5 d'un fichier</td></tr>
+<tr><td><code>sha256sum fichier</code></td><td>Calculer le hash SHA-256 d'un fichier</td></tr>
+<tr><td><code>sha512sum fichier</code></td><td>Calculer le hash SHA-512 d'un fichier</td></tr>
+<tr><td><code>b2sum fichier</code></td><td>Calculer le hash BLAKE2 d'un fichier</td></tr>
+<tr><td><code>sha256sum -c fichier.sha256</code></td><td>Vérifier les fichiers listés dans un fichier de hash</td></tr>
+<tr><td><code>echo -n "texte" | sha256sum</code></td><td>Calculer le hash d'une chaîne de texte</td></tr>
+</table>
+
+<h2>Exercice pratique</h2>
+
+<p>Pour vous familiariser avec les checksums, essayez cet exercice :</p>
+
+<div class="code-block">
+<div class="code-line"><code># 1. Créez un fichier texte</code></div>
+<div class="code-line"><code>echo "Mon fichier de test" > test.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 2. Calculez son hash SHA-256</code></div>
+<div class="code-line"><code>sha256sum test.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 3. Modifiez légèrement le fichier</code></div>
+<div class="code-line"><code>echo "Mon fichier de test." > test.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 4. Calculez à nouveau le hash</code></div>
+<div class="code-line"><code>sha256sum test.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 5. Comparez : les hash sont différents, même avec un seul point ajouté !</code></div>
+</div>
+
+<p>Vous constaterez que le hash change complètement, même pour un changement minime. C'est précisément ce qui rend les checksums si fiables pour détecter n'importe quelle modification.</p>
+
+<h2>Conclusion</h2>
+
+<p>Les checksums sont un outil fondamental pour quiconque manipule des fichiers importants sous Linux. Que ce soit pour vérifier l'intégrité d'un téléchargement, valider une sauvegarde ou s'assurer qu'un fichier n'a pas été modifié, <code>md5sum</code>, <code>sha256sum</code> et leurs variantes offrent une solution simple, rapide et efficace. Prenez l'habitude de vérifier vos fichiers critiques — c'est une bonne pratique qui peut vous éviter bien des ennuis.</p>
+
+<nav>
+<a href="109-watch.html">&larr; Leçon 109 : watch — Exécuter une commande périodiquement</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
