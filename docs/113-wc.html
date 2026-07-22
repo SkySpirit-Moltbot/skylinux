@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 113 : wc — Compter lignes, mots et caractères</h1>
+
+<p>Quand vous avez besoin de savoir combien de lignes contient un fichier, combien de mots dans un texte, ou la taille exacte en caractères d'une sortie, <code>wc</code> (word count) est l'outil parfait. Simple, rapide et souvent utilisé dans les pipes, <code>wc</code> fait partie de ces commandes essentielles que tout utilisateur Linux devrait connaître. Dans cette leçon, vous apprendrez toutes ses options et des combinaisons pratiques.</p>
+
+<h2>Introduction à wc</h2>
+
+<p><code>wc</code> signifie <strong>word count</strong> (compteur de mots). Par défaut, il affiche trois informations :</p>
+
+<ul>
+<li>Le nombre de <strong>lignes</strong></li>
+<li>Le nombre de <strong>mots</strong></li>
+<li>Le nombre d'<strong>octets</strong> (caractères)</li>
+</ul>
+
+<p>C'est une commande présente sur tous les systèmes Unix/Linux depuis les origines, grâce à son utilité dans les scripts et les tubes (pipes).</p>
+
+<h2>Utilisation de base</h2>
+
+<h3>Compter un fichier entier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>wc fichier.txt</code></div>
+</div>
+
+<p>Résultat :</p>
+
+<div class="code-block">
+<div class="code-line"><code>    125    892   5214 fichier.txt</code></div>
+<div class="code-line"><code># Lignes   Mots   Octets</code></div>
+</div>
+
+<h3>Compter plusieurs fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>wc fichier1.txt fichier2.txt fichier3.txt</code></div>
+</div>
+
+<p>Résultat :</p>
+
+<div class="code-block">
+<div class="code-line"><code>   125   892   5214 fichier1.txt</code></div>
+<div class="code-line"><code>    78   456   2890 fichier2.txt</code></div>
+<div class="code-line"><code>   203  1348   8104 fichier3.txt</code></div>
+<div class="code-line"><code>   406  2696  16208 total</code></div>
+</div>
+
+<h3>Compter depuis stdin (pipe)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>cat fichier.txt | wc</code></div>
+</div>
+
+<p>Ou encore plus simplement avec une redirection :</p>
+
+<div class="code-block">
+<div class="code-line"><code>wc < fichier.txt</code></div>
+</div>
+
+<h2>Les options principales</h2>
+
+<h3>-l : Compter uniquement les lignes</h3>
+
+<p>L'option la plus utilisée. Nombreux sont les cas où seule la nombre de lignes importe :</p>
+
+<div class="code-block">
+<div class="code-line"><code>wc -l fichier.txt</code></div>
+<div class="code-line"><code># 125 fichier.txt</code></div>
+</div>
+
+<p>Exemples pratiques :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Compter le nombre de connexions SSH actives</code></div>
+<div class="code-line"><code>who | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter le nombre de paquets installés</code></div>
+<div class="code-line"><code>dpkg -l | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter le nombre de lignes dans un log</code></div>
+<div class="code-line"><code>wc -l /var/log/syslog</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter le nombre de fichiers dans un répertoire</code></div>
+<div class="code-line"><code>ls -1 | wc -l</code></div>
+</div>
+
+<h3>-w : Compter uniquement les mots</h3>
+
+<div class="code-block">
+<div class="code-line"><code>wc -w fichier.txt</code></div>
+<div class="code-line"><code># 892 fichier.txt</code></div>
+</div>
+
+<p>Utile pour analyser la taille d'un texte :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Compter les mots d'un article</code></div>
+<div class="code-line"><code>wc -w article.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter les mots dans toutes les pages HTML</code></div>
+<div class="code-line"><code>cat *.html | wc -w</code></div>
+</div>
+
+<h3>-c : Compter uniquement les octets</h3>
+
+<div class="code-block">
+<div class="code-line"><code>wc -c fichier.txt</code></div>
+<div class="code-line"><code># 5214 fichier.txt</code></div>
+</div>
+
+<p>Affiche la taille exacte du fichier en octets (indépendamment du contenu).</p>
+
+<h3>-m : Compter uniquement les caractères</h3>
+
+<p>Similar à <code>-c</code> mais prend en compte les caractères multi-octets (comme les accents UTF-8) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>wc -m fichier.txt</code></div>
+</div>
+
+<p>Sur un fichier avec des caractères accentués, <code>-c</code> et <code>-m</code> peuvent donner des résultats différents.</p>
+
+<h3>-L : Afficher la longueur de la ligne la plus longue</h3>
+
+<div class="code-block">
+<div class="code-line"><code>wc -L fichier.txt</code></div>
+<div class="code-line"><code># 78</code></div>
+</div>
+
+<p>Cette option affiche la longueur (en caractères) de la ligne la plus longue du fichier. Très utile pour :</p>
+
+<ul>
+<li>Déterminer la largeur d'affichage nécessaire</li>
+<li>Valider des formats avec des limites de longueur</li>
+<li>Optimiser l'affichage dans un terminal</li>
+</ul>
+
+<h2>Exemples pratiques en combinaison</h2>
+
+<h3>Compter des lignes avec grep</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compter le nombre d'erreurs dans un log</code></div>
+<div class="code-line"><code>grep "ERROR" /var/log/syslog | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter le nombre de lignes contenant "TODO" dans du code</code></div>
+<div class="code-line"><code>grep -r "TODO" src/ | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter le nombre de fichiers d'un type précis</code></div>
+<div class="code-line"><code>find . -name "*.py" | wc -l</code></div>
+</div>
+
+<h3>Compter le nombre de processus</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Nombre total de processus</code></div>
+<div class="code-line"><code>ps aux | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Nombre de processus d'un utilisateur</code></div>
+<div class="code-line"><code>ps -u $USER | wc -l</code></div>
+</div>
+
+<h3>Compter des utilisateurs ou connexions</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Nombre d'utilisateurs sur le système</code></div>
+<div class="code-line"><code>cat /etc/passwd | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Nombre de connexions SSH actives</code></div>
+<div class="code-line"><code>who | wc -l</code></div>
+</div>
+
+<h3>Analyser du code</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Nombre de lignes dans un fichier source</code></div>
+<div class="code-line"><code>wc -l main.py</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Total de lignes de code dans un projet</code></div>
+<div class="code-line"><code>find . -name "*.py" -exec cat {} + | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Nombre de fonctions dans un fichier</code></div>
+<div class="code-line"><code>grep -c "def " fichier.py</code></div>
+</div>
+
+<h2>Combiner wc avec d'autres outils</h2>
+
+<h3>Tri par nombre de lignes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister les fichiers par nombre de lignes (du plus grand au plus petit)</code></div>
+<div class="code-line"><code>wc -l *.txt | sort -rn</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Exclure le total et trier</code></div>
+<div class="code-line"><code>wc -l *.txt | grep -v total | sort -rn</code></div>
+</div>
+
+<h3>Statistiques avec awk</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Additionner toutes les lignes de plusieurs fichiers</code></div>
+<div class="code-line"><code>cat *.log | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Moyenne de mots par ligne</code></div>
+<div class="code-line"><code>awk '{mots+=$2; lignes++} END {print mots/lignes}' <(wc -l *.txt)</code></div>
+</div>
+
+<h3>Utiliser avec xargs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compter les lignes de tous les fichiers txt</code></div>
+<div class="code-line"><code>find . -name "*.txt" | xargs wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Version sûre (gère les espaces dans les noms)</code></div>
+<div class="code-line"><code>find . -name "*.txt" -print0 | xargs -0 wc -l</code></div>
+</div>
+
+<h2>Formats de sortie personnalises</h2>
+
+<h3>Ajouter le nom du fichier</h3>
+
+<p>Par défaut, <code>wc</code> affiche le nom du fichier. Pour un affichage plus propre :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Format : "nombre_lignes fichier"</code></div>
+<div class="code-line"><code>wc -l fichier.txt</code></div>
+<div class="code-line"><code># 125 fichier.txt</code></div>
+</div>
+
+<h3>Sans nom de fichier (pour les pipes)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># pipe | wc -l n'affiche pas le nom</code></div>
+<div class="code-line"><code>cat fichier.txt | wc -l</code></div>
+<div class="code-line"><code># 125</code></div>
+</div>
+
+<h3>Formatage avec printf</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Format personnalisé</code></div>
+<div class="code-line"><code>printf "Lignes: %s\n" "$(wc -l < fichier.txt)"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Utiliser dans un script</code></div>
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code>nb_lignes=$(wc -l < "$1")</code></div>
+<div class="code-line"><code>echo "Le fichier $1 contient $nb_lignes lignes"</code></div>
+</div>
+
+<h2>Les limites de wc</h2>
+
+<ul>
+<li><strong>Ne compte pas les lignes vides correctement</strong> si le fichier ne se termine pas par un retour à la ligne (la dernière ligne sans \n n'est pas comptée)</li>
+<li><strong>Les performances</strong> peuvent être meilleures avec <code>wc -l</code> qu'avec <code>grep -c</code> car <code>wc</code> utilise une méthode plus directe</li>
+<li><strong>Pour les très gros fichiers</strong>, <code>wc -l</code> est plus rapide que charger tout le fichier en mémoire</li>
+</ul>
+
+<h2>Scripts pratiques avec wc</h2>
+
+<h3>Script : vérifier la taille d'un projet</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "=== Statistiques du projet ==="</code></div>
+<div class="code-line"><code>echo ""</code></div>
+<div class="code-line"><code>echo "Lignes de code par langage:"</code></div>
+<div class="code-line"><code>find . -name "*.py" 2>/dev/null | xargs wc -l | tail -1</code></div>
+<div class="code-line"><code>find . -name "*.js" 2>/dev/null | xargs wc -l | tail -1</code></div>
+<div class="code-line"><code>find . -name "*.html" 2>/dev/null | xargs wc -l | tail -1</code></div>
+<div class="code-line"><code>echo ""</code></div>
+<div class="code-line"><code>echo "Total fichiers:"</code></div>
+<div class="code-line"><code>find . -type f | wc -l</code></div>
+</div>
+
+<h3>Script : surveillance de log</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>LOG="/var/log/syslog"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>avant=$(wc -l < "$LOG")</code></div>
+<div class="code-line"><code>sleep 60</code></div>
+<div class="code-line"><code>apres=$(wc -l < "$LOG")</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Lignes ajoutées en 1 minute: $((apres - avant))"</code></div>
+</div>
+
+<h2>Résumé des options</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>wc -l</code></td><td>Compter les lignes</td></tr>
+<tr><td><code>wc -w</code></td><td>Compter les mots</td></tr>
+<tr><td><code>wc -c</code></td><td>Compter les octets</td></tr>
+<tr><td><code>wc -m</code></td><td>Compter les caractères (UTF-8)</td></tr>
+<tr><td><code>wc -L</code></td><td>Afficher la longueur de la ligne la plus longue</td></tr>
+</table>
+
+<h2>Conclusion</h2>
+
+<p><code>wc</code> est une commande simple mais puissante, indispensable dans la boîte à outils de tout utilisateur Linux. Que ce soit pour analyser du code, surveiller des logs, ou compter des éléments dans un système, <code>wc</code> s'intègre parfaitement dans les tubes (pipes) avec d'autres commandes. N'oubliez pas l'option <code>-l</code> qui est de loin la plus utilisée au quotidien.</p>
+
+<nav>
+<a href="112-expect-automatisation-taches-interactives.html">&larr; Leçon 112 : expect — Automatiser les tâches interactives</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
