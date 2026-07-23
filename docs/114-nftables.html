@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 114 : nftables — Le pare-feu nouvelle génération</h1>
+
+<p>Si vous avez suivi la leçon sur <code>iptables</code>, vous connaissez déjà le pare-feu historique de Linux. Mais iptables a pris de l'âge. <strong>nftables</strong> est son remplaçant officiel, conçu pour corriger ses limitations et unifier la gestion des règles de pare-feu, de NAT et même du QoS dans une seule interface cohérente.</p>
+
+<h2>Pourquoi passer à nftables ?</h2>
+
+<p>iptables souffre de plusieurs problèmes hérités de son histoire : une syntaxe différente selon le protocole (iptables pour IPv4, ip6tables pour IPv6, ebtables pour Ethernet…), un système de tables et chaînes rigide, et des performances limitées sur les systèmes à nombreuses règles. nftables résout tout ça avec une syntaxe unifiée et un noyau unifié.</p>
+
+<h2>Installation</h2>
+
+<p>nftables est généralement préinstallé sur les distributions modernes. Vérifions sa présence :</p>
+
+<div class="code-block">
+<div class="code-line"><code>which nft</code></div>
+</div>
+
+<p>Sur Ubuntu/Debian, installez-le si nécessaire :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo apt install nftables</code></div>
+</div>
+
+<h2>Activer et gérer le service</h2>
+
+<p>nftables fonctionne avec systemd comme les autres services :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl enable nftables
+sudo systemctl start nftables
+sudo systemctl status nftables</code></div>
+</div>
+
+<h2>La syntaxe de base</h2>
+
+<p>Contrairement à iptables où tout est morcelé (tables, chaînes, règles), nftables organise tout dans une structure logique lisible.</p>
+
+<h2>Listing des règles existantes</h2>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft list ruleset</code></div>
+</div>
+
+<p>Si c'est vide, tant mieux — c'est le reglas par défaut d'un système ouvert.</p>
+
+<h2>Créer une table</h2>
+
+<p>Une <em>table</em> contient des chaînes. Le type de table définit ce qu'elle filtre : <code>filter</code> pour le pare-feu, <code>nat</code> pour la translation d'adresses, <code>route</code> pour le routage.</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add table inet firewall</code></div>
+</div>
+
+<p><code>inet</code> signifie que la table gère à la fois IPv4 et IPv6 avec la même syntaxe. Fini de manipuler <code>iptables</code> ET <code>ip6tables</code> séparément !</p>
+
+<h2>Créer des chaînes</h2>
+
+<p>Une chaîne définit un point d' interception :</p>
+
+<ul>
+<li><strong>input</strong> : trafic entrant</li>
+<li><strong>forward</strong> : trafic routé</li>
+<li><strong>output</strong> : trafic sortant</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add chain inet firewall input { type filter hook input priority 0 \; policy drop \; }</code></div>
+</div>
+
+<p>Cette chaîne <code>input</code> intercepte tout le trafic entrant, avec une politique par défaut de <code>drop</code> (tout refuser par défaut). Le <code>priority 0</code> définit l'ordre d'évaluation.</p>
+
+<h2>Ajouter des règles</h2>
+
+<h3>Autoriser le loopback</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet firewall input iif lo accept</code></div>
+</div>
+
+<p><code>iif lo</code> = interface d'entrée loopback. Tout le trafic loopback est légitime.</p>
+
+<h3>Autoriser les connexions établies</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet firewall input ct state established,related accept</code></div>
+</div>
+
+<p><code>ct state established,related</code> accepte les paquets qui appartiennent à une connexion déjà établie ou liée. Indispensable pour que les réponses aux connexions sortantes reviennent.</p>
+
+<h3>Autoriser SSH (port 22)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet firewall input tcp dport 22 accept</code></div>
+</div>
+
+<h3>Autoriser HTTP/HTTPS (ports 80 et 443)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet firewall input tcp dport { 80, 443 } accept</code></div>
+</div>
+
+<p>Notez la syntaxe avec accolades pour plusieurs ports — bien plus lisible que les multiples règles iptables.</p>
+
+<h3>Autoriser ICMP (ping)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft add rule inet firewall input icmp type echo-request accept</code></div>
+</div>
+
+<h2>Supprimer des règles</h2>
+
+<p>Chaque règle a un numéro de handle. Pour le trouver :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft -a list ruleset</code></div>
+</div>
+
+<p>L'option <code>-a</code> affiche les handles. Ensuite, supprimez par handle :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nft delete rule inet firewall input handle 5</code></div>
+</div>
+
+<h2>Voir et effacer tout</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Voir les règles
+sudo nft list ruleset
+
+# Effacer tout et recommencer
+sudo nft flush ruleset
+
+# Supprimer une table complète
+sudo nft delete table inet firewall</code></div>
+</div>
+
+<h2>Exemple complet : pare-feu de base</h2>
+
+<p>Voici un script complet qui configure un pare-feu nftables standard pour un serveur :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/sbin/nft -f
+
+# Flush existing rules
+flush ruleset
+
+# Table unique pour IPv4 + IPv6
+table inet firewall {
+
+  # Chaîne entrante — politique par défaut : drop
+  chain input {
+    type filter hook input priority 0; policy drop;
+
+    # Loopback — toujours accepter
+    iif lo accept
+
+    # Connexions établies/liées
+    ct state established,related accept
+
+    # ICMP (ping)
+    ip protocol icmp accept
+    icmpv6 type { echo-request, echo-reply, destination-unreachable } accept
+
+    # SSH — adaptez le port si nécessaire
+    tcp dport 22 accept
+
+    # HTTP/HTTPS
+    tcp dport { 80, 443 } accept
+
+    # Impossible ici : rejection propre (optionnel)
+    # tcp reset
+    # icmpv6 type port-unreachable
+  }
+}</code></div>
+</div>
+
+<p>Sauvegardez ce script dans <code>/etc/nftables.conf</code> et activez-le au démarrage. Activez aussi la persistance :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl enable nftables</code></div>
+</div>
+
+<h2>nftables et la persistance</h2>
+
+<p>nftables ne sauvegarde pas automatiquement les règles à chaque modification. Deux approches :</p>
+
+<ul>
+<li><strong>Script dans <code>/etc/nftables.conf</code></strong> : nftables charge ce fichier au démarrage. Modifiez, puis <code>sudo nft -f /etc/nftables.conf</code> pour recharger.</li>
+<li><strong>Commandes interactives</strong> : utilisez <code>sudo nft list ruleset > /etc/nftables.conf</code> pour sauvegarder l'état courant.</li>
+</ul>
+
+<h2>Comparaison nftables vs iptables</h2>
+
+<table>
+<tr><th>Aspect</th><th>iptables</th><th>nftables</th></tr>
+<tr><td>IPv4/IPv6 unifié</td><td>Non (iptables + ip6tables séparés)</td><td>Oui (famille <code>inet</code>)</td></tr>
+<tr><td>Syntaxe</td><td>Différente par module</td><td>Unifiée et expressive</td></tr>
+<tr><td>Sets de ports</td><td>Non natif (necessite multiports)</td><td>Natifs : <code>{ 80, 443 }</code></td></tr>
+<tr><td>Maps et dictionnaires</td><td>Non</td><td>Oui (accélère les règles)</td></tr>
+<tr><td>Stateful firewall</td><td>Oui (par extension)</td><td>Oui (intégré nativement)</td></tr>
+<tr><td>Support NAT</td><td>Table nat dédiée</td><td>Même table avec <code>nat</code></td></tr>
+<tr><td>Fichier de config</td><td>Scripts shell</td><td><code>/etc/nftables.conf</code> natif</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Définissez toujours une politique par défaut stricte (<code>drop</code> ou <code>accept</code> selon vos besoins).</li>
+<li>Placez les règles les plus fréquentes en premier pour optimiser les performances.</li>
+<li>Testez vos règles dans un screen ou tmux pour ne pas vous enfermer dehors.</li>
+<li>Conservez toujours un accès SSH depuis un autre réseau avant d'appliquer un pare-feu restrictif.</li>
+<li>Utilisez <code>inet</code> pour gérer IPv4 et IPv6 dans la même table.</li>
+</ul>
+
+<h2>Vérifier le pare-feu actif</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Voir les règles avec handles
+sudo nft -a list ruleset
+
+# Vérifier les compteurs de paquets
+sudo nft -s list ruleset
+
+# Monitorer en temps réel
+sudo nft monitor</code></div>
+</div>
+
+<h2>Conclusion</h2>
+
+<p>nftables est l'avenir du pare-feu Linux. Sa syntaxe unifiée, ses performances améliorées et ses fonctionnalités avancées (sets, maps, support natif IPv4+IPv6) en font le choix naturel pour tout nouveau serveur. Si vous administrez des machines en production, prenez le temps de migrer vos scripts iptables vers nftables — vous y gagnerez en maintenabilité et en clarté.</p>
+
+<nav>
+<a href="113-wc.html">&larr; Leçon 113 : wc — Compter lignes, mots et caractères</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
