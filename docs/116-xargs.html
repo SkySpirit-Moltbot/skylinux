@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 116 : xargs — Construire des commandes à partir de résultats</h1>
+
+<p><code>xargs</code> est un outil qui lit des données (depuis l'entrée standard ou un fichier) et les transforme en <strong>arguments pour une autre commande</strong>. C'est le pont idéal entre les commandes qui produisent du texte et celles qui attendent des arguments. Sans <code>xargs</code>, beaucoup de chaînes de commandes puissantes seraient impossibles.</p>
+
+<h2>Le problème que xargs résout</h2>
+
+<p>Imaginons que vous vouliez supprimer tous les fichiers <code>.tmp</code> trouvés par <code>find</code>. Vous pourriez croire que ceci fonctionne :</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /tmp -name "*.tmp" | rm</code></div>
+</div>
+
+<p>Mais <code>rm</code> ne lit pas l'entrée standard. Elle attend des arguments explicites. C'est là qu'intervient <code>xargs</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /tmp -name "*.tmp" | xargs rm</code></div>
+</div>
+
+<p><code>xargs</code> reçoit les lignes de <code>find</code> et les passe comme arguments à <code>rm</code>.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>commande_source | xargs commande_cible</code></div>
+</div>
+
+<p>Chaque ligne résultat de <code>commande_source</code> devient un argument de <code>commande_cible</code>.</p>
+
+<h2>Exemples concrets</h2>
+
+<h3>Supprimer des fichiers par leur contenu</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les fichiers contenant "error" et les supprimer</code></div>
+<div class="code-line"><code>grep -rl "error" /var/log/ | xargs rm</code></div>
+</div>
+
+<h3>Créer des archives à partir d'une liste de fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Archiver tous les fichiers .txt du répertoire courant</code></div>
+<div class="code-line"><code>ls *.txt | xargs tar -czf archive.tar.gz</code></div>
+</div>
+
+<h3>Compter les lignes de plusieurs fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.log" | xargs wc -l</code></div>
+</div>
+
+<p>Équivalent à : <code>wc -l fichier1.log fichier2.log fichier3.log ...</code></p>
+
+<h3>Créer des répertoires à partir d'une liste</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire les noms de la liste.txt et créer chaque répertoire</code></div>
+<div class="code-line"><code>cat liste.txt | xargs mkdir</code></div>
+</div>
+
+<h2>La commande -I : remplacement de placeholder</h2>
+
+<p>Par défaut, <code>xargs</code> place les arguments <strong>en fin de commande</strong>. Parfois, vous voulez les insérer <strong>au milieu</strong> ou <strong>utiliser plusieurs fois</strong> le même argument. L'option <code>-I</code> définit un placeholder.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find . -name "*.txt" | xargs -I {} mv {} /home/user/docs/</code></div>
+</div>
+
+<p><code>{}</code> est remplacé par chaque chemin de fichier. La commande <code>mv</code> est exécutée séparément pour chaque fichier (par défaut).</p>
+
+<h3>Autre exemple avec -I</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Copier chaque image en备份</code></div>
+<div class="code-line"><code>ls *.jpg | xargs -I {} cp {} {}.bak</code></div>
+</div>
+
+<h3>Utiliser un autre placeholder</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un fichier .md et un .txt pour chaque nom</code></div>
+<div class="code-line"><code>cat noms.txt | xargs -I @ sh -c 'touch @.md && touch @.txt'</code></div>
+</div>
+
+<h2>Exécution parallèle avec -P</h2>
+
+<p>Par défaut, <code>xargs</code> exécute les commandes <strong>séquentiellement</strong>. L'option <code>-P</code> permet de paralléliser.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser 4 fichiers simultanément</code></div>
+<div class="code-line"><code>ls *.log | xargs -P 4 gzip</code></div>
+</div>
+
+<p>Cela compressera jusqu'à 4 fichiers en même temps, ce qui accélère considérablement le traitement sur les machines multi-cœurs.</p>
+
+<h3>Combiner -I et -P</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find . -name "*.png" | xargs -I {} -P 4 convert {} -resize 800x600 {}</code></div>
+</div>
+
+<h2>Limiter le nombre d'arguments par commande : -n</h2>
+
+<p><code>-n 1</code> force <code>xargs</code> à exécuter la commande cible avec <strong>un seul argument à la fois</strong>. C'est utile quand la commande cible ne supporte pas plusieurs arguments.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Exporter chaque variable individuellement</code></div>
+<div class="code-line"><code>cat variables.env | xargs -n 1 export</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Importer chaque clé SSH séparément</code></div>
+<div class="code-line"><code>ssh-add -l | grep " RSA" | xargs -n 1 ssh-add -d</code></div>
+</div>
+
+<h3>Combiner -n et -P pour un contrôle fin</h3>
+
+<div class="code-block">
+<div class="code-line"><code># 2 arguments par commande, jusqu'à 3 processus parallèles</code></div>
+<div class="code-line"><code>cat fichiers.txt | xargs -n 2 -P 3 commande</code></div>
+</div>
+
+<h2>Interaction avec find</h2>
+
+<p><code>find</code> et <code>xargs</code> fonctionnent très bien ensemble. Par défaut, <code>find</code> utilise des sauts de ligne, ce qui pose problème si les noms contiennent des espaces. two solutions :</p>
+
+<h3>Solution 1 : find -print0 et xargs -0</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.txt" -print0 | xargs -0 rm</code></div>
+</div>
+
+<p><code>-print0</code> sépare les résultats par un caractère nul (<code>\0</code>) au lieu d'un retour à la ligne. <code>xargs -0</code> lit ces séparateurs nuls. Gère les noms avec espaces ou caractères spéciaux.</p>
+
+<h3>Solution 2 : find -exec avec ;</h3>
+
+<div class="code-block">
+<div class="code-line"><code>find /home -name "*.txt" -exec rm {} \;</code></div>
+</div>
+
+<p>Cette approche exécute <code>rm</code> pour chaque fichier individuellement. <code>xargs</code> est généralement <strong>plus rapide</strong> car il группирует les arguments.</p>
+
+<h2>Afficher la commande avant de l'exécuter : --verbose / -t</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Voir exactement quelles commandes seront exécutées</code></div>
+<div class="code-line"><code>echo "fichier1.txt fichier2.txt" | xargs -t rm</code></div>
+<div class="code-line"><code>rm fichier1.txt fichier2.txt</code></div>
+</div>
+
+<p>Très utile pour <strong>vérifier avant de lancer</strong>, surtout avec des commandes destructives.</p>
+
+<h2>Ne rien exécuter : --empty-verbose / --dry-run</h2>
+
+<p>Pas de flag dry-run natif, mais combinez <code>-t</code> avec une cible inoffensive :</p>
+
+<div class="code-block">
+<div class="code-line"><code>find . -name "*.tmp" | xargs -t echo "Suppression:"</code></div>
+</div>
+
+<h2>Combiner avec des compteurs</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Numéroter chaque fichier pour le traitement</code></div>
+<div class="code-line"><code>ls *.mp3 | nl | xargs -I {} sh -c 'echo "Piste {}"'</code></div>
+</div>
+
+<h2>Protéger contre l'injection</h2>
+
+<p>Si les noms de fichiers peuvent contenir des caractères dangereux, combinez toujours <code>find -print0</code> et <code>xargs -0</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>find /uploads -type f -print0 | xargs -0 -I {} chmod 644 {}</code></div>
+</div>
+
+<h2>Tableau récapitulatif des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-0</code></td><td>Séparateur nul (pour utiliser avec find -print0)</td></tr>
+<tr><td><code>-I {}</code></td><td>Placeholder remplacé par chaque argument</td></tr>
+<tr><td><code>-n N</code></td><td>Maximum N arguments par commande</td></tr>
+<tr><td><code>-P N</code></td><td>Exécuter jusqu'à N processus en parallèle</td></tr>
+<tr><td><code>-t</code></td><td>Afficher la commande avant de l'exécuter</td></tr>
+<tr><td><code>-p</code></td><td>Demander confirmation avant chaque exécution</td></tr>
+<tr><td><code>-r</code></td><td>Ne rien faire si l'entrée est vide</td></tr>
+</table>
+
+<h2>Exemple avancé : pipeline complet</h2>
+
+<div class="code-block">
+<div class="code-line"><code># 1. Trouver les fichiers.log de plus de 7 jours</code></div>
+<div class="code-line"><code># 2. Les compresser en parallèle (max 4)</code></div>
+<div class="code-line"><code># 3. Compter les lignes de chaque archive</code></div>
+<div class="code-line"><code>find /var/log -name "*.log" -mtime +7 -print0 | \</code></div>
+<div class="code-line"><code>  xargs -0 -P 4 gzip && \</code></div>
+<div class="code-line"><code>  find /var/log -name "*.log.gz" | xargs -P 4 zcat | wc -l</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<ul>
+<li><code>xargs</code> transforme l'entrée standard en arguments pour une autre commande.</li>
+<li><code>-I {}</code> insère les arguments à un endroit précis de la commande.</li>
+<li><code>-n 1</code> passe un seul argument par exécution.</li>
+<li><code>-P N</code> parallélise jusqu'à N processus.</li>
+<li><code>-0</code> avec <code>find -print0</code> gère les noms avec espaces.</li>
+<li><code>-t</code> affiche les commandes avant exécution (debug).</li>
+</ul>
+
+<nav>
+<a href="115-jobs-fg-bg.html">&larr; Leçon 115 : jobs, fg et bg — Gestion des tâches en arrière-plan</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
