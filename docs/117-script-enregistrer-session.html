@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 117 : script — Enregistrer une session terminal</h1>
+
+<p>Vous avez déjà été dans cette situation : vous effectuez une série de commandes complexes, et vous auriez bien voulu garder une trace de tout ce que vous avez tapé et affiché. C'est exactement ce que fait la commande <code>script</code>. Elle enregistre tout ce qui s'affiche dans votre terminal dans un fichier, que vous pouvez ensuite relire, partager ou archiver.</p>
+
+<h2>1. L'enregistrement de base</h2>
+
+<p>La syntaxe est très simple :</p>
+
+<div class="code-block"><div class="code-line"><code>script ma_session.txt</code></div></div>
+
+<p>Dès cet instant, tout ce que vous tapez et tout ce qui s'affiche est enregistré dans <code>ma_session.txt</code>. Pour arrêter l'enregistrement, tapez <code>exit</code> ou appuyez sur <code>Ctrl+D</code>.</p>
+
+<div class="code-block"><div class="code-line"><code>$ script session.log</code></div></div>
+<div class="code-block"><div class="code-line"><code>Script started, file is session.log</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ ls -la /var/log</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ df -h</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ uptime</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ exit</code></div></div>
+<div class="code-block"><div class="code-line"><code>Script done, file is session.log</code></div></div>
+
+<h2>2. Lire le fichier d'enregistrement</h2>
+
+<p>Le fichier généré contient à la fois les commandes tapées et leur sortie. Vous pouvez le consulter directement avec <code>cat</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>cat session.log</code></div></div>
+
+<p>Le fichier inclut des caractères de contrôle (backspaces, retours chariot). Si vous voulez un fichier texte propre, utilisez l'option <code>-c</code> (ou <code>--log-close</code>) combinée avec <code>scriptreplay</code>.</p>
+
+<h2>3. Enregistrement avec horodatage</h2>
+
+<p>Pour garder une trace du moment où chaque commande a été exécutée, utilisez l'option <code>--timing</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>script --timing=timing.txt session.log</code></div></div>
+
+<p>Cette commande crée deux fichiers :</p>
+
+<ul>
+<li><code>session.log</code> : le contenu de la session</li>
+<li><code>timing.txt</code> : les délais entre chaque action</li>
+</ul>
+
+<p>Vous pouvez ensuite rejouer la session avec <code>scriptreplay</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>scriptreplay --timing=timing.txt --log-out=session.log</code></div></div>
+
+<p>La session est rejouée exactement comme vous l'avez vécue, avec les mêmes délais.</p>
+
+<h2>4. Enregistrement silencieux</h2>
+
+<p>Par défaut, <code>script</code> affiche aussi dans le terminal tout en enregistrant. Si vous voulez un enregistrement transparent (sans double affichage), utilisez l'option <code>-q</code> (quiet) :</p>
+
+<div class="code-block"><div class="code-line"><code>script -q session.log</code></div></div>
+
+<h2>5. Mode append (ajouter au fichier)</h2>
+
+<p>Vous pouvez ajouter une nouvelle session à un fichier existant avec l'option <code>-a</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>script -a session.log</code></div></div>
+
+<p>C'est utile pour documenter des sessions de maintenance sur plusieurs jours.</p>
+
+<h2>6. Enregistrement dans un format brut</h2>
+
+<p>L'option <code>-t</code> (timing) est l'équivalent historique de <code>--timing</code>. Combinez-la avec <code>scriptreplay</code> pour rejouer :</p>
+
+<div class="code-block"><div class="code-line"><code>script -t 2>timing.txt session.log</code></div></div>
+
+<p>Cette syntaxe redirige les informations de timing vers <code>timing.txt</code> et le contenu vers <code>session.log</code>.</p>
+
+<h2>7. Cas d'utilisation pratiques</h2>
+
+<h3>Documenter une installation complexe</h3>
+
+<div class="code-block"><div class="code-line"><code>script install_serveur.log</code></div></div>
+<div class="code-block"><div class="code-line"><code># Tapez vos commandes d'installation...</code></div></div>
+<div class="code-block"><div class="code-line"><code>exit</code></div></div>
+
+<p>Vous avez maintenant une trace complète de votre installation, horodatée, que vous pouvez conserver ou partager.</p>
+
+<h3>Capturer une session de debug</h3>
+
+<div class="code-block"><div class="code-line"><code>script debug_reseau.log</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ ip addr show</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ ping -c 4 8.8.8.8</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ traceroute google.com</code></div></div>
+<div class="code-block"><div class="code-line"><code>$ exit</code></div></div>
+
+<h3>Formation et tutoriels</h3>
+
+<p>Enregistrez une session pour montrer à un collègue ou un étudiant les étapes exactes d'une procédure. Rejouez-la avec <code>scriptreplay</code> pour une démonstration en direct.</p>
+
+<h2>8. Récapitulatif des options</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>script fichier.log</code></td><td>Enregistrer dans fichier.log</td></tr>
+<tr><td><code>-a</code></td><td>Ajouter au fichier existant</td></tr>
+<tr><td><code>-q</code></td><td>Mode silencieux (pas d'affichage)</td></tr>
+<tr><td><code>--timing=fichier.txt</code></td><td>Enregistrer les délais</td></tr>
+<tr><td><code>-c COMMANDE</code></td><td>Exécuter une commande sans shell interactif</td></tr>
+<tr><td><code>scriptreplay</code></td><td>Rejouer une session enregistrée</td></tr>
+</table>
+
+<h2>9. Exécuter une commande sans shell interactif</h2>
+
+<p>Si vous voulez juste capturer la sortie d'une commande sans ouvrir un shell complet, utilisez <code>-c</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>script -c "make && make install" install.log</code></div></div>
+
+<p>C'est pratique pour capturer une compilation sans que l'utilisateur interagisse.</p>
+
+<h2>Exercice</h2>
+
+<p>Essayez ces manipulations pour vous familiariser avec <code>script</code> :</p>
+
+<ul>
+<li>Démarrez un enregistrement avec <code>script test.log</code></li>
+<li>Tapez quelques commandes (<code>ls</code>, <code>date</code>, <code>whoami</code>)</li>
+<li>Quittez avec <code>exit</code></li>
+<li>Affichez le contenu de <code>test.log</code> avec <code>cat</code></li>
+<li>Recommencez avec l'option <code>-a</code> pour ajouter au même fichier</li>
+<li>Utilisez <code>script --timing=timing.txt sortie.log</code> puis <code>scriptreplay</code></li>
+</ul>
+
+<p>La commande <code>script</code> est un outil simple mais puissant pour garder une trace de votre travail. Que ce soit pour de la documentation, du dépannage, de la formation ou simplement pour ne rien oublier de ce que vous avez fait, elle trouve sa place dans la boîte à outils de tout administrateur Linux.</p>
+
+<nav>
+<a href="116-xargs.html">&larr; Leçon 116 : xargs — Construire des commandes à partir de résultats</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
