@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>basename et dirname — Extraire le nom et le répertoire d'un chemin</h1>
+
+<p>Quand vous travaillez avec des chemins de fichiers en Bash, il est souvent utile d'en extraire une partie précise : le nom du fichier seul, ou le répertoire parent. C'est exactement ce que font <code>basename</code> et <code>dirname</code>.</p>
+
+<h2>Qu'est-ce que basename ?</h2>
+
+<p><code>basename</code> extrait le dernier élément d'un chemin. Si vous lui donnez un chemin complet de fichier, il retourne simplement le nom du fichier (sans le répertoire qui le contient).</p>
+
+<h3>Utilisation basique</h3>
+
+<div class="code-block"><div class="code-line"><code>basename /home/utilisateur/documents/rapport.pdf</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>rapport.pdf</code></div></div>
+
+<h3>Supprimer une extension</h3>
+
+<p>Vous pouvez demander à <code>basename</code> de retirer une extension précise grâce à l'option <code>-s</code> (suffix) :</p>
+
+<div class="code-block"><div class="code-line"><code>basename -s .pdf /home/utilisateur/documents/rapport.pdf</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>rapport</code></div></div>
+
+<p>Autre méthode avec <code>basename</code> suivi du suffixe en argument :</p>
+
+<div class="code-block"><div class="code-line"><code>basename /home/utilisateur/documents/rapport.pdf .pdf</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>rapport</code></div></div>
+
+<h2>Qu'est-ce que dirname ?</h2>
+
+<p><code>dirname</code> fait l'inverse de <code>basename</code> : il retourne la partie répertoire du chemin, c'est-à-dire tout ce qui précède le dernier <code>/</code>.</p>
+
+<h3>Utilisation basique</h3>
+
+<div class="code-block"><div class="code-line"><code>dirname /home/utilisateur/documents/rapport.pdf</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>/home/utilisateur/documents</code></div></div>
+
+<h3>Cas particulier</h3>
+
+<p>Si le chemin ne contient qu'un nom de fichier sans répertoire, <code>dirname</code> retourne <code>.</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>dirname rapport.pdf</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>.</code></div></div>
+
+<h2>Combiner basename et dirname</h2>
+
+<p>Ensemble, ils permettent de分解 un chemin complet en ses deux parties :</p>
+
+<div class="code-block"><div class="code-line"><code>chemin="/home/utilisateur/documents/rapport.pdf"
+
+echo "Chemin complet : $chemin"
+echo "Répertoire      : $(dirname "$chemin")"
+echo "Nom du fichier  : $(basename "$chemin")"</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>Chemin complet : /home/utilisateur/documents/rapport.pdf
+Répertoire      : /home/utilisateur/documents
+Nom du fichier  : rapport.pdf</code></div></div>
+
+<h2>Utiliser basename dans des scripts</h2>
+
+<p><code>basename</code> est très utile dans les scripts pour :</p>
+
+<h3>Créer des noms de fichiers temporaires</h3>
+
+<div class="code-block"><div class="code-line"><code># Extraire le nom sans extension
+nom_fichier=$(basename "$fichier" .pdf)
+echo "Base : $nom_fichier"</code></div></div>
+
+<h3>Générer des noms de sauvegarde</h3>
+
+<div class="code-block"><div class="code-line"><code># Créer une sauvegarde : fichier.bak
+fichier="/home/utilisateur/data.csv"
+bak="${fichier}.bak"
+cp "$fichier" "$bak"
+echo "Sauvegarde créée : $bak"</code></div></div>
+
+<h3>Afficher le nom du script</h3>
+
+<div class="code-block"><div class="code-line"><code># Dans un script
+nom_script=$(basename "$0")
+echo "Ce script s'appelle : $nom_script"</code></div></div>
+
+<h2>Traiter plusieurs chemins</h2>
+
+<p>Avec l'option <code>-a</code> (multiple), vous pouvez traiter plusieurs chemins à la fois :</p>
+
+<div class="code-block"><div class="code-line"><code># basename sur plusieurs fichiers
+basename -a /home/user/a.txt /home/user/b.txt /home/user/c.txt</code></div></div>
+
+<p>Résultat :</p>
+
+<div class="code-block"><div class="code-line"><code>a.txt
+b.txt
+c.txt</code></div></div>
+
+<p>Et avec <code>-z</code>, les résultats sont séparés par des caractères nuls (utile avec <code>xargs -0</code>) :</p>
+
+<div class="code-block"><div class="code-line"><code>basename -z /home/user/a.txt /home/user/b.txt</code></div></div>
+
+<h2>Tableau récapitulatif</h2>
+
+<table>
+<tr><th>Commande</th><th>Entrée</th><th>Sortie</th></tr>
+<tr><td><code>basename</code></td><td><code>/home/user/fichier.txt</code></td><td><code>fichier.txt</code></td></tr>
+<tr><td><code>basename -s .txt</code></td><td><code>/home/user/fichier.txt</code></td><td><code>fichier</code></td></tr>
+<tr><td><code>dirname</code></td><td><code>/home/user/fichier.txt</code></td><td><code>/home/user</code></td></tr>
+<tr><td><code>dirname</code></td><td><code>fichier.txt</code></td><td><code>.</code></td></tr>
+</table>
+
+<h2>Exercices pratiques</h2>
+
+<h3>Exercice 1</h3>
+<p>Quel résultat donne cette commande ?</p>
+<div class="code-block"><div class="code-line"><code>basename /var/log/syslog</code></div></div>
+
+<h3>Exercice 2</h3>
+<p>Écrivez une commande qui affiche le répertoire parent de <code>/etc/nginx/nginx.conf</code>.</p>
+
+<h3>Exercice 3</h3>
+<p>Dans un script, extrayez le nom du fichier sans son extension à partir de <code>/home/david/photos/vacances.jpg</code>.</p>
+
+<h3>Exercice 4</h3>
+<p>Comment afficher simultanément le répertoire et le nom de fichier de <code>/opt/projet/code/main.py</code> en une seule ligne ?</p>
+
+<h2>Solutions</h2>
+
+<h3>Solution 1</h3>
+<div class="code-block"><div class="code-line"><code>syslog</code></div></div>
+
+<h3>Solution 2</h3>
+<div class="code-block"><div class="code-line"><code>dirname /etc/nginx/nginx.conf</code></div></div>
+<p>Résultat : <code>/etc/nginx</code></p>
+
+<h3>Solution 3</h3>
+<div class="code-block"><div class="code-line"><code>basename -s .jpg /home/david/photos/vacances.jpg</code></div></div>
+<p>Résultat : <code>vacances</code></p>
+
+<h3>Solution 4</h3>
+<div class="code-block"><div class="code-line"><code>chemin="/opt/projet/code/main.py"
+echo "Répertoire : $(dirname "$chemin")"
+echo "Fichier     : $(basename "$chemin")"</code></div></div>
+
+<h2>Conclusion</h2>
+
+<p><code>basename</code> et <code>dirname</code> sont deux outils simples mais essentiels pour manipuler les chemins de fichiers. Ils s'utilisent partout : dans les scripts Bash, les commandes en ligne, ou combinés avec d'autres outils comme <code>find</code>, <code>cp</code> ou <code>mv</code>. Leur maîtrise rend la gestion des fichiers beaucoup plus fluide.</p>
+
+<nav>
+<a href="117-script-enregistrer-session.html">&larr; script — Enregistrer une session terminal</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
