@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>mtree — Vérifier l'intégrité des fichiers et répertoires</h1>
+
+<p><code>mtree</code> est un outil puissant permet de vérifier l'intégrité des fichiers et répertoires. Il génère une spécification (ou "spec") d'un répertoire, puis permet de vérifier si des changements sont survenus : fichiers modifiés, supprimés, ou permissions changées.</p>
+
+<h2>Installation</h2>
+
+<p><code>mtree</code> fait partie des utilitaires système sur la plupart des distributions Linux. Sous Debian/Ubuntu :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo apt install mtree</code></div></div>
+
+<p>Sous Red Hat/CentOS :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo yum install mtree-nox11</code></div></div>
+
+<p>Ou installez le package <code>mtree-netbsd</code> selon votre distribution.</p>
+
+<h2>Principe de fonctionnement</h2>
+
+<p><code>mtree</code> fonctionne en deux étapes :</p>
+
+<ol>
+<li><strong>Génération</strong> : créer un fichier de spécification (spec) qui contient les empreintes et attributs de chaque fichier</li>
+<li><strong>Vérification</strong> : comparer l'état actuel contre cette spécification</li>
+</ol>
+
+<h2>Générer une spécification</h2>
+
+<h3>Commande de base</h3>
+
+<p>Pour créer une spécification d'un répertoire, utilisez <code>mtree -c</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -c -K md5ormd5 -p /home/david/documents > ~/documents.mtree</code></div></div>
+
+<p>Explication :</p>
+<ul>
+<li><code>-c</code> : créer une spécification (spec)</li>
+<li><code>-K md5ormd5</code> : inclure les empreintes MD5 (ou SHA256)</li>
+<li><code>-p /home/david/documents</code> : le répertoire à analyser</li>
+<li><code>> ~/documents.mtree</code> : sauvegarder dans un fichier</li>
+</ul>
+
+<h3>Types d'empreintes disponibles</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>md5ormd5</code></td><td>Empreinte MD5 (si disponible)</td></tr>
+<tr><td><code>sha256</code></td><td>Empreinte SHA-256</td></tr>
+<tr><td><code>sha512</code></td><td>Empreinte SHA-512</td></tr>
+<tr><td><code>rmd160</code></td><td>Empreinte RIPEMD-160</td></tr>
+</table>
+
+<h3>Inclure les permissions et attributs</h3>
+
+<p>Par défaut, <code>mtree</code> vérifie le type de fichier, le propriétaire, les permissions et le nombre de liens. Vous pouvez spécifier les éléments à vérifier avec <code>-K</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -c -K md5ormd5,cksum,owner,group,mode,nlink -p /home/david/documents > ~/documents.mtree</code></div></div>
+
+<p>Ou de manière plus concise en spécifiant les clés ignorées avec <code>-k</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -c -k md5 -p /home/david/documents > ~/documents.mtree</code></div></div>
+
+<h2>Vérifier l'intégrité</h2>
+
+<p>Une fois la spécification créée, vous pouvez vérifier si des changements sont survenus :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -f ~/documents.mtree -p /home/david/documents</code></div></div>
+
+<p>Si tout est intact, vous n'aurez aucune sortie. Si des écarts sont détectés :</p>
+
+<div class="code-block"><div class="code-line"><code>.J./home/david/documents/rapport.pdf
+    modification time    Fri Jun 20 14:30:00 2025 -> Tue Jul 28 09:15:00 2026
+    size         10240 -> 11520</code></div></div>
+
+<h3>Exemple de sortie avec erreur</h3>
+
+<p>Quand un fichier a été modifié, <code>mtree</code> affiche les différences :</p>
+
+<div class="code-block"><div class="code-line"><code>documents/archive.zip
+    modification time    Wed Jan 15 10:00:00 2026 -> Thu Feb 20 11:30:00 2026
+documents/notes.txt
+    missing</code></div></div>
+
+<h2>Options de vérification utiles</h2>
+
+<h3>Vérifier sans les timestamps</h3>
+
+<p>Les timestamps changent souvent naturellement. Pour ne vérifier que le contenu :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -f ~/documents.mtree -p /home/david/documents -e -k md5</code></div></div>
+
+<ul>
+<li><code>-e</code> : ignorer les fichiers manquants dans le répertoire cible</li>
+<li><code>-k md5</code> : vérifier uniquement l'empreinte MD5</li>
+</ul>
+
+<h3>Mode silencieux (quiet)</h3>
+
+<p>Pour ne voir que les erreurs sans les statistiques :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -f ~/documents.mtree -p /home/david/documents -q</code></div></div>
+
+<p>Le code de retour indique le résultat :</p>
+<ul>
+<li><code>0</code> : tout estOK</li>
+<li><code>1</code> : des écarts ont été détectés</li>
+<li><code>2</code> : une erreur s'est produite</li>
+</ul>
+
+<h2>Mettre à jour une spécification</h2>
+
+<p>Si vous avez fait des modifications légitimes et voulez mettre à jour la spec :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -c -K md5ormd5 -p /home/david/documents > ~/documents.mtree</code></div></div>
+
+<p>Ou en utilisant la redirection pour remplacer la spécification existante :</p>
+
+<div class="code-block"><div class="code-line"><code>mtree -c -K md5ormd5 -p /home/david/documents | tee ~/documents.mtree</code></div></div>
+
+<h2>Utiliser mtree pour la sécurité</h2>
+
+<h3>Vérifier un répertoire système critique</h3>
+
+<p>Vous pouvez créer une spécification d'un répertoire système et la vérifier régulièrement :</p>
+
+<div class="code-block"><div class="code-line"><code># Créer la spécification
+sudo mtree -c -K md5ormd5,cksum,owner,group,mode,nlink -p /etc > /root/etc.mtree
+
+# Vérifier périodiquement
+sudo mtree -f /root/etc.mtree -p /etc</code></div></div>
+
+<h3>Automatiser avec cron</h3>
+
+<p>Créez un script de vérification automatique :</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Script de vérification d'intégrité
+
+SPEC="/root/etc.mtree"
+RESULT=$(mtree -f "$SPEC" -p /etc 2>&1)
+
+if [ -n "$RESULT" ]; then
+    echo "ALERTE: Des changements ont été détectés dans /etc" | mail -s "mtree alert" admin@exemple.com
+    echo "$RESULT" >> /var/log/mtree.log
+fi</code></div></div>
+
+<h3>Planifier avec cron</h3>
+
+<p>Ajoutez ceci dans la crontab :</p>
+
+<div class="code-block"><div class="code-line"><code>0 3 * * * /usr/local/bin/check-integrity.sh</code></div></div>
+
+<h2>Format du fichier de spécification</h2>
+
+<p>Un fichier <code>.mtree</code> est un fichier texte lisible :</p>
+
+<div class="code-block"><div class="code-line"><code>#       mtree specification
+. type=dir time=1627459200.0 mode=755 owner=root group=root
+./subdir type=dir time=1627459200.0 mode=755 owner=root group=root
+./fichier.txt size=1024 md5digest=a1b2c3d4e5f6... mode=644 owner=david group=david
+./archive.zip size=5242880 md5digest=f6e5d4c3b2a1... mode=600 owner=david group=david</code></div></div>
+
+<h2>Spécifier les mots-clés (keywords)</h2>
+
+<p>Les mots-clés définissent ce qui sera vérifié. Syntaxe avec <code>-K</code> :</p>
+
+<table>
+<tr><th>Keyword</th><th>Description</th></tr>
+<tr><td><code>cksum</code></td><td>Somme de contrôle CRC</td></tr>
+<tr><td><code>md5</code></td><td>Empreinte MD5</td></tr>
+<tr><td><code>sha256</code></td><td>Empreinte SHA-256</td></tr>
+<tr><td><code>sha512</code></td><td>Empreinte SHA-512</td></tr>
+<tr><td><code>ripemd160</code></td><td>Empreinte RIPEMD-160</td></tr>
+<tr><td><code>size</code></td><td>Taille du fichier en octets</td></tr>
+<tr><td><code>mode</code></td><td>Permissions du fichier</td></tr>
+<tr><td><code>owner</code></td><td>Propriétaire du fichier</td></tr>
+<tr><td><code>group</code></td><td>Groupe du fichier</td></tr>
+<tr><td><code>nlink</code></td><td>Nombre de liens physiques</td></tr>
+<tr><td><code>type</code></td><td>Type de fichier (file, dir, link, etc.)</td></tr>
+<tr><td><code>time</code></td><td>Date de modification</td></tr>
+<tr><td><code>link</code></td><td>Cible d'un lien symbolique</td></tr>
+<tr><td><code>device</code></td><td>Type de périphérique</td></tr>
+</table>
+
+<h2>Comparaison avec d'autres outils</h2>
+
+<table>
+<tr><th>Outil</th><th>Usage principal</th><th>Différence avec mtree</th></tr>
+<tr><td><code>md5sum</code></td><td>Vérifier un fichier</td><td>Un seul fichier à la fois</td></tr>
+<tr><td><code>AIDE</code></td><td>Détection d'intrusion</td><td>Plus complet, base de données persistante</td></tr>
+<tr><td><code>tripwire</code></td><td>Sécurité système</td><td>Plus complexe, gestion centralisée</td></tr>
+<tr><td><code>rkhunter</code></td><td>Rootkits</td><td>Détection de rootkits spécifiques</td></tr>
+<tr><td><code>mtree</code></td><td>Vérification légère</td><td>Simple, intégré, idéal pour des répertoires spécifiques</td></tr>
+</table>
+
+<h2>Exercices pratiques</h2>
+
+<h3>Exercice 1</h3>
+<p>Créez une spécification de votre répertoire <code>/tmp/test_mtree</code> avec des empreintes MD5, puis vérifiez-la.</p>
+
+<h3>Exercice 2</h3>
+<p>Modifiez un fichier dans le répertoire de l'exercice 1, puis lancez la vérification. Observez la sortie.</p>
+
+<h3>Exercice 3</h3>
+<p>Créez une spécification de <code>/etc</code> qui vérifie uniquement les permissions et le propriétaire (sans empreintes).</p>
+
+<h3>Exercice 4</h3>
+<p>Écrivez un script qui vérifie automatiquement l'intégrité de <code>/var/www</code> chaque jour à 4h du matin.</p>
+
+<h2>Solutions</h2>
+
+<h3>Solution 1</h3>
+<div class="code-block"><div class="code-line"><code># Créer le répertoire de test
+mkdir -p /tmp/test_mtree
+echo "fichier test" > /tmp/test_mtree/test.txt
+
+# Créer la spécification
+mtree -c -K md5 -p /tmp/test_mtree > /tmp/test.mtree
+
+# Vérifier
+mtree -f /tmp/test.mtree -p /tmp/test_mtree</code></div></div>
+
+<h3>Solution 2</h3>
+<div class="code-block"><div class="code-line"><code># Modifier le fichier
+echo "contenu modifié" >> /tmp/test_mtree/test.txt
+
+# Vérifier à nouveau
+mtree -f /tmp/test.mtree -p /tmp/test_mtree</code></div></div>
+<p>Résultat attendu : affichage des différences de taille et d'empreinte MD5.</p>
+
+<h3>Solution 3</h3>
+<div class="code-block"><div class="code-line"><code>sudo mtree -c -k mode,owner,group -p /etc > /root/etc-perms.mtree</code></div></div>
+
+<h3>Solution 4</h3>
+<p>Créez le script <code>/usr/local/bin/check-www.sh</code> :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+SPEC="/root/www.mtree"
+RESULT=$(mtree -f "$SPEC" -p /var/www 2>&1)
+
+if [ -n "$RESULT" ]; then
+    echo "Changements détectés dans /var/www:" | tee -a /var/log/www-integrity.log
+    echo "$RESULT" >> /var/log/www-integrity.log
+fi</code></div></div>
+
+<p>Ajoutez dans la crontab :</p>
+<div class="code-block"><div class="code-line"><code>0 4 * * * /usr/local/bin/check-www.sh</code></div></div>
+
+<h2>Conclusion</h2>
+
+<p><code>mtree</code> est un outil simple mais efficace pour vérifier l'intégrité des fichiers. Il est particulièrement utile pour :</p>
+
+<ul>
+<li>Détecter des modifications non autorisées sur des fichiers critiques</li>
+<li>Valider l'intégrité d'une installation après une mise à jour</li>
+<li>Vérifier que des sauvegardes sont intactes</li>
+<li>Surveiller des répertoires sensibles comme <code>/etc</code> ou <code>/var/www</code></li>
+</ul>
+
+<p>Bien qu'il soit moins complet que des outils comme <code>tripwire</code> ou <code>AIDE</code>, sa simplicité et sa disponibilité native en font un excellent choix pour des vérifications ponctuelles ou automatisées avec cron.</p>
+
+<nav>
+<a href="118-basename-dirname.html">&larr; basename et dirname — Extraire le nom et le répertoire d'un chemin</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
