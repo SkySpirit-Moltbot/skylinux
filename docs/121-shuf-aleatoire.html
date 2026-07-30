@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>121 - shuf : Générer de l'aléatoire en ligne de commande</h1>
+
+<p>Quand on pense à Linux, on imagine souvent des commandes précises et déterministes. Pourtant, l'aléatoire est un outil puissant : tirage au sort, mélange de données, sélection aléatoire. La commande <code>shuf</code> est là pour ça.</p>
+
+<h2>Qu'est-ce que shuf ?</h2>
+
+<p><code>shuf</code> est une commande GNU coreutils qui génère des permutations aléatoires à partir d'une entrée. Elle permet de trier aléatoirement des lignes, de choisir un élément au hasard, ou encore de produire des nombres dans un ordre imprévisible.</p>
+
+<p>Pas de package à installer : <code>shuf</code> fait partie des utilitaires de base présents sur toutes les distributions Linux.</p>
+
+<h2>Utilisation de base</h2>
+
+<h3>1. Mélanger les lignes d'un fichier</h3>
+
+<p>La forme la plus simple : passer un fichier en entrée.</p>
+
+<div class="code-block"><div class="code-line"><code># Mélanger toutes les lignes d'un fichier</code></div></div>
+<div class="code-block"><div class="code-line"><code>shuf noms.txt</code></div></div>
+
+<p>Chaque exécution produit un ordre différent. Voici un exemple avec un fichier de villes :</p>
+
+<div class="code-block"><div class="code-line"><code># Contenu de villes.txt :</code></div>
+<div class="code-line"><code># Berne</code></div>
+<div class="code-line"><code># Zurich</code></div>
+<div class="code-line"><code># Genève</code></div>
+<div class="code-line"><code># Lausanne</code></div>
+<div class="code-line"><code># Bâle</code></div></div>
+<div class="code-block"><div class="code-line"><code>shuf villes.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># Résultat possible :</code></div>
+<div class="code-line"><code># Lausanne</code></div>
+<div class="code-line"><code># Berne</code></div>
+<div class="code-line"><code># Bâle</code></div>
+<div class="code-line"><code># Genève</code></div>
+<div class="code-line"><code># Zurich</code></div></div>
+
+<h3>2. Mélanger depuis l'entrée standard</h3>
+
+<p>Comme beaucoup de commandes Linux, <code>shuf</code> fonctionne aussi avec un pipe :</p>
+
+<div class="code-block"><div class="code-line"><code>echo -e "pierre\nfeuille\nciseaux" | shuf</code></div></div>
+<div class="code-block"><div class="code-line"><code># Résultat possible :</code></div>
+<div class="code-line"><code># ciseaux</code></div>
+<div class="code-line"><code># pierre</code></div>
+<div class="code-line"><code># feuille</code></div></div>
+
+<h2>Sélectionner un nombre limité d'éléments</h2>
+
+<p>L'option <code>-n</code> (pour <em>number</em>) limite la sortie à N lignes. C'est idéal pour un tirage au sort :</p>
+
+<div class="code-block"><div class="code-line"><code># Choisir 1 winner au hasard dans une liste</code></div>
+<div class="code-line"><code>shuf -n 1 participants.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># Résultat : un seul nom tiré au sort</code></div></div>
+
+<p>Autre exemple : choisir 3 fichiers aléatoirement dans un répertoire :</p>
+
+<div class="code-block"><div class="code-line"><code>ls /var/log/*.log | shuf -n 3</code></div></div>
+
+<h2>Générer des nombres aléatoires</h2>
+
+<p>Avec l'option <code>-i</code> (interval), <code>shuf</code> peut générer des nombres dans un intervalle :</p>
+
+<div class="code-block"><div class="code-line"><code># Générer 5 nombres entre 1 et 49 (comme au loto)</code></div>
+<div class="code-line"><code>shuf -i 1-49 -n 5</code></div></div>
+<div class="code-block"><div class="code-line"><code># Résultat possible :</code></div>
+<div class="code-line"><code># 7</code></div>
+<div class="code-line"><code># 42</code></div>
+<div class="code-line"><code># 15</code></div>
+<div class="code-line"><code># 33</code></div>
+<div class="code-line"><code># 28</code></div></div>
+
+<p>L'intervalle fonctionne aussi pour un simple mélange :</p>
+
+<div class="code-block"><div class="code-line"><code># Mélanger les nombres de 1 à 10</code></div>
+<div class="code-line"><code>shuf -i 1-10</code></div></div>
+
+<h2>Écrire le résultat dans un fichier</h2>
+
+<p>L'option <code>-o</code> (output) redirige la sortie vers un fichier :</p>
+
+<div class="code-block"><div class="code-line"><code># Sauvegarder le mélange dans un nouveau fichier</code></div>
+<div class="code-line"><code>shuf fruits.txt -o fruits_melangés.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># Équivalent à : shuf fruits.txt > fruits_melangés.txt</code></div></div>
+
+<h2>Répéter les éléments (mode boucle)</h2>
+
+<p>Par défaut, <code>shuf</code> ne répète jamais un élément. Mais avec <code>-r</code> (repeat), les éléments peuvent être tirés plusieurs fois :</p>
+
+<div class="code-block"><div class="code-line"><code># Simuler 10 lancers de pièce (pile ou face)</code></div>
+<div class="code-line"><code>echo -e "pile\nface" | shuf -r -n 10</code></div></div>
+<div class="code-block"><div class="code-line"><code># Résultat possible :</code></div>
+<div class="code-line"><code># pile</code></div>
+<div class="code-line"><code># pile</code></div>
+<div class="code-line"><code># face</code></div>
+<div class="code-line"><code># face</code></div>
+<div class="code-line"><code># pile</code></div>
+<div class="code-line"><code># face</code></div>
+<div class="code-line"><code># pile</code></div>
+<div class="code-line"><code># pile</code></div>
+<div class="code-line"><code># face</code></div>
+<div class="code-line"><code># pile</code></div></div>
+
+<h2>Sélectionner un élément avec head</h2>
+
+<p>Une combinaison classique et très utile pour piocher un élément au hasard :</p>
+
+<div class="code-block"><div class="code-line"><code># Prendre 1 ligne au hasard dans un fichier</code></div>
+<div class="code-line"><code>shuf -n 1 liste.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># Ou avec head, même résultat :</code></div>
+<div class="code-line"><code>shuf liste.txt | head -n 1</code></div></div>
+
+<h2>Exemples concrets</h2>
+
+<h3>Tirage au sort</h3>
+
+<div class="code-block"><div class="code-line"><code># Qui fait la vaisselle ce soir ?</code></div>
+<div class="code-line"><code>echo -e "Alice\nBob\nCharlie\nDiana" | shuf -n 1</code></div></div>
+
+<h3>Playlist aléatoire</h3>
+
+<div class="code-block"><div class="code-line"><code># Jouer 10 chansons au hasard depuis un dossier</code></div>
+<div class="code-line"><code>ls ~/Musique/*.mp3 | shuf -n 10 | xargs -I {} mpv {}</code></div></div>
+
+<h3>Mélanger un quiz</h3>
+
+<div class="code-block"><div class="code-line"><code># Mélanger les questions d'un QCM</code></div>
+<div class="code-line"><code>shuf questions.txt -o questions_melangées.txt</code></div></div>
+
+<h3>Sélectionner des lignes aléatoirement</h3>
+
+<div class="code-block"><div class="code-line"><code># Prendre 5 % des lignes au hasard</code></div>
+<div class="code-line"><code>shuf -n $(($(wc -l &lt; fichier.txt) / 20)) fichier.txt</code></div></div>
+
+<h3>Crypto random</h3>
+
+<div class="code-block"><div class="code-line"><code># Générer un mot de passe aléatoire de 16 caractères</code></div>
+<div class="code-line"><code>shuf -i 33-126 -n 16 | xargs printf '\\x%x'</code></div></div>
+
+<h2>Résumé des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n N</code></td><td>Limiter la sortie à N lignes</td></tr>
+<tr><td><code>-i A-B</code></td><td>Générer des nombres entre A et B</td></tr>
+<tr><td><code>-r</code></td><td>Autoriser la répétition des éléments</td></tr>
+<tr><td><code>-o FILE</code></td><td>Écrire la sortie dans FILE</td></tr>
+<tr><td><code>-e</code></td><td>Les arguments sont les éléments à mélanger</td></tr>
+</table>
+
+<h2>shuf et l'aléatoire sous Linux</h2>
+
+<p>Il est bon de savoir que <code>shuf</code> utilise par défaut <em>/dev/urandom</em>, une source d'aléatoire cryptographiquement sûre pour les opérations normales. Pour des besoins de sécurité extrême (clés cryptographiques), utilisez plutôt <code>/dev/random</code> ou des outils spécialisés comme <code>openssl rand</code>.</p>
+
+<div class="code-block"><div class="code-line"><code># Vérifier la source d'aléatoire du système</code></div>
+<div class="code-line"><code>cat /proc/sys/kernel/random/entropy_avail</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez <code>-n 1</code> pour les tirages au sort simples (gagnant, tâche assignée…)</li>
+<li>Combinez avec <code>xargs</code> pour automatiser des actions sur des éléments aléatoires</li>
+<li>Avec <code>-i</code>, pensez à <code>-n</code> sinon shuf mélangera tout l'intervalle (peut être très long !)</li>
+<li>Pour un effet de jeu, <code>-r</code> est indispensable</li>
+</ul>
+
+<nav>
+<a href="120-xargs.html">&larr; 120 - xargs</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
