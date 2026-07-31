@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>122 - mtree : Vérifier l'intégrité des fichiers et répertoires</h1>
+
+<p>Comment être sûr que vos fichiers n'ont pas été modifiés à votre insu ? Comment détecter un changement de permission, un fichier corrompu ou une intrusion ? La commande <code>mtree</code> est l'outil historique de Linux pour répondre à ces questions.</p>
+
+<h2>Qu'est-ce que mtree ?</h2>
+
+<p><code>mtree</code> est un utilitaire qui génère une spécification (un fichier manifest) décrivant un ensemble de fichiers et répertoires. Ce manifest contient pour chaque élément des métadonnées : permissions, propriétaire, taille, somme de contrôle, timestamps… On peut ensuite comparer l'état actuel contre ce manifest pour détecter toute divergence.</p>
+
+<p><code>mtree</code> vient à l'origine de BSD et fait partie des utilitaires GNU sur Linux. Il est particulièrement utilisé pour :</p>
+<ul>
+<li>Vérifier l'intégrité d'une installation ou d'une sauvegarde</li>
+<li>Détecter des modifications non autorisées</li>
+<li>S'assurer qu'un répertoire distant (via SSH, NFS…) n'a pas dérivé</li>
+<li>Valider le contenu d'une archive avant extraction</li>
+</ul>
+
+<h2>Générer un manifest (spécification)</h2>
+
+<h3>1. Spécification simple d'un répertoire</h3>
+
+<p>La forme la plus courante : créer un fichier qui décrit l'état actuel d'un répertoire.</p>
+
+<div class="code-block"><div class="code-line"><code># Générer un manifest de /opt/monapp</code></div>
+<div class="code-line"><code>mtree -c -p /opt/monapp > manifest_monapp.txt</code></div></div>
+
+<p>Explications :</p>
+<ul>
+<li><code>-c</code> : créer (generate output)</li>
+<li><code>-p</code> : chemin de base (root du répertoire à cataloguer)</li>
+</ul>
+
+<p>Contenu typique du fichier généré :</p>
+
+<div class="code-block"><div class="code-line"><code>#       user: root</code></div>
+<div class="code-line"><code>#       date: Fri Jul 31 06:00:00 2026</code></div>
+<div class="code-line"><code>/set type=file mode=0755 gid=0 uid=0</code></div>
+<div class="code-line"><code>.               type=dir</code></div>
+<div class="code-line"><code>./bin            mode=0755</code></div>
+<div class="code-line"><code>./bin/monapp     size=48210 sha256=3f2a8b...</code></div>
+<div class="code-line"><code>./config         type=dir mode=0755</code></div>
+<div class="code-line"><code>./config/serveur.ini size=1204 sha256=9a1c7d...</code></div>
+<div class="code-line"><code>./lib            type=dir</code></div>
+<div class="code-line"><code>./lib/core.so    size=102400 sha256=b8e4f2...</code></div></div>
+
+<h3>2. Choisir les propriétés à inclure</h3>
+
+<p>Par défaut, <code>mtree</code>记录了很多属性. L'option <code>-k</code> (keys) permet de sélectionner quelles propriétés tracker :</p>
+
+<div class="code-block"><div class="code-line"><code># Ne tracker que les permissions et le propriétaire</code></div>
+<div class="code-line"><code>mtree -c -p /opt/monapp -k mode,uid,gid > manifest_permissions.txt</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Tracker permissions, propriétaire ET somme de contrôle</code></div>
+<div class="code-line"><code>mtree -c -p /opt/monapp -k mode,uid,gid,sha256 > manifest_complet.txt</code></div></div>
+
+<h3>3. Sélection de clés disponibles</h3>
+
+<table>
+<tr><th>Clé</th><th>Description</th></tr>
+<tr><td><code>mode</code></td><td>Droits du fichier (rwxr-xr-x…)</td></tr>
+<tr><td><code>uid</code></td><td>Identifiant utilisateur propriétaire</td></tr>
+<tr><td><code>gid</code></td><td>Identifiant du groupe propriétaire</td></tr>
+<tr><td><code>size</code></td><td>Taille en octets</td></tr>
+<tr><td><code>sha256</code></td><td>Somme de contrôle SHA-256</td></tr>
+<tr><td><code>sha512</code></td><td>Somme de contrôle SHA-512</td></tr>
+<tr><td><code>md5</code></td><td>Somme de contrôle MD5</td></tr>
+<tr><td><code>time</code></td><td>Timestamp de modification</td></tr>
+<tr><td><code>type</code></td><td>Type : file, dir, link, socket…</td></tr>
+<tr><td><code>link</code></td><td>Cible d'un lien symbolique</td></tr>
+<tr><td><code>cksum</code></td><td>Somme de contrôle CRC</td></tr>
+<tr><td><code>ripemd160</code></td><td>Hash cryptographique RIPEMD-160</td></tr>
+</table>
+
+<h2>Vérifier l'intégrité (comparaison)</h2>
+
+<h3>1. Comparaison basique</h3>
+
+<p>Une fois le manifest créé, on peut vérifier si quelque chose a changé :</p>
+
+<div class="code-block"><div class="code-line"><code># Comparer l'état actuel contre le manifest</code></div>
+<div class="code-line"><code>mtree -p /opt/monapp < manifest_complet.txt</code></div></div>
+
+<p>Si tout est identique, aucune sortie. En cas de différences, <code>mtree</code> affiche chaque problème :</p>
+
+<div class="code-block"><div class="code-line"><code>.        changed</code></div>
+<div class="code-line"><code>./bin/monapp changed</code></div>
+<div class="code-line"><code>        size        expected 48210 found 48211</code></div>
+<div class="code-line"><code>        sha256      expected 3f2a8b... found 7c4d1a...</code></div>
+<div class="code-line"><code>./config/serveur.ini missing</code></div>
+<div class="code-line"><code>./log          extra</code></div></div>
+
+<p>Signification :</p>
+<ul>
+<li><code>changed</code> : au moins une propriété a changé</li>
+<li><code>missing</code> : le fichier existait dans le manifest mais plus sur le disque</li>
+<li><code>extra</code> : un fichier est présent sur le disque mais pas dans le manifest</li>
+</ul>
+
+<h3>2. Mode silencieux (exit code)</h3>
+
+<p>Pour les scripts, utilisez <code>-q</code> (quiet) pour n'afficher que les différences critiques et retourner un exit code :</p>
+
+<div class="code-block"><div class="code-line"><code># Script de vérification dans un cron</code></div>
+<div class="code-line"><code>if ! mtree -p /opt/monapp < manifest_complet.txt; then</code></div>
+<div class="code-line"><code>    echo "ALERTE: Modification détectée dans /opt/monapp" | mail -s "mtree alert" admin@exemple.com</code></div>
+<div class="code-line"><code>fi</code></div></div>
+
+<h2>Mettre à jour le manifest</h2>
+
+<p>Si vous avez fait des modifications légitimes (mise à jour, nouveau fichier), vous pouvez mettre à jour le manifest :</p>
+
+<div class="code-block"><div class="code-line"><code># Recréer le manifest après une mise à jour connue</code></div>
+<div class="code-line"><code>mtree -c -p /opt/monapp -k mode,uid,gid,sha256 > manifest_complet.txt</code></div></div>
+
+<p>Ou :</p>
+
+<div class="code-block"><div class="code-line"><code># Mettre à jour uniquement les sommes de contrôle</code></div>
+<div class="code-line"><code>mtree -c -p /opt/monapp -k sha256 > manifest_sha256.txt</code></div></div>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Vérifier un serveur web après une mise à jour</h3>
+
+<div class="code-block"><div class="code-line"><code># 1. Créer le manifest initial</code></div>
+<div class="code-line"><code>mtree -c -p /var/www/monsite -k mode,uid,gid,sha256 > /root/manifest_www.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># 2. Après une mise à jour, recréer le manifest</code></div>
+<div class="code-line"><code>mtree -c -p /var/www/monsite -k mode,uid,gid,sha256 > /root/manifest_www.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># 3. Vérification automatique quotidienne</code></div>
+<div class="code-line"><code>mtree -p /var/www/monsite < /root/manifest_www.txt || echo "INTRUSION!"</code></div></div>
+
+<h3>2. Vérifier un système de fichiers importé</h3>
+
+<div class="code-block"><div class="code-line"><code># Sur la machine source : générer le manifest</code></div>
+<div class="code-line"><code>mtree -c -p /sauvegardes/backup_journalier -k mode,uid,gid,sha256,size > manifest_backup.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># Sur la machine de restauration : vérifier avant utilisation</code></div>
+<div class="code-line"><code>mtree -p /mnt/backup_restore < manifest_backup.txt</code></div></div>
+
+<h3>3. Vérifier un partage NFS</h3>
+
+<div class="code-block"><div class="code-line"><code># Générer le manifest depuis le serveur NFS</code></div>
+<div class="code-line"><code>mtree -c -p /export/partage -k mode,uid,gid,sha256 > /tmp/manifest_nfs.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># Sur le client NFS, vérifier l'intégrité</code></div>
+<div class="code-line"><code>mtree -p /mnt/nfs/partage < /tmp/manifest_nfs.txt</code></div></div>
+
+<h3>4. Cron de vérification automatique</h3>
+
+<div class="code-block"><div class="code-line"><code># /etc/cron.daily/verify-integrity</code></div>
+<div class="code-line"><code>#!/bin/sh</code></div>
+<div class="code-line"><code>mtree -p /opt/monapp < /root/manifest_monapp.txt > /var/log/mtree_check.log 2>&1</code></div>
+<div class="code-line"><code>if [ $? -ne 0 ]; then</code></div>
+<div class="code-line"><code>    cat /var/log/mtree_check.log | mail -s "[ALERTE] mtree: modifications sur /opt/monapp" admin@exemple.com</code></div>
+<div class="code-line"><code>fi</code></div></div>
+
+<h3>5. Spécification de format de sortie personnalisé</h3>
+
+<p>Vous pouvez générer un manifest dans un autre format (par exemple sans les sommes de contrôle pour une comparaison rapide) :</p>
+
+<div class="code-block"><div class="code-line"><code># Manifest léger pour vérifier rapidement les permissions</code></div>
+<div class="code-line"><code>mtree -c -p /etc -k mode,uid,gid > /root/manifest_etc_perms.txt</code></div></div>
+<div class="code-block"><div class="code-line"><code># Vérification rapide des permissions système</code></div>
+<div class="code-line"><code>mtree -p /etc < /root/manifest_etc_perms.txt</code></div></div>
+
+<h2>mtree dans les scripts d'installation</h2>
+
+<p><code>mtree</code> est utilisé en coulisses par les gestionnaires de paquets BSD. Sous Linux, vous pouvez l'intégrer dans vos propres scripts d'installation :</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Script d'installation avec vérification</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>APP_DIR="/opt/monapp"</code></div>
+<div class="code-line"><code>MANIFEST="/root/.monapp_integrity.txt"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Installation...</code></div>
+<div class="code-line"><code>echo "Installation de l'application..."</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Générer le manifest après installation</code></div>
+<div class="code-line"><code>echo "Génération du manifest d'intégrité..."</code></div>
+<div class="code-line"><code>mtree -c -p "$APP_DIR" -k mode,uid,gid,sha256 > "$MANIFEST"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Installation terminée. Manifest sauvegardé dans $MANIFEST"</code></div>
+<div class="code-line"><code>echo "Pour vérifier: mtree -p $APP_DIR < $MANIFEST"</code></div></div>
+
+<h2>Comparaison avec d'autres outils</h2>
+
+<table>
+<tr><th>Outil</th><th>Usage</th><th>Différence</th></tr>
+<tr><td><code>mtree</code></td><td>Spécification complète avec métadonnées</td><td>Réseau, multi-propriétés, format standard</td></tr>
+<tr><td><code>sha256sum</code></td><td>Somme de contrôle rapide</td><td>Uniquement le hash, pas les permissions</td></tr>
+<tr><td><code>diff</code></td><td>Comparer deux fichiers</td><td>Pas de récursion ni de métadonnées</td></tr>
+<tr><td><code>rsync --checksum</code></td><td>Synchroniser en vérifiant les sommes</td><td>Synchronise aussi les fichiers</td></tr>
+<tr><td><code>AIDE</code></td><td>Détection d'intrusion avancée</td><td>Daemon,监控 continue, plus complexe</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Stockez le manifest sur un support séparé (clé USB, serveur distant) pour qu'un attaquant ne puisse pas le modifier avec les fichiers</li>
+<li>Utilisez <code>sha256</code> ou <code>sha512</code> de préférence à <code>md5</code> (md5 est cassable)</li>
+<li>Vérifiez régulièrement dans un cron, mais protecez le manifest lui-même</li>
+<li>Après toute mise à jour légitime, régénérez le manifest</li>
+<li>Combinez avec <code>-e</code> (empty) pour ignorer les répertoires vides non désirés</li>
+</ul>
+
+<h2>Options principales de mtree</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-c</code></td><td>Créer un manifest (générer la spécification)</td></tr>
+<tr><td><code>-p PATH</code></td><td>Chemin racine à traiter</td></tr>
+<tr><td><code>-k KEY</code></td><td>Propriétés à inclure (séparées par virgules)</td></tr>
+<tr><td><code>-q</code></td><td>Mode silencieux, sortir sans message</td></tr>
+<tr><td><code>-e</code></td><td>Ignorer les entrées absentes dans le manifest</td></tr>
+<tr><td><code>-x</code></td><td>Ne pas descendre dans les sous-répertoires (standalone)</td></tr>
+<tr><td><code>-8</code></td><td>Format UTF-8</td></tr>
+<tr><td><code>-d</code></td><td>N'inclure que les répertoires</td></tr>
+</table>
+
+<nav>
+<a href="121-shuf-aleatoire.html">&larr; 121 - shuf</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
