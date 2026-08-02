@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 124 : rsync — Sauvegardes professionnelles</h1>
+
+<p>Dans la <a href="50-rsync.html">leçon 50</a>, nous avons vu les bases de rsync. Ici, nous plongeons dans les stratégies de sauvegarde professionnelles, les scripts automatisés, et les techniques avancées pour protéger vos données.</p>
+
+<h2>Pourquoi rsync pour les sauvegardes ?</h2>
+
+<ul>
+<li><strong>Incrémental par défaut</strong> : ne transfère que les fichiers modifiés</li>
+<li><strong>Compression à la volée</strong> : réduit la bande passante</li>
+<li><strong>Preserve les permissions</strong> : conserve propriétaires, timestamps et attributs étendus</li>
+<li><strong>Supporte SSH</strong> : chiffré de bout en bout</li>
+<li><strong>rapide et léger</strong> : idéal pour les sauvegardes fréquentes</li>
+</ul>
+
+<h2>Stratégies de sauvegarde</h2>
+
+<h3>1. Sauvegarde locale complète</h3>
+
+<div class="code-block">
+<div class="code-line"><code>rsync -avh --progress /home/david/documents/ /media/backup/documents/</code></div>
+</div>
+
+<ul>
+<li><code>-a</code> : mode archivage (preserve permissions, ownership, timestamps, symlinks)</li>
+<li><code>-v</code> : mode verbeux</li>
+<li><code>-h</code> : affichage lisible (human readable)</li>
+<li><code>--progress</code> : affiche la progression</li>
+</ul>
+
+<h3>2. Sauvegarde avec lien dur (stratégie 3-2-1)</h3>
+
+<p>La stratégie 3-2-1 : 3 copies, 2 supports différents, 1 copie hors site.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Première sauvegarde complète
+rsync -av /home/david/documents/ /backup/jour1/documents/
+
+# Sauvegarde du lendemain (ne transfère que les changements)
+rsync -av --delete /home/david/documents/ /backup/jour2/documents/
+
+# Utiliser --link-dest pour créer des copies efficientes
+rsync -av --link-dest=/backup/jour1/documents/ \
+       /home/david/documents/ \
+       /backup/jour2/documents/</code></div>
+</div>
+
+<p>L'option <code>--link-dest</code> crée des liens durs vers les fichiers inchangés du répertoire de référence, économisant énormément d'espace disque tout en permettant d'accéder à chaque instant comme s'il s'agissait d'une sauvegarde complète.</p>
+
+<h3>3. Sauvegarde distante via SSH</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe SSH
+rsync -avz -e ssh /home/david/documents/ user@serveur:/backup/documents/
+
+# Avec port SSH personnalisé
+rsync -avz -e "ssh -p 2222" /home/david/documents/ user@serveur:/backup/
+
+# Spécifier une clé SSH
+rsync -avz -e "ssh -i ~/.ssh/backup_key" /home/david/documents/ user@serveur:/backup/</code></div>
+</div>
+
+<h3>4. Sauvegarde en mode daemon (rsyncd)</h3>
+
+<p>Configuration du serveur rsyncd sur <code>/etc/rsyncd.conf</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>[backup]
+   comment = Module de sauvegarde
+   path = /backup
+   read only = no
+   auth users = backupuser
+   secrets file = /etc/rsyncd.secrets</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Lancement du daemon
+sudo systemctl enable rsync
+sudo systemctl start rsync
+
+# Connexion depuis le client
+rsync -av /home/david/documents/ rsync://backupuser@monserveur/backup/</code></div>
+</div>
+
+<h2>Exclusions et filtres</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Exclure des patterns
+rsync -av --exclude='*.tmp' --exclude='.cache/' /home/david/ /backup/
+
+# Exclure depuis un fichier
+rsync -av --exclude-from='/home/david/exclusions.txt' /home/david/ /backup/
+
+# Inclure uniquement certains fichiers
+rsync -av --include='*.pdf' --include='*.docx' --exclude='*' /home/david/ /backup/
+
+# Utiliser un fichier de filter
+rsync -avF /home/david/ /backup/</code></div>
+</div>
+
+<p>Contenu typique de <code>exclusions.txt</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>- .cache/
+- .thumbnails/
+- *.tmp
+- Downloads/
+- node_modules/</code></div>
+</div>
+
+<h2>Script de sauvegarde automatisé</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+
+# === Configuration ===
+SRC="/home/david/documents"
+DEST="/media/backup/documents"
+LOG="/var/log/backup.log"
+RETENTION=7
+
+# === Fonctions ===
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"
+}
+
+# === Vérifications ===
+[ ! -d "$SRC" ] && { log "ERREUR: Source $SRC introuvable"; exit 1; }
+[ ! -d "$DEST" ] && { log "ERREUR: Destination $DEST introuvable"; exit 1; }
+
+# === Sauvegarde avec lien dur ===
+log "Début de la sauvegarde de $SRC vers $DEST"
+rsync -avh \
+      --delete \
+      --link-dest=/backup/precedent \
+      --exclude='.cache' \
+      --exclude='*.tmp' \
+      --log-file="$LOG" \
+      "$SRC/" "$DEST/current/" 2>&1
+
+if [ $? -eq 0 ]; then
+    log "Sauvegarde terminée avec succès"
+
+    # Rotation : déplacer current vers precedent
+    rm -rf /backup/precedent
+    mv /backup/actuel /backup/precedent
+    ln -s "$DEST/current" /backup/actuel
+
+    # Nettoyage des anciennes sauvegardes (> $RETENTION jours)
+    find /backup -maxdepth 1 -type d -mtime +$RETENTION -exec rm -rf {} \;
+    log "Rotation terminée"
+else
+    log "ERREUR: La sauvegarde a échoué"
+    exit 1
+fi</code></div>
+</div>
+
+<h2>Options avancées utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>--dry-run</code> / <code>-n</code></td><td>Simulation sans modification (indispensable pour tester)</td></tr>
+<tr><td><code>--delete</code></td><td>Supprime les fichiers dans dest s'ils n'existent plus dans src</td></tr>
+<tr><td><code>--partial</code></td><td>Conserve les fichiers partiellement transférés (reprise)</td></tr>
+<tr><td><code>--bwlimit=5000</code></td><td>Limite la bande passante à 5 Mo/s</td></tr>
+<tr><td><code>--checksum</code></td><td>Compare par checksum (plus lent, plus sûr)</td></tr>
+<tr><td><code>--backup</code></td><td>Backup des fichiers modifiés/supprimés</td></tr>
+<tr><td><code>--update</code></td><td>Ne transfère que si la source est plus récente</td></tr>
+<tr><td><code>-z</code></td><td>Compresse pendant le transfert</td></tr>
+</table>
+
+<h2>Reprise après interruption</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Reprendre un transfert interrompu
+rsync -avP --partial \
+      -e ssh \
+      /home/david/large_file.tar.gz \
+      user@serveur:/backup/
+
+# -P = --partial --progress (raccourci courant)</code></div>
+</div>
+
+<h2>Sauvegarde système complète</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Exclure les fichiers volatiles et les systèmes de fichiers virtuels
+rsync -aAXv \
+      --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found"} \
+      / \
+      /backup/system/</code></div>
+</div>
+
+<ul>
+<li><code>-A</code> : préserve les ACL</li>
+<li><code>-X</code> : préserve les attributs étendus (SELinux context)</li>
+</ul>
+
+<h2>Tableau comparatif : rsync vs cp vs cp -l</h2>
+
+<table>
+<tr><th>Commande</th><th>Incrémental</th><th>Vérification</th><th>Compression</th><th>SSH</th></tr>
+<tr><td><code>cp</code></td><td>Non</td><td>Non</td><td>Non</td><td>Non</td></tr>
+<tr><td><code>cp -l</code></td><td>Partiel (liens)</td><td>Non</td><td>Non</td><td>Non</td></tr>
+<tr><td><code>rsync</code></td><td>Oui</td><td>Oui (option)</td><td>Oui</td><td>Oui</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Toujours tester avec <code>--dry-run</code></strong> avant d'exécuter</li>
+<li><strong>Vérifier les logs</strong> après chaque sauvegarde</li>
+<li><strong>Tester la restauration</strong> régulièrement</li>
+<li><strong>Utiliser SSH</strong> pour les sauvegardes distantes (chiffrement)</li>
+<li><strong>Planifier avec cron</strong> : <code>0 2 * * * /home/david/scripts/backup.sh</code></li>
+<li><strong>Monitorer l'espace disque</strong>剩余空间</li>
+</ul>
+
+<hr>
+<p><strong>À retenir</strong> : rsync est l'outil de référence pour les sauvegardes Linux grâce à son efficacité incrémentale. Combinez-le avec SSH pour des sauvegardes sécurisées et avec <code>--link-dest</code> pour des instantanés (snapshots) économes en espace.</p>
+
+<nav>
+<a href="123-factor.html">&larr; Leçon 123 : factor — Décomposer en facteurs premiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
