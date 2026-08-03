@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 125: ss — Socket Statistics, l'outil moderne pour analyser le réseau</h1>
+
+<p>Dans cette leçon, vous allez découvrir <code>ss</code>, la commande moderne pour inspecter les sockets réseau sous Linux. Elle remplace avantageusement <code>netstat</code> et offre des performances bien meilleures sur les systèmes avec de nombreuses connexions.</p>
+
+<h2>1. Qu'est-ce que ss ?</h2>
+
+<p><code>ss</code> signifie <strong>Socket Statistics</strong>. C'est un outil en ligne de commande qui permet d'afficher des informations détaillées sur les sockets réseau actif sur votre système Linux.</p>
+
+<p><strong>Pourquoi utiliser ss plutôt que netstat ?</strong></p>
+<ul>
+<li>Plus rapide sur les systèmes avec beaucoup de connexions</li>
+<li>Fait partie du paquet <code>iproute2</code> (déjà installé partout)</li>
+<li>Affiche plus d'informations pertinentes par défaut</li>
+<li>Support natif des filtres avancés</li>
+</ul>
+
+<h2>2. Installation</h2>
+
+<p><code>ss</code> est généralement préinstallé sur les distributions Linux modernes. Il fait partie du paquet <code>iproute2</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier que ss est installé</code></div>
+<div class="code-line"><code>which ss</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Si besoin, installer iproute2</code></div>
+<div class="code-line"><code># Ubuntu/Debian:</code></div>
+<div class="code-line"><code>sudo apt install iproute2</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Fedora/RHEL:</code></div>
+<div class="code-line"><code>sudo dnf install iproute</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Arch Linux:</code></div>
+<div class="code-line"><code>sudo pacman -S iproute2</code></div>
+</div>
+
+<h2>3. Utilisation basique</h2>
+
+<h3>Afficher toutes les connexions</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister toutes les connexions (TCP, UDP, Unix)</code></div>
+<div class="code-line"><code>ss</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Équivalent court</code></div>
+<div class="code-line"><code>ss -a</code></div>
+</div>
+
+<h3>Filtrer par protocole</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher uniquement les connexions TCP</code></div>
+<div class="code-line"><code>ss -t</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Afficher uniquement les connexions UDP</code></div>
+<div class="code-line"><code>ss -u</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Afficher uniquement les sockets Unix (communication locale)</code></div>
+<div class="code-line"><code>ss -x</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Combiner les options</code></div>
+<div class="code-line"><code>ss -tu     # TCP et UDP</code></div>
+<div class="code-line"><code>ss -lt     # TCP en écoute (listening)</code></div>
+<div class="code-line"><code>ss -lu     # UDP en écoute</code></div>
+</div>
+
+<h2>4. Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-l</code></td><td>Afficher uniquement les sockets en écoute</td></tr>
+<tr><td><code>-p</code></td><td>Afficher les processus utilisant les sockets</td></tr>
+<tr><td><code>-n</code></td><td>Ne pas résoudre les noms (afficher les ports numériques)</td></tr>
+<tr><td><code>-r</code></td><td>Résoudre les noms (hostname, service)</td></tr>
+<tr><td><code>-a</code></td><td>Toutes les sockets (écoute + établies)</td></tr>
+<tr><td><code>-e</code></td><td>Informations étendues</td></tr>
+<tr><td><code>-m</code></td><td>Afficher l'utilisation mémoire du socket</td></tr>
+<tr><td><code>-i</code></td><td>Informations internes TCP</td></tr>
+<tr><td><code>-o</code></td><td>Afficher les timers (chrono)</td></tr>
+</table>
+
+<h2>5. Exemples pratiques</h2>
+
+<h3>Voir tous les services en écoute</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ports TCP en écoute</code></div>
+<div class="code-line"><code>ss -ltn</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Résultat typique:</code></div>
+<div class="code-line"><code>State      Recv-Q   Send-Q   Local Address:Port    Peer Address:Port</code></div>
+<div class="code-line"><code>LISTEN     0        128      0.0.0.0:22            0.0.0.0:*</code></div>
+<div class="code-line"><code>LISTEN     0        128      0.0.0.0:80            0.0.0.0:*</code></div>
+<div class="code-line"><code>LISTEN     0        128      0.0.0.0:443           0.0.0.0:*</code></div>
+<div class="code-line"><code>LISTEN     0        128      [::]:22               [::]:*</code></div>
+</div>
+
+<h3>Voir les connexions établies avec les processus</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Connexions TCP établies avec nom du processus</code></div>
+<div class="code-line"><code>ss -tlnp</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Exemple de sortie:</code></div>
+<div class="code-line"><code>State    Recv-Q  Send-Q  Local Address:Port  Peer Address:Port  Process</code></div>
+<div class="code-line"><code>LISTEN   0       128     0.0.0.0:22          0.0.0.0:*          users:(("sshd",pid=1234,fd=3))</code></div>
+<div class="code-line"><code>LISTEN   0       128     0.0.0.0:80          0.0.0.0:*          users:(("nginx",pid=5678,fd=4))</code></div>
+</div>
+
+<h3>Connexions SSH actives</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir qui est connecté en SSH</code></div>
+<div class="code-line"><code>ss | grep ssh</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Ou plus précis:</code></div>
+<div class="code-line"><code>ss -tp | grep ssh</code></div>
+</div>
+
+<h3>Connections par adresse IP</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Filtrer par IP source ou destination</code></div>
+<div class="code-line"><code>ss dst 192.168.1.100</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Filtrer par port</code></div>
+<div class="code-line"><code>ss sport = :443</code></div>
+<div class="code-line"><code>ss dport = :80</code></div>
+</div>
+
+<h3>Statistiques globales</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Résumé des connexions par état</code></div>
+<div class="code-line"><code>ss -s</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Exemple de sortie:</code></div>
+<div class="code-line"><code>Total: 156 (kernel 168)</code></div>
+<div class="code-line"><code>TCP:   12 (estab 5, closed 2, orphaned 0, synrecv 0, timewait 2/0)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>Transport Total   IP  IPv6</code></div>
+<div class="code-line"><code>*         168     -   -</code></div>
+<div class="code-line"><code>RAW      0       0   0</code></div>
+<div class="code-line"><code>UDP      4       3   1</code></div>
+<div class="code-line"><code>TCP      10      8   2</code></div>
+<div class="code-line"><code>INET     14      11  3</code></div>
+<div class="code-line"><code>FRAG     0       0   0</code></div>
+</div>
+
+<h2>6. Filtres avancés avec ss</h2>
+
+<p><code>ss</code> permet des filtres très puissants pour analyser des situations spécifiques.</p>
+
+<h3>États des connexions TCP</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Connexions établies</code></div>
+<div class="code-line"><code>ss state established</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Connexions en attente (synrecv)</code></div>
+<div class="code-line"><code>ss state syn-recv</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># TIME_WAIT (connexion fermée mais en attente)</code></div>
+<div class="code-line"><code>ss state time-wait</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># États possibles: established, syn-sent, syn-recv, fin-wait-1, fin-wait-2,</code></div>
+<div class="code-line"><code>#                  time-wait, close, close-wait, last-ack, listening, closing</code></div>
+</div>
+
+<h3>Combiner filtres et états</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Connexions HTTP/HTTPS établies</code></div>
+<div class="code-line"><code>ss state established '( dport = :80 or dport = :443 )'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Connexions SSH établies</code></div>
+<div class="code-line"><code>ss state established '( dport = :22 )'</code></div>
+</div>
+
+<h3>Filtrer par numéro de port</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Port source ou destination égal à 22</code></div>
+<div class="code-line"><code>ss sport = :22</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Multiple ports (SSH ou HTTPS)</code></div>
+<div class="code-line"><code>ss -tn 'dport = :22 or dport = :443'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Plage de ports (5000 à 6000)</code></div>
+<div class="code-line"><code>ss sport gt :5000 sport lt :6000</code></div>
+</div>
+
+<h2>7. Cas d'utilisation réels</h2>
+
+<h3>Diagnostiquer un serveur web lent</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir toutes les connexions HTTP/HTTPS</code></div>
+<div class="code-line"><code>ss -ti 'dport = :80 or dport = :443'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># L'option -i affiche les infos TCP internes:</code></div>
+<div class="code-line"><code># - struct tcp_info: congestion, RTT, fenêtre receive/send</code></div>
+</div>
+
+<h3>Vérifier les connexions suspectes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir toutes les connexions non-locales établies</code></div>
+<div class="code-line"><code>ss -tnp | grep -v 127.0.0.1 | grep ESTAB</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Chercher des connexions depuis l'extérieur sur des ports inhabituels</code></div>
+<div class="code-line"><code>ss -tnp | grep ESTAB | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn</code></div>
+</div>
+
+<h3>Surveiller les connexions MySQL/PostgreSQL</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Connexions MySQL (port 3306)</code></div>
+<div class="code-line"><code>ss -tnp 'dport = :3306'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Connexions PostgreSQL (port 5432)</code></div>
+<div class="code-line"><code>ss -tnp 'dport = :5432'</code></div>
+</div>
+
+<h2>8. Timer et monitoring continu</h2>
+
+<p>Pour un monitoring en temps réel, combinez avec <code>watch</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Surveillance continue des connexions</code></div>
+<div class="code-line"><code>watch -n 1 'ss -tn'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Surveillance des nouvelles connexions avec timer</code></div>
+<div class="code-line"><code>watch -n 1 'ss -tno'</code></div>
+</div>
+
+<h2>9. Comparaison avec netstat</h2>
+
+<table>
+<tr><th>Commande</th><th>Performance</th><th>Informations</th><th>Disponibilité</th></tr>
+<tr><td><code>netstat -tuln</code></td><td>Lent sur beaucoup de connexions</td><td>Basique</td><td>Deprecated</td></tr>
+<tr><td><code>ss -tuln</code></td><td>Très rapide</td><td>Détaillé</td><td>Moderne, recommandé</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># L'ancien netstat</code></div>
+<div class="code-line"><code>netstat -tuln</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Équivalent moderne avec ss</code></div>
+<div class="code-line"><code>ss -tuln</code></div>
+</div>
+
+<h2>10. Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez toujours <code>ss</code> plutôt que <code>netstat</code> sur les systèmes modernes</li>
+<li>Combinez <code>-n</code> avec les filtres pour éviter les lenteurs de résolution DNS</li>
+<li>Pour le debugging réseau, <code>ss -ti</code> offre des infos TCP très utiles</li>
+<li>Combinez avec <code>grep</code> pour filtrer rapidement : <code>ss -tnp | grep :80</code></li>
+<li>Pour un monitoring continu, utilisez <code>watch</code> : <code>watch -n 1 'ss -s'</code></li>
+</ul>
+
+<h2>Résumé</h2>
+
+<p>La commande <code>ss</code> est l'outil indispensable pour quiconque administre un serveur Linux. Elle permet de diagnostiquer rapidement les problèmes de réseau, identifier les connexions actives, et surveiller l'état des services réseau.</p>
+
+<table>
+<tr><td><strong>Commande de base</strong></td><td><code>ss</code></td></tr>
+<tr><td><strong>Ports en écoute</strong></td><td><code>ss -ltn</code></td></tr>
+<tr><td><strong>Avec processus</strong></td><td><code>ss -lnp</code></td></tr>
+<tr><td><strong>Connexions établies</strong></td><td><code>ss -tn</code></td></tr>
+<tr><td><strong>Filtre par port</strong></td><td><code>ss 'dport = :80'</code></td></tr>
+<tr><td><strong>Statistiques</strong></td><td><code>ss -s</code></td></tr>
+</table>
+
+<p>Dans la prochaine leçon, nous explorerons un autre outil complémentaire pour surveiller votre système en temps réel.</p>
+
+<nav>
+<a href="124-rsync-backups.html">&larr; Leçon 124: rsync — Sauvegardes professionnelles</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
