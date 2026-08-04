@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 126: man — Les pages de manuel, votre bibliothèque intégré</h1>
+
+<p>Dans cette leçon, vous allez découvrir <code>man</code>, la commande qui vous donne accès à la documentation officielle de chaque outil Linux. C'est votre premier réflexe quand vous ne comprenez pas une commande.</p>
+
+<h2>1. Qu'est-ce que man ?</h2>
+
+<p><code>man</code> (abréviation de <em>manual</em>) est le système de documentation intégré à Linux. Presque chaque commande, fichier de configuration et fonction système dispose d'une page de manuel que vous pouvez consulter directement dans le terminal.</p>
+
+<p><strong>Pourquoi utiliser les pages man ?</strong></p>
+<ul>
+<li>Documentation officielle et toujours à jour sur votre système</li>
+<li>Disponible hors-ligne (pas besoin d'Internet)</li>
+<li>Couvre les commandes, les fichiers de config, les fonctions C, etc.</li>
+<li>Structure standardisée : toujours savoir où trouver l'information</li>
+</ul>
+
+<h2>2. Installation</h2>
+
+<p>Le package <code>man-db</code> est généralement préinstallé sur toutes les distributions Linux modernes.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier que man est installé</code></div>
+<div class="code-line"><code>which man</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Si besoin, installer man et les pages manuel</code></div>
+<div class="code-line"><code># Ubuntu/Debian:</code></div>
+<div class="code-line"><code>sudo apt install man-db man-pages</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Fedora/RHEL:</code></div>
+<div class="code-line"><code>sudo dnf install man-db</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Arch Linux:</code></div>
+<div class="code-line"><code>sudo pacman -S man-db man-pages</code></div>
+</div>
+
+<h2>3. Utilisation basique</h2>
+
+<h3>Lire la page man d'une commande</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ouvrir la page man de ls</code></div>
+<div class="code-line"><code>man ls</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Ouvrir la page man de ssh</code></div>
+<div class="code-line"><code>man ssh</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Ouvrir la page man de systemd (service)</code></div>
+<div class="code-line"><code>man systemd</code></div>
+</div>
+
+<h3>Navigation dans man</h3>
+
+<p>Une fois dans <code>man</>, utilisez ces touches pour naviguer :</p>
+
+<table>
+<tr><th>Touche</th><th>Action</th></tr>
+<tr><td><code>Flèche haut / j</code></td><td>Ligne précédente</td></tr>
+<tr><td><code>Flèche bas / k</code></td><td>Ligne suivante</td></tr>
+<tr><td><code>Espace / Page Down</code></td><td>Page suivante</td></tr>
+<tr><td><code>b / Page Up</code></td><td>Page précédente</td></tr>
+<tr><td><code>g</code></td><td>Retour au début</td></tr>
+<tr><td><code>G</code></td><td>Aller à la fin</td></tr>
+<tr><td><code>/motif</code></td><td>Rechercher vers le bas (n: suivant, N: précédent)</td></tr>
+<tr><td><code>?motif</code></td><td>Rechercher vers le haut</td></tr>
+<tr><td><code>q</code></td><td>Quitter man</td></tr>
+<tr><td><code>h</code></td><td>Aide (raccourcis disponibles)</td></tr>
+</table>
+
+<h2>4. Sections des pages man</h2>
+
+<p>Les pages man sont organisées en sections numérotées. Chaque section a un but précis :</p>
+
+<table>
+<tr><th>Section</th><th>Contenu</th><th>Exemple</th></tr>
+<tr><td><code>1</code></td><td>Commandes utilisateur</td><td><code>man 1 ls</code> ou <code>man ls</code></td></tr>
+<tr><td><code>2</code></td><td>Appels système (kernel)</td><td><code>man 2 open</code>, <code>man 2 fork</code></td></tr>
+<tr><td><code>3</code></td><td>Fonctions des bibliothèques C</td><td><code>man 3 printf</code></td></tr>
+<tr><td><code>4</code></td><td>Fichiers spéciaux (devices)</td><td><code>man 4 null</code>, <code>man 4 tty</code></td></tr>
+<tr><td><code>5</code></td><td>Fichiers de configuration</td><td><code>man 5 passwd</code>, <code>man 5 fstab</code></td></tr>
+<tr><td><code>6</code></td><td>Jeux et écrans de veille</td><td><code>man 6 fortune</code></td></tr>
+<tr><td><code>7</code></td><td>Conventions, glossaire</td><td><code>man 7 utf-8</code>, <code>man 7 regex</code></td></tr>
+<tr><td><code>8</code></td><td>Commandes d'administration</td><td><code>man 8 fdisk</code>, <code>man 8 iptables</code></td></tr>
+</table>
+
+<h3>Pourquoi plusieurs sections pour un même nom ?</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Par exemple, 'passwd' existe dans plusieurs sections:</code></div>
+<div class="code-line"><code>man 1 passwd    # La commande pour changer son mot de passe</code></div>
+<div class="code-line"><code>man 5 passwd   # Le fichier /etc/passwd</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Préciser la section évite l'ambiguïté</code></div>
+<div class="code-line"><code>man 3 printf   # La fonction C</code></div>
+<div class="code-line"><code>man 1 printf   # La commande shell</code></div>
+</div>
+
+<h2>5. Options utiles de man</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-k motif</code></td><td>Rechercher dans les descriptions (équivalent de <code>apropos</code>)</td></tr>
+<tr><td><code>-K motif</code></td><td>Rechercher dans le texte complet de toutes les pages</td></tr>
+<tr><td><code>-f commande</code></td><td>Afficher une description courte (équivalent de <code>whatis</code>)</td></tr>
+<tr><td><code>-w</code></td><td>Afficher l'emplacement du fichier source de la page man</td></tr>
+<tr><td><code>-a</code></td><td>Afficher toutes les pages correspondant au nom (toutes sections)</td></tr>
+<tr><td><code>-l</code></td><td>Formatage en local (pas de pagination)</td></tr>
+<tr><td><code>-I</code></td><td>Recherche insensible à la casse</td></tr>
+<tr><td><code>--no-justification</code></td><td>Désactiver l'alignement du texte</td></tr>
+</table>
+
+<h2>6. Rechercher dans les pages man</h2>
+
+<h3>Recherche par mot-clé (-k)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les pages man qui mentionnent "network"</code></div>
+<div class="code-line"><code>man -k network</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Équivalent:</code></div>
+<div class="code-line"><code>apropos network</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Rechercher "socket"</code></div>
+<div class="code-line"><code>man -k socket</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Rechercher avec expression régulière</code></div>
+<div class="code-line"><code>man -k "^fdisk"</code></div>
+</div>
+
+<h3>Recherche dans le texte complet (-K)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Chercher "fork" dans toutes les pages man (peut être long)</code></div>
+<div class="code-line"><code>man -K fork</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Rechercher uniquement dans la section 2 (appels système)</code></div>
+<div class="code-line"><code>man -K -s 2 fork</code></div>
+</div>
+
+<h3>Description courte (-f / whatis)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Une ligne de description pour ls</code></div>
+<div class="code-line"><code>man -f ls</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Équivalent:</code></div>
+<div class="code-line"><code>whatis ls</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Plusieurs commandes à la fois</code></div>
+<div class="code-line"><code>whatis ls cp mv rm</code></div>
+</div>
+
+<h2>7. Trouver le fichier source d'une page man</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Où est stockée la page man de ls ?</code></div>
+<div class="code-line"><code>man -w ls</code></div>
+<div class="code-line"><code># Résultat: /usr/share/man/man1/ls.1.gz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Pour un fichier de configuration</code></div>
+<div class="code-line"><code>man -w fstab</code></div>
+<div class="code-line"><code># Résultat: /usr/share/man/man5/fstab.5.gz</code></div>
+</div>
+
+<h2>8. Afficher toutes les sections</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Si 'passwd' existe dans plusieurs sections, toutes les afficher</code></div>
+<div class="code-line"><code>man -a passwd</code></div>
+<div class="code-line"><code># Affiche la section 1, puis 5, enchaînées</code></div>
+</div>
+
+<h2>9. Exemples pratiques</h2>
+
+<h3>Trouver comment utiliser une commande inconnue</h3>
+
+<div class="code-block">
+<div class="code-line"><code># 1. D'abord, une description courte</code></div>
+<div class="code-line"><code>whatis tar</code></div>
+<div class="code-line"><code># tar - gnu tar - GNU tar archiver</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 2. Lire la page man complète</code></div>
+<div class="code-line"><code>man tar</code></div>
+</div>
+
+<h3>Retrouver les options d'une commande</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vous savez que ssh existe mais pas les options</code></div>
+<div class="code-line"><code>man ssh</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Chercher une option spécifique dans la page</code></div>
+<div class="code-line"><code># Tapez /-v puis Entrée pour chercher "-v"</code></div>
+</div>
+
+<h3>Explorer les fichiers de configuration</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Comprendre le format de /etc/passwd</code></div>
+<div class="code-line"><code>man 5 passwd</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Comprendre le format de /etc/fstab</code></div>
+<div class="code-line"><code>man 5 fstab</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Comprendre le format de crontab</code></div>
+<div class="code-line"><code>man 5 crontab</code></div>
+</div>
+
+<h3>Explorer les appels système Linux</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Comment fonctionne la création de processus ?</code></div>
+<div class="code-line"><code>man 2 fork</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Comprendre les permissions (chmod utilise open/permissions en interne)</code></div>
+<div class="code-line"><code>man 2 chmod</code></div>
+</div>
+
+<h3>Recherche rapide sans ouvrir man</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vous cherchez une commande pour "compresser"</code></div>
+<div class="code-line"><code>man -k compress</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Résultat typique:</code></div>
+<div class="code-line"><code>bzip2 (1)            - a block-sorting file compressor</code></div>
+<div class="code-line"><code>gzip (1)             - compression/decompression tool</code></div>
+<div class="code-line"><code>tar (1)              - gnu tar - an archiving utility</code></div>
+<div class="code-line"><code>unzip (1)            - list, test and extract compressed files</code></div>
+<div class="code-line"><code>zip (1)              - package and compress files</code></div>
+</div>
+
+<h2>10. Outils complémentaires</h2>
+
+<h3>whatis — Description courte</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher la description d'une commande</code></div>
+<div class="code-line"><code>whatis ls</code></div>
+<div class="code-line"><code># ls (1) - list directory contents</code></div>
+</div>
+
+<h3>apropos — Recherche par mot-clé</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les commandes liées à "disk"</code></div>
+<div class="code-line"><code>apropos disk</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trouver les commandes liées à "user management"</code></div>
+<div class="code-line"><code>apropos "user"</code></div>
+</div>
+
+<h3>which — Localiser une commande</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Où est la commande ls sur le système ?</code></div>
+<div class="code-line"><code>which ls</code></div>
+<div class="code-line"><code># /bin/ls</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir toutes les occurrences (si同名 exists dans $PATH)</code></div>
+<div class="code-line"><code>which -a python</code></div>
+</div>
+
+<h3>whereis — Localiser les fichiers source et man</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Fichier binaire, source et page man</code></div>
+<div class="code-line"><code>whereis ls</code></div>
+<div class="code-line"><code># ls: /bin/ls /usr/share/man/man1/ls.1.gz</code></div>
+</div>
+
+<h2>11. Mises à jour et base de données man</h2>
+
+<p>Le système <code>man</code> utilise une base de données d'index pour les recherches. Sur certains systèmes, il faut la mettre à jour manuellement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Mettre à jour la base de données des pages man (si nécessaire)</code></div>
+<div class="code-line"><code>sudo mandb</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Sur certaines distributions (Debian/Ubuntu)</code></div>
+<div class="code-line"><code>sudo update-db</code></div>
+</div>
+
+<h2>12. Format des pages man</h2>
+
+<p>Une page man standard suit toujours cette structure :</p>
+
+<div class="code-block">
+<div class="code-line"><code>NAME         — Nom de la commande et description courte</code></div>
+<div class="code-line"><code>SYNOPSIS     — Syntaxe d'utilisation</code></div>
+<div class="code-line"><code>DESCRIPTION  — Explication détaillée</code></div>
+<div class="code-line"><code>OPTIONS      — Liste des options disponibles</code></div>
+<div class="code-line"><code>EXAMPLES     — Exemples d'utilisation</code></div>
+<div class="code-line"><code>FILES        — Fichiers liés (config, etc.)</code></div>
+<div class="code-line"><code>SEE ALSO     — Commandes ou pages liées</code></div>
+<div class="code-line"><code>BUGS         — Problèmes connus</code></div>
+<div class="code-line"><code>AUTHOR       — Auteur(s)</code></div>
+</div>
+
+<h3>Lire le synopsis (SYNOPSIS)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exemple avec ls:</code></div>
+<div class="code-line"><code>man ls</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Dans SYNOPSIS, vous verrez:</code></div>
+<div class="code-line"><code># ls [OPTION]... [FILE]...</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Signification:</code></div>
+<div class="code-line"><code># [OPTION]    → option(s) entre crochets = facultatif</code></div>
+<div class="code-line"><code># ...         → peut être répété plusieurs fois</code></div>
+<div class="code-line"><code># FILE        → argument obligatoire</code></div>
+<div class="code-line"><code># [FILE]...   → fichier(s) optionnel(s)</code></div>
+</div>
+
+<h2>13. Tips et bonnes pratiques</h2>
+
+<ul>
+<li><strong>Premier réflexe</strong> : face à une commande inconnue, tapez <code>man commande</code> avant de Googler</li>
+<li><strong>Recherche rapide</strong> : <code>man -k</code> pour trouver une commande par son effet</li>
+<li><strong>Section 5</strong> : pour comprendre un fichier de config, utilisez <code>man 5 nomfichier</code></li>
+<li><strong>Section 2-3</strong> : pour comprendre le fonctionnement interne, les appels système (2) et fonctions C (3)</li>
+<li><strong>Combiné avec grep</strong> : <code>man ls | grep -i recursive</code> pour trouver rapidement une info</li>
+<li><strong>Mise à jour</strong> : après installation d'un nouveau logiciel, lancez <code>sudo mandb</code> si <code>man -k</code> ne trouve rien</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<p>La commande <code>man</code> est votre encyclopedie Linux. Elle contient la documentation officielle de pratiquement tout — commandes, fichiers de configuration, appels système, fonctions de bibliothèque. Apprendre à naviguer efficacement dans les pages man est une compétence fondamentale pour tout administrateur ou développeur Linux.</p>
+
+<table>
+<tr><td><strong>Lire une page man</strong></td><td><code>man commande</code></td></tr>
+<tr><td><strong>Description courte</strong></td><td><code>whatis commande</code></td></tr>
+<tr><td><strong>Rechercher par mot-clé</strong></td><td><code>man -k motif</code> ou <code>apropos motif</code></td></tr>
+<tr><td><strong>Section précise</strong></td><td><code>man 5 passwd</code></td></tr>
+<tr><td><strong>Emplacement de la page</strong></td><td><code>man -w commande</code></td></tr>
+<tr><td><strong>Toutes les sections</strong></td><td><code>man -a nom</code></td></tr>
+</table>
+
+<nav>
+<a href="125-ss-socket-statistics.html">&larr; Leçon 125: ss — Socket Statistics</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
