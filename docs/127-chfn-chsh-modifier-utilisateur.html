@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 127 : chfn et chsh — Modifier les informations utilisateur</h1>
+
+<h2>Introduction</h2>
+<p>Sous Linux, chaque compte utilisateur dispose d'informations complémentaires au simple nom de login : le nom complet, le bureau, le téléphone, etc. Les commandes <code>chfn</code> (change finger) et <code>chsh</code> (change shell) permettent de modifier ces informations directement depuis le terminal.</p>
+<p>Ces commandes agissent sur le fichier <code>/etc/passwd</code> et sont particulièrement utiles sur les systèmes multi-utilisateurs ou les serveurs où vous souhaitez maintenir un annuaire précis des utilisateurs.</p>
+
+<h2>La commande chfn</h2>
+<p><code>chfn</code> modifie les champs d'information personnelle d'un utilisateur dans <code>/etc/passwd</code>. Ces informations sont parfois affichées par la commande <code>finger</code> (d'où le nom).</p>
+
+<h3>Syntaxe de base</h3>
+<div class="code-block"><div class="code-line"><code>chfn [options] [utilisateur]</code></div></div>
+
+<h3>Modifier les informations de l'utilisateur courant</h3>
+<div class="code-block"><div class="code-line"><code>chfn</code></div></div>
+<p>Sans argument, <code>chfn</code> demande交互式 les nouvelles valeurs pour chaque champ :</p>
+<div class="code-block"><div class="code-line"><code>Nom complet []: Jean Dupont
+Bureau []: Atelier B
+Téléphone professionnel []: 021 123 45 67
+Téléphone personnel []: 079 123 45 67</code></div></div>
+
+<h3>Modifier un champ précis</h3>
+<div class="code-block"><div class="code-line"><code># Modifier le nom complet
+chfn -f "Marie Martin" utilisateur
+
+# Modifier le bureau
+chfn -o "Bureau 204" utilisateur
+
+# Modifier le téléphone professionnel
+chfn -p "021 987 65 43" utilisateur
+
+# Modifier le téléphone personnel
+chfn -h "079 555 33 22" utilisateur</code></div></div>
+
+<h3>Options principales de chfn</h3>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-f, --full-name</code></td><td>Définir le nom complet</td></tr>
+<tr><td><code>-o, --office</code></td><td>Définir le bureau ou le service</td></tr>
+<tr><td><code>-p, --office-phone</code></td><td>Définir le téléphone professionnel</td></tr>
+<tr><td><code>-h, --home-phone</code></td><td>Définir le téléphone personnel</td></tr>
+<tr><td><code>-u, --help</code></td><td>Afficher l'aide</td></tr>
+<tr><td><code>-v, --version</code></td><td>Afficher la version</td></tr>
+</table>
+
+<h2>La commande chsh</h2>
+<p><code>chsh</code> modifie le shell de connexion d'un utilisateur. C'est le programme qui s'exécute automatiquement lors de l'ouverture d'une session terminal.</p>
+
+<h3>Syntaxe de base</h3>
+<div class="code-block"><div class="code-line"><code>chsh [options] [utilisateur]</code></div></div>
+
+<h3>Voir le shell actuel</h3>
+<div class="code-block"><div class="code-line"><code># Pour l'utilisateur courant
+chsh -l</code></div></div>
+<p>Cette commande liste les shells disponibles dans <code>/etc/shells</code>.</p>
+
+<h3>Modifier son propre shell</h3>
+<div class="code-block"><div class="code-line"><code># Passer à zsh
+chsh -s /bin/zsh
+
+# Passer à fish
+chsh -s /usr/bin/fish
+
+# Passer à bash (chemin complet)
+chsh -s /bin/bash</code></div></div>
+
+<h3>Modifier le shell d'un autre utilisateur</h3>
+<p>Il faut être root :</p>
+<div class="code-block"><div class="code-line"><code>sudo chsh -s /bin/zsh utilisateur</code></div></div>
+
+<h3>Options principales de chsh</h3>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-s, --shell</code></td><td>Définir le nouveau shell</td></tr>
+<tr><td><code>-l, --list-shells</code></td><td>Lister les shells disponibles</td></tr>
+<tr><td><code>-u, --help</code></td><td>Afficher l'aide</td></tr>
+<tr><td><code>-v, --version</code></td><td>Afficher la version</td></tr>
+</table>
+
+<h2>Vérifier les modifications</h2>
+<p>Après modification, vous pouvez vérifier les changements de plusieurs manières :</p>
+
+<h3>Avec id</h3>
+<div class="code-block"><div class="code-line"><code>id utilisateur</code></div></div>
+
+<h3>Avec getent</h3>
+<div class="code-block"><div class="code-line"><code>getent passwd utilisateur</code></div></div>
+
+<h3>Avec finger (si installé)</h3>
+<div class="code-block"><div class="code-line"><code>finger utilisateur</code></div></div>
+<p>La commande <code>finger</code> affiche les informations définies par <code>chfn</code>.</p>
+
+<h2>Shells disponibles</h2>
+<p>Le fichier <code>/etc/shells</code> liste les shells autorisés sur le système :</p>
+<div class="code-block"><div class="code-line"><code>cat /etc/shells</code></div></div>
+<p>Exemple de sortie :</p>
+<div class="code-block"><div class="code-line"><code>/bin/sh
+/bin/bash
+/bin/rbash
+/bin/zsh
+/usr/bin/zsh
+/usr/bin/fish
+/bin/dash</code></div></div>
+
+<h2>Cas pratiques</h2>
+
+<h3>Créer un compte avec un shell spécifique</h3>
+<div class="code-block"><div class="code-line"><code># Créer l'utilisateur avec zsh comme shell par défaut
+sudo useradd -m -s /bin/zsh nouvelutilisateur
+
+# Ou modifier après création
+sudo chsh -s /bin/zsh nouvelutilisateur</code></div></div>
+
+<h3>Configurer les informations complètes d'un nouvel employé</h3>
+<div class="code-block"><div class="code-line"><code># Définir toutes les informations en une seule commande
+sudo chfn -f "Sophie Müller" -o "Développement" -p "021 111 22 33" -h "079 444 55 66" sophie</code></div></div>
+
+<h3>Restreindre un utilisateur à un shell limité</h3>
+<p>Pour un utilisateur qui ne doit exécuter qu'un programme spécifique (compte de service) :</p>
+<div class="code-block"><div class="code-line"><code># Donner un shell restreint comme /usr/sbin/nologin
+sudo chsh -s /usr/sbin/nologin compte-service</code></div></div>
+<p>Les shells comme <code>/usr/sbin/nologin</code> ou <code>/bin/false</code> empêchent la connexion interactive.</p>
+
+<h2>Difference entre /etc/passwd et /etc/shadow</h2>
+<p>Il est important de comprendre où sont stockées ces informations :</p>
+<table>
+<tr><th>Fichier</th><th>Contenu</th><th>Accessible en lecture</th></tr>
+<tr><td><code>/etc/passwd</code></td><td>Nom, UID, GID, shell, infos <code>chfn</code></td><td>Tous les utilisateurs</td></tr>
+<tr><td><code>/etc/shadow</code></td><td>Mot de passe chiffré</td><td>Root uniquement</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Utilisez <code>sudo</code> pour modifier les comptes d'autres utilisateurs.</li>
+<li>Vérifiez toujours que le shell choisi existe dans <code>/etc/shells</code> avant d'appliquer <code>chsh</code>.</li>
+<li>Un shell erroné peut bloquer la connexion d'un utilisateur. En cas de problème, utilisez le mode single-user pour corriger.</li>
+<li>Documentez le shell attribué à chaque utilisateur dans un registre pour faciliter l'administration.</li>
+<li>Pour les comptes de service, privilégiez <code>/usr/sbin/nologin</code> plutôt qu'un shell interactif.</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Usage</th><th>Exemple</th></tr>
+<tr><td><code>chfn</code></td><td>Modifier les informations personnelles</td><td><code>chfn -f "Nouveau Nom" user</code></td></tr>
+<tr><td><code>chsh</code></td><td>Modifier le shell de connexion</td><td><code>chsh -s /bin/zsh</code></td></tr>
+<tr><td><code>chsh -l</code></td><td>Lister les shells disponibles</td><td><code>chsh -l</code></td></tr>
+</table>
+
+<p>Ces deux commandes font partie des outils essentiels pour l'administration des comptes utilisateurs sous Linux. Elles permettent de maintenir un annuaire précis et d'adapter l'environnement de chaque utilisateur selon ses besoins.</p>
+
+<nav>
+<a href="126-man-pages-manuel.html">&larr; Leçon 126 : man — Les pages de manuel</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
