@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 128 : column — Formater du texte en colonnes</h1>
+
+<h2>Introduction</h2>
+<p>La commande <code>column</code> est un outil puissant pour formater du texte en colonnes nettes et lisibles. Elle transforme un texte brut, souvent issu d'une commande ou d'un fichier, en un affichage tabulaire aligné automatiquement.</p>
+<p>Utile pour visualiser des données tabulaires, des listes de fichiers, des tableaux de configuration ou des sorties de commandes — sans avoir à écrire de script complexe.</p>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block"><div class="code-line"><code>column [options] [fichier...]</code></div></div>
+
+<h2>Utilisation simple</h2>
+
+<h3>Formater un fichier texte délimité</h3>
+<p>Créons d'abord un fichier d'exemple avec des données séparées par des deux-points (:) :</p>
+<div class="code-block"><div class="code-line"><code>cat > utilisateurs.txt << 'EOF'
+Pierre:Administrateur:1001:Linux
+Marie:Développeur:1002:Python
+Jean:Designer:1003:GIMP
+Sophie:Technicien:1004:Réseau
+EOF</code></div></div>
+
+<p>Puis affichons-le en colonnes avec le délimiteur <code>:</code> :</p>
+<div class="code-block"><div class="code-line"><code>column -t -s ':' utilisateurs.txt</code></div></div>
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>Pierre   Administrateur  1001  Linux
+Marie    Développeur     1002  Python
+Jean     Designer        1003  GIMP
+Sophie   Technicien      1004  Réseau</code></div></div>
+
+<h3>Sans délimiteur (espace)</h3>
+<p>Par défaut, <code>column</code> détecte les espaces comme séparateurs :</p>
+<div class="code-block"><div class="code-line"><code>cat mots.txt
+un deux trois
+alpha beta gamma
+foo bar baz
+
+column mots.txt</code></div></div>
+
+<h2>Options principales</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-t</code></td><td>Crée un tableau en détectant automatiquement le nombre de colonnes</td></tr>
+<tr><td><code>-s SEP</code></td><td>Spécifie le ou les caractères séparateurs (par exemple <code>:,;</code>)</td></tr>
+<tr><td><code>-c LARGEUR</code></td><td>Limite la largeur totale de sortie à LARGEUR colonnes</td></tr>
+<tr><td><code>-o CHAÎNE</code></td><td>Utilise CHAÎNE comme séparateur de colonnes (par défaut : deux espaces)</td></tr>
+<tr><td><code>-x</code></td><td>Remplit les colonnes par lignes d'abord (par défaut : par colonnes)</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Liste de fichiers avec ls</h3>
+<div class="code-block"><div class="code-line"><code># Lister les fichiers et afficher en colonnes
+ls -l /usr/bin | awk '{print $9}' | grep -v '^$' | column
+
+# Ou plus simplement
+ls -1 /usr/share/man/man1 | head -20 | column</code></div></div>
+
+<h3>Afficher /etc/passwd de manière lisible</h3>
+<div class="code-block"><div class="code-line"><code>sudo cut -d: -f1,5,6 /etc/passwd | column -t -s ':'</code></div></div>
+
+<h3>Tableau de configuration réseau</h3>
+<div class="code-block"><div class="code-line"><code>cat > reseau.txt << 'EOF'
+eth0:192.168.1.10:255.255.255.0:actif
+wlan0:10.0.0.5:255.0.0.0:actif
+docker0:172.17.0.1:255.255.0.0:inactif
+EOF
+
+column -t -s ':' reseau.txt</code></div></div>
+
+<h3>Utiliser un séparateur personnalisé</h3>
+<div class="code-block"><div class="code-line"><code># Avec un CSV (virgule)
+echo "Nom,Pays,Ville" > data.csv
+echo "Pierre,Suisse,Berne" >> data.csv
+echo "Marie,France,Paris" >> data.csv
+column -t -s ',' data.csv</code></div></div>
+
+<h3>Limiter la largeur avec -c</h3>
+<div class="code-block"><div class="code-line"><code># Forcer un affichage sur 80 colonnes maximum
+column -t -c 80 fichier.txt</code></div></div>
+
+<h3>Remplissage par lignes avec -x</h3>
+<p>Par défaut, <code>column</code> remplit colonne par colonne. L'option <code>-x</code> remplit ligne par ligne :</p>
+<div class="code-block"><div class="code-line"><code># Sans -x (par défaut : colonne par colonne)
+seq 1 12 | column
+
+# Avec -x (ligne par ligne)
+seq 1 12 | column -x</code></div></div>
+
+<h2>Combiner avec d'autres commandes</h2>
+
+<h3>Avec ps pour afficher les processus</h3>
+<div class="code-block"><div class="code-line"><code>ps aux | awk '{print $2, $11}' | head -15 | column -t</code></div></div>
+
+<h3>Avec df pour les espaces disque</h3>
+<div class="code-block"><div class="code-line"><code>df -h | tail -n +2 | awk '{print $1, $2, $5}' | column -t</code></div></div>
+
+<h3>Avec find</h3>
+<div class="code-block"><div class="code-line"><code>find . -maxdepth 1 -type f -printf '%f\n' | sort | column</code></div></div>
+
+<h3>Avec grep pour filtrer et formater</h3>
+<div class="code-block"><div class="code-line"><code>grep -E '^[^#]*=' /etc/sysctl.conf | column -t -s '='</code></div></div>
+
+<h2>Format de sortie personnalisé</h2>
+
+<h3>Changer le séparateur de colonnes</h3>
+<div class="code-block"><div class="code-line"><code># Utiliser des barres verticales comme séparateur
+column -t -s ':' -o ' | ' fichier.txt</code></div></div>
+
+<h3>Sans tableau (-t désactivé)</h3>
+<p>Sans <code>-t</code>, le texte est simplement réorganisé en colonnes :</p>
+<div class="code-block"><div class="code-line"><code>seq 1 20 | column</code></div></div>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>Préparer des données pour un rapport</h3>
+<div class="code-block"><div class="code-line"><code># Transformer un CSV en tableau lisible
+cat rapport.csv | column -t -s ',' > rapport-formate.txt</code></div></div>
+
+<h3>Afficher les variables d'environnement</h3>
+<div class="code-block"><div class="code-line"><code>env | sort | column -t -s '='</code></div></div>
+
+<h3>Visualiser les services systemd actifs</h3>
+<div class="code-block"><div class="code-line"><code>systemctl list-units --type=service --state=active --no-pager | awk '{print $1, $2, $4}' | column -t</code></div></div>
+
+<h3>Comparer des paquets installés</h3>
+<div class="code-block"><div class="code-line"><code>dpkg -l | awk '{print $2, $3}' | head -20 | column -t</code></div></div>
+
+<h2>Limites de column</h2>
+<ul>
+<li><code>column</code> ne gère pas lesCellules multilignes — chaque ligne doit être indépendante.</li>
+<li>Si une cellule contient elle-même le séparateur, le résultat peut être décalé.</li>
+<li>Sur des fichiers très volumineux, le traitement peut être lent.</li>
+<li>La largeur de sortie dépend du terminal — <code>-c</code> peut être nécessaire sur des terminaux étroits.</li>
+</ul>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Utilisez toujours <code>-t</code> pour un affichage tabulaire clair.</li>
+<li>Combinez <code>-s</code> avec le bon délimiteur selon le format de votre fichier.</li>
+<li>Pour des données complexes, envisagez <code>awk</code> ou <code>pandas</code> pour plus de contrôle.</li>
+<li>Testez d'abord sans <code>-t</code> pour voir comment <code>column</code> interprète vos données.</li>
+<li>Utilisez <code>-x</code> pour un rendu plus naturel sur des listes courtes.</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Usage</th><th>Exemple</th></tr>
+<tr><td><code>column -t</code></td><td>Formatage tabulaire automatique</td><td><code>column -t fichier.txt</code></td></tr>
+<tr><td><code>column -s ':'</code></td><td>Spécifier le délimiteur</td><td><code>column -t -s ':' fichier</code></td></tr>
+<tr><td><code>column -c 80</code></td><td>Limiter la largeur</td><td><code>column -t -c 80 fichier</code></td></tr>
+<tr><td><code>column -x</code></td><td>Remplissage par lignes</td><td><code>seq 1 12 | column -x</code></td></tr>
+<tr><td><code>column -o ' | '</code></td><td>Séparateur personnalisé</td><td><code>column -t -s ':' -o ' | '</code></td></tr>
+</table>
+
+<p><code>column</code> est l'outil idéal pour transformer rapidement des données brutes en tableaux lisibles. Que ce soit pour visualiser des fichiers de configuration, des sorties de commandes ou des données tabulaires, il fait gagner du temps sans nécessiter de programmation.</p>
+
+<nav>
+<a href="127-chfn-chsh-modifier-utilisateur.html">&larr; Leçon 127 : chfn et chsh — Modifier les informations utilisateur</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
