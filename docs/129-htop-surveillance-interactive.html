@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 129 : htop — Surveillance interactive des processus</h1>
+
+<h2>Introduction</h2>
+<p><code>htop</code> est un visualiseur de processus interactif en temps réel. Contrairement à <code>top</code>, il offre une interface plus intuitive, colorée, et permet de naviguer et manipuler les processus avec les touches du clavier.</p>
+<p>C'est l'outil de surveillance incontournable pour quiconque administre un serveur ou souhaite comprendre ce qui se passe sur sa machine Linux.</p>
+
+<h2>Installation</h2>
+<div class="code-block"><div class="code-line"><code># Ubuntu / Debian
+sudo apt install htop
+
+# Fedora / CentOS / RHEL
+sudo dnf install htop
+
+# Arch Linux
+sudo pacman -S htop
+
+# Vérifier l'installation
+htop --version</code></div></div>
+
+<h2>Lancement</h2>
+<div class="code-block"><div class="code-line"><code># Lancement simple
+htop
+
+# Avec un_pid spécifique en surbrillance
+htop -d PID
+
+# Mode lecture seule (sans modification possible)
+htop -s</code></div></div>
+
+<h2>L'interface d'htop</h2>
+
+<h3>Les zones de l'écran</h3>
+<table>
+<tr><th>Zone</th><th>Description</th></tr>
+<tr><td><code>Barre supérieure</code></td><td>CPU (par cœur), RAM, Swap, nombre de tâches, charge système, uptime</td></tr>
+<tr><td><code>Zone centrale</code></td><td>Liste des processus triés (par défaut par CPU)</td></tr>
+<tr><td><code>Barre des minimiseurs</code></td><td>Raccourcis clavier disponibles</td>
+<tr><td><code>Barre inférieure</code></td><td>Commandes principales (F1-F10)</td></tr>
+</table>
+
+<h3>La barre supérieure</h3>
+<p>De gauche à droite, la barre affiche :</p>
+<ul>
+<li><strong>CPU</strong> : utilisation par cœur (barres colorées)</li>
+<li><strong>MEM</strong> : mémoire vive utilisée / totale</li>
+<li><strong>SZW</strong> : swap utilisé / total</li>
+<li><strong>Tasks</strong> : nombre total de processus</li>
+<li><strong>Load average</strong> : charge système (1, 5, 15 min)</li>
+<li><strong>Uptime</strong> : temps depuis le dernier démarrage</li>
+</ul>
+
+<h2>Navigation et interaction</h2>
+
+<h3>Raccourcis clavier essentiels</h3>
+<table>
+<tr><th>Touche</th><th>Action</th></tr>
+<tr><td><code>↑ / ↓</code></td><td>Sélectionner un processus</td></tr>
+<tr><td><code>↑ / ↓ (colonne)</code></td><td>Scroller la liste des processus</td></tr>
+<tr><td><code>g</code></td><td>Aller au mode « nice » (priorité)</td></tr>
+<tr><td><code>u</code></td><td>Afficher les processus d'un utilisateur</td></tr>
+<tr><td><code>t</code></td><td>Basculer l'arbre des processus</td></tr>
+<tr><td><code>H</code></td><td>Afficher/masquer les threads</td></tr>
+<tr><td><code>F</code></td><td>Suivre un processus (track)</td></tr>
+<tr><td><code>Space</code></td><td>Marquer/démarquer un processus</td></tr>
+<tr><td><code>k</code></td><td>Envoyer un signal au processus sélectionné</td></tr>
+<tr><td><code>q</code> ou <code>Esc</code></td><td>Quitter htop</td></tr>
+</table>
+
+<h2>Tri et affichage</h2>
+
+<h3>Changer le tri</h3>
+<p>Appuyez sur <code>>&lt;</code> (touches Shift + point-virgule) ou utilisez <code>M</code>, <code>N</code>, <code>P</code> :</p>
+<table>
+<tr><th>Touche</th><th>Tri par</th></tr>
+<tr><td><code>M</code></td><td>Mémoire (Memory)</td></tr>
+<tr><td><code>P</code></td><td>Processeur (CPU)</td></tr>
+<tr><td><code>T</code></td><td>Temps (Time)</td></tr>
+<tr><td><code>N</code></td><td>PID (numéro de processus)</td></tr>
+</table>
+
+<h3>Vue en arbre</h3>
+<p>La vue en arbre montre les relations parent-enfant entre processus :</p>
+<div class="code-block"><div class="code-line"><code># Dans htop, appuyez sur 't' pour basculer en mode arbre</code></div></div>
+<p>Exemple de sortie en arbre :</p>
+<div class="code-block"><div class="code-line"><code>systemd─┬─sshd───sshd───bash
+         ├─nginx───nginx───php-fpm
+         └─dockerd───containerd───sh</code></div></div>
+
+<h2>Recherche et filtrage</h2>
+
+<h3>Rechercher un processus</h3>
+<p>Appuyez sur <code>/</code> et tapez le nom du processus :</p>
+<div class="code-block"><div class="code-line"><code># Appuyez sur /, puis tapez 'nginx'
+# htop surligne tous les processus contenant 'nginx'</code></div></div>
+
+<h3>Filtrer par nom</h3>
+<p>Appuyez sur <code>Ctrl+f</code> pour filtrer :</p>
+<div class="code-block"><div class="code-line"><code># Affiche uniquement les processus contenant 'firefox'
+# (après avoir appuyé sur Ctrl+f et tapé 'firefox')</code></div></div>
+
+<h3>Filtrer par utilisateur</h3>
+<p>Appuyez sur <code>u</code> et choisissez un utilisateur :</p>
+<div class="code-block"><div class="code-line"><code># Affiche uniquement les processus de l'utilisateur 'www-data'
+# Utile pour isoler les processus d'un service web</code></div></div>
+
+<h2>Signaux et actions</h2>
+
+<h3>Envoyer un signal à un processus</h3>
+<p>Sélectionnez un processus et appuyez sur <code>k</code> :</p>
+<table>
+<tr><th>Signal</th><th>Numéro</th><th>Effet</th></tr>
+<tr><td><code>SIGTERM</code></td><td>15</td><td>Demande d'arrêt élégant (par défaut)</td></tr>
+<tr><td><code>SIGKILL</code></td><td>9</td><td>Arrêt forcé immédiat</td></tr>
+<tr><td><code>SIGSTOP</code></td><td>19</td><td>Suspendre le processus</td></tr>
+<tr><td><code>SIGCONT</code></td><td>18</td><td>Reprendre un processus suspendu</td></tr>
+</table>
+
+<h3>Exemple concret</h3>
+<div class="code-block"><div class="code-line"><code># 1. Lancez un processus en arrière-plan
+sleep 300 &
+
+# 2. Ouvrez htop
+htop
+
+# 3. Trouvez le processus 'sleep'
+# 4. Appuyez sur 'k'
+# 5. Choisissez SIGTERM (15) pour arrêter proprement
+# 6. Ou SIGKILL (9) pour forcer l'arrêt</code></div></div>
+
+<h2>Personnalisation</h2>
+
+<h3>Configurer htop</h3>
+<p>Appuyez sur <code>F2</code> (Setup) pour accéder aux options :</p>
+<ul>
+<li><strong>Display options</strong> : afficher/masquer les colonnes, les couleurs</li>
+<li><strong>Columns</strong> : ajouter ou retirer des colonnes (PID, USER, PRI, NI, etc.)</li>
+<li><strong>Meters</strong> : configurer la barre supérieure (CPU, RAM, Swap, etc.)</li>
+<li><strong>Colors</strong> : choisir un thème de couleurs</li>
+</ul>
+
+<h3>Colonnes utiles à ajouter</h3>
+<p>Dans Setup → Columns, ajoutez :</p>
+<table>
+<tr><th>Colonne</th><th>Description</th></tr>
+<tr><td><code>PID</code></td><td>Numéro unique du processus</td></tr>
+<tr><td><code>PPID</code></td><td>PID du processus parent</td></tr>
+<tr><td><code>USER</code></td><td>Propriétaire du processus</td></tr>
+<tr><td><code>PRI</code></td><td>Priorité réelle</td></tr>
+<tr><td><code>NI</code></td><td>Valeur nice</td></tr>
+<tr><td><code>CMD</code></td><td>Commande complète</td></tr>
+<tr><td><code>CWD</code></td><td>Répertoire de travail</td></tr>
+</table>
+
+<h3>Fichier de configuration</h3>
+<p>La configuration est sauvegardée dans <code>~/.config/htop/htoprc</code> :</p>
+<div class="code-block"><div class="code-line"><code># Exemple de configuration minimale
+[settings]
+delay=15
+sort_key=PERCENT_CPU
+sort_direction=1
+
+[colors]
+scheme=0
+
+[meters]
+CPU=1,1,1
+Memory=1,1,1
+Swap=1,1,1
+Tasks=1,1,1
+Uptime=1,1,1</code></div></div>
+
+<h2>htop en ligne de commande</h2>
+
+<h3>Options non-interactives</h3>
+<div class="code-block"><div class="code-line"><code># Afficher les processus d'un utilisateur
+htop -u www-data
+
+# Démarrer avec un tri par mémoire
+htop -s PERCENT_MEM
+
+# Rafraîchir toutes les secondes (par défaut : 10)
+htop -d 1
+
+# Mode compact (moins de détails)
+htop -C
+
+# Afficher uniquement les processus actifs
+htop --user=root --no-unicode</code></div></div>
+
+<h3>Combiner avec d'autres outils</h3>
+<div class="code-block"><div class="code-line"><code># Capturer la sortie de htop dans un fichier (non interactif)
+htop -b -n 1 > etat_systeme.txt
+
+# Explication :
+# -b : mode batch (non interactif)
+# -n 1 : une seule itération
+# Redirection vers un fichier pour l'archiver</code></div></div>
+
+<h2>Comparaison htop vs top</h2>
+<table>
+<tr><th>Fonctionnalité</th><th>top</th><th>htop</th></tr>
+<tr><td>Interface colorée</td><td>Non</td><td>Oui</td></tr>
+<tr><td>Navigation clavier intuitive</td><td>Limité</td><td>Complet</td></tr>
+<tr><td>Vue en arbre</td><td>Non</td><td>Oui (t)</td></tr>
+<tr><td>Filtrer par utilisateur</td><td>Oui (-u)</td><td>Oui (u)</td></tr>
+<tr><td>Envoyer des signaux</td><td>Oui (k)</td><td>Oui (k)</td></tr>
+<tr><td>Afficher les threads</td><td>H</td><td>H</td></tr>
+<tr><td>Personnalisation</td><td>Basique</td><td>Très flexible</td></tr>
+<tr><td>Consommation mémoire</td><td>Très légère</td><td>Légère</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Surveiller un service spécifique</h3>
+<div class="code-block"><div class="code-line"><code># Lancer htop filtré sur nginx
+htop -u www-data
+
+# Dans htop :
+# 1. Appuyez sur / et tapez 'nginx'
+# 2. Observez la charge CPU et mémoire de chaque worker</code></div></div>
+
+<h3>Identifier un processus qui mange la RAM</h3>
+<div class="code-block"><div class="code-line"><code># Lancer htop trié par mémoire
+htop -s PERCENT_MEM
+
+# Les processus les plus gourmands apparaissent en haut
+# Cliquez sur M pour forcer le tri par mémoire</code></div></div>
+
+<h3>Diagnostiquer une charge élevée</h3>
+<div class="code-block"><div class="code-line"><code># 1. Lancez htop
+htop
+
+# 2. Observez la barre CPU - si tous les cœurs sont à 100% :
+# 3. Triez par CPU (P ou M)
+# 4. Identifiez le processus responsable
+# 5. Cliquez sur le processus
+# 6. Appuyez sur 's' pour voir les fichiers ouverts (strace léger)</code></div></div>
+
+<h3>Arrêter proprement plusieurs processus</h3>
+<div class="code-block"><div class="code-line"><code># 1. Lancez htop
+htop
+
+# 2. Appuyez sur 't' pour la vue en arbre
+# 3. Trouvez le processus parent (ex: un script Python)
+# 4. Sélectionnez-le et appuyez sur 'k'
+# 5. Envoyez SIGTERM (15) - tue aussi les processus enfants</code></div></div>
+
+<h3>Surveiller les threads d'un processus</h3>
+<div class="code-block"><div class="code-line"><code># 1. Lancez un processus multi-threadé (ex: Firefox)
+firefox &
+
+# 2. Lancez htop
+htop
+
+# 3. Appuyez sur 'H' pour afficher les threads
+# 4. Chaque thread apparaît comme une ligne séparée
+# 5. Identifiez les threads qui consomment le plus</code></div></div>
+
+<h2>Alternatives à htop</h2>
+<table>
+<tr><th>Outil</th><th>Description</th><th>Installation</th></tr>
+<tr><td><code>top</code></td><td>Le classique, toujours disponible</td><td>Préinstallé</td></tr>
+<tr><td><code>htop</code></td><td>Interactif, coloré, moderne</td><td><code>apt install htop</code></td></tr>
+<tr><td><code>btop</code></td><td>Moderne, en curses, graphs beaux</td><td><code>apt install btop</code></td></tr>
+<tr><td><code>bpytop</code></td><td>Version Python de btop</td><td><code>pip install bpytop</code></td></tr>
+<tr><td><code>bashtop</code></td><td>En bash (plus lent que btop)</td><td><code>apt install bashtop</code></td></tr>
+<tr><td><code>atop</code></td><td>Historique et surveillance avancée</td><td><code>apt install atop</code></td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Utilisez <code>htop</code> au quotidien plutôt que <code>top</code> — plus ergonomique</li>
+<li>Familiarisez-vous avec les raccourcis clavier (<code>M</code>, <code>P</code>, <code>t</code>, <code>u</code>)</li>
+<li>Surveillez régulièrement la RAM avec <code>M</code> pour détecter les fuites mémoire</li>
+<li>Combinez avec <code>htop -b -n 1</code> pour capturer l'état dans un script</li>
+<li>Personnalisez vos colonnes pour votre usage (dev, sysadmin, etc.)</li>
+<li>Installez <code>btop</code> pour une expérience encore plus moderne</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande / Touche</th><th>Usage</th></tr>
+<tr><td><code>htop</code></td><td>Lancer htop</td></tr>
+<tr><td><code>htop -u user</code></td><td>Filtrer par utilisateur</td></tr>
+<tr><td><code>htop -s MEM</code></td><td>Trier par mémoire au démarrage</td></tr>
+<tr><td><code>htop -b -n 1</code></td><td>Mode batch (pour scripts)</td></tr>
+<tr><td><code>M / P / T / N</code></td><td>Trier par Mémoire / CPU / Time / PID</td></tr>
+<tr><td><code>t</code></td><td>Vue en arbre</td></tr>
+<tr><td><code>u</code></td><td>Filtrer par utilisateur</td></tr>
+<tr><td><code>/</code></td><td>Rechercher un processus</td></tr>
+<tr><td><code>k</code></td><td>Envoyer un signal</td></tr>
+<tr><td><code>H</code></td><td>Afficher les threads</td></tr>
+<tr><td><code>F2</code></td><td>Configurer htop</td></tr>
+<tr><td><code>q / Esc</code></td><td>Quitter</td></tr>
+</table>
+
+<p><code>htop</code> est l'outil de surveillance de processus le plus complet et agréable à utiliser. Que ce soit pour diagnostiquer un serveur lent, identifier un processus gourmand, ou simplement explorer ce qui tourne sur votre machine, <code>htop</code> rend la tâche intuitive et efficace.</p>
+
+<nav>
+<a href="128-column-formater-colonnes.html">&larr; Leçon 128 : column — Formater du texte en colonnes</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
