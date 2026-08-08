@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 130 - tac et rev — Inverser du texte</h1>
+
+<p>Deux commandes méconnues mais redoutables : <code>tac</code> et <code>rev</code>. La première inverse l'ordre des lignes d'un fichier, la seconde inverse chaque ligne caractère par caractère. Utiles pour lire des logs du plus récent au plus ancien, manipuler du texte, ou encore tester la robustesse de vos scripts.</p>
+
+<h2>Principe de fonctionnement</h2>
+
+<p><code>tac</code> — oui, c'est bien <em>cat</em> à l'envers — lit un fichier et affiche ses lignes en ordre inversé, de la dernière à la première. Il ne modifie pas le fichier original.</p>
+
+<p><code>rev</code> lit chaque ligne et l'inverse caractère par caractère, de droite à gauche. Un peu comme un miroir pour le texte.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>tac [OPTIONS] [FICHIER...]</code></div>
+<div class="code-line"><code>rev [OPTIONS] [FICHIER...]</code></div>
+</div>
+
+<h2>Options principales de tac</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-r</code>, <code>--regex</code></td><td>Utiliser une expression rationnelle comme séparateur</td></tr>
+<tr><td><code>-s</code>, <code>--separator=CHAÎNE</code></td><td>Utiliser CHAÎNE comme séparateur au lieu du retour à la ligne</td></tr>
+<tr><td><code>-b</code>, <code>--before</code></td><td>Placer le séparateur avant le contenu</td></tr>
+</table>
+
+<h2>Options principales de rev</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-V</code>, <code>--version</code></td><td>Afficher la version</td></tr>
+</table>
+
+<p><code>rev</code> est volontairement simple. Son fonctionnement est entièrement déduit de ses arguments.</p>
+
+<h2>Exemples concrets avec tac</h2>
+
+<h3>1. Inverser l'ordre des lignes</h3>
+
+<p>Créons un fichier pour illustrer le comportement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>cat > fruits.txt << 'EOF'</code></div>
+<div class="code-line"><code>pomme</code></div>
+<div class="code-line"><code>banane</code></div>
+<div class="code-line"><code>cerise</code></div>
+<div class="code-line"><code>dattes</code></div>
+<div class="code-line"><code>EOF</code></div>
+<div class="code-line"><code>tac fruits.txt</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># dattes</code></div>
+<div class="code-line"><code># cerise</code></div>
+<div class="code-line"><code># banane</code></div>
+<div class="code-line"><code># pomme</code></div>
+</div>
+
+<h3>2. Lire un journal de logs du plus récent au plus ancien</h3>
+
+<p>Dans les fichiers de logs, les entrées les plus récentes sont généralement en bas. Pour les consulter de la plus fraîche à la plus ancienne :</p>
+
+<div class="code-block">
+<div class="code-line"><code>tac /var/log/syslog | head -20</code></div>
+</div>
+
+<p>Affiche les 20 dernières lignes du journal, dans l'ordre chronologique inversé.</p>
+
+<h3>3. Combiner avec grep pour trouver les erreurs récentes</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tac /var/log/syslog | grep -m5 "error"</code></div>
+</div>
+
+<p>Affiche les 5 dernières occurrences du mot <code>error</code> dans le journal système.</p>
+
+<h3>4. Utiliser un séparateur personnalisé</h3>
+
+<p><code>tac</code> peut aussi inverser des enregistrements séparés par un délimiteur personnalisé, comme un CSV ou un texte délimité :</p>
+
+<div class="code-block">
+<div class="code-line"><code>echo "ligne1;ligne2;ligne3" | tac -s ";"</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># ligne3;ligne2;ligne1</code></div>
+</div>
+
+<h3>5. Pipeline avec d'autres commandes</h3>
+
+<div class="code-block">
+<div class="code-line"><code>ls -lt /var/log | tail -5 | tac</code></div>
+</div>
+
+<p>Affiche les 5 fichiers de logs les plus anciens, mais dans l'ordre de la commande originale (le plus récent en dernier après ce double traitement).</p>
+
+<h2>Exemples concrets avec rev</h2>
+
+<h3>1. Inverser une ligne de texte</h3>
+
+<div class="code-block">
+<div class="code-line"><code>echo "Bonjour le monde" | rev</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># ednom eluojorB</code></div>
+</div>
+
+<h3>2. Inverser chaque ligne d'un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>rev fruits.txt</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># emmap</code></div>
+<div class="code-line"><code># enanab</code></div>
+<div class="code-line"><code># esihrec</code></div>
+<div class="code-line"><code># settad</code></div>
+</div>
+
+<h3>3. Vérifier qu'un mot est un palindrome</h3>
+
+<p>Un palindrome se lit indifféremment de gauche à droite ou de droite à gauche. Avec <code>rev</code>, c'est immédiat :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mot="radar"</code></div>
+<div class="code-line"><code>if [ "$mot" = "$(echo $mot | rev)" ]; then</code></div>
+<div class="code-line"><code>    echo "$mot est un palindrome"</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "$mot n'est pas un palindrome"</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code># Sortie : radar est un palindrome</code></div>
+</div>
+
+<h3>4. Extraire l'extension d'un fichier</h3>
+
+<p>En combinant <code>rev</code> avec <code>cut</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>fichier="document.pdf"</code></div>
+<div class="code-line"><code>echo "$fichier" | rev | cut -d. -f1 | rev</code></div>
+<div class="code-line"><code># Sortie : pdf</code></div>
+</div>
+
+<p>Cela inverse le nom, coupe au premier point, puis réinverse pour obtenir l'extension.</p>
+
+<h3>5. Extraire le nom sans l'extension</h3>
+
+<div class="code-block">
+<div class="code-line"><code>fichier="document.pdf"</code></div>
+<div class="code-line"><code>echo "$fichier" | rev | cut -d. -f2- | rev</code></div>
+<div class="code-line"><code># Sortie : document</code></div>
+</div>
+
+<h2>Combiner tac et rev ensemble</h2>
+
+<h3>Inverser complètement un texte</h3>
+
+<p>Vous pouvez chaîner les deux commandes pour un effet maximum :</p>
+
+<div class="code-block">
+<div class="code-line"><code>echo "Ligne 1\nLigne 2\nLigne 3" | tac | rev</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># 3 enegnL</code></div>
+<div class="code-line"><code># 2 enegnL</code></div>
+<div class="code-line"><code># 1 enegnL</code></div>
+</div>
+
+<p>D'abord <code>tac</code> inverse l'ordre des lignes, puis <code>rev</code> inverse chaque ligne.</p>
+
+<h2>Cas d'utilisation pratiques</h2>
+
+<h3>Analyser un historique de commandes inversé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>history | tac</code></div>
+</div>
+
+<p>Affiche l'historique des commandes de la plus ancienne à la plus récente.</p>
+
+<h3>Reconstruire un fichier en ordre inverse</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tac fichier.log > fichier-inverse.log</code></div>
+</div>
+
+<p>Crée une copie du fichier avec les lignes en ordre inversé.</p>
+
+<h3>Déverminer un script qui génère du texte</h3>
+
+<div class="code-block">
+<div class="code-line"><code>./mon_script.sh 2>&1 | tac | grep -A5 "ERREUR"</code></div>
+</div>
+
+<p>Permet de localiser les erreurs les plus récentes dans la sortie d'un script.</p>
+
+<h3>Lire un fichier depuis la fin avec moins</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tac fichier.txt | less</code></div>
+</div>
+
+<p>Ouvre le fichier dans <code>less</code> en commençant par la fin. Pratique pour les gros fichiers de logs.</p>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Pas de modification du fichier original</strong> : <code>tac</code> et <code>rev</code> ne touchent jamais au fichier source. Ils lisent et affichent, c'est tout.</li>
+<li><strong>Combiner avec head et tail</strong> : <code>tac fichier | head -10</code> donne les 10 dernières lignes dans l'ordre chronologique original.</li>
+<li><strong>Utiliser dans les pipes</strong> : ces commandes s'intègrent naturellement dans des pipelines complexes avec <code>grep</code>, <code>cut</code>, <code>awk</code>, etc.</li>
+<li><strong>Palindromes et extractions</strong> : <code>rev</code> est parfait pour extraire des informations en fin de chaîne (comme les extensions de fichiers).</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>tac fichier</code></td><td>Affiche les lignes en ordre inversé</td></tr>
+<tr><td><code>rev fichier</code></td><td>Inverse chaque ligne caractère par caractère</td></tr>
+<tr><td><code>tac fichier | grep motif</code></td><td>Trouver un motif dans les dernières lignes</td></tr>
+<tr><td><code>echo $mot | rev</code></td><td>Inverser une chaîne</td></tr>
+<tr><td><code>$var = "$(echo $var | rev)"</code></td><td>Vérifier un palindrome en script</td></tr>
+<tr><td><code>... | rev | cut -d. -f1 | rev</code></td><td>Extraire l'extension d'un fichier</td></tr>
+</table>
+
+<p><code>tac</code> et <code>rev</code> sont deux commandes simples mais puissantes pour manipuler l'ordre du texte. <code>tac</code> est votre allié pour lire des logs de bas en haut ou parcourir l'historique dans l'ordre, tandis que <code>rev</code> brille pour les manipulations de chaînes comme les palindromes ou l'extraction d'extensions. Gardez-les en tête : elles rendront service bien plus souvent qu'on ne l'imagine.</p>
+
+<nav>
+<a href="129-htop-surveillance-interactive.html">&larr; Leçon 129 - htop — Surveillance interactive des processus</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
