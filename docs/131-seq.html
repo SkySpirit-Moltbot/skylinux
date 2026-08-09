@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 131 - seq — Générer des suites de nombres</h1>
+
+<p>La commande <code>seq</code> (pour <em>sequence</em>) génère une suite de nombres entiers de manière simple et rapide. Que vous ayez besoin de créer une liste numérotée, d'itérer dans un script Bash, ou de générer des données de test, <code>seq</code> est l'outil idéal.</p>
+
+<h2>Principe de fonctionnement</h2>
+
+<p><code>seq</code> prend en entrée un nombre de départ, un incrément optionnel, et un nombre de fin. Il affiche ensuite chaque nombre de la séquence sur une ligne distincte. Simple, efficace, et terriblement utile.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>seq [PREMIER] [INCRÉMENT] DERNIER</code></div>
+</div>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-f</code>, <code>--format=FORMAT</code></td><td>Format de sortie (printf-style)</td></tr>
+<tr><td><code>-s</code>, <code>--separator=CHAÎNE</code></td><td>Séparateur entre les nombres (défaut : \n)</td></tr>
+<tr><td><code>-w</code>, <code>--equal-width</code></td><td>Alignement avec des zéros</td></tr>
+</table>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Compter de 1 à un nombre donné</h3>
+
+<p>La forme la plus simple — compter de 1 jusqu'à une valeur :</p>
+
+<div class="code-block">
+<div class="code-line"><code>seq 5</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># 1</code></div>
+<div class="code-line"><code># 2</code></div>
+<div class="code-line"><code># 3</code></div>
+<div class="code-line"><code># 4</code></div>
+<div class="code-line"><code># 5</code></div>
+</div>
+
+<h3>2. Compter depuis un nombre précis</h3>
+
+<div class="code-block">
+<div class="code-line"><code>seq 3 7</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># 3</code></div>
+<div class="code-line"><code># 4</code></div>
+<div class="code-line"><code># 5</code></div>
+<div class="code-line"><code># 6</code></div>
+<div class="code-line"><code># 7</code></div>
+</div>
+
+<h3>3. Compter avec un incrément personnalisé</h3>
+
+<p>Par défaut, l'incrément est 1. Vous pouvez le modifier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>seq 0 2 10</code></div>
+<div class="code-line"><code># Sortie : 0, 2, 4, 6, 8, 10</code></div>
+<div class="code-line"><code>seq 10 -2 0</code></div>
+<div class="code-line"><code># Sortie : 10, 8, 6, 4, 2, 0</code></div>
+</div>
+
+<h3>4. Compter à l'envers (décroissant)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>seq 5 -1 1</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># 5</code></div>
+<div class="code-line"><code># 4</code></div>
+<div class="code-line"><code># 3</code></div>
+<div class="code-line"><code># 2</code></div>
+<div class="code-line"><code># 1</code></div>
+</div>
+
+<h3>5. Utiliser un format personnalisé avec -f</h3>
+
+<p>Le format par défaut est <code>%g</code> (nombre simple). Vous pouvez utiliser un format printf :</p>
+
+<div class="code-block">
+<div class="code-line"><code>seq -f "Fichier_%03g.txt" 1 3</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># Fichier_001.txt</code></div>
+<div class="code-line"><code># Fichier_002.txt</code></div>
+<div class="code-line"><code># Fichier_003.txt</code></div>
+</div>
+
+<h3>6. Ajouter un préfixe avec %g</h3>
+
+<div class="code-block">
+<div class="code-line"><code>seq -f "Serveur %g" 1 3</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># Serveur 1</code></div>
+<div class="code-line"><code># Serveur 2</code></div>
+<div class="code-line"><code># Serveur 3</code></div>
+</div>
+
+<h3>7. Utiliser un séparateur personnalisé avec -s</h3>
+
+<p>Par défaut, chaque nombre est sur une ligne. Vous pouvez changer le séparateur :</p>
+
+<div class="code-block">
+<div class="code-line"><code>seq -s ", " 1 5</code></div>
+<div class="code-line"><code># Sortie : 1, 2, 3, 4, 5</code></div>
+<div class="code-line"><code>seq -s " - " 1 3</code></div>
+<div class="code-line"><code># Sortie : 1 - 2 - 3</code></div>
+</div>
+
+<h3>8. Nombres à largeur fixe avec -w</h3>
+
+<p><code>-w</code> complète les nombres courts avec des zéros pour un affichage aligné :</p>
+
+<div class="code-block">
+<div class="code-line"><code>seq -w 1 10</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># 01</code></div>
+<div class="code-line"><code># 02</code></div>
+<div class="code-line"><code># ...</code></div>
+<div class="code-line"><code># 10</code></div>
+</div>
+
+<h2>seq dans les scripts Bash</h2>
+
+<h3>1. Boucle for avec seq</h3>
+
+<p>Une utilisation classique dans les scripts :</p>
+
+<div class="code-block">
+<div class="code-line"><code>for i in $(seq 1 5); do</code></div>
+<div class="code-line"><code>    echo "Traitement $i"</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># Traitement 1</code></div>
+<div class="code-line"><code># Traitement 2</code></div>
+<div class="code-line"><code># Traitement 3</code></div>
+<div class="code-line"><code># Traitement 4</code></div>
+<div class="code-line"><code># Traitement 5</code></div>
+</div>
+
+<h3>2. Boucle avec incrément</h3>
+
+<div class="code-block">
+<div class="code-line"><code>for i in $(seq 0 10 50); do</code></div>
+<div class="code-line"><code>    echo "Étape $i"</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># Étape 0</code></div>
+<div class="code-line"><code># Étape 10</code></div>
+<div class="code-line"><code># Étape 20</code></div>
+<div class="code-line"><code># Étape 30</code></div>
+<div class="code-line"><code># Étape 40</code></div>
+<div class="code-line"><code># Étape 50</code></div>
+</div>
+
+<h3>3. Générer des noms de fichiers numérotés</h3>
+
+<div class="code-block">
+<div class="code-line"><code>for i in $(seq -f "%03g" 1 10); do</code></div>
+<div class="code-line"><code>    touch "fichier_$i.txt"</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code># Crée fichier_001.txt, fichier_002.txt, ..., fichier_010.txt</code></div>
+</div>
+
+<h3>4. Créer plusieurs répertoires</h3>
+
+<div class="code-block">
+<div class="code-line"><code>mkdir -p projet{$(seq -s "," 1 5)}</code></div>
+<div class="code-line"><code># Crée : projet1, projet2, projet3, projet4, projet5</code></div>
+</div>
+
+<h3>5. Additionner une série de nombres</h3>
+
+<div class="code-block">
+<div class="code-line"><code>seq 1 100 | paste -s -d'+' | bc</code></div>
+<div class="code-line"><code># Sortie : 5050</code></div>
+<div class="code-line"><code># Calcule la somme des nombres de 1 à 100</code></div>
+</div>
+
+<h2>Combinaisons utiles</h2>
+
+<h3>1. Générer des lignes numérotées</h3>
+
+<div class="code-block">
+<div class="code-line"><code>seq 5 | while read n; do echo "Ligne $n"; done</code></div>
+<div class="code-line"><code># Sortie :</code></div>
+<div class="code-line"><code># Ligne 1</code></div>
+<div class="code-line"><code># Ligne 2</code></div>
+<div class="code-line"><code># Ligne 3</code></div>
+<div class="code-line"><code># Ligne 4</code></div>
+<div class="code-line"><code># Ligne 5</code></div>
+</div>
+
+<h3>2. Créer une table de multiplication</h3>
+
+<div class="code-block">
+<div class="code-line"><code>for i in $(seq 1 10); do</code></div>
+<div class="code-line"><code>    echo "5 x $i = $((5 * i))"</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>3. Simuler des délais d'exécution</h3>
+
+<div class="code-block">
+<div class="code-line"><code>for i in $(seq 3 -1 1); do</code></div>
+<div class="code-line"><code>    echo "Redémarrage dans $i secondes..."</code></div>
+<div class="code-line"><code>    sleep 1</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>4. Itérer sur des ports</h3>
+
+<div class="code-block">
+<div class="code-line"><code>for port in $(seq 8000 8005); do</code></div>
+<div class="code-line"><code>    echo "Port : $port"</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code># Affiche : Port 8000, 8001, 8002, 8003, 8004, 8005</code></div>
+</div>
+
+<h3>5. Générer des dates pour une plage</h3>
+
+<p>En combinaison avec <code>date</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>for i in $(seq 0 6); do</code></div>
+<div class="code-line"><code>    date -d "today + $i days" +"%A %d/%m"</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code># Affiche les 7 prochains jours</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Préférer l'expansion de brace</strong> : pour des petites suites, <code>{1..5}</code> est plus rapide que <code>$(seq 1 5)</code></li>
+<li><strong>Utiliser -f pour le formattage</strong> : <code>-f</code> permet de créer des nommages cohérents (zéros padded)</li>
+<li><strong>Combiner avec bc pour les calculs</strong> : <code>seq | paste</code> permet des calculs arithmétiques rapides</li>
+<li><strong>Éviter seq pour les grandes suites</strong> : pour des millions de lignes, considerer des alternatives comme <code>yes</code> ou des scripts optimisés</li>
+</ul>
+
+<h2>seq vs expansion de brace { }</h2>
+
+<p>Bash propose aussi les accolades pour les suites :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Avec seq</code></div>
+<div class="code-line"><code>for i in $(seq 1 5); do echo $i; done</code></div>
+<div class="code-line"><code># Avec brace expansion</code></div>
+<div class="code-line"><code>for i in {1..5}; do echo $i; done</code></div>
+</div>
+
+<table>
+<tr><th>Caractéristique</th><th>seq</th><th>Brace expansion</th></tr>
+<tr><td>Vitesse</td><td>Lente (sous-processus)</td><td>Rapide (natif Bash)</td></tr>
+<tr><td>Incréments personnalisés</td><td>Oui</td><td>Non (incrément de 1)</td></tr>
+<tr><td>Décroissant</td><td>Oui</td><td>Oui ({5..1})</td></tr>
+<tr><td>Format personnalisé</td><td>Oui (-f)</td><td>Non</td></tr>
+</table>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>seq N</code></td><td>Compte de 1 à N</td></tr>
+<tr><td><code>seq X Y</code></td><td>Compte de X à Y</td></tr>
+<tr><td><code>seq X I Y</code></td><td>Compte de X à Y par pas de I</td></tr>
+<tr><td><code>seq -f "fmt" X Y</code></td><td>Compte avec un format</td></tr>
+<tr><td><code>seq -s "sep" X Y</code></td><td>Utilise sep comme séparateur</td></tr>
+<tr><td><code>seq -w X Y</code></td><td>Nombres à largeur fixe (padding)</td></tr>
+<tr><td><code>seq X -1 Y</code></td><td>Compte à l'envers</td></tr>
+</table>
+
+<p><code>seq</code> est un outil simple mais puissant pour générer des suites de nombres. Que ce soit pour numérotées des fichiers, créer des boucles dans des scripts, ou générer des données de test, <code>seq</code> rend la tâche simple et lisible. Gardez-le sous la main : il vous fera gagner du temps bien plus souvent qu'on ne l'imagine.</p>
+
+<nav>
+<a href="130-tac-rev-inverser-texte.html">&larr; Leçon 130 - tac et rev — Inverser du texte</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
