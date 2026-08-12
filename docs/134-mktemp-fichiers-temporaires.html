@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 134 - mktemp — Créer des fichiers et répertoires temporaires sécurisés</h1>
+
+<p>La commande <code>mktemp</code> crée des fichiers et répertoires temporaires avec des noms uniques et sécurisés. Contrairement à créer un fichier <code>/tmp/test.txt</code> manuellement (risque de collision), <code>mktemp</code> génère des noms aléatoires impossibles à deviner. C'est indispensable pour les scripts qui necesitan un espace de travail temporaire, le traitement de données intermédiaires, ou toute situation où vous ne voulez pas polluer le système avec des fichiers temporaires mal nommés.</p>
+
+<h2>Pourquoi utiliser mktemp ?</h2>
+
+<p>Le répertoire <code>/tmp</code> est un espace partagé. Si vous créez un fichier appelé <code>temp.txt</code>, vous risquez :</p>
+<ul>
+<li>Une collision avec un autre processus qui utilise le même nom</li>
+<li>Un conflit de sécurité si un attaquant prédit le nom du fichier</li>
+<li>Des résidus de fichiers si votre script crash avant le nettoyage</li>
+</ul>
+
+<p><code>mktemp</code> résout ces problèmes en générant des noms aléatoires et en vous garantissant que le fichier n'existe pas encore.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp [OPTIONS] [TEMPLATE]</code></div>
+</div>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-d</code>, <code>--directory</code></td><td>Créer un répertoire temporaire au lieu d'un fichier</td></tr>
+<tr><td><code>-p REP</code>, <code>--tmpdir=REP</code></td><td>Créer dans le répertoire spécifié (par défaut /tmp)</td></tr>
+<tr><td><code>-u</code>, <code>--dry-run</code></td><td>Ne pas créer, juste retourner le nom (peu sécurisé)</td></tr>
+<tr><td><code>-q</code>, <code>--quiet</code></td><td>Ne pas afficher d'erreur si la création échoue</td></tr>
+</table>
+
+<h2>Créer un fichier temporaire</h2>
+
+<h3>Sans template (comportement par défaut)</h3>
+
+<p>Par défaut, <code>mktemp</code> crée un fichier dans <code>/tmp</code> avec le préfixe <code>tmp.</code> et ajoute 10 caractères aléatoires :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp</code></div>
+<div class="code-line"><code># /tmp/tmp.xKj9mNpL2q</code></div>
+</div>
+
+<p>Chaque appel génère un nom différent :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp && mktemp && mktemp</code></div>
+<div class="code-line"><code># /tmp/tmp.aB3cD7eF9h</code></div>
+<div class="code-line"><code># /tmp/tmp.iJ1kL4mN6p</code></div>
+<div class="code-line"><code># /tmp/tmp.qR7sT0uV3x</code></div>
+</div>
+
+<h3>Avec un template personnalisé</h3>
+
+<p>Vous pouvez définir votre propre format avec des <code>X</code> qui seront remplacés par des caractères aléatoires. Le template doit contenir au moins 3 <code>X</code> à la fin :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp /tmp/monfichier-XXXX.txt</code></div>
+<div class="code-line"><code># /tmp/monfichier-Kj9m.txt</code></div>
+</div>
+
+<p>Utiliser un préfixe plus descriptif :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp /tmp/backup-XXXXXX</code></div>
+<div class="code-line"><code># /tmp/backup-aB3cD7</code></div>
+</div>
+
+<h2>Créer un répertoire temporaire</h2>
+
+<p>L'option <code>-d</code> crée un répertoire au lieu d'un fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp -d</code></div>
+<div class="code-line"><code># /tmp/tmp.MnPqR5sT8u</code></div>
+</div>
+
+<p>Ou avec un template personnalisé :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp -d /tmp/monprojet-XXXXXX</code></div>
+<div class="code-line"><code># /tmp/monprojet-eF9gH1</code></div>
+</div>
+
+<h2>Définir le répertoire parent</h2>
+
+<h3>Avec -p</h3>
+
+<p>Spécifier un répertoire différent de <code>/tmp</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>mktemp -p ~/Documents/</code></div>
+<div class="code-line"><code># /home/utilisateur/Documents/tmp.jK8LmN</code></div>
+</div>
+
+<h3>Avec la variable TMPDIR</h3>
+
+<p>Vous pouvez aussi définir <code>TMPDIR</code> pour changer le comportement par défaut :</p>
+
+<div class="code-block">
+<div class="code-line"><code>TMPDIR=/var/tmp mktemp</code></div>
+<div class="code-line"><code># /var/tmp/tmp.pQ0rS2tU5v</code></div>
+</div>
+
+<h2>Cas d'usage courants</h2>
+
+<h3>1. Capturer la sortie d'une commande temporairement</h3>
+
+<p>Très utile quand une commande écrit dans un fichier et que vous voulez un nom temporaire :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Stocker le résultat dans un fichier temporaire</code></div>
+<div class="code-line"><code>tmpfile=$(mktemp)</code></div>
+<div class="code-line"><code>commande_lourde > "$tmpfile"</code></div>
+<div class="code-line"><code># Traiter le résultat</code></div>
+<div class="code-line"><code>cat "$tmpfile" | grep "motif"</code></div>
+<div class="code-line"><code># Nettoyer</code></div>
+<div class="code-line"><code>rm "$tmpfile"</code></div>
+</div>
+
+<h3>2. Travailler sur des fichiers dangereux en sécurité</h3>
+
+<p>Avant de modifier un fichier important, faire une copie temporaire pour tester :</p>
+
+<div class="code-block">
+<div class="code-line"><code>tmpfile=$(mktemp)</code></div>
+<div class="code-line"><code>cp document_important.txt "$tmpfile"</code></div>
+<div class="code-line"><code># Tester les modifications sur la copie</code></div>
+<div class="code-line"><code>sed -i 's/ancien/nouveau/g' "$tmpfile"</code></div>
+<div class="code-line"><code># Vérifier le résultat</code></div>
+<div class="code-line"><code>diff document_important.txt "$tmpfile"</code></div>
+<div class="code-line"><code># Si tout est bon, remplacer le fichier original</code></div>
+<div class="code-line"><code># mv "$tmpfile" document_important.txt</code></div>
+</div>
+
+<h3>3. Créer un espace de travail pour un script</h3>
+
+<p>Utiliser un répertoire temporaire pour ranger les fichiers intermédiaires d'un script :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Créer un répertoire de travail temporaire</code></div>
+<div class="code-line"><code>workdir=$(mktemp -d)</code></div>
+<div class="code-line"><code>echo "Travail dans: $workdir"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trap pour nettoyer en cas d'erreur ou de Ctrl+C</code></div>
+<div class="code-line"><code>trap "rm -rf '$workdir'" EXIT</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># ... faire quelque chose avec $workdir ...</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Le nettoyage se fait automatiquement à la fin</code></div>
+</div>
+
+<h3>4. Télécharger et extraire temporairement</h3>
+
+<p>Télécharger une archive dans un répertoire temporaire pour l'examiner :</p>
+
+<div class="code-block">
+<div class="code-line"><code>tmpdir=$(mktemp -d)</code></div>
+<div class="code-line"><code>cd "$tmpdir"</code></div>
+<div class="code-line"><code>wget -q https://example.com/archive.tar.gz</code></div>
+<div class="code-line"><code>tar -xzf archive.tar.gz</code></div>
+<div class="code-line"><code># Explorer le contenu...</code></div>
+<div class="code-line"><code>cd - > /dev/null</code></div>
+<div class="code-line"><code>rm -rf "$tmpdir"</code></div>
+</div>
+
+<h3>5. Stocker un PID ou un état</h3>
+
+<p>Créer un fichier pour stocker un état temporaire :</p>
+
+<div class="code-block">
+<div class="code-line"><code>pidfile=$(mktemp /tmp/monapp-pid-XXXX)</code></div>
+<div class="code-line"><code>echo $$ > "$pidfile"</code></div>
+<div class="code-line"><code># ... l'application tourne ...</code></div>
+<div class="code-line"><code>rm "$pidfile"</code></div>
+</div>
+
+<h2>Nettoyage automatique avec trap</h2>
+
+<p>Le piège classique des fichiers temporaires : si votre script crash ou est interrompu, les fichiers restent. La commande <code>trap</code> permet de nettoyer automatiquement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Créer le fichier temporaire</code></div>
+<div class="code-line"><code>tmpfile=$(mktemp)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Nettoyer sur sortie normale, erreur, ou interruption</code></div>
+<div class="code-line"><code>trap 'rm -f "$tmpfile"' EXIT</code></div>
+<div class="code-line"><code>trap 'rm -f "$tmpfile"; exit 1' INT TERM</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># ... votre code ici ...</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Le fichier est automatiquement supprimé à la fin</code></div>
+</div>
+
+<p>Pour un répertoire temporaire avec sous-fichiers :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>workdir=$(mktemp -d)</code></div>
+<div class="code-line"><code>trap "rm -rf '$workdir'" EXIT</code></div>
+<div class="code-line"><code>trap "rm -rf '$workdir'; exit 1" INT TERM HUP</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># ... travail ...</code></div>
+</div>
+
+<h2>Attention : le mode dry-run (-u)</h2>
+
+<p>L'option <code>-u</code> génère juste le nom sans créer le fichier. C'est rapide mais peu sécurisé — un autre processus pourrait créer le fichier entre le moment où <code>mktemp</code> génère le nom et celui où vous le créez :</p>
+
+<div class="code-block">
+<div class="code-line"><code># DANGEREUX - ne faites pas ça</code></div>
+<div class="code-line"><code>tmp=$(mktemp -u)</code></div>
+<div class="code-line"><code>commande > "$tmp"  # Un autre processus pourrait créer "$tmp" avant</code></div>
+</div>
+
+<p>Utilisez toujours <code>-u</code> uniquement quand vous allez créer le fichier immédiatement après :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Plus sûr si fait immédiatement</code></div>
+<div class="code-line"><code>tmp=$(mktemp -u)</code></div>
+<div class="code-line"><code>touch "$tmp" && echo "contenu" > "$tmp" && rm "$tmp"</code></div>
+</div>
+
+<h2>Vérifier que le fichier existe</h2>
+
+<p>Après création, vérifiez que le fichier a bien été créé (et que vous avez les permissions) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>tmpfile=$(mktemp)</code></div>
+<div class="code-line"><code>if [ -f "$tmpfile" ]; then</code></div>
+<div class="code-line"><code>    echo "Fichier créé: $tmpfile"</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Erreur: impossible de créer le fichier temporaire"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h2>Permissions par défaut</h2>
+
+<p>Les fichiers et répertoires créés par <code>mktemp</code> ont des permissions restrictives :</p>
+<ul>
+<li>Fichiers : <code>0600</code> (rw-------) — seul le propriétaire peut lire/écrire</li>
+<li>Répertoires : <code>0700</code> (rwx------) — seul le propriétaire peut lire/écrire/exécuter</li>
+</ul>
+
+<p>C'est sécurisé par défaut. Vous pouvez les modifier si nécessaire :</p>
+
+<div class="code-block">
+<div class="code-line"><code>tmpfile=$(mktemp)</code></div>
+<div class="code-line"><code>chmod 0644 "$tmpfile"  # Lecture pour tous, écriture pour owner</code></div>
+</div>
+
+<h2>Exemple : script de backup temporaire</h2>
+
+<p>Un exemple complet qui utilise <code>mktemp</code> pour un backup sûr :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Backup temporaire sécurisé</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>SOURCE="${1:-fichier.txt}"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Créer un répertoire temporaire pour le backup</code></div>
+<div class="code-line"><code>backupdir=$(mktemp -d /tmp/backup-XXXXXX)</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Nettoyer automatiquement</code></div>
+<div class="code-line"><code>trap "rm -rf '$backupdir'" EXIT</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier le fichier avec horodatage</code></div>
+<div class="code-line"><code>timestamp=$(date +%Y%m%d-%H%M%S)</code></div>
+<div class="code-line"><code>cp "$SOURCE" "$backupdir/backup-$timestamp"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compresser le backup</code></div>
+<div class="code-line"><code>tar -czf "$HOME/backup-$timestamp.tar.gz" -C "$backupdir" .</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Backup créé: $HOME/backup-$timestamp.tar.gz"</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Utilisez toujours les quotes</strong> autour de la variable pour gérer les espaces dans les chemins</li>
+<li><strong>Combinez avec <code>trap</code></strong> pour nettoyer automatiquement en cas d'interruption</li>
+<li><strong>Évitez <code>-u</code></strong> sauf si vous créez le fichier immédiatement après</li>
+<li><strong>Nommez vos templates</strong> de manière descriptive pour faciliter le débogage</li>
+<li><strong>Vérifiez toujours</strong> que le fichier/répertoire a été créé avant de l'utiliser</li>
+<li><strong>Utilisez des répertoires temporaires</strong> (<code>-d</code>) pour les opérations multi-fichiers</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>mktemp</code></td><td>Créer un fichier temporaire avec nom aléatoire</td></tr>
+<tr><td><code>mktemp -d</code></td><td>Créer un répertoire temporaire</td></tr>
+<tr><td><code>mktemp /tmp/monfichier-XXXX</code></td><td>Template personnalisé (X = caractères aléatoires)</td></tr>
+<tr><td><code>mktemp -p ~/Documents/</code></td><td>Créer dans un répertoire spécifique</td></tr>
+<tr><td><code>trap "rm -f '$tmp'" EXIT</code></td><td>Nettoyage automatique à la sortie</td></tr>
+<tr><td><code>$(mktemp)</code></td><td>Capturer le nom dans une variable</td></tr>
+</table>
+
+<p><code>mktemp</code> est un outil essentiel pour tout script qui nécessite des fichiers ou répertoires temporaires. Sa capacité à générer des noms uniques et sécurisés, combinée avec <code>trap</code> pour le nettoyage automatique, en fait une commande indispensable pour écrire des scripts robustes et sûrs.</p>
+
+<nav>
+<a href="133-tr-transformer-texte.html">&larr; Leçon 133 - tr — Transformer du texte caractère par caractère</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
