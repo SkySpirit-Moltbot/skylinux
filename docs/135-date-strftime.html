@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>date et strftime — Afficher et formater la date et l'heure</h1>
+
+<p>La commande <code>date</code> est un outil essentiel sous Linux. Elle permet d'afficher la date et l'heure actuelles, mais aussi de formater la sortie selon vos besoins, de calculer des dates, et d'utiliser le temps dans vos scripts Bash.</p>
+
+<h2>Afficher la date et l'heure actuelles</h2>
+
+<p>Sans option, <code>date</code> affiche la date et l'heure dans le format par défaut du système :</p>
+
+<div class="code-block"><div class="code-line"><code>date</code></div></div>
+
+<p>Résultat classique :</p>
+
+<div class="code-block"><div class="code-line"><code>Thu Aug 13 08:00:00 UTC 2026</code></div></div>
+
+<h2>Formatage avec strftime</h2>
+
+<p>Le formatage se fait avec l'option <code>+format</code>. Le format est une chaîne contenant des séquences spéciales commençant par <code>%</code>.</p>
+
+<h3>Les séquences de format les plus utiles</h3>
+
+<table>
+<tr><th>Séquence</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>%Y</code></td><td>Année sur 4 chiffres</td><td>2026</td></tr>
+<tr><td><code>%m</code></td><td>Mois sur 2 chiffres</td><td>08</td></tr>
+<tr><td><code>%d</code></td><td>Jour du mois sur 2 chiffres</td><td>13</td></tr>
+<tr><td><code>%H</code></td><td>Heure (00-23)</td><td>08</td></tr>
+<tr><td><code>%M</code></td><td>Minutes (00-59)</td><td>00</td></tr>
+<tr><td><code>%S</code></td><td>Secondes (00-59)</td><td>00</td></tr>
+<tr><td><code>%A</code></td><td>Nom complet du jour</td><td>Thursday</td></tr>
+<tr><td><code>%a</code></td><td>Nom abrégé du jour</td><td>Thu</td></tr>
+<tr><td><code>%B</code></td><td>Nom complet du mois</td><td>August</td></tr>
+<tr><td><code>%b</code></td><td>Nom abrégé du mois</td><td>Aug</td></tr>
+<tr><td><code>%j</code></td><td>Jour de l'année (001-366)</td><td>225</td></tr>
+<tr><td><code>%u</code></td><td>Jour de la semaine (1=lundi, 7=dimanche)</td><td>4</td></tr>
+<tr><td><code>%V</code></td><td>Numéro de semaine ISO</td><td>33</td></tr>
+<tr><td><code>%Z</code></td><td>Fuseau horaire</td><td>UTC</td></tr>
+<tr><td><code>%%</code></td><td>Caractère pourcentage littéral</td><td>%</td></tr>
+</table>
+
+<h3>Exemples concrets de formatage</h3>
+
+<div class="code-block"><div class="code-line"><code># Format ISO classique
+date "+%Y-%m-%d"
+# → 2026-08-13</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Format français
+date "+%d/%m/%Y"
+# → 13/08/2026</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Date et heure complète
+date "+%A %d %B %Y à %H:%M:%S"
+# → Thursday 13 August 2026 à 08:00:00</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Horodatage (timestamp Unix)
+date "+%s"
+# → 1752480000</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Format compact pour les noms de fichiers
+date "+%Y%m%d_%H%M%S"
+# → 20260813_080000</code></div></div>
+
+<h2>Calculer des dates</h2>
+
+<p>Vous pouvez ajouter ou soustraire du temps avec l'option <code>-d</code> (ou <code>--date</code>).</p>
+
+<div class="code-block"><div class="code-line"><code># Demain
+date -d "tomorrow" "+%Y-%m-%d"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Hier
+date -d "yesterday" "+%Y-%m-%d"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Dans une semaine
+date -d "next week" "+%Y-%m-%d"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Dans 3 mois
+date -d "3 months" "+%Y-%m-%d"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Il y a 10 jours
+date -d "10 days ago" "+%Y-%m-%d"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Date précise
+date -d "2026-12-25" "+%A"
+# → Friday</code></div></div>
+
+<h2>Utiliser date dans des scripts</h2>
+
+<h3>Créer des noms de fichiers horodatés</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Sauvegarde avec horodatage
+sauvegarde="backup_$(date +%Y%m%d_%H%M%S).tar.gz"
+tar -czf "$sauvegarde" /home/user/documents
+echo "Sauvegarde créée : $sauvegarde"</code></div></div>
+
+<h3>Calculer le temps d'exécution d'un script</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+debut=$(date +%s)
+
+# Votre commande ici
+sleep 2
+
+fin=$(date +%s)
+duree=$((fin - debut))
+echo "Temps d'exécution : ${duree} secondes"</code></div></div>
+
+<h3>Log avec horodatage</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*" >> /var/log/mon_script.log
+}
+
+log "Le service a démarré"
+log "Traitement terminé"</code></div></div>
+
+<h2>Afficher un timestamp lisible</h2>
+
+<p>Pour convertir un timestamp Unix en date lisible :</p>
+
+<div class="code-block"><div class="code-line"><code># Convertir un timestamp
+date -d @1752480000
+# → Thu Aug 13 08:00:00 UTC 2026</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Avec formatage
+date -d @1752480000 "+%d/%m/%Y à %H:%M"</code></div></div>
+
+<h2>Définir la date et l'heure (root)</h2>
+
+<p>Pour modifier la date système (nécessite root) :</p>
+
+<div class="code-block"><div class="code-line"><code># Syntaxe : date MMDDhhmm[[CC]YY][.ss]
+# MM = mois, DD = jour, hh = heure, mm = minute
+
+# Exemple : 13 août 2026, 10h30
+sudo date 081310302026</code></div></div>
+
+<p><strong>Attention</strong> : modifiez l'heure système uniquement sur un serveur ou machine locale, jamais à distance sans précaution.</p>
+
+<h2>Format UTC et fuseaux horaires</h2>
+
+<div class="code-block"><div class="code-line"><code># Afficher en UTC
+date -u
+
+# Afficher pour un fuseau horaire spécifique
+TZ="America/New_York" date "+%H:%M"</code></div></div>
+
+<h2>Récapitulatif des formats courants</h2>
+
+<table>
+<tr><th>Usage</th><th>Commande</th></tr>
+<tr><td>Date ISO</td><td><code>date +%Y-%m-%d</code></td></tr>
+<tr><td>Heure seule</td><td><code>date +%H:%M:%S</code></td></tr>
+<tr><td>Horodatage fichier</td><td><code>date +%Y%m%d_%H%M%S</code></td></tr>
+<tr><td>Timestamp Unix</td><td><code>date +%s</code></td></tr>
+<tr><td>Nom de jour</td><td><code>date +%A</code></td></tr>
+<tr><td>Semaine ISO</td><td><code>date +%G-W%V</code></td></tr>
+<tr><td>Date française</td><td><code>date +%d/%m/%Y</code></td></tr>
+</table>
+
+<nav>
+<a href="134-mktemp-fichiers-temporaires.html">&larr; Leçon 134 : mktemp — Fichiers temporaires sécurisés</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
