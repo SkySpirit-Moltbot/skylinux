@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>taskset — Gérer l'affinité CPU des processus</h1>
+
+<p>Sous Linux, chaque processus peut être lié à un ou plusieurs cœurs CPU. Par défaut, un processus peut s'exécuter sur n'importe quel cœur disponible. La commande <code>taskset</code> permet de contrôler finement cette affinité, ce qui est particulièrement utile pour optimiser les performances ou isoler des charges de travail.</p>
+
+<h2>Afficher le nombre de CPU disponibles</h2>
+
+<p>Avant de jouer avec l'affinité, connaissez votre matériel :</p>
+
+<div class="code-block"><div class="code-line"><code>nproc</code></div></div>
+
+<p>Ou encore :</p>
+
+<div class="code-block"><div class="code-line"><code>ls /sys/devices/system/cpu/</code></div></div>
+
+<p>Cela liste les CPUs disponibles (cpu0, cpu1, cpu2…). Sur un système 4 cœurs, vous aurez cpu0 à cpu3.</p>
+
+<h2>Voir l'affinité actuelle d'un processus</h2>
+
+<p>Chaque processus possède un masque de bits (bitmask) indiquant sur quels CPU il peut s'exécuter. Pour le voir :</p>
+
+<div class="code-block"><div class="code-line"><code>taskset -p PID</code></div></div>
+
+<p>Exemple concret :</p>
+
+<div class="code-block"><div class="code-line"><code>taskset -p 1234</code></div></div>
+
+<p>Résultat possible :</p>
+
+<div class="code-block"><div class="code-line"><code>pid 1234's current affinity mask: ff</code></div></div>
+
+<p>Le masque <code>ff</code> (en hexadécimal) signifie que le processus peut tourner sur les 8 premiers CPU (ff en hexa = 11111111 en binaire = 8 bits = 8 CPU).</p>
+
+<h2>Démarrer un processus avec une affinité précise</h2>
+
+<h3>Avec un masque binaire</h3>
+
+<p>Le format le plus courant utilise un masque hexadécimal. Chaque bit correspond à un CPU :</p>
+
+<table>
+<tr><th>Masque</th><th>CPU autorisés</th><th>Description</th></tr>
+<tr><td><code>01</code></td><td>CPU 0 uniquement</td><td>1 CPU</td></tr>
+<tr><td><code>02</code></td><td>CPU 1 uniquement</td><td>1 CPU</td></tr>
+<tr><td><code>03</code></td><td>CPU 0 et 1</td><td>2 CPUs</td></tr>
+<tr><td><code>07</code></td><td>CPU 0, 1 et 2</td><td>3 CPUs</td></tr>
+<tr><td><code>0f</code></td><td>CPU 0 à 3</td><td>4 CPUs</td></tr>
+<tr><td><code>ff</code></td><td>CPU 0 à 7</td><td>8 CPUs</td></tr>
+<tr><td><code>ffffffff</code></td><td>Tous les CPU 0-31</td><td>32 CPUs</td></tr>
+</table>
+
+<p>Pour lancer un processus sur le CPU 0 uniquement :</p>
+
+<div class="code-block"><div class="code-line"><code>taskset -c 01 -- gnome-calculator</code></div></div>
+
+<p>Ou en utilisant le format classique (non compact) :</p>
+
+<div class="code-block"><div class="code-line"><code>taskset 01 -- mon_script.sh</code></div></div>
+
+<h3>Avec la liste CPU (format compact)</h3>
+
+<p>Utilisez le flag <code>-c</code> pour une syntaxe plus lisible :</p>
+
+<div class="code-block"><div class="code-line"><code>taskset -c 0,2,3 -- mon_processus</code></div></div>
+
+<p>Cela lance le processus sur les CPU 0, 2 et 3 uniquement.</p>
+
+<div class="code-block"><div class="code-line"><code>taskset -c 0-3 -- mon_processus</code></div></div>
+
+<p>Cela lance le processus sur les CPU 0 à 3 (notation par plage).</p>
+
+<h2>Modifier l'affinité d'un processus en cours</h2>
+
+<p>Vous pouvez changer l'affinité d'un processus déjà démarré :</p>
+
+<div class="code-block"><div class="code-line"><code>taskset -p 03 PID</code></div></div>
+
+<p>Cela restreint le processus PID aux CPU 0 et 1.</p>
+
+<p>Ou avec le format compact :</p>
+
+<div class="code-block"><div class="code-line"><code>taskset -cp 0,1 PID</code></div></div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>1. Lancer un script bash sur un cœur dédié</h3>
+
+<div class="code-block"><div class="code-line"><code>taskset -c 3 ./mon_script_lourd.sh</code></div></div>
+
+<p>Le script s'exécutera uniquement sur le CPU 3, isolant les autres cœurs pour le système.</p>
+
+<h3>2. Vérifier et modifier l'affinité avec top</h3>
+
+<p>Dans <code>top</code>, appuyez sur <code>f</code> puis ajoutez la colonne <code>Last used CPU</code>. Vous verrez sur quel CPU chaque processus s'exécute. Combinez avec taskset pour affiner.</p>
+
+<h3>3. Scripts de performance</h3>
+
+<p>Pour un benchmark ou un calcul intensif qu'on veut contrôler :</p>
+
+<div class="code-block"><div class="code-line"><code># Lancer 4 instances d'un worker, chacune sur un CPU différent
+taskset -c 0 ./worker.sh &
+taskset -c 1 ./worker.sh &
+taskset -c 2 ./worker.sh &
+taskset -c 3 ./worker.sh &</code></div></div>
+
+<h3>4. Affinité CPU dans un script Python</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/usr/bin/env python3
+import os
+
+# Obtenir le masque CPU actuel
+mask = os.sched_getaffinity(0)
+print(f"CPU disponibles: {mask}")
+
+# Restreindre aux CPU 0 et 1
+os.sched_setaffinity(0, {0, 1})
+print("Affinité modifiée: CPU 0 et 1 uniquement")</code></div></div>
+
+<h2>Cas d'utilisation courants</h2>
+
+<ul>
+<li><strong>Optimisation de performance :</strong> Certaines applications sensibles à la latence (trading haute fréquence, audio temps réel) bénéficient d'un CPU dédié pour éviter les migrations entre cœurs.</li>
+<li><strong>Isolation de charge :</strong> Isoler un processus lourd sur des CPU spécifiques pour préserver la réactivité du système sur les autres cœurs.</li>
+<li><strong>Conteneurs et virtualisation :</strong> Pinner des conteneurs Docker ou des VMs sur des CPU dédiés.</li>
+<li><strong>Tests et benchmarks :</strong> Mesurer les performances sur un nombre limité de cœurs pour des comparaisons précises.</li>
+</ul>
+
+<h2>Combiner avec d'autres outils</h2>
+
+<h3>Avec <code>nice</code> et <code>ionice</code></h3>
+
+<p>Ces outils contrôlent différents aspects de l'ordonnancement. Ensemble, ils offrent un contrôle complet :</p>
+
+<div class="code-block"><div class="code-line"><code>nice -n 10 ionice -c 2 -n 7 taskset -c 2 ./processus_lourd.sh</code></div></div>
+
+<p>Cela exécute le processus avec une priorité réduite (<code>nice</code>), une classe d'I/O différée (<code>ionice</code>), et uniquement sur le CPU 2.</p>
+
+<h2>Attention aux systèmes NUMA</h2>
+
+<p>Sur les serveurs avec plusieurs nœuds NUMA (plusieurs sockets CPU), méfiez-vous de l'allocation mémoire. Un processus épinglé sur un CPU d'un nœud NUMA peut ressentir une latence accrue si sa mémoire est sur un autre nœud. Vérifiez avec <code>numactl --hardware</code>.</p>
+
+<div class="code-block"><div class="code-line"><code>numactl --cpunodebind=0 --membind=0 ./mon_programme</code></div></div>
+
+<h2>Résumé des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>taskset -p PID</code></td><td>Afficher l'affinité actuelle d'un processus</td></tr>
+<tr><td><code>taskset -p MASQUE PID</code></td><td>Modifier l'affinité d'un processus existant</td></tr>
+<tr><td><code>taskset -c MASQUE CMD</code></td><td>Lancer une commande avec une affinité donnée (format compact)</td></tr>
+<tr><td><code>taskset -c 0-3 CMD</code></td><td>Format par plage de CPUs</td></tr>
+<tr><td><code>taskset -c 0,2,4 CMD</code></td><td>Format liste de CPUs</td></tr>
+</table>
+
+<p><code>taskset</code> est un outil puissant pour optimiser et contrôler l'exécution des processus sous Linux. Bien utilisé, il permet d'améliorer significativement les performances et la prévisibilité des charges de travail.</p>
+
+<nav>
+<a href="135-date-strftime.html">&larr; date et strftime — Afficher et formater la date et l'heure</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
