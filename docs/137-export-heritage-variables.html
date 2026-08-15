@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>export — Héritage et propagation des variables dans les scripts</h1>
+
+<p>Quand vous lancez un script ou une commande dans le terminal, un nouvel environnement est créé. Toutes les variables ne sont pas automatiquement visibles de l'intérieur. La commande <code>export</code> est la clé qui contrôle cette propagation. Comprendre son fonctionnement est essentiel pour écrire des scripts robustes et comprendre pourquoi certaines variables "disparaissent" entre les appels.</p>
+
+<h2>La différence entre variable et variable exportée</h2>
+
+<p>Une variable simple n'existe que dans le shell courant. Elle n'est pas transmise aux processus enfants (les commandes ou scripts que vous lancez).</p>
+
+<div class="code-block"><div class="code-line"><code>MA_VARIABLE="Bonjour"</code></div></div>
+
+<p>Vérifions ce que voit une commande enfant :</p>
+
+<div class="code-block"><div class="code-line"><code>echo "$MA_VARIABLE"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : vide — la variable n'est pas visible ici</code></div></div>
+
+<p>Maintenant, rendons-la exportable :</p>
+
+<div class="code-block"><div class="code-line"><code>export MA_VARIABLE="Bonjour"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>echo "$MA_VARIABLE"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : Bonjour</code></div></div>
+
+<h2>Les trois façons de déclarer une variable exportée</h2>
+
+<h3>1. export avec déclaration</h3>
+
+<div class="code-block"><div class="code-line"><code>export NOM="David"</code></div></div>
+
+<p>La variable est créée et marquée pour l'export en une seule commande.</p>
+
+<h3>2. export sur une variable existante</h3>
+
+<div class="code-block"><div class="code-line"><code>AGE=25
+export AGE</code></div></div>
+
+<p>On crée d'abord la variable, puis on l'exporte séparément. Équivalent à <code>export AGE=25</code>.</p>
+
+<h3>3. readonly + export</h3>
+
+<div class="code-block"><div class="code-line"><code>export CHEMIN="/opt/outils"
+readonly CHEMIN</code></div></div>
+
+<p>Une variable peut être à la fois exportée et en lecture seule. Une fois figée, elle ne peut plus être modifiée ni désexportée.</p>
+
+<h2>Visualiser l'environnement exporté</h2>
+
+<h3>Liste de toutes les variables exportées</h3>
+
+<div class="code-block"><div class="code-line"><code>export -p</code></div></div>
+
+<p>Cette commande affiche toutes les variables exportées dans le shell courant, avec la syntaxe <code>export</code> complète. Utile pour débugger.</p>
+
+<h3>Liste simplifiée</h3>
+
+<div class="code-block"><div class="code-line"><code>env</code></div></div>
+
+<p>Affiche l'intégralité de l'environnement : chaque ligne est <code>CLE=VALEUR</code>.</p>
+
+<h3>Une variable précise</h3>
+
+<div class="code-block"><div class="code-line"><code>echo "$PATH"</code></div></div>
+
+<p><code>PATH</code> est la variable la plus célèbre : elle contient la liste des répertoires où le shell cherche les commandes.</p>
+
+<h2>Comprendre l'héritage parent → enfant</h2>
+
+<h3>Le principe fondamental</h3>
+
+<p>Quand vous lancez un script ou une commande, un <strong>processus enfant</strong> est créé. Ce processus reçoit une <em>copie</em> de l'environnement du parent. Le parent et l'enfant ne partagent pas la mémoire : les modifications de l'enfant n'affectent jamais le parent.</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# script_enfant.sh
+echo "L'enfant voit : $MA_VAR"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>MA_VAR="Valeur secrète"
+./script_enfant.sh  # L'enfant ne la voit PAS</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>export MA_VAR="Valeur secrète"
+./script_enfant.sh  # L'enfant la voit</code></div></div>
+
+<h3>L'inverse ne marche jamais</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# script_enfant.sh
+MA_VAR="Modifiée par l'enfant"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>./script_enfant.sh
+echo "$MA_VAR"  # Affiche : Modifiée par l'enfant</code></div></div>
+
+<p>Cela fonctionne car le script s'exécute dans le <em>même</em> shell si vous le "sourced" (avec <code>source</code> ou <code>.</code>), pas dans un sous-shell.</p>
+
+<h2>export vs source : deux modes d'exécution</h2>
+
+<h3>Exécution dans un sous-shell (par défaut)</h3>
+
+<div class="code-block"><div class="code-line"><code>./mon_script.sh
+bash mon_script.sh</code></div></div>
+
+<p>Le script s'exécute dans un processus enfant. Seules les variables <code>export</code> lui sont transmises.</p>
+
+<h3>Exécution dans le shell courant (source)</h3>
+
+<div class="code-block"><div class="code-line"><code>source ./mon_script.sh
+. ./mon_script.sh</code></div></div>
+
+<p>Le script s'exécute dans le shell courant. Toutes les variables définies dans le script existent dans votre terminal après l'exécution. Aucun <code>export</code> n'est nécessaire pour "remonter" les valeurs.</p>
+
+<p>Cela explique pourquoi <code>~/.bashrc</code> ou <code>~/.profile</code> utilisent <code>export</code> : ces fichiers sont sourcés au démarrage du shell, pas exécutés dans un sous-shell.</p>
+
+<h2>La variable d'environnement speciale : ENV</h2>
+
+<p>Quand un shell interactif démarre, il lit automatiquement le fichier pointé par <code>$ENV</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>echo "$ENV"</code></div></div>
+
+<p>Généralement, c'est <code>~/.bashrc</code>. Vous pouvez personnaliser ce comportement :</p>
+
+<div class="code-block"><div class="code-line"><code>export ENV="$HOME/.bash_perso"</code></div></div>
+
+<p>Tout ce que vous ajoutez dans ce fichier sera exécuté à chaque nouveau shell interactif.</p>
+
+<h2>Supprimer une variable exportée</h2>
+
+<p>Pour retirer une variable de l'environnement exporté (sans supprimer la variable elle-même) :</p>
+
+<div class="code-block"><div class="code-line"><code>export -n MA_VARIABLE</code></div></div>
+
+<p>Après cela, <code>MA_VARIABLE</code> existe toujours dans le shell, mais n'est plus transmise aux processus enfants.</p>
+
+<p>Pour supprimer complètement une variable :</p>
+
+<div class="code-block"><div class="code-line"><code>unset MA_VARIABLE</code></div></div>
+
+<p><code>unset</code> supprime la variable de tous les contextes (shell + export). Exception : les variables readonly ne peuvent pas être unsetées.</p>
+
+<h2>Transmission selective : env -i</h2>
+
+<p>Parfois, vous voulez lancer une commande avec un environnement vide (propre), sans les variables du shell courant :</p>
+
+<div class="code-block"><div class="code-line"><code>env -i /home/user/mon_script.sh</code></div></div>
+
+<p><code>env -i</code> efface tout l'environnement avant d'exécuter la commande. Seules les variables que vous ajoutez explicitement seront présentes.</p>
+
+<h3>Combiner -i et export</h3>
+
+<div class="code-block"><div class="code-line"><code>env -i HOME=/home/user PATH=/usr/bin:/bin ./script_propre.sh</code></div></div>
+
+<p>Ce mode est utile pour tester qu'un script fonctionne avec un environnement minimal et prévisible.</p>
+
+<h2>Debogage : suivre ce qui est transmis</h2>
+
+<h3>Voir l'environnement d'un script</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+echo "=== ENVIRONNEMENT REÇU ==="
+env | sort
+echo "=== FIN ==="</code></div></div>
+
+<h3>Traces avec bash -x</h3>
+
+<div class="code-block"><div class="code-line"><code>bash -x ./mon_script.sh</code></div></div>
+
+<p>Active le mode trace : chaque commande est affichée avec le préfixe <code>+ </code> avant son exécution. Permet de suivre précisément le cheminement du script.</p>
+
+<h3>Exporter une trace</h3>
+
+<div class="code-block"><div class="code-line"><code>BASH_XTRACEFD=3
+exec 3>/tmp/trace.log
+set -x
+source ./mon_script.sh 2>&3</code></div></div>
+
+<p>Cette technique avancée redirige les traces vers un fichier dédié sans polluer la sortie standard.</p>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>1. Configurer un projet</h3>
+
+<div class="code-block"><div class="code-line"><code># config.sh
+export PROJET_ROOT="/home/user/monprojet"
+export PROJET_ENV="production"
+export LOG_LEVEL="debug"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>source ./config.sh
+./build.sh       # build.sh voit les variables exportées
+./deploy.sh      # deploy.sh aussi</code></div></div>
+
+<h3>2. CI/CD et scripts automatises</h3>
+
+<div class="code-block"><div class="code-line"><code>export API_KEY="secret123"
+export DEPLOY_TARGET="production"
+./deploy.sh</code></div></div>
+
+<p>Les variables exportées dans le shell parent sont disponibles pour tous les scripts appelés ensuite.</p>
+
+<h3>3. Environment wrapper</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# env_python.sh
+export PYTHONPATH="/opt/projet/lib:$PYTHONPATH"
+export DJANGO_SETTINGS_MODULE="projet.settings.prod"
+exec "$@"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>chmod +x env_python.sh
+./env_python.sh python manage.py runserver</code></div></div>
+
+<p>Ce wrapper prépare l'environnement puis exécute la commande passée en argument avec les variables définies.</p>
+
+<h2>Tableau recapitulatif</h2>
+
+<table>
+<tr><th>Commande</th><th>Effet</th></tr>
+<tr><td><code>VAR=valeur</code></td><td>Variable locale au shell courant uniquement</td></tr>
+<tr><td><code>export VAR=valeur</code></td><td>Variable transmise aux processus enfants</td></tr>
+<tr><td><code>export -n VAR</code></td><td>Retire VAR de l'environnement exporté</td></tr>
+<tr><td><code>export -p</code></td><td>Affiche toutes les variables exportées</td></tr>
+<tr><td><code>unset VAR</code></td><td>Supprime la variable (local + export)</td></tr>
+<tr><td><code>env -i CMD</code></td><td>Exécute CMD avec un environnement vide</td></tr>
+<tr><td><code>source script.sh</code></td><td>Exécute dans le shell courant (pas de sous-shell)</td></tr>
+<tr><td><code>./script.sh</code></td><td>Exécute dans un sous-shell (export requis pour voir les variables parent)</td></tr>
+</table>
+
+<p>La commande <code>export</code> est un pilier de l'écriture de scripts Linux. Elle contrôle la frontière invisible entre le shell parent et ses enfants, et comprendre cette frontière évite bien des surprises quand une variable "disparaît" mystérieusement.</p>
+
+<nav>
+<a href="136-taskset-affinite-cpu.html">&larr; taskset — Gérer l'affinité CPU des processus</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
