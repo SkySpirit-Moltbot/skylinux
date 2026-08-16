@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>mktemp — Fichiers et répertoires temporaires sécurisés</h1>
+
+<p>Quand un script a besoin de stocker des données intermédiaires, la pire approche est d'utiliser un nom fixe comme <code>/tmp/mon_fichier.txt</code>. Ce fichier peut déjà exister, appartenir à un autre processus, ou pire — créer une faille de sécurité. La commande <code>mktemp</code> génère des noms de fichiers et répertoires temporaires avec des noms aléatoires et uniques, impossibles à deviner. C'est l'outil de référence pour tout script qui manipule des données temporaires.</p>
+
+<h2>Le problème des fichiers temporaires</h2>
+
+<h3>La méthode naïve (à éviter)</h3>
+
+<div class="code-block"><div class="code-line"><code># NE PAS FAIRE — Problèmes de sécurité et de concurrence
+echo "donnees" > /tmp/temp.txt</code></div></div>
+
+<p>Plusieurs processus lancés simultanément vont se marcher sur les pieds. Pire : un attaquant peut prédire le nom du fichier et y écrire des données malveillantes avant votre script.</p>
+
+<h3>La bonne approche</h3>
+
+<div class="code-block"><div class="code-line"><code>mktemp</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : /tmp/tmp.R7xNk2h3m
+# Le nom est aléatoire, imprévisible, et le fichier n'existe pas encore</code></div></div>
+
+<h2>Créer un fichier temporaire</h2>
+
+<h3>Usage de base</h3>
+
+<div class="code-block"><div class="code-line"><code>mktemp</code></div></div>
+
+<p>Par défaut, <code>mktemp</code> crée un fichier vide et affiche son chemin. Le nom contient <code>tmp.</code> suivi de 10 caractères aléatoires.</p>
+
+<h3>Utiliser le résultat directement</h3>
+
+<div class="code-block"><div class="code-line"><code>TMPFILE=$(mktemp)
+echo "Contenu temporaire" > "$TMPFILE"
+cat "$TMPFILE"
+rm -f "$TMPFILE"</code></div></div>
+
+<p>La syntaxe <code>$(mktemp)</code> capture le chemin généré dans une variable pour l'utiliser ensuite.</p>
+
+<h3>Avec un suffixe personnalisé</h3>
+
+<p>Vous pouvez ajouter une extension pour identifier le type de fichier :</p>
+
+<div class="code-block"><div class="code-line"><code>mktemp --suffix=.txt</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : /tmp/tmp.K8mNp2x4.txt</code></div></div>
+
+<h3>Avec un préfixe personnalisé</h3>
+
+<div class="code-block"><div class="code-line"><code>mktemp /tmp/monapp-XXXXXX</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : /tmp/monapp-aB3kLm7
+# Les X sont remplacés par des caractères aléatoires</code></div></div>
+
+<p>Le nombre de <code>X</code> détermine le niveau d'aléatoire : au moins 3 <code>X</code> sont requis. Plus il y en a, plus le nom est imprévisible.</p>
+
+<h2>Créer un répertoire temporaire</h2>
+
+<h3>L'option -d</h3>
+
+<div class="code-block"><div class="code-line"><code>mktemp -d</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : /tmp/tmp.R9pLw3k1m</code></div></div>
+
+<p>Avec <code>-d</code>, <code>mktemp</code> crée un répertoire au lieu d'un fichier. C'est idéal quand votre script a besoin de stocker plusieurs fichiers temporaires ensemble.</p>
+
+<h3>Exemple concret</h3>
+
+<div class="code-block"><div class="code-line"><code>TMPDIR=$(mktemp -d)
+echo "Fichier 1" > "$TMPDIR/fichier1.txt"
+echo "Fichier 2" > "$TMPDIR/fichier2.txt"
+ls -la "$TMPDIR"
+rm -rf "$TMPDIR"</code></div></div>
+
+<p><code>rm -rf</code> supprime le répertoire et tout son contenu en une seule commande.</p>
+
+<h2>Mode一点的 : suffixe de sécurité</h2>
+
+<h3>Vérifier que le fichier n'existait pas avant</h3>
+
+<p>Par défaut, <code>mktemp</code> crée le fichier/répertoire et garantit qu'il n'existait pas avant. Si pour une raison obscure le nom généré existait déjà, <code>mktemp</code> échoue avec une erreur — il ne remplace jamais un fichier existant.</p>
+
+<div class="code-block"><div class="code-line"><code># Sans l'option -u, mktemp crée réellement le fichier
+TMPFILE=$(mktemp)
+ls -l "$TMPFILE"
+# -rw------- 1 user user 0 ... /tmp/tmp.Xy7k2m9p</code></div></div>
+
+<h3>Mode "dry-run" avec -u</h3>
+
+<p>L'option <code>-u</code> génère le nom sans créer le fichier. Utile pour tester ou quand vous voulez créer le fichier vous-même :</p>
+
+<div class="code-block"><div class="code-line"><code>mktemp -u</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : /tmp/tmp.M3nR8pQ5k
+# Le fichier n'est PAS créé sur le disque</code></div></div>
+
+<h2>Template de nom personnalisé</h2>
+
+<p>Le dernier argument non-optionnel de <code>mktemp</code> est un template. Il doit contenir au moins 3 <code>X</code> qui seront remplacés par le générateur aléatoire.</p>
+
+<h3>Exemples de templates</h3>
+
+<table>
+<tr><th>Template</th><th>Exemple de résultat</th></tr>
+<tr><td><code>tmp.XXXXXX</code></td><td><code>tmp.aB3kL9</code></td></tr>
+<tr><td><code>/tmp/monapp-XXXX</code></td><td><code>/tmp/monapp-xK9m</code></td></tr>
+<tr><td><code>donnees-XXXXXX.csv</code></td><td><code>donnees-7nLpQr.csv</code></td></tr>
+<tr><td><code>XXXXXXXXXXXX</code></td><td><code>R9mXk3pL7nQr</code></td></tr>
+</table>
+
+<h2>Gestion des erreurs</h2>
+
+<h3>Vérifier le retour de mktemp</h3>
+
+<p>Si <code>mktemp</code> ne peut pas créer le fichier (permissions, disque plein), il renvoie un code d'erreur non nul. Toujours vérifier :</p>
+
+<div class="code-block"><div class="code-line"><code>TMPFILE=$(mktemp) || { echo "Erreur: impossible de créer le fichier temporaire"; exit 1; }
+echo "OK, fichier créé : $TMPFILE"</code></div></div>
+
+<h3>Nettoyage automatique avec trap</h3>
+
+<p>Dans un script qui peut être interrompu (Ctrl+C), les fichiers temporaires doivent être supprimés même en cas d'erreur :</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+TMPFILE=$(mktemp) || exit 1
+TMPDIR2=$(mktemp -d) || { rm -f "$TMPFILE"; exit 1; }
+
+# Supprimer automatiquement en cas d'interruption ou de sortie
+trap 'rm -f "$TMPFILE"; rm -rf "$TMPDIR2"' EXIT INT TERM
+
+# ... votre code ici ...
+
+exit 0
+# Le trap s'exécute automatiquement à la sortie du script</code></div></div>
+
+<p><code>trap</code> garantit que les fichiers sont supprimés quel que soit le moyen de sortie du script — succès, erreur, ou interruption par l'utilisateur.</p>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>1. Télécharger et traiter des données</h3>
+
+<div class="code-block"><div class="code-line"><code>TMPFILE=$(mktemp --suffix=.csv)
+curl -s "https://api.exemple.com/export" -o "$TMPFILE"
+python3 traitement.py "$TMPFILE"
+rm -f "$TMPFILE"</code></div></div>
+
+<h3>2. Comparer deux fichiers avec un fichier intermédiaire</h3>
+
+<div class="code-block"><div class="code-line"><code>TMPDIFF=$(mktemp)
+diff fichier1.txt fichier2.txt > "$TMPDIFF" || true
+# || true car diff retourne 1 si des différences sont trouvées
+cat "$TMPDIFF"
+rm -f "$TMPDIFF"</code></div></div>
+
+<h3>3. Stocker des données de session</h3>
+
+<div class="code-block"><div class="code-line"><code>SESSION_DIR=$(mktemp -d)
+echo "Session de travail : $SESSION_DIR"
+# Stocker les fichiers de travail temporairement
+echo "donnees" > "$SESSION_DIR/etat.txt"
+# ... utiliser les fichiers ...
+rm -rf "$SESSION_DIR"</code></div></div>
+
+<h3>4. Stocker des logs temporaires pour un script</h3>
+
+<div class="code-block"><div class="code-line"><code>LOG=$(mktemp --suffix=.log)
+mon_script.sh 2>&1 | tee "$LOG"
+echo "=== Log sauvegardé dans $LOG ==="</code></div></div>
+
+<h2>TMPDIR et les variables d'environnement</h2>
+
+<p>Par défaut, <code>mktemp</code> utilise <code>/tmp</code>. Vous pouvez changer ce comportement avec la variable <code>TMPDIR</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>TMPDIR="$HOME/tmp" mktemp</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Résultat : /home/user/tmp/tmp.K9mNp3x</code></div></div>
+
+<p>Dans un script, vous pouvez aussi créer <code>~/tmp</code> au préalable :</p>
+
+<div class="code-block"><div class="code-line"><code>mkdir -p "$HOME/tmp"
+TMPFILE=$(TMPDIR="$HOME/tmp" mktemp)</code></div></div>
+
+<h2>mktemp vs alternatives</h2>
+
+<table>
+<tr><th>Méthode</th><th>Problème</th></tr>
+<tr><td><code>echo "x" > /tmp/temp</code></td><td>Nom prévisible, risque de collision</td></tr>
+<tr><td><code>/tmp/temp.$</code></td><td>Toujours prévisible</td></tr>
+<tr><td><code>mktemp</code></td><td>Noms aléatoires, sécurisés, uniques</td></tr>
+<tr><td><code>tempfile</code></td><td>Obsolète, moins sécurisé que mktemp</td></tr>
+</table>
+
+<p><code>tempfile</code> est une commande historique plus ancienne. <code>mktemp</code> est la solution moderne recommandée sur toutes les distributions Linux.</p>
+
+<h2>Tableau récapitulatif</h2>
+
+<table>
+<tr><th>Commande</th><th>Effet</th></tr>
+<tr><td><code>mktemp</code></td><td>Crée un fichier temporaire avec un nom aléatoire</td></tr>
+<tr><td><code>mktemp -d</code></td><td>Crée un répertoire temporaire avec un nom aléatoire</td></tr>
+<tr><td><code>mktemp -u</code></td><td>Génère le nom sans créer le fichier (dry-run)</td></tr>
+<tr><td><code>mktemp --suffix=.txt</code></td><td>Ajoute un suffixe au nom généré</td></tr>
+<tr><td><code>mktemp /tmp/monapp-XXXX</code></td><td>Utilise un template personnalisé</td></tr>
+<tr><td><code>TMPDIR="$HOME/tmp" mktemp</code></td><td>Utilise un répertoire de base personnalisé</td></tr>
+</table>
+
+<p><code>mktemp</code> est une commande simple mais indispensable. Dès que votre script a besoin d'un espace temporaire, c'est toujours la solution à adopter. Elle élimine les risques de collision et de sécurité liés aux noms de fichiers temporaires fixes, et combinée avec <code>trap</code>, elle garantit un nettoyage parfait même en cas d'interruption.</p>
+
+<nav>
+<a href="137-export-heritage-variables.html">&larr; export — Héritage et propagation des variables dans les scripts</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
