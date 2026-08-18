@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>tree — Afficher une arborescence de répertoires</h1>
+
+<p>Vous connaissez <code>ls</code> pour lister les fichiers, mais quand les répertoires deviennent profonds, il est difficile de s'y retrouver. <code>tree</code> affiche la structure complète d'un répertoire sous forme d'arborescence visuelle — bien plus lisible qu'une longue liste de <code>ls -R</code>.</p>
+
+<h2>Installation</h2>
+
+<p><code>tree</code> n'est pas toujours installé par défaut. Sur Debian/Ubuntu :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo apt install tree</code></div>
+</div>
+
+<p>Sur Fedora/RHEL :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dnf install tree</code></div>
+</div>
+
+<p>Sur Arch Linux :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo pacman -S tree</code></div>
+</div>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>tree [OPTIONS] [RÉPERTOIRE]</code></div>
+</div>
+
+<p>Sans argument, <code>tree</code> affiche l'arborescence du répertoire courant.</p>
+
+<h2>Exemples fondamentaux</h2>
+
+<h3>Arborescence simple</h3>
+
+<div class="code-block">
+<div class="code-line"><code>$ tree</code></div>
+<div class="code-line"><code>.</code></div>
+<div class="code-line"><code>├── documents</code></div>
+<div class="code-line"><code>│   ├── rapport.pdf</code></div>
+<div class="code-line"><code>│   └── notes.txt</code></div>
+<div class="code-line"><code>├── images</code></div>
+<div class="code-line"><code>│   ├── photo1.jpg</code></div>
+<div class="code-line"><code>│   └── photo2.png</code></div>
+<div class="code-line"><code>└── projet</code></div>
+<div class="code-line"><code>    ├── src</code></div>
+<div class="code-line"><code>    │   ├── main.c</code></div>
+<div class="code-line"><code>    │   └── utils.c</code></div>
+<div class="code-line"><code>    └── Makefile</code></div>
+</div>
+
+<h3>Limiter la profondeur</h3>
+
+<p>L'option <code>-L</code> contrôle la profondeur de l'affichage :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher uniquement 1 niveau de profondeur</code></div>
+<div class="code-line"><code>$ tree -L 1</code></div>
+<div class="code-line"><code>.</code></div>
+<div class="code-line"><code>├── documents</code></div>
+<div class="code-line"><code>├── images</code></div>
+<div class="code-line"><code>└── projet</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher 2 niveaux maximum</code></div>
+<div class="code-line"><code>$ tree -L 2</code></div>
+<div class="code-line"><code>.</code></div>
+<div class="code-line"><code>├── documents</code></div>
+<div class="code-line"><code>│   ├── rapport.pdf</code></div>
+<div class="code-line"><code>│   └── notes.txt</code></div>
+<div class="code-line"><code>├── images</code></div>
+<div class="code-line"><code>│   ├── photo1.jpg</code></div>
+<div class="code-line"><code>│   └── photo2.png</code></div>
+<div class="code-line"><code>└── projet</code></div>
+<div class="code-line"><code>    ├── src</code></div>
+<div class="code-line"><code>    └── Makefile</code></div>
+</div>
+
+<h2>Options utiles</h2>
+
+<h3>Afficher les fichiers cachés</h3>
+
+<div class="code-block">
+<div class="code-line"><code>$ tree -a</code></div>
+</div>
+
+<h3>Types de fichiers</h3>
+
+<p><code>-p</code> affiche les permissions et <code>-s</code> affiche la taille des fichiers :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ tree -p -s</code></div>
+<div class="code-line"><code>.</code></div>
+<div class="code-line"><code>[drwxr-xr-x]  documents</code></div>
+<div class="code-line"><code>├── [-rw-r--r--]     4096  rapport.pdf</code></div>
+<div class="code-line"><code>└── [-rw-r--r--]      512  notes.txt</code></div>
+</div>
+
+<h3>Filtrer par extension</h3>
+
+<p><code>-P</code> filtre les fichiers par motif (pattern) :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher uniquement les fichiers .txt</code></div>
+<div class="code-line"><code>$ tree -P "*.txt"</code></div>
+<div class="code-line"><code>.</code></div>
+<div class="code-line"><code>├── documents</code></div>
+<div class="code-line"><code>│   └── notes.txt</code></div>
+<div class="code-line"><code>└── projet</code></div>
+<div class="code-line"><code>    └── README.txt</code></div>
+</div>
+
+<p><code>-I</code> exclut les fichiers correspondant au motif :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Exclure node_modules et .git</code></div>
+<div class="code-line"><code>$ tree -I "node_modules|.git"</code></div>
+</div>
+
+<h3>Trier la sortie</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trier par nom (défaut)</code></div>
+<div class="code-line"><code>$ tree --sort=name</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Trier par taille (décroissant)</code></div>
+<div class="code-line"><code>$ tree -sh --sort=size</code></div>
+<div class="code-line"><code>.</code></div>
+<div class="code-line"><code>├── [drwxr-xr-x  4.0K]  projet</code></div>
+<div class="code-line"><code>├── [drwxr-xr-x  2.0K]  documents</code></div>
+<div class="code-line"><code>└── [drwxr-xr-x  1.0K]  images</code></div>
+</div>
+
+<h3>Afficher le nombre de fichiers par répertoire</h3>
+
+<div class="code-block">
+<div class="code-line"><code>$ tree</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>$ tree</code></div>
+</div>
+
+<h2>Sortie vers un fichier</h2>
+
+<p>Redirigez la sortie vers un fichier pour garder une trace de l'arborescence :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ tree -o arborescence.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Version ASCII (compatible partout)</code></div>
+<div class="code-line"><code>$ tree -o arborescence.txt --charset=ascii</code></div>
+</div>
+
+<h2>Utiliser avec d'autres commandes</h2>
+
+<h3>Combiner avec find</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher l'arborescence complète du système de fichiers</code></div>
+<div class="code-line"><code>$ tree -L 3 /home/utilisateur</code></div>
+</div>
+
+<h3>Combiner avec grep</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver un fichier dans l'arborescence</code></div>
+<div class="code-line"><code>$ tree | grep "config"</code></div>
+<div class="code-line"><code>│   └── config.json</code></div>
+</div>
+
+<h3>Exclure certains répertoires</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exclure plusieurs patterns</code></div>
+<div class="code-line"><code>$ tree -I "node_modules|.git|dist|build" -L 3</code></div>
+</div>
+
+<h2>Options avancées</h2>
+
+<h3>Afficher les liens symboliques</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Les liens symboliques sont affichés différemment</code></div>
+<div class="code-line"><code>$ tree -L 2 -p -s</code></div>
+<div class="code-line"><code>.</code></div>
+<div class="code-line"><code>[drwxr-xr-x] 4096 .</code></div>
+<div class="code-line"><code>├── [lrwxrwxrwx] 4096 lien -> cible</code></div>
+</div>
+
+<h3>Couleur selon le type</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Activer les couleurs (par défaut si terminal le supporte)</code></div>
+<div class="code-line"><code>$ tree -C</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Désactiver les couleurs</code></div>
+<div class="code-line"><code>$ tree -n</code></div>
+</div>
+
+<h3>Format JSON</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sortie en JSON (avec jq pour parser)</code></div>
+<div class="code-line"><code>$ tree -J /home/user | jq '.'</code></div>
+</div>
+
+<h2>Exercices pratiques</h2>
+
+<h3>Exercice 1 : Explorer son répertoire personnel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir la structure de base sans les fichiers cachés</code></div>
+<div class="code-line"><code>$ tree -L 2 $HOME</code></div>
+</div>
+
+<h3>Exercice 2 : Trouver les gros fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister les fichiers triés par taille</code></div>
+<div class="code-line"><code>$ tree -s -h --sort=size | head -20</code></div>
+</div>
+
+<h3>Exercice 3 : Vérifier un projet</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir la structure d'un projet sans les dépendances</code></div>
+<div class="code-line"><code>$ cd /home/user/projet</code></div>
+<div class="code-line"><code>$ tree -I "node_modules|.git|vendor|__pycache__" -L 3</code></div>
+</div>
+
+<h2>Tableau récapitulatif des options</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-L N</code></td><td>Limiter la profondeur à N niveaux</td></tr>
+<tr><td><code>-a</code></td><td>Afficher les fichiers cachés</td></tr>
+<tr><td><code>-p</code></td><td>Afficher les permissions</td></tr>
+<tr><td><code>-s</code></td><td>Afficher la taille des fichiers</td></tr>
+<tr><td><code>-h</code></td><td>Tailles lisibles (K, M, G)</td></tr>
+<tr><td><code>-P "*.ext"</code></td><td>Inclure les fichiers correspondant au pattern</td></tr>
+<tr><td><code>-I "motif"</code></td><td>Exclure les fichiers correspondant au pattern</td></tr>
+<tr><td><code>-o fichier</code></td><td>Sauvegarder la sortie dans un fichier</td></tr>
+<tr><td><code>-C</code></td><td>Activer les couleurs</td></tr>
+<tr><td><code>-n</code></td><td>Désactiver les couleurs</td></tr>
+<tr><td><code>--dirsfirst</code></td><td>Afficher les répertoires avant les fichiers</td></tr>
+<tr><td><code>--sort=name</code></td><td>Trier par nom</td></tr>
+<tr><td><code>--sort=size</code></td><td>Trier par taille</td></tr>
+</table>
+
+<h2>Conclusion</h2>
+
+<p><code>tree</code> est l'outil idéal pour visualiser rapidement la structure d'un projet ou d'un répertoire. Que ce soit pour comprendre l'organisation d'un code source, retrouver un fichier perdu dans une arborescence profonde, ou simplement partager une vue d'ensemble de vos dossiers, <code>tree</code> rend tout cela simple et visuel. Combinez-le avec les options de filtrage pour ne voir que ce qui vous intéresse.</p>
+
+<nav>
+<a href="139-factor-nombres.html">&larr; Leçon 139 : factor — Décomposer les nombres en facteurs premiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
