@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>jobs, fg et bg — Gérer les tâches en arrière-plan</h1>
+
+<p>Quand vous lancez une commande dans votre terminal, vous avez parfois besoin de la suspendre temporairement, de la laisser tourner en arrière-plan pendant que vous continuez à travailler, ou de la remettre au premier plan. Linux offre trois commandes内置 pour cela : <code>jobs</code>, <code>fg</code> et <code>bg</code>. Elles font partie des outils essentiels pour tout utilisateur du terminal.</p>
+
+<h2>Comprendre les jobs et le shell</h2>
+
+<p>Chaque shell maintient une table des <strong>jobs</strong> (tâches) en cours. Un job peut être dans trois états :</p>
+
+<ul>
+<li><strong>Foreground (premier plan)</strong> : le terminal est occupé par cette commande, vous interagissez avec elle en temps réel.</li>
+<li><strong>Background (arrière-plan)</strong> : la commande tourne mais ne bloque pas le terminal — vous pouvez continuer à taper d'autres commandes.</li>
+<li><strong>Stopped (suspendu)</strong> : la commande est figée, ni en avant ni en arrière-plan, prête à être relancée.</li>
+</ul>
+
+<h2>La commande jobs</h2>
+
+<p><code>jobs</code> liste toutes les tâches associées au shell courant.</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ jobs</code></div>
+<div class="code-line"><code>[1]  Stopped     vim fichier.txt</code></div>
+<div class="code-line"><code>[2]- Running     sleep 300 &</code></div>
+<div class="code-line"><code>[3]+ Stopped     top</code></div>
+</div>
+
+<p>Chaque job affiche :</p>
+<ul>
+<li><strong>[1]</strong> : le numéro de job (utilisé par <code>fg</code> et <code>bg</code>)</li>
+<li><strong>Stopped / Running</strong> : l'état actuel</li>
+<li><strong>+</strong> : le job actuel (celui sur lequel <code>fg</code> agira par défaut)</li>
+<li><strong>-</strong> : le job précédent (celui qui sera + après un <code>fg</code>)</li>
+</ul>
+
+<h3>Options de jobs</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>jobs -l</code></td><td>Affiche aussi le PID de chaque job</td></tr>
+<tr><td><code>jobs -p</code></td><td>Affiche uniquement les PIDs (une ligne par job)</td></tr>
+<tr><td><code>jobs -r</code></td><td>Affiche uniquement les jobs en cours d'exécution</td></tr>
+<tr><td><code>jobs -s</code></td><td>Affiche uniquement les jobs suspendus</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Avec les PIDs</code></div>
+<div class="code-line"><code>$ jobs -l</code></div>
+<div class="code-line"><code>[1]  1234  Stopped     vim fichier.txt</code></div>
+<div class="code-line"><code>[2]- 1245  Running     sleep 300 &</code></div>
+</div>
+
+<h2>La commande fg</h2>
+
+<p><code>fg</code> (<strong>foreground</strong>) ramène un job en avant-plan.</p>
+
+<h3>Syntaxe</h3>
+
+<div class="code-block">
+<div class="code-line"><code>fg [%numéro_job]</code></div>
+</div>
+
+<h3>Exemples</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Remettre le job actuel (+) au premier plan</code></div>
+<div class="code-line"><code>$ fg</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Remettre le job 2 au premier plan</code></div>
+<div class="code-line"><code>$ fg %2</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Raccourci : %- ramène le job précédent (-)</code></div>
+<div class="code-line"><code>$ fg %-</code></div>
+</div>
+
+<h2>La commande bg</h2>
+
+<p><code>bg</code> (<strong>background</strong>) reprend un job suspendu et le lance en arrière-plan.</p>
+
+<h3>Syntaxe</h3>
+
+<div class="code-block">
+<div class="code-line"><code>bg [%numéro_job]</code></div>
+</div>
+
+<h3>Exemples</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer le job suspendu en arrière-plan</code></div>
+<div class="code-line"><code>$ bg</code></div>
+<div class="code-line"><code>[1] sleep 300 &</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Même chose explicitement pour le job 1</code></div>
+<div class="code-line"><code>$ bg %1</code></div>
+<div class="code-line"><code>[1] sleep 300 &</code></div>
+</div>
+
+<h2>Raccourcis clavier utiles</h2>
+
+<p>Ces combinaisons fonctionnent dans le terminal, directement dans le shell :</p>
+
+<table>
+<tr><th>Raccourci</th><th>Action</th></tr>
+<tr><td><code>Ctrl+Z</code></td><td>Suspendre le job en cours et le mettre en arrière-plan (Stopped)</td></tr>
+<tr><td><code>Ctrl+C</code></td><td>Interrompre (kill) le job en cours</td></tr>
+<tr><td><code>Ctrl+Y</code></td><td>Suspendre uniquement quand le processus lit depuis le terminal</td></tr>
+</table>
+
+<h2>Workflow typique</h2>
+
+<h3>Scénario 1 : Lancer en arrière-plan dès le départ</h3>
+
+<p>Ajoutez <code>&amp;</code> à la fin de votre commande :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ find / -name "fichier.txt" 2>/dev/null &</code></div>
+<div class="code-line"><code>[1] 4521</code></div>
+<div class="code-line"><code>$</code></div>
+</div>
+
+<p>Le shell affiche le numéro de job et le PID, puis vous redonne immédiatement la main.</p>
+
+<h3>Scénario 2 : Suspendre puis mettre en arrière-plan</h3>
+
+<div class="code-block">
+<div class="code-line"><code>$ vim gros_fichier.log</code></div>
+<div class="code-line"><code># Vous êtes dans vim, vous voulez revenir au terminal</code></div>
+<div class="code-line"><code># Tapez :</code></div>
+<div class="code-line"><code>Ctrl+Z</code></div>
+<div class="code-line"><code>[1]+ Stopped  vim gros_fichier.log</code></div>
+<div class="code-line"><code>$</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Relancer vim en arrière-plan</code></div>
+<div class="code-line"><code>$ bg</code></div>
+<div class="code-line"><code>[1] vim gros_fichier.log &</code></div>
+</div>
+
+<h3>Scénario 3 : Gérer plusieurs jobs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Job 1 : en arrière-plan</code></div>
+<div class="code-line"><code>$ sleep 600 &</code></div>
+<div class="code-line"><code>[1] 1234</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Job 2 : en arrière-plan</code></div>
+<div class="code-line"><code>$ tail -f /var/log/syslog &</code></div>
+<div class="code-line"><code>[2] 1235</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir tous les jobs</code></div>
+<div class="code-line"><code>$ jobs</code></div>
+<div class="code-line"><code>[1]   Running     sleep 600 &</code></div>
+<div class="code-line"><code>[2]- Running     tail -f /var/log/syslog &</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Ramener le job 1 au premier plan</code></div>
+<div class="code-line"><code>$ fg %1</code></div>
+<div class="code-line"><code># Vous interagissez avec sleep... taper Ctrl+C pour arrêter</code></div>
+</div>
+
+<h2>Cas concret : compilation longue</h2>
+
+<p>Vous compilez un projet et voulez surveiller les logs tout en pouvant continuer à travailler :</p>
+
+<div class="code-block">
+<div class="code-line"><code>$ make -j4 &</code></div>
+<div class="code-line"><code>[1] 5678</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vérifier l'état</code></div>
+<div class="code-line"><code>$ jobs</code></div>
+<div class="code-line"><code>[1]+ Running  make -j4 &</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Voir les logs de compilation</code></div>
+<div class="code-line"><code>$ tail -f build.log</code></div>
+<div class="code-line"><code># Taper Ctrl+Z pour suspendre</code></div>
+<div class="code-line"><code>[2]+ Stopped  tail -f build.log</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Remettre en arrière-plan sans revenir au premier plan</code></div>
+<div class="code-line"><code>$ bg</code></div>
+<div class="code-line"><code>[2]+ tail -f build.log &</code></div>
+</div>
+
+<h2>Limitations importantes</h2>
+
+<p>Attention : les jobs sont liés au <strong>shell qui les a lancés</strong>. Si vous fermez ce terminal, les jobs en arrière-plan seront arrêtés (SIGHUP). Pour qu'un job survive à la fermeture du terminal, utilisez <code>nohup</code> (voir <a href="59-nohup.html">leçon 59</a>) ou <code>screen</code> / <code>tmux</code> (<a href="84-screen.html">leçon 84</a>, <a href="27-tmux-multiplexeur-terminal.html">leçon 27</a>).</p>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer un job qui survivra à la fermeture du terminal</code></div>
+<div class="code-line"><code>$ nohup sleep 600 &</code></div>
+<div class="code-line"><code>$ exit</code></div>
+</div>
+
+<h2>Tableau récapitulatif</h2>
+
+<table>
+<tr><th>Commande</th><th>Action</th></tr>
+<tr><td><code>jobs</code></td><td>Lister les jobs du shell courant</td></tr>
+<tr><td><code>jobs -l</code></td><td>Lister les jobs avec leurs PIDs</td></tr>
+<tr><td><code>fg</code></td><td>Ramener le job actuel au premier plan</td></tr>
+<tr><td><code>fg %N</code></td><td>Ramener le job N au premier plan</td></tr>
+<tr><td><code>bg</code></td><td>Reprendre le job suspendu en arrière-plan</td></tr>
+<tr><td><code>bg %N</code></td><td>Reprendre le job N suspendu en arrière-plan</td></tr>
+<tr><td><code>commande &amp;</code></td><td>Lancer directement en arrière-plan</td></tr>
+<tr><td><code>Ctrl+Z</code></td><td>Suspendre le job en cours</td></tr>
+<tr><td><code>Ctrl+C</code></td><td>Arrêter le job en cours</td></tr>
+</table>
+
+<h2>Conclusion</h2>
+
+<p>La gestion des jobs en arrière-plan est une compétence fondamentale sous Linux. Que vous compiliez du code, surveilliez des logs, ou longuement editiez un fichier, <code>jobs</code>, <code>fg</code> et <code>bg</code> vous donnent le contrôle nécessaire pour basculer entre les tâches sans perdre votre travail. Combinez-les avec <code>screen</code> ou <code>tmux</code> pour des sessions encore plus robustes.</p>
+
+<nav>
+<a href="140-tree.html">&larr; Leçon 140 : tree — Afficher une arborescence de répertoires</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
