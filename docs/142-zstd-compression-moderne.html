@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 142 : zstd — Compression moderne et performante</h1>
+
+<p><strong>zstd</strong> (Zstandard) est un algorithme de compression développé par Facebook en 2016. Il offre d'excellentes performances en compression et décompression, rivalisant avec les meilleurs outils tout en étant plus rapide.</p>
+
+<h2>Pourquoi utiliser zstd ?</h2>
+
+<ul>
+<li><strong>Vitesse</strong> : compression et décompression bien plus rapides que gzip ou bzip2</li>
+<li><strong>Ratio de compression</strong> : meilleur que gzip, configurable selon vos besoins</li>
+<li><strong>Support natif</strong> : intégré dans de nombreuses distributions et outils (tar, etc.)</li>
+<li><strong>Multi-thread</strong> : tire parti des processeurs multicœurs</li>
+<li><strong>Sans perte</strong> : qualité préservée lors de la décompression</li>
+</ul>
+
+<h2>Installation</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Ubuntu / Debian</code></div>
+<div class="code-line"><code>sudo apt install zstd</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Fedora / RHEL / CentOS</code></div>
+<div class="code-line"><code>sudo dnf install zstd</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Arch Linux</code></div>
+<div class="code-line"><code>sudo pacman -S zstd</code></div>
+</div>
+
+<h2>Commandes de base</h2>
+
+<h3>Compression simple</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser un fichier (extension .zst automatiquement)</code></div>
+<div class="code-line"><code>zstd fichier.txt</code></div>
+<div class="code-line"><code># Résultat : fichier.txt.zst</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser et supprimer le fichier original</code></div>
+<div class="code-line"><code>zstd --rm fichier.txt</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Spécifier le niveau de compression (1-19, défaut: 3)</code></div>
+<div class="code-line"><code>zstd -1 fichier.txt      # Compression rapide</code></div>
+<div class="code-line"><code>zstd -19 fichier.txt     # Compression maximale</code></div>
+</div>
+
+<h3>Décompression</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Décompresser un fichier .zst</code></div>
+<div class="code-line"><code>zstd -d fichier.txt.zst</code></div>
+<div class="code-line"><code># Ou simplement :</code></div>
+<div class="code-line"><code>unzstd fichier.txt.zst</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Décompresser et supprimer le fichier compressé</code></div>
+<div class="code-line"><code>zstd -d --rm fichier.txt.zst</code></div>
+</div>
+
+<h3>Visualiser les informations</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher les informations sur un fichier compressé</code></div>
+<div class="code-line"><code>zstd -l fichier.txt.zst</code></div>
+<div class="code-line"><code># Affiche : taille originale, taille compressée, ratio</code></div>
+</div>
+
+<h2>Niveaux de compression</h2>
+
+<p>zstd propose 19 niveaux de compression (de <code>-1</code> à <code>-19</code>) :</p>
+
+<table>
+<tr><th>Niveau</th><th>Usage</th><th>Vitesse</th><th>Ratio</th></tr>
+<tr><td><code>-1</code> à <code>-3</code></td><td>Usage courant (défaut)</td><td>★★★★★</td><td>★★★</td></tr>
+<tr><td><code>-4</code> à <code>-9</code></td><td>Bon compromis</td><td>★★★★</td><td>★★★★</td></tr>
+<tr><td><code>-10</code> à <code>-15</code></td><td>Compression élevée</td><td>★★★</td><td>★★★★★</td></tr>
+<tr><td><code>-16</code> à <code>-19</code></td><td>Compression maximale</td><td>★★</td><td>★★★★★</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code># Compression ultra-rapide (niveau 1)</code></div>
+<div class="code-line"><code>zstd -1 --rm gros_fichier.iso</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compression maximale (niveau 19)</code></div>
+<div class="code-line"><code>zstd -19 --rm gros_fichier.iso</code></div>
+</div>
+
+<h2>Compression multi-thread</h2>
+
+<p>zstd peut utiliser plusieurs cœurs pour accélérer la compression :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Utiliser tous les cœurs disponibles</code></div>
+<div class="code-line"><code>zstd -T0 fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Spécifier le nombre de threads</code></div>
+<div class="code-line"><code>zstd -T4 fichier.txt  # 4 threads</code></div>
+</div>
+
+<h2>Compression avec tar</h2>
+
+<p>tar supporte nativement zstd avec le drapeau <code>--zstd</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer une archive compressée zstd</code></div>
+<div class="code-line"><code>tar -caf archive.tar.zst dossier/</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Extraire une archive zstd</code></div>
+<div class="code-line"><code>tar -xf archive.tar.zst</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Avec multi-thread (plus rapide)</code></div>
+<div class="code-line"><code>tar -I zstdmt -cf archive.tar.zst dossier/</code></div>
+</div>
+
+<h2>Comparaison avec d'autres outils</h2>
+
+<table>
+<tr><th>Outil</th><th>Vitesse compression</th><th>Vitesse décompression</th><th>Ratio</th></tr>
+<tr><td>gzip</td><td>★★★★</td><td>★★★★</td><td>★★★</td></tr>
+<tr><td>bzip2</td><td>★★</td><td>★★★</td><td>★★★★</td></tr>
+<tr><td>xz</td><td>★</td><td>★★</td><td>★★★★★</td></tr>
+<tr><td>zstd</td><td>★★★★★</td><td>★★★★★</td><td>★★★★</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Sauvegarde rapide</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarder un dossier avec compression zstd</code></div>
+<div class="code-line"><code>tar -I zstdmt -cf sauvegarde_$(date +%Y%m%d).tar.zst /home/utilisateur/documents</code></div>
+</div>
+
+<h3>Compression de logs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser d'anciens logs</code></div>
+<div class="code-line"><code>find /var/log -name "*.log" -mtime +7 -exec zstd --rm {} \;</code></div>
+</div>
+
+<h3>Compression itérative</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Tester différents niveaux pour trouver le meilleur ratio/vitesse</code></div>
+<div class="code-line"><code>for level in 1 3 5 10 15 19; do</code></div>
+<div class="code-line"><code>  zstd -$level fichier.iso -o fichier_lvl$level.zst</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h2>Dictionnaires de compression</h2>
+
+<p>zstd permet d'utiliser des dictionnaires pour améliorer la compression de fichiers similaires :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un dictionnaire à partir d'échantillons</code></div>
+<div class="code-line"><code>zstd --train dossier_samples/ -o dictionnaire_dict</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Utiliser le dictionnaire pour compresser</code></div>
+<div class="code-line"><code>zstd -D dictionnaire_dict fichier_similaire.txt -o resultat.zst</code></div>
+</div>
+
+<h2>Flux et pipes</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Compression en flux (streaming)</code></div>
+<div class="code-line"><code>dd if=fichier.iso | zstd > fichier.iso.zst</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Décompression en flux</code></div>
+<div class="code-line"><code>zstd -d < fichier.iso.zst > fichier_restored.iso</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Pipeline complet : créer et compresser une archive</code></div>
+<div class="code-line"><code>tar -cf - /home/docs | zstd -T0 > sauvegarde.tar.zst</code></div>
+</div>
+
+<h2>Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux (afficher les détails)</td></tr>
+<tr><td><code>-q</code></td><td>Mode silencieux</td></tr>
+<tr><td><code>-k</code></td><td>Garder le fichier original</td></tr>
+<tr><td><code>--rm</code></td><td>Supprimer le fichier original après compression</td></tr>
+<tr><td><code>-C</code></td><td>Vérifier l'intégrité après compression</td></tr>
+<tr><td><code>-f</code></td><td>Écraser sans confirmation</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez <code>-T0</code> pour la compression multi-thread sur les machines modernes</li>
+<li>Le niveau 3 (défaut) offre un bon équilibre vitesse/ratio pour un usage quotidien</li>
+<li>Utilisez des niveaux plus élevés (<code>-12</code> à <code>-15</code>) pour les archives de sauvegarde où l'espace compte</li>
+<li>Combinez avec <code>tar -I zstdmt</code> pour des sauvegardes efficaces</li>
+<li>Vérifiez toujours vos archives avec <code>zstd -C</code> après compression</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<p><strong>zstd</strong> est l'outil de compression moderne par excellence sous Linux. Plus rapide que gzip, avec un meilleur ratio que bzip2, et un support natif dans tar. Il est devenu un standard pour les sauvegardes et l'archivage.</p>
+
+<nav>
+<a href="141-jobs-fg-bg.html">&larr; jobs, fg et bg — Gestion des tâches en arrière-plan</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
