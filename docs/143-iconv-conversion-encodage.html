@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 143 : iconv — Convertir l'encodage des caractères</h1>
+
+<p><strong>iconv</strong> est un outil en ligne de commande pour convertir des fichiers texte entre différents encodages de caractères. Indispensable pour manipuler d'anciens fichiers ou échanger des données avec des systèmes utilisant des encodages différents.</p>
+
+<h2>Pourquoi iconv est essentiel</h2>
+
+<ul>
+<li><strong>Problèmes d'accents</strong> : caractères mal affichés (�, Ã©, etc.)</li>
+<li><strong>Fichiers legacy</strong> : documents anciens créés sous Windows ou Latin-1</li>
+<li><strong>Compatibilité</strong> : convertir entre UTF-8, ISO-8859-1, Windows-1252, etc.</li>
+<li><strong>Scriptable</strong> : automatiser la conversion massive de fichiers</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>iconv [option] [-f encodage_source] [-t encodage_cible] [fichier]</code></div>
+</div>
+
+<h2>Installation</h2>
+
+<p>iconv fait partie de la glibc et est installé par défaut sur la plupart des distributions Linux. Vérifiez sa présence :</p>
+
+<div class="code-block">
+<div class="code-line"><code>which iconv</code></div>
+<div class="code-line"><code>iconv --version</code></div>
+</div>
+
+<p>Si absent, installez le paquet <code>glibc</code> ou <code>libc-bin</code>.</p>
+
+<h2>Encodages courants</h2>
+
+<table>
+<tr><th>Nom</th><th>Description</th><th>Usage</th></tr>
+<tr><td><code>UTF-8</code></td><td>Unicode standard moderne</td><td>Linux, Web, JSON</td></tr>
+<tr><td><code>ISO-8859-1</code></td><td>Latin-1 (Europe de l'Ouest)</td><td>Anciens fichiers Unix</td></tr>
+<tr><td><code>Windows-1252</code></td><td>Latin-1 étendu Windows</td><td>Fichiers Microsoft</td></tr>
+<tr><td><code>ISO-8859-15</code></td><td>Latin-9 (€ et œ)</td><td>Europe de l'Ouest moderne</td></tr>
+<tr><td><code>ASCII</code></td><td>7 bits (0-127)</td><td>Texte pur US</td></tr>
+<tr><td><code>CP437</code></td><td>Page de code DOS</td><td>Anciens fichiers DOS</td></tr>
+<tr><td><code>KOI8-R</code></td><td>Cyrillique</td><td>Russie</td></tr>
+<tr><td><code>Shift_JIS</code></td><td>Japonais</td><td>Fichiers japonais Windows</td></tr>
+<tr><td><code>EUC-JP</code></td><td>Japonais étendu</td><td>Unix japonais</td></tr>
+<tr><td><code>GB2312</code></td><td>Chinois simplifié</td><td>Fichiers chinois</td></tr>
+</table>
+
+<h2>Commandes fondamentales</h2>
+
+<h3>Conversion simple</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Convertir un fichier Latin-1 vers UTF-8</code></div>
+<div class="code-line"><code>iconv -f ISO-8859-1 -t UTF-8 fichier_latin1.txt > fichier_utf8.txt</code></div>
+</div>
+
+<h3>Écrire dans un fichier directement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Avec redirection (écrase le fichier original)</code></div>
+<div class="code-line"><code>iconv -f Windows-1252 -t UTF-8 entree.txt -o sortie.txt</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Remplacer le fichier en place (via fichier temporaire)</code></div>
+<div class="code-line"><code>iconv -f ISO-8859-1 -t UTF-8 ancien.txt > temporaire.txt && mv temporaire.txt ancien.txt</code></div>
+</div>
+
+<h3>Convertir et afficher</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher le résultat dans le terminal (sans fichier de sortie)</code></div>
+<div class="code-line"><code>iconv -f Windows-1252 -t UTF-8 document_windows.txt</code></div>
+</div>
+
+<h3>Détecter l'encodage automatiquement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Linux : utiliser enca (si installé)</code></div>
+<div class="code-line"><code>sudo apt install enca</code></div>
+<div class="code-line"><code>enca -L french fichier_mystere.txt</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Ou avec uchardet (détection par Mozilla)</code></div>
+<div class="code-line"><code>sudo apt install uchardet</code></div>
+<div class="code-line"><code>uchardet fichier_mystere.txt</code></div>
+</div>
+
+<h2>Cas pratiques</h2>
+
+<h3>Conversion de fichiers CSV Windows</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Fichier CSV Windows (Windows-1252) vers UTF-8</code></div>
+<div class="code-line"><code>iconv -f Windows-1252 -t UTF-8 donnees_windows.csv > donnees_utf8.csv</code></div>
+</div>
+
+<h3>Conversion de logs systèmes anciens</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Log en Latin-1 vers UTF-8</code></div>
+<div class="code-line"><code>iconv -f ISO-8859-1 -t UTF-8 /var/log/old_system.log -o /var/log/old_system_utf8.log</code></div>
+</div>
+
+<h3>Préparer un fichier pour le web</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Convertir en UTF-8 sans BOM (recommandé pour le web)</code></div>
+<div class="code-line"><code>iconv -f ISO-8859-1 -t UTF-8//TRANSLIT page_latin1.html > page_utf8.html</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># ou avec suppression des caractères non convertibles</code></div>
+<div class="code-line"><code>iconv -f ISO-8859-1 -t UTF-8//IGNORE ancien.html > nouveau.html</code></div>
+</div>
+
+<h2>Options avancées</h2>
+
+<h3>Translittération (<code>//TRANSLIT</code>)</h3>
+
+<p>Remplace les caractères non convertibles par des近似 caractères相似 :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Les caractères accentués sont Approximés</code></div>
+<div class="code-line"><code>iconv -f ISO-8859-1 -t ASCII//TRANSLIT texte_accentue.txt</code></div>
+<div class="code-line"><code># é -> e, ç -> c, ñ -> n</code></div>
+</div>
+
+<h3>Ignorer les caractères non convertibles (<code>//IGNORE</code>)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Supprime silencieusement les caractères problématiques</code></div>
+<div class="code-line"><code>iconv -f UTF-8 -t ASCII//IGNORE fichier.txt > resultat.txt</code></div>
+</div>
+
+<h3>Combiner les options</h3>
+
+<div class="code-block">
+<div class="code-line"><code># TRANSLIT d'abord, puis IGNORE pour le reste</code></div>
+<div class="code-line"><code>iconv -f Windows-1252 -t UTF-8//TRANSLIT//IGNORE fichier.txt</code></div>
+</div>
+
+<h2>Conversion par lot</h2>
+
+<h3>Plusieurs fichiers avec une boucle</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Convertir tous les fichiers .txt d'un répertoire</code></div>
+<div class="code-line"><code>for fichier in *.txt; do</code></div>
+<div class="code-line"><code>  iconv -f ISO-8859-1 -t UTF-8 "$fichier" -o "${fichier%.txt}_utf8.txt"</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>Renommer et convertir</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Convertir et remplacer (avec backup)</code></div>
+<div class="code-line"><code>for f in *.csv; do</code></div>
+<div class="code-line"><code>  cp "$f" "$f.bak"</code></div>
+<div class="code-line"><code>  iconv -f Windows-1252 -t UTF-8 "$f.bak" > "$f"</code></div>
+<div class="code-line"><code>  rm "$f.bak"</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>Conversion récursive</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver et convertir tous les .txt d'un dossier</code></div>
+<div class="code-line"><code>find /home/docs -name "*.txt" -exec sh -c '</code></div>
+<div class="code-line"><code>  iconv -f ISO-8859-1 -t UTF-8 "$1" > "$1.tmp" && mv "$1.tmp" "$1"' _ {} \;</code></div>
+</div>
+
+<h2>Convertir avec <code>dos2unix</code> (encodage + fins de ligne)</h2>
+
+<p>Pour les fichiers Windows, vous pourriez aussi vouloir corriger les fins de ligne :</p>
+
+<div class="code-block">
+<div class="code-line"><code># dos2unix convertit aussi l'encodage si nécessaire</code></div>
+<div class="code-line"><code>sudo apt install dos2unix</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Convertir fins de ligne Windows (CRLF) -> Unix (LF)</code></div>
+<div class="code-line"><code>dos2unix fichier_windows.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec conversion d'encodage simultanée</code></div>
+<div class="code-line"><code>iconv -f Windows-1252 -t UTF-8 fichier.txt | dos2unix > resultat.txt</code></div>
+</div>
+
+<h2>Encodages et diagnostics</h2>
+
+<h3>Détecter l'encodage actuel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir l'encodage actuel du système</code></div>
+<div class="code-line"><code>locale</code></div>
+<div class="code-line"><code># Exemple: LANG=fr_CH.UTF-8</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Examiner les premiers octets d'un fichier binaire</code></div>
+<div class="code-line"><code>hexdump -C fichier.txt | head</code></div>
+<div class="code-line"><code># ou</code></div>
+<div class="code-line"><code>file fichier.txt</code></div>
+</div>
+
+<h3>Vérifier la conversion</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier qu'un fichier est bien en UTF-8</code></div>
+<div class="code-line"><code>file -i fichier_utf8.txt</code></div>
+<div class="code-line"><code># Affiche: fichier_utf8.txt: text/plain; charset=utf-8</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier qu'il n'y a plus de caractères non-ASCII problématiques</code></div>
+<div class="code-line"><code>iconv -f UTF-8 -t UTF-8 fichier.txt > /dev/null && echo "UTF-8 valide"</code></div>
+</div>
+
+<h2>Encodages utiles selon le contexte</h2>
+
+<table>
+<tr><th>Contexte</th><th>Source typique</th><th>Recommandation</th></tr>
+<tr><td>Fichiers Linux modernes</td><td>UTF-8</td><td>UTF-8 → UTF-8 (aucune conversion)</td></tr>
+<tr><td>Fichiers Microsoft Office anciens</td><td>Windows-1252</td><td>Windows-1252 → UTF-8</td></tr>
+<tr><td>Fichiers ISO Unix</td><td>ISO-8859-1</td><td>ISO-8859-1 → UTF-8</td></tr>
+<tr><td>Pages web anciennes</td><td>ISO-8859-1 ou Windows-1252</td><td>Vers UTF-8</td></tr>
+<tr><td>Données JSON API</td><td>UTF-8</td><td>UTF-8 obligatoire</td></tr>
+<tr><td>Fichiers CSV Excel</td><td>Windows-1252 ou UTF-8 avec BOM</td><td>Vers UTF-8 sans BOM</td></tr>
+</table>
+
+<h2>Exemples intégrés</h2>
+
+<h3>Script de migration massif</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Conversion récursive de ISO-8859-1 vers UTF-8</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>find /home/data -type f \( -name "*.txt" -o -name "*.csv" -o -name "*.html" \) | while read fichier; do</code></div>
+<div class="code-line"><code>    # Vérifier si le fichier contient des caractères Latin-1</code></div>
+<div class="code-line"><code>    if iconv -f ISO-8859-1 -t UTF-8 "$fichier" > /dev/null 2>&1; then</code></div>
+<div class="code-line"><code>        echo "Conversion : $fichier"</code></div>
+<div class="code-line"><code>        iconv -f ISO-8859-1 -t UTF-8 "$fichier" > "${fichier}.utf8"</code></div>
+<div class="code-line"><code>        mv "${fichier}.utf8" "$fichier"</code></div>
+<div class="code-line"><code>    else</code></div>
+<div class="code-line"><code>        echo "Problème : $fichier"</code></div>
+<div class="code-line"><code>    fi</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h3>Pipeline avec curl</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger une page et convertir son encodage</code></div>
+<div class="code-line"><code>curl -s "http://example.com/page.php" | iconv -f ISO-8859-1 -t UTF-8 > page_utf8.html</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Toujours garder un backup</strong> avant conversion massive</li>
+<li><strong>Vérifiez l'encodage source</strong> avant de convertir (<code>file</code>, <code>uchardet</code>)</li>
+<li><strong>UTF-8 est le standard moderne</strong> — convertissez tout vers UTF-8</li>
+<li><strong>Évitez UTF-8 avec BOM</strong> pour les fichiers texte Linux (cause des erreurs)</li>
+<li><strong>Utilisez <code>//TRANSLIT</code></strong> pour garder le texte lisible quand des caractères manquent</li>
+<li><strong>Scripts de conversion</strong> : loggez les fichiers traités pour audit</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<p><strong>iconv</strong> est l'outil indispensable pour gérer les problèmes d'encodage sous Linux. Que ce soit pour convertir d'anciens fichiers Windows-1252 ou Latin-1 vers UTF-8, iconv offre une solution simple et scriptable pour tous vos besoins de conversion de caractères.</p>
+
+<nav>
+<a href="142-zstd-compression-moderne.html">&larr; zstd — Compression moderne et performante</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
