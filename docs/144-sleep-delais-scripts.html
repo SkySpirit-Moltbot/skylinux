@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 144 : sleep — Créer des délais et pauses dans vos scripts</h1>
+
+<p><strong>sleep</strong> est une commande fondamentale sous Linux qui suspend l'exécution pendant une durée précise. Bien qu'elle paraisse simple, elle est incontournable pour orchestrer des scripts, ajouter des temporisations, et gérer des boucles de retry.</p>
+
+<h2>Pourquoi sleep est essentiel</h2>
+
+<ul>
+<li><strong>Scripts bash</strong> :espérer entre deux commandes</li>
+<li><strong>Boucles de retry</strong> : attendre qu'un service soit prêt</li>
+<li><strong>Délais visuels</strong> : ralentir l'affichage dans un script interactif</li>
+<li><strong>Crédibilité</strong> : simuler des opérations longues dans des démonstrations</li>
+<li><strong>Chronométrage</strong> : mesurer des durées ou créer des minuteurs</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>sleep NOMBRE[SUFFIXE]...</code></div>
+</div>
+
+<p>Par défaut, le nombre est exprimé en secondes.</p>
+
+<h2>Installation</h2>
+
+<p><code>sleep</code> fait partie du paquet <code>coreutils</code> et est installé par défaut sur toutes les distributions Linux. Aucune installation nécessaire.</p>
+
+<h2>Syntaxe des durées</h2>
+
+<p><code>sleep</code> accepte différents suffixes pour exprimer la durée :</p>
+
+<table>
+<tr><th>Suffixe</th><th>Unité</th><th>Exemple</th></tr>
+<tr><td><code>s</code></td><td>Secondes (défaut)</td><td><code>sleep 5s</code></td></tr>
+<tr><td><code>m</code></td><td>Minutes</td><td><code>sleep 2m</code></td></tr>
+<tr><td><code>h</code></td><td>Heures</td><td><code>sleep 1h</code></td></tr>
+<tr><td><code>d</code></td><td>Jours</td><td><code>sleep 1d</code></td></tr>
+<tr><td>(aucun)</td><td>Secondes (par défaut)</td><td><code>sleep 5</code></td></tr>
+</table>
+
+<h2>Commandes fondamentales</h2>
+
+<h3>Delai simple</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Attendre 5 secondes</code></div>
+<div class="code-line"><code>sleep 5</code></div>
+</div>
+
+<h3>Avec suffixe explicite</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sleep 30s   # 30 secondes</code></div>
+<div class="code-line"><code>sleep 2m    # 2 minutes</code></div>
+<div class="code-line"><code>sleep 1h    # 1 heure</code></div>
+<div class="code-line"><code>sleep 1d    # 1 jour</code></div>
+</div>
+
+<h3>Delai fractionnel</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sleep 0.5   # demi-seconde</code></div>
+<div class="code-line"><code>sleep 0.1   # un dizieme de seconde</code></div>
+<div class="code-line"><code>sleep 1.5   # une seconde et demie</code></div>
+<div class="code-line"><code>sleep 2.5m  # 2 minutes et demie</code></div>
+</div>
+
+<h3>Delai compose</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Combiner plusieurs durees</code></div>
+<div class="code-line"><code>sleep 1m 30s</code></div>
+<div class="code-line"><code>sleep 2h 15m 10s</code></div>
+</div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Affichage avec delai</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Afficher un message toutes les 2 secondes</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>for i in {1..5}; do</code></div>
+<div class="code-line"><code>    echo "Iteration $i"</code></div>
+<div class="code-line"><code>    sleep 2</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code>echo "Termine !"</code></div>
+</div>
+
+<h3>Minuteur dans le terminal</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Minuteur de 10 secondes</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>secondes=10</code></div>
+<div class="code-line"><code>while [ $secondes -gt 0 ]; do</code></div>
+<div class="code-line"><code>    echo -ne "Il reste $secondes secondes... \r"</code></div>
+<div class="code-line"><code>    sleep 1</code></div>
+<div class="code-line"><code>    secondes=$((secondes - 1))</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code>echo -e "\nC'est parti !"</code></div>
+</div>
+
+<h3>Boucle de retry</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Attendre qu'un service soit operationnel</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>max_attentes=10</code></div>
+<div class="code-line"><code>compteur=0</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>until curl -s http://localhost:8080/ready > /dev/null 2>&1; do</code></div>
+<div class="code-line"><code>    compteur=$((compteur + 1))</code></div>
+<div class="code-line"><code>    if [ $compteur -ge $max_attentes ]; then</code></div>
+<div class="code-line"><code>        echo "Le service n'est pas disponible apres $max_attentes tentatives"</code></div>
+<div class="code-line"><code>        exit 1</code></div>
+<div class="code-line"><code>    fi</code></div>
+<div class="code-line"><code>    echo "Attente du demarrage... ($compteur/$max_attentes)"</code></div>
+<div class="code-line"><code>    sleep 5</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Serviceopreationnel !"</code></div>
+</div>
+
+<h3>Delai avant action</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Demander confirmation avec delai d'expiration</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Voulez-vous continuer ? (o/n)"</code></div>
+<div class="code-line"><code>read -t 10 reponse || reponse="timeout"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ "$reponse" = "timeout" ]; then</code></div>
+<div class="code-line"><code>    echo "Delai d'expiration dépassé. Continuation automatique..."</code></div>
+<div class="code-line"><code>elif [ "$reponse" = "o" ] || [ "$reponse" = "O" ]; then</code></div>
+<div class="code-line"><code>    echo "Confirmation recue. Continuation..."</code></div>
+<div class="code-line"><code>else</code></div>
+<div class="code-line"><code>    echo "Annulation."</code></div>
+<div class="code-line"><code>    exit 0</code></div>
+<div class="code-line"><code>fi</code></div>
+</div>
+
+<h2>Utilisation avec d'autres commandes</h2>
+
+<h3>Simuler un traitement long</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Simuler un traitement de 3 secondes</code></div>
+<div class="code-line"><code>echo "Traitement en cours..."</code></div>
+<div class="code-line"><code>sleep 3</code></div>
+<div class="code-line"><code>echo "Termine !"</code></div>
+</div>
+
+<h3>Delai entre deux operations</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Creer un fichier, attendre, puis le copier</code></div>
+<div class="code-line"><code>echo "Creation du fichier..."</code></div>
+<div class="code-line"><code>echo "donnees" > /tmp/data.txt</code></div>
+<div class="code-line"><code>sleep 2</code></div>
+<div class="code-line"><code>cp /tmp/data.txt /tmp/backup.txt</code></div>
+<div class="code-line"><code>echo "Sauvegarde effectuee."</code></div>
+</div>
+
+<h3>Compte a rebours</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Compte a rebours de 5 secondes</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>for i in 5 4 3 2 1; do</code></div>
+<div class="code-line"><code>    echo "$i..."</code></div>
+<div class="code-line"><code>    sleep 1</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code>echo "Feu !"</code></div>
+</div>
+
+<h3>Delai aleatoire</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Attendre un temps aleatoire entre 1 et 5 secondes</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>delai=$((RANDOM % 5 + 1))</code></div>
+<div class="code-line"><code>echo "Attente de $delai secondes..."</code></div>
+<div class="code-line"><code>sleep $delai</code></div>
+<div class="code-line"><code>echo "OK, on continue."</code></div>
+</div>
+
+<h3>Daemon avec pause</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Boucle infinie avec pause de 60 secondes</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>while true; do</code></div>
+<div class="code-line"><code>    echo "$(date) - Verification..."</code></div>
+<div class="code-line"><code>    # votre tache ici</code></div>
+<div class="code-line"><code>    sleep 60</code></div>
+<div class="code-line"><code>done</code></div>
+</div>
+
+<h2>Mesurer le temps avec sleep</h2>
+
+<h3>Chronometrer une commande</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Mesurer le temps d'execution</code></div>
+<div class="code-line"><code>debut=$(date +%s)</code></div>
+<div class="code-line"><code>echo "Debut : $(date)"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Votre commande</code></div>
+<div class="code-line"><code>ls -la /</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>fin=$(date +%s)</code></div>
+<div class="code-line"><code>duree=$((fin - debut))</code></div>
+<div class="code-line"><code>echo "Fin : $(date)"</code></div>
+<div class="code-line"><code>echo "Duree totale : ${duree}s"</code></div>
+</div>
+
+<h3>Creer un minuteur</h3>
+
+<div class="code-block">
+<Div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Minuteur pour une duree donnee</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>lecture() {</code></div>
+<div class="code-line"><code>    local t=$1</code></div>
+<div class="code-line"><code>    while [ $t -gt 0 ]; do</code></div>
+<div class="code-line"><code>        printf "\rTemps restant : %02d:%02d" $((t/60)) $((t%60))</code></div>
+<div class="code-line"><code>        sleep 1</code></div>
+<div class="code-line"><code>        t=$((t-1))</code></div>
+<div class="code-line"><code>    done</code></div>
+<div class="code-line"><code>    echo ""</code></div>
+<div class="code-line"><code>    echo "Temps ecoule !"</code></div>
+<div class="code-line"><code>}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Utilisation : ./minuteur.sh 300 (pour 5 minutes)</code></div>
+<div class="code-line"><code>lecture ${1:-300}</code></div>
+</div>
+
+<h2>Cas d'utilisation avances</h2>
+
+<h3>Rate limiting simple</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Limiter les requetes a 1 par seconde</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>derniere_requete=0</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>pour chaque_requete() {</code></div>
+<div class="code-line"><code>    maintenant=$(date +%s)</code></div>
+<div class="code-line"><code>    ecoule=$((maintenant - derniere_requete))</code></div>
+<div class="code-line"><code>    if [ $ecoule -lt 1 ]; then</code></div>
+<div class="code-line"><code>        sleep $((1 - ecoule))</code></div>
+<div class="code-line"><code>    fi</code></div>
+<div class="code-line"><code>    # ... votre logique ici</code></div>
+<div class="code-line"><code>    echo "Requete traitee"</code></div>
+<div class="code-line"><code>    derniere_requete=$(date +%s)</code></div>
+<div class="code-line"><code>}</code></div>
+</div>
+
+<h3>Delai exponentiel (backoff)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Retry avec delai exponentiel</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>delai=1</code></div>
+<div class="code-line"><code>max_delai=64</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>for tentative in {1..5}; do</code></div>
+<div class="code-line"><code>    echo "Tentative $tentative..."</code></div>
+<div class="code-line"><code>    if ta_commande; then</code></div>
+<div class="code-line"><code>        echo "Succes !"</code></div>
+<div class="code-line"><code>        exit 0</code></div>
+<div class="code-line"><code>    fi</code></div>
+<div class="code-line"><code>    echo "Echec. Attente de ${delai}s..."</code></div>
+<div class="code-line"><code>    sleep $delai</code></div>
+<div class="code-line"><code>    delai=$((delai * 2))</code></div>
+<div class="code-line"><code>    [ $delai -gt $max_delai ] && delai=$max_delai</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Echec apres toutes les tentatives"</code></div>
+<div class="code-line"><code>exit 1</code></div>
+</div>
+
+<h3>Progression bar</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Barre de progression simple</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>total=20</code></div>
+<div class="code-line"><code>for i in $(seq 1 $total); do</code></div>
+<div class="code-line"><code>    percent=$((i * 100 / total))</code></div>
+<div class="code-line"><code>    filled=$((i * 40 / total))</code></div>
+<div class="code-line"><code>    empty=$((40 - filled))</code></div>
+<div class="code-line"><code>    printf "\r[%${filled}s%${empty}s] %3d%%" | tr ' ' '=' | tr ' ' '-' </code></div>
+<div class="code-line"><code>    sleep 0.1</code></div>
+<div class="code-line"><code>done</code></div>
+<div class="code-line"><code>echo ""</code></div>
+</div>
+
+<h2>Integration avec cron</h2>
+
+<h3>Delai au demarrage d'un script cron</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Dans un script lance par cron, eviter le demarrage simultane</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Attendre un delai aleatoire pour eviter la surcharge</code></div>
+<div class="code-line"><code>sleep $((RANDOM % 300))  # 0 a 5 minutes</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Puis le reste du script</code></div>
+<div class="code-line"><code>/opt/mon-script.sh</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Utilisez des suffixes explicites</strong> (<code>5s</code>, <code>2m</code>) pour la lisibilité</li>
+<li><strong>Pour les boucles</strong>, commencez avec des délais courts et augmentez si nécessaire</li>
+<li><strong>Backoff exponentiel</strong> : pour les retries, augmentez le délai à chaque tentative</li>
+<li><strong>Des délais de 0.1s</strong> sont utiles pour les boucles de progression</li>
+<li><strong>Combiner avec <code>read -t</code></strong> : timeout sur les entrées utilisateur</li>
+<li><strong>Dans les scripts critiques</strong>, ajoutez des logs avant/après les sleep</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<p><strong>sleep</strong> est une commande simple mais puissante. Elle suspend l'exécution pour une durée précise et s'intègre naturellement dans les scripts bash pour orchestrer des délais, des retries, des minuteurs, et des boucles de progression. Combinez-la avec des boucles, des conditions, et des compteurs pour créer des scripts robustes et temporisés.</p>
+
+<nav>
+<a href="143-iconv-conversion-encodage.html">&larr; iconv — Convertir l'encodage des caractères</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
