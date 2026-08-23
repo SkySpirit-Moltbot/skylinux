@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 145 : tee — Écrire simultanément dans un fichier et vers une autre commande</h1>
+
+<p><strong>tee</strong> est une commande qui lit depuis l'entrée standard et écrit simultanément dans la sortie standard et dans un ou plusieurs fichiers. Son nom vient de la forme en "T" du tuyau de plomberie : les données entrent d'un côté et sortent dans deux directions.</p>
+
+<h2>Pourquoi tee est essentiel</h2>
+
+<ul>
+<li><strong>Logging</strong> : voir la sortie d'une commande ET la sauvegarder dans un fichier</li>
+<li><strong>Pipeline transparent</strong> : inspecter les données qui traversent un pipe</li>
+<li><strong>Debug</strong> : déboguer un pipeline sans le casser</li>
+<li><strong>Archivage</strong> : capturer la sortie de commandes longue sans知道她</li>
+<li><strong>Installation</strong> : visualiser ET enregistrer le résultat d'une installation</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>commande | tee [OPTIONS] FICHIER...</code></div>
+</div>
+
+<h2>Installation</h2>
+
+<p><code>tee</code> fait partie du paquet <code>coreutils</code> et est installé par défaut sur toutes les distributions Linux. Aucune installation nécessaire.</p>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-a, --append</code></td><td>Ajouter à la fin du fichier au lieu de l'écraser</td></tr>
+<tr><td><code>-i, --ignore-interrupts</code></td><td>Ignorer les signaux d'interruption</td></tr>
+<tr><td><code>-p</code></td><td>Diagnostiquer les erreurs lors de l'écriture dans les pipes</td></tr>
+<tr><td><code>--output-error[=MODE]</code></td><td>Comportement en cas d'erreur d'écriture (warn, exit, etc.)</td></tr>
+</table>
+
+<h2>Exemples fondamentaux</h2>
+
+<h3>Écrire dans un fichier ET afficher à l'écran</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir la sortie ET la sauvegarder</code></div>
+<div class="code-line"><code>echo "Bonjour le monde" | tee salut.txt</code></div>
+<div class="code-line"><code># Affiche : Bonjour le monde</code></div>
+<div class="code-line"><code># Contenu de salut.txt : Bonjour le monde</code></div>
+</div>
+
+<h3>Écraser un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Par défaut, tee écrase le fichier</code></div>
+<div class="code-line"><code>ls -la / | tee liste.txt</code></div>
+</div>
+
+<h3>Ajouter à un fichier (append)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter au lieu d'écraser</code></div>
+<div class="code-line"><code>echo "Première ligne" | tee log.txt</code></div>
+<div class="code-line"><code>echo "Deuxième ligne" | tee -a log.txt</code></div>
+<div class="code-line"><code>echo "Troisième ligne" | tee -a log.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>cat log.txt</code></div>
+<div class="code-line"><code># Première ligne</code></div>
+<div class="code-line"><code># Deuxième ligne</code></div>
+<div class="code-line"><code># Troisième ligne</code></div>
+</div>
+
+<h3>Écrire dans plusieurs fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire dans plusieurs fichiers en une seule passe</code></div>
+<div class="code-line"><code>echo "Données importantes" | tee fichier1.txt fichier2.txt fichier3.txt</code></div>
+</div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Logger une installation</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Enregistrer et visualiser une installation</code></div>
+<div class="code-line"><code>sudo apt install nginx | tee install_nginx.log</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vous voyez la sortie en temps réel</code></div>
+<div class="code-line"><code># ET le fichier install_nginx.log contient tout</code></div>
+</div>
+
+<h3>Logger un script</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Exécuter un script et logger la sortie</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>./mon_script.sh 2>&1 | tee sortie.log</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># 2>&1 redirige stderr vers stdout pour tout capturer</code></div>
+</div>
+
+<h3>Capturer la sortie de make</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compiler et garder le log</code></div>
+<div class="code-line"><code>make 2>&1 | tee build.log</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># En cas d'erreur, le log contient tout pour le debug</code></div>
+</div>
+
+<h3>Pipeline de debug</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Inspecter ce qui passe dans un pipeline</code></div>
+<div class="code-line"><code>cat data.csv | tee /tmp/debug.txt | sort | uniq</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vous voyez les données originales</code></div>
+<div class="code-line"><code># /tmp/debug.txt contient les données avant tri</code></div>
+</div>
+
+<h3>Archivage de la sortie système</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Capturer la sortie de plusieurs commandes</code></div>
+<div class="code-line"><code>{</code></div>
+<div class="code-line"><code>    echo "=== RAPPORT SYSTÈME ==="</code></div>
+<div class="code-line"><code>    echo "Date : $(date)"</code></div>
+<div class="code-line"><code>    echo ""</code></div>
+<div class="code-line"><code>    echo "=== MÉMOIRE ==="</code></div>
+<div class="code-line"><code>    free -h</code></div>
+<div class="code-line"><code>    echo ""</code></div>
+<div class="code-line"><code>    echo "=== DISQUE ==="</code></div>
+<div class="code-line"><code>    df -h</code></div>
+<div class="code-line"><code>} | tee rapport_systeme.txt</code></div>
+</div>
+
+<h3>Pipeline sudo</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire dans un fichier protégé avec sudo</code></div>
+<div class="code-line"><code>echo "configuration" | sudo tee /etc/mon_service/config.conf</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Alternative sans tee (moins élégant) :</code></div>
+<div class="code-line"><code>echo "configuration" | sudo dd of=/etc/mon_service/config.conf</code></div>
+</div>
+
+<h3>Ajouter sudo pour l'écriture</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#tee ne peut pas lire sudo pour l'entrée,</code></div>
+<div class="code-line"><code>#mais peut écrire la sortie avec sudo</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Écrire dans un fichier root-owned</code></div>
+<div class="code-line"><code>commande | sudo tee /var/log/mon_log.log > /dev/null</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Le > /dev/null empêche l'affichage de la sortie</code></div>
+</div>
+
+<h2>Combinaisons avancées</h2>
+
+<h3>Avec xargs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer plusieurs fichiers à partir d'une liste</code></div>
+<div class="code-line"><code>echo -e "fichier1.txt\nfichier2.txt\nfichier3.txt" | xargs -I {} tee {} <<< "Contenu initial"</code></div>
+</div>
+
+<h3>Avec des sous-shells</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Capturer plusieurs sorties groupées</code></div>
+<div class="code-line"><code>(</code></div>
+<div class="code-line"><code>    echo "=== HEURE ===" ; date</code></div>
+<div class="code-line"><code>    echo "=== UTILISATEURS ===" ; who</code></div>
+<div class="code-line"><code>    echo "=== PROCESSUS ===" ; ps aux | head -5</code></div>
+<div class="code-line"><code>) | tee -a journal_quotidien.txt</code></div>
+</div>
+
+<h3>Avec grep pour filtrer ET存档</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Garder les lignes contenant "error" ET voir toute la sortie</code></div>
+<div class="code-line"><code>commande | tee /tmp/sortie_complete.txt | grep "error"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># /tmp/sortie_complete.txt contient tout</code></div>
+<div class="code-line"><code># grep affiche uniquement les erreurs (sans vider le pipe)</code></div>
+</div>
+
+<h3>Double tee (pipeline en T)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Écrire à deux endroits différents</code></div>
+<div class="code-line"><code>commande | tee fichier1.txt | tee fichier2.txt | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Les deux fichiers reçoivent la même sortie</code></div>
+</div>
+
+<h3>Archiver et envoyer vers un pipe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Archiver ET continuer le traitement</code></div>
+<div class="code-line"><code>curl http://api.exemple.com/donnees | tee /tmp/cache.json | jq '.resultats'</code></div>
+</div>
+
+<h2>Cas d'utilisation réels</h2>
+
+<h3>Script d'installation avec log</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Script d'installation qui log tout</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>LOG="install_$(date +%Y%m%d_%H%M%S).log"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>exec > >(tee -a "$LOG") 2>&1</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "=================================="</code></div>
+<div class="code-line"><code>echo "Installation начало $LOG"</code></div>
+<div class="code-line"><code>echo "=================================="</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Toutes les sorties sont automatiquement loggées</code></div>
+<div class="code-line"><code>apt update</code></div>
+<div class="code-line"><code>apt install -y nginx postgresql</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Installation terminée !"</code></div>
+</div>
+
+<h3>Sauvegarde avec tee</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Créer une sauvegarde et garder un historique</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>SOURCE="/home/david/documents"</code></div>
+<div class="code-line"><code>BACKUP="/media/backup/sauvegarde_$(date +%Y%m%d).tar.gz"</code></div>
+<div class="code-line"><code>LISTE="/media/backup/liste_fichiers.txt"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lister les fichiers et archiver en parallèle</code></div>
+<div class="code-line"><code>tar -czf "$BACKUP" "$SOURCE" 2>&1 | tee "$LISTE"</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Sauvegarde créée : $BACKUP"</code></div>
+<div class="code-line"><code>echo "Liste enregistrée : $LISTE"</code></div>
+</div>
+
+<h3> Surveillance en temps réel</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code># Surveiller un log en temps réel et l'archiver</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>tail -f /var/log/syslog | tee /tmp/syslog_capture.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vous voyez les logs défiler ET ils sont sauvegardés</code></div>
+</div>
+
+<h3>Pipeline de traitement de données</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Traiter des données, garder une trace, et continuer</code></div>
+<div class="code-line"><code>cat data.csv | tee raw_data.csv | sort | uniq > cleaned_data.csv</code></div>
+</div>
+
+<h2>Comparaison avec d'autres commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Écrit au fichier</th><th>Affiche à l'écran</th><th>Continue le pipe</th></tr>
+<tr><td><code>></code> (redirection)</td><td>✅</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>tee</code></td><td>✅</td><td>✅</td><td>✅</td></tr>
+<tr><td><code>2>&1 |</code></td><td>❌</td><td>✅</td><td>✅</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Utilisez <code>2>&1 | tee</code></strong> pour capturer stdout et stderr</li>
+<li><strong>Utilisez <code>-a</code></strong> pour ajouter au lieu d'écraser lors des logs successifs</li>
+<li><strong>Redirigez vers <code>/dev/null</code></strong> avec <code>> /dev/null</code> si vous ne voulez que le fichier</li>
+<li><strong>Combinez avec <code>sudo tee</code></strong> pour écrire dans des fichiers protégés</li>
+<li><strong>Pour des logs automatiques</strong>, utilisez <code>exec > >(tee -a logfile) 2>&1</code> au début d'un script</li>
+<li><strong>Vérifiez le code de retour</strong> du pipeline car tee peut échouer silencieusement</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<p><strong>tee</strong> est l'outil idéal pour dupliquer un flux de données : il affiche tout ce qui passe ET l'enregistre simultanément. Utilisez-le pour le logging, le debug de pipelines, l'archivage de sorties, ou simplement pour garder une trace de ce que fait une commande sans perdre la visibilité en temps réel.</p>
+
+<nav>
+<a href="144-sleep-delais-scripts.html">&larr; sleep — Créer des délais et pauses dans vos scripts</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
