@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>146. systemctl — Fichiers Unit personnalisés (Avancé)</h1>
+
+<p>Dans la leçon 74, nous avons vu les bases de systemd et systemctl. Ici, nous allons apprendre à créer nos propres fichiers unit pour transformer n'importe quel script ou commande en vrai service géré par systemd.</p>
+
+<h2>📋 Anatomie d'un fichier Unit</h2>
+
+<p>Un fichier unit est un fichier texte au format INI situé dans :</p>
+<ul>
+<li><code>/etc/systemd/system/</code> — pour les services système (root)</li>
+<li><code>~/.config/systemd/user/</code> — pour les services utilisateur</li>
+</ul>
+
+<h3>Structure minimale</h3>
+
+<div class="code-block"><div class="code-line"><code>[Unit]
+Description=Mon service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/monscript.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target</code></div></div>
+
+<h2>🔧 Types de services (Type=)</h2>
+
+<table>
+<tr><th>Type</th><th>Description</th><th>Quand l'utiliser</th></tr>
+<tr><td><code>simple</code></td><td>Le processus principal est ExecStart</td><td>Cas par défaut, le plus courant</td></tr>
+<tr><td><code>forking</code></td><td>Le processus père en spawn d'autres puis se termine</td><td>Daemon classique style SysV</td></tr>
+<tr><td><code>oneshot</code></td><td>Le service s'exécute puis s'arrête</td><td>Tâches de configuration ponctuelles</td></tr>
+<tr><td><code>exec</code></td><td>Similar à simple mais plus récent et propre</td><td>Remplacement recommandé de simple</td></tr>
+<tr><td><code>notify</code></td><td>Le service envoie un signal READY à systemd</td><td>Services qui implémentent sd_notify</td></tr>
+<tr><td><code>dbus</code></td><td>Le service prend un nom sur D-Bus</td><td>Services D-Bus typiques</td></tr>
+</table>
+
+<h2>📝 Section [Unit] — Métadonnées</h2>
+
+<div class="code-block"><div class="code-line"><code>[Unit]
+Description=Backup automatique quotidien     # Description lisible
+Documentation=https://mondomaine.com/docs     # Doc optionnelle
+After=network-online.target mysql.service     # Démarre APRÈS ces services
+Before=montage.service                         # Démarre AVANT ce service
+Wants=network-online.target                    # Veut ce service (sans obligation)
+Requires=network.target                       # Dépendance forte (échoue si absent)</code></div></div>
+
+<h2>⚙️ Section [Service] — Configuration d'exécution</h2>
+
+<h3>Commandes de cycle de vie</h3>
+
+<div class="code-block"><div class="code-line"><code>[Service]
+ExecStart=/usr/bin/monservice start           # Commande de démarrage
+ExecStop=/usr/bin/monservice stop             # Commande d'arrêt (optionnel)
+ExecReload=/bin/kill -HUP $MAINPID            # Commande de reload
+RestartForceExitStatus=100                     # Redémarre sur ce code de sortie
+TimeoutStartSec=300                            # Timeout démarrage (5 min)
+TimeoutStopSec=30                              # Timeout arrêt</code></div></div>
+
+<h3>Variables d'environnement</h3>
+
+<div class="code-block"><div class="code-line"><code>[Service]
+Environment="PORT=8080"
+Environment="HOST=localhost"
+EnvironmentFile=/etc/monservice/env            # Charger depuis fichier</code></div></div>
+
+<h3>Utilisateur et groupe</h3>
+
+<div class="code-block"><div class="code-line"><code>[Service]
+User=backupuser
+Group=backupgroup
+SupplementaryGroups=disk                        # Groupes additionnels
+WorkingDirectory=/home/backupuser</code></div></div>
+
+<h3>Gestion du redémarrage</h3>
+
+<table>
+<tr><th>Valeur</th><th>Comportement</th></tr>
+<tr><td><code>no</code></td><td>Ne redémarre jamais (défaut)</td></tr>
+<tr><td><code>on-success</code></td><td>Redémarre si sortie normale (code 0)</td></tr>
+<tr><td><code>on-failure</code></td><td>Redémarre si sortie anormale</td></tr>
+<tr><td><code>on-abnormal</code></td><td>Redémarre sur signal ou timeout</td></tr>
+<tr><td><code>always</code></td><td>Redémarre toujours</td></tr>
+</table>
+
+<h3>Limites système (ULimit)</h3>
+
+<div class="code-block"><div class="code-line"><code>[Service]
+LimitNOFILE=65536                              # Nombre max de fichiers ouverts
+LimitNPROC=4096                                # Nombre max de processus
+LimitCORE=infinity                             # Taille max core dump
+MemoryMax=512M                                 # Limite mémoire
+CPUQuota=50%                                   #Quota CPU</code></div></div>
+
+<h3>Accès réseau et sécurité</h3>
+
+<div class="code-block"><div class="code-line"><code>[Service]
+PrivateTmp=yes                                 # /tmp isolé
+ProtectSystem=strict                           # Protection /usr /boot /etc
+ProtectHome=yes                                # Cache /home
+ReadOnlyPaths=/                                 # Rendre le FS lecture seule
+NoNewPrivileges=yes                            # Empêcher privilege escalation
+ProtectKernelTunables=yes                      # Protéger paramètres kernel
+ProtectKernelModules=yes                       # Protéger chargement modules
+ProtectControlGroups=yes                       # Protéger cgroups
+RestrictNamespaces=yes                         # Restreindre namespaces
+LockPersonality=yes                            # Bloquer changement architecture
+RestrictRealtime=yes                           # Pas de scheduling RT
+RestrictAddressFamilies=af_inet af_inet6      # IPv4/IPv6 seulement</code></div></div>
+
+<h2>🎯 Section [Install] — Activation</h2>
+
+<div class="code-block"><div class="code-line"><code>[Install]
+WantedBy=multi-user.target    # Active au boot en mode texte
+# WantedBy=graphical.target   # Active au boot en mode graphique
+# WantedBy=default.target     # Active par défaut pour session utilisateur
+Alias=monservice              # Nom alternatif
+Also=autreservice.service     # Active/désactive aussi ces services</code></div></div>
+
+<h2>📦 Exemple complet : Service de backup</h2>
+
+<div class="code-block"><div class="code-line"><code>[Unit]
+Description=Backup automatique quotidien vers NAS
+Documentation=man:rsync(1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=backup
+Group=backup
+WorkingDirectory=/home/backup
+Environment=BACKUP_DEST=/mnt/nas/backup
+EnvironmentFile=/etc/backup/env
+ExecStart=/usr/local/bin/backup.sh
+ExecStartPost=/usr/bin/logger "Backup terminé avec succès"
+ExecStartPost=/usr/bin/notify-send "Backup" "Sauvegarde terminée"
+ExecStopPost=/usr/bin/logger "Backup interrompu"
+Restart=on-failure
+RestartSec=60
+TimeoutStartSec=3600
+TimeoutStopSec=300
+
+# Sécurité
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadOnlyPaths=/
+ReadWritePaths=/home/backup /mnt/nas
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=backup-service
+
+[Install]
+WantedBy=multi-user.target</code></div></div>
+
+<h2>🔄 Exemple : Service permanent (daemon)</h2>
+
+<div class="code-block"><div class="code-line"><code>[Unit]
+Description=Capteur de température IoT
+After=network.target
+
+[Service]
+Type=exec
+ExecStart=/usr/local/bin/temp-sensor --port 8888
+Restart=always
+RestartSec=5
+WatchdogSec=30
+
+# Sécurité avancée
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=no
+RestrictAddressFamilies=af_inet
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+
+# Ressources
+MemoryMax=100M
+CPUQuota=20%
+
+[Install]
+WantedBy=multi-user.target</code></div></div>
+
+<h2>⏰ Exemple : Service temporisé (timer-linked)</h2>
+
+<p>Créer d'abord le service (sans [Install]) puis un timer associé :</p>
+
+<div class="code-block"><div class="code-line"><code># /etc/systemd/system/nettoyage.service
+[Unit]
+Description=Nettoyage des fichiers temporaires
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cleanup-tmp.sh
+PrivateTmp=yes
+
+[Unit]
+Description=Nettoyage automatique tous les jours à 3h
+After=multi-user.target
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=3600
+
+[Install]
+WantedBy=timers.target</code></div></div>
+
+<h2>🛠️ Commands essentielles pour gérer vos units</h2>
+
+<div class="code-block"><div class="code-line"><code># Installer et activer
+sudo cp mon-service.service /etc/systemd/system/
+sudo systemctl daemon-reload                  # Recharger après modification
+sudo systemctl enable --now mon-service        # Activer + démarrer
+
+# Vérifications
+systemctl status mon-service
+systemctl cat mon-service                      # Voir le fichier unit
+systemctl edit mon-service                     # Éditer (crée override)
+systemctl show mon-service                     # Voir toute la config
+
+# Logs
+journalctl -u mon-service -f                  # Suivre les logs
+journalctl -u mon-service --since "1 hour ago"
+
+# Réinstaller après modification
+sudo systemctl daemon-reload
+sudo systemctl restart mon-service</code></div></div>
+
+<h2>🔒 Bonnes pratiques de sécurité</h2>
+
+<ul>
+<li><strong>Principe du moindre privilège</strong> : créez un utilisateur dédié, pas root</li>
+<li><strong>ProtectSystem=strict</strong> : limitez l'accès au filesystem</li>
+<li><strong>NoNewPrivileges=yes</strong> : empêche l'élévation de privilèges</li>
+<li><strong>ReadOnlyPaths</strong> : rendez le système de fichiers lecture seule par défaut</li>
+<li><strong>SystemCallFilter</strong> : limitez les appels système autorisés</li>
+<li><strong>RestrictNamespaces</strong> : limitez l'utilisation des namespaces Linux</li>
+<li><strong>PrivateTmp</strong> : isoler /tmp et /var/tmp</li>
+<li><strong>WatchdogSec</strong> : redémarrer automatiquement si le service plante silencieusement</li>
+</ul>
+
+<h2>📊 Surveillance et debugging</h2>
+
+<div class="code-block"><div class="code-line"><code># Voir les dépendances
+systemctl list-dependencies mon-service
+
+# Tester les limites
+systemd-run --scope -p MemoryMax=100M /chemin/commande
+
+# Mode "transient" (test sans fichier)
+systemd-run --scope /usr/bin/mon-daemon
+
+# Vérifier les erreurs de syntaxe
+systemd-analyze verify /etc/systemd/system/mon-service.service</code></div></div>
+
+<h2>🎓 Résumé</h2>
+
+<table>
+<tr><th>Concept</th><th>Description</th></tr>
+<tr><td><code>Type=</code></td><td>simple, oneshot, forking, exec, notify, dbus</td></tr>
+<tr><td><code>Restart=</code></td><td>Stratégie de redémarrage automatique</td></tr>
+<tr><td><code>WantedBy=</code></td><td>Comment le service est activé</td></tr>
+<tr><td><code>Environment=</code></td><td>Variables d'environnement injectées</td></tr>
+<tr><td><code>Protect*=yes</code></td><td>Options de sandboxing filesystem</td></tr>
+<tr><td><code>SystemCallFilter=</code></td><td>Limiter les appels système</td></tr>
+<tr><td><code>WatchdogSec=</code></td><td>Timeout de surveillance (health check)</td></tr>
+</table>
+
+<p>Avec systemd, vous pouvez transformer n'importe quel script en service robuste, sécurisé et surveillé — bien plus professionnel qu'un simple <code>nohup</code> ou un <code>screen</code>.</p>
+
+<nav>
+<a href="145-tee-ecrire-parallel.html">&larr; 145. tee — Écrire simultanément dans un fichier et vers une autre commande</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
