@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>147 — uniq — Supprimer ou compter les doublons</h1>
+
+<p><code>uniq</code> est une commande qui permet de supprimer ou de compter les lignes consécutives identiques dans un fichier ou un flux. Elle est très souvent utilisée en combinaison avec <code>sort</code> pour traiter des données triées et en extraire des informations utiles.</p>
+
+<h2>1. Principe fondamental</h2>
+
+<p>La chose la plus importante à comprendre est que <code>uniq</code> ne fonctionne que sur des <strong>lignes consécutives identiques</strong>. Si votre fichier contient :</p>
+<div class="code-block"><div class="code-line"><code>pomme
+banane
+pomme
+cerise
+pomme</code></div></div>
+
+<p><code>uniq</code> seul ne supprimera <em>aucun</em> doublon car les "pomme" ne sont pas consécutifs. Il faut d'abord <strong>trier</strong> le fichier.</p>
+
+<h2>2. Utilisation de base</h2>
+
+<h3>Supprimer les doublons</h3>
+<div class="code-block"><div class="code-line"><code>sort fichier.txt | uniq</code></div></div>
+
+<p>Cela affiche chaque ligne unique, triée par ordre alphabétique.</p>
+
+<h3>Variante équivalente</h3>
+<div class="code-block"><div class="code-line"><code>sort -u fichier.txt</code></div></div>
+
+<p>L'option <code>-u</code> de <code>sort</code> fait exactement la même chose en une seule commande. C'est une question de préférence et de lisibilité.</p>
+
+<h2>3. Compter les occurrences</h2>
+
+<p>L'option <code>-c</code> (count) affiche le nombre de fois que chaque ligne apparaît :</p>
+<div class="code-block"><div class="code-line"><code>sort fichier.txt | uniq -c</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>  3 pomme
+  1 banane
+  2 cerise</code></div></div>
+
+<p>Le chiffre apparaît en début de ligne, suivi d'un espace, puis de la ligne elle-même.</p>
+
+<h2>4. Ne garder que les lignes dupliquées</h2>
+
+<p>Parfois on veut voir uniquement les valeurs qui apparaissent plusieurs fois. On utilise <code>-d</code> (duplicated) :</p>
+<div class="code-block"><div class="code-line"><code>sort fichier.txt | uniq -d</code></div></div>
+
+<p>Seules les lignes qui apparaissent au moins deux fois de suite sont affichées.</p>
+
+<h2>5. Ne garder que les lignes uniques (apparaissant une seule fois)</h2>
+
+<p>L'option <code>-u</code> (unique) affiche les lignes qui n'apparaissent qu'une seule fois :</p>
+<div class="code-block"><div class="code-line"><code>sort fichier.txt | uniq -u</code></div></div>
+
+<h2>6. Comparer deux fichiers</h2>
+
+<p><code>uniq</code> peut comparer deux fichiers déjà triés avec l'option <code>-</code> pour l'entrée standard :</p>
+<div class="code-block"><div class="code-line"><code>comm -12 <(sort fichier1.txt) <(sort fichier2.txt)</code></div></div>
+
+<p>Pour utiliser <code>uniq</code> en combinaison avec deux fichiers triés séparément :</p>
+<div class="code-block"><div class="code-line"><code>cat <(sort fichier1.txt) <(sort fichier2.txt) | uniq -d</code></div></div>
+
+<p>Affiche les lignes présentes dans les deux fichiers.</p>
+
+<h2>7. Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-c</code></td><td>Compte les occurrences de chaque ligne</td></tr>
+<tr><td><code>-d</code></td><td>N'affiche que les lignes dupliquées (apparaissant au moins 2 fois)</td></tr>
+<tr><td><code>-u</code></td><td>N'affiche que les lignes uniques (apparaissant une seule fois)</td></tr>
+<tr><td><code>-i</code></td><td>Ignore la casse (minuscules/majuscules équivalentes)</td></tr>
+<tr><td><code>-w N</code></td><td>Ne compare que les N premiers caractères de chaque ligne</td></tr>
+<tr><td><code>-f N</code></td><td>Ignore les N premiers champs de chaque ligne</td></tr>
+<tr><td><code>-s N</code></td><td>Ignore les N premiers caractères de chaque ligne</td></tr>
+</table>
+
+<h2>8. Exemples concrets</h2>
+
+<h3>Trouver les IP qui accèdent le plus à un serveur</h3>
+<div class="code-block"><div class="code-line"><code>grep "GET /api" /var/log/nginx/access.log \
+  | cut -d' ' -f1 \
+  | sort \
+  | uniq -c \
+  | sort -rn \
+  | head -10</code></div></div>
+
+<p>Cette chaîne de commandes est très classique : on filtre les lignes pertinentes, on extrait le champwanted (ici l'adresse IP), on trie, on compte les occurrences, puis on trie par nombre décroissant pour voir les IP les plus fréquentes.</p>
+
+<h3>Trouver les erreurs les plus fréquentes dans les logs</h3>
+<div class="code-block"><div class="code-line"><code>grep "ERROR" /var/log/syslog \
+  | cut -d' ' -f5- \
+  | sort \
+  | uniq -c \
+  | sort -rn \
+  | head -20</code></div></div>
+
+<h3>Lister les utilisateurs connectés (sans doublons)</h3>
+<div class="code-block"><div class="code-line"><code>who | cut -d' ' -f1 | sort | uniq</code></div></div>
+
+<h3>Comparer deux listes et voir les différences</h3>
+<p>Éléments présents dans liste1.txt mais pas dans liste2.txt :</p>
+<div class="code-block"><div class="code-line"><code>comm -23 <(sort liste1.txt) <(sort liste2.txt)</code></div></div>
+
+<p>Éléments présents dans les deux listes :</p>
+<div class="code-block"><div class="code-line"><code>comm -12 <(sort liste1.txt) <(sort liste2.txt)</code></div></div>
+
+<h3>Ignorer la casse avec -i</h3>
+<div class="code-block"><div class="code-line"><code>sort fichier.txt | uniq -ic</code></div></div>
+
+<p>Compte les occurrences en ignorant les différences entre minuscules et majuscules.</p>
+
+<h3>Comparer uniquement les premiers caractères avec -w</h3>
+<div class="code-block"><div class="code-line"><code>sort fichier.txt | uniq -cw 3</code></div></div>
+
+<p>Ne compare que les 3 premiers caractères de chaque ligne.</p>
+
+<h3>Ignorer les premiers champs avec -f</h3>
+<p>Utile quand chaque ligne a un préfixe (comme un compteur ou un horodatage) :</p>
+<div class="code-block"><div class="code-line"><code>sort fichier.txt | uniq -f 1</code></div></div>
+
+<p>Ignore le premier champ (séparé par des espaces) pour la comparaison.</p>
+
+<h2>9. Erreurs fréquentes</h2>
+
+<ul>
+<li><strong>Oublier de trier avant uniq</strong> — C'est l'erreur la plus courante. <code>uniq</code> ne détecte que les doublons consécutifs. Sans tri, il ne se passera rien.</li>
+<li><strong>Confondre <code>sort -u</code> et <code>sort | uniq</code></strong> — Ils sont équivalents pour supprimer les doublons, mais <code>uniq</code> offre des options supplémentaires comme <code>-c</code> et <code>-d</code> qui n'existent pas dans <code>sort</code>.</li>
+<li><strong>Utiliser <code>uniq</code> seul pour "nettoyer" un fichier</strong> — S'il n'est pas trié, les doublons resteront. Toujours trier d'abord.</li>
+</ul>
+
+<h2>10. Bonnes pratiques</h2>
+
+<ul>
+<li>Combinez toujours <code>sort</code> et <code>uniq</code> dans le bon ordre : <code>sort | uniq</code>, jamais l'inverse.</li>
+<li>Pour des fichiers volumineux, <code>sort</code> peut être lent. Utilisez <code>sort -u</code> en une seule passe si vous n'avez pas besoin des comptages.</li>
+<li>Quand vous analysez des logs, chainez <code>grep | cut | sort | uniq -c | sort -rn</code> pour obtenir un classement par fréquence très rapidement.</li>
+<li>Pour des comparaisons entre fichiers, <code>comm</code> est souvent plus lisible que <code>uniq</code> avec des fichiers concaténés.</li>
+</ul>
+
+<nav>
+<a href="146-systemctl-unit-files-avance.html">&larr; Leçon 146 — Les fichiers Unit systemd (Avancé)</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
