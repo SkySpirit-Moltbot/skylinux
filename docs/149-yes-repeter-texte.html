@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>149 — yes — Répéter du texte en boucle</h1>
+
+<p><code>yes</code> est une commande simple mais étonnamment utile. Elle affiche une ligne contenant une chaîne de texte (par défaut "y") indéfiniment, jusqu'à ce qu'on l'arrête ou qu'elle soit redirigée. Elle sert principalement à automatiser les réponses "oui" dans les scripts et à générer des flux de données texte.</p>
+
+<h2>1. Principe de base</h2>
+
+<p>Sans argument, <code>yes</code> affiche la lettre <code>y</code> suivie d'un retour à la ligne, en continu :</p>
+
+<div class="code-block"><div class="code-line"><code>yes</code></div></div>
+
+<p>Cela produit une suite infinie de lignes contenant "y". Pour arrêter, faites <code>Ctrl+C</code>.</p>
+
+<p>Vous pouvez spécifier n'importe quel texte à répéter :</p>
+<div class="code-block"><div class="code-line"><code>yes "oui"</code></div></div>
+
+<p>Cela affiche "oui" en boucle.</p>
+
+<h2>2. Répondre automatiquement "oui" aux commandes</h2>
+
+<p>L'utilisation la plus courante de <code>yes</code> est d'automatiser les confirmations interactives. Many commands ask for confirmation (yes/no), and <code>yes</code> can feed them automatically.</p>
+
+<h3>Exemple avec rm (supprimer)</h3>
+<div class="code-block"><div class="code-line"><code>yes | rm -ri /tmp/test</code></div></div>
+
+<p>Cela supprime récursivement et interactivement <code>/tmp/test</code>, en répondant automatiquement "y" à chaque confirmation.</p>
+
+<h3>Exemple avec apt-get</h3>
+<div class="code-block"><div class="code-line"><code>yes | apt-get install mon_paquet</code></div></div>
+
+<p>Répond "y" à toutes les questions de confirmation d'<code>apt-get</code>. Notez que cela peut être dangereux pour certaines opérations.</p>
+
+<h3>Exemple avec cp (copier)</h3>
+<div class="code-block"><div class="code-line"><code>yes | cp -i fichier.txt destination/</code></div></div>
+
+<p>L'option <code>-i</code> de <code>cp</code> demande une confirmation avant d'écraser. <code>yes</code> fournit automatiquement cette confirmation.</p>
+
+<h2>3. Répondre autre chose que "y"</h2>
+
+<p>On peut passer n'importe quelle chaîne de texte à <code>yes</code> :</p>
+<div class="code-block"><div class="code-line"><code>yes "Je confirme"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>yes "OK"</code></div></div>
+
+<div class="code-block"><div class="code-line"><code>yes "oui" | commande_interactive</code></div></div>
+
+<h2>4. Limiter le nombre de répétitions</h2>
+
+<p>Bien que <code>yes</code> produise une sortie infinie par défaut, on peut la limiter avec une redirection ou <code>head</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>yes | head -n 10</code></div></div>
+
+<p>Esto produces only 10 lines of "y".</p>
+
+<div class="code-block"><div class="code-line"><code>yes "OK" | head -n 5</code></div></div>
+
+<p>Produces 5 lines containing "OK".</p>
+
+<h2>5. Générer du contenu pour les tests</h2>
+
+<p><code>yes</code> est très utile pour créer rapidement des fichiers de test ou générer des données volumineuses :</p>
+
+<h3>Créer un fichier avec des lignes répétées</h3>
+<div class="code-block"><div class="code-line"><code>yes "Ligne de test" | head -n 100 > test.txt</code></div></div>
+
+<p>Crée un fichier <code>test.txt</code> contenant 100 lignes "Ligne de test".</p>
+
+<h3>Générer un fichier de données volumineux</h3>
+<div class="code-block"><div class="code-line"><code>yes "data" | head -c 1M > fichier_1Mo.dat</code></div></div>
+
+<p>Génère un fichier de 1 Mo rempli de "data". Utile pour tester la gestion de gros fichiers.</p>
+
+<h3>Remplir un disque avec des zéros (ou presque)</h3>
+<div class="code-block"><div class="code-line"><code>yes | dd of=/dev/zero bs=1M count=100 2>/dev/null</code></div></div>
+
+<p>Bien que <code>/dev/zero</code> soit plus approprié pour des zéros purs, <code>yes</code> fonctionne aussi pour des tests de remplissage.</p>
+
+<h2>6. Combiner avec xargs pour des opérations en masse</h2>
+
+<h3>Approuver toutes les suppressions</h3>
+<div class="code-block"><div class="code-line"><code>find /tmp -name "*.tmp" -print0 | xargs -0 rm -i</code></div></div>
+
+<p>Pour que cette commande soit automatique, combinez avec <code>yes</code> :</p>
+<div class="code-block"><div class="code-line"><code>yes | find /tmp -name "*.tmp" -exec rm -i {} +</code></div></div>
+
+<h3>Valider toutes les demandes de confirmation</h3>
+<div class="code-block"><div class="code-line"><code>yes | xargs -I {} commande {}</code></div></div>
+
+<h2>7. Exemples concrets</h2>
+
+<h3>Forcer la suppression de plusieurs fichiers</h3>
+<div class="code-block"><div class="code-line"><code>yes | rm -i *.log</code></div></div>
+
+<p>Supprime tous les fichiers <code>.log</code> en répondant "y" à chaque demande.</p>
+
+<h3>Générer un fichier CSV de test</h3>
+<div class="code-block"><div class="code-line"><code>yes "id,name,email" | head -n 5 > test.csv</code></div></div>
+
+<h3>Créer un fichier avec des caractères répétés</h3>
+<div class="code-block"><div class="code-line"><code>yes "=" | head -n 40 | tr -d '\n' > line.txt</code></div></div>
+
+<p>Creates a line of 40 equal signs without a trailing newline.</p>
+
+<h3>Test de performance d'écriture disque</h3>
+<div class="code-block"><div class="code-line"><code>yes "test" | head -c 100M > /tmp/test_perf.dat && rm /tmp/test_perf.dat</code></div></div>
+
+<h3>Alimentation d'un tube (pipe) en continu</h3>
+<div class="code-block"><div class="code-line"><code>yes "ping" | nc -l -p 1234</code></div></div>
+
+<p>Envoie "ping" en boucle vers un serveur NetCat en écoute.</p>
+
+<h3>Script de déploiement automatisé</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Script de déploiement avec validations automatiques
+yes | ./deploy.sh</code></div></div>
+
+<h2>8. Options de yes</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>yes [chaîne]</code></td><td>Affiche la chaîne en boucle (défaut : "y")</td></tr>
+<tr><td><code>--help</code></td><td>Affiche l'aide et quitte</td></tr>
+<tr><td><code>--version</code></td><td>Affiche la version et quitte</td></tr>
+</table>
+
+<h2>9. yes vs autres approches</h2>
+
+<table>
+<tr><th>Méthode</th><th>Usage</th><th>Quand l'utiliser</th></tr>
+<tr><td><code>yes | cmd</code></td><td>Répondre "y" à tout</td><td>Automatiser les confirmations</td></tr>
+<tr><td><code>cmd &lt;&lt;&lt; "y"</code></td><td>Répondre une seule fois</td><td>Une seule confirmation nécessaire</td></tr>
+<tr><td><code>echo "y" | cmd</code></td><td>Répondre "y" via pipe</td><td>Alternative simple</td></tr>
+<tr><td><code>cmd --assume-yes</code></td><td>Option native</td><td>Si la commande le supporte (apt, yum...)</td></tr>
+</table>
+
+<h2>10. Erreurs fréquentes</h2>
+
+<ul>
+<li><strong>Utiliser <code>yes</code> sans limitation et saturer le disque</code> — <code>yes</code> peut remplir un disque très rapidement si redirigé sans <code>head</code>. Toujours coupler avec une limite.</li>
+<li><strong>Oublier de rediriger la sortie</code> — <code>yes</code> sans redirection remplit l'écran de "y". Utilisez <code>yes | head -n N</code> pour contrôler.</li>
+<li><strong>Confondre avec <code>echo</code></code> — <code>echo</code> affiche une fois, <code>yes</code> affiche en boucle infinie.</li>
+<li><strong>Utiliser sur des systèmes de fichiers en production</code> — La génération de gros volumes de données peut saturer l'espace disque.</li>
+<li><strong>Ne pas vérifier le contenu généré</code> — Assurez-vous que le texte répété correspond bien à ce que la commande attend.</li>
+</ul>
+
+<h2>11. Bonnes pratiques</h2>
+
+<ul>
+<li>Toujours coupler <code>yes</code> avec <code>head -n</code> quand vous redirigez vers un fichier pour éviter de saturer le disque.</li>
+<li>Privilégiez les options natives comme <code>--yes</code> ou <code>-y</code> quand elles existent dans la commande (ex : <code>apt-get install -y</code>).</li>
+<li>Dans un script de déploiement, préférez <code>yes | ./script.sh</code> plutôt que de modifier le script lui-même.</li>
+<li>Pour les tests de performance, utilisez <code>/dev/zero</code> si vous avez besoin de zéros, c'est plus rapide et plus propre.</li>
+<li>Créez des fichiers de test réalistes en combinant <code>yes</code> avec <code>head</code> et <code>tr</code> selon vos besoins.</li>
+<li>Dans les pipelines, <code>yes</code> peut servir à alimenter une commande qui attend une entrée en continu.</li>
+</ul>
+
+<nav>
+<a href="148-fmt-formater-texte.html">&larr; Leçon 148 — fmt — Formater le texte en paragraphs</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
