@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 150 : lsof — Lister les fichiers ouverts</h1>
+
+<p>Sur un système Linux, chaque fichier, dossier, socket ou tube possède un <strong>descripteur de fichier</strong>. <code>lsof</code> (List Open Files) permet de voir exactement quels fichiers sont ouverts par quels processus. C'est un outil essentiel pour le diagnostic et la sécurité.</p>
+
+<h2>Installation</h2>
+
+<p><code>lsof</code> est généralement préinstallé. Si ce n'est pas le cas :</p>
+
+<div class="code-block"><div class="code-line"><code># Debian/Ubuntu
+sudo apt install lsof
+
+# Fedora/RHEL
+sudo dnf install lsof
+
+# Arch Linux
+sudo pacman -S lsof</code></div></div>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block"><div class="code-line"><code>lsof [options]</code></div></div>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-a</code></td><td>Combine les critères avec ET (AND)</td></tr>
+<tr><td><code>-c processus</code></td><td>Affiche les fichiers ouverts par un processus précis</td></tr>
+<tr><td><code>-u utilisateur</code></td><td>Affiche les fichiers ouverts par un utilisateur précis</td></tr>
+<tr><td><code>-p PID</code></td><td>Affiche les fichiers ouverts par un PID précis</td></tr>
+<tr><td><code>-i [46][protocol][@hostname][:service]</code></td><td>Affiche les fichiers réseau (sockets)</td></tr>
+<tr><td><code>-n</code></td><td>N'affiche pas les noms d'hôtes (plus rapide)</td></tr>
+<tr><td><code>-P</code></td><td>N'affiche pas les noms de ports (plus rapide)</td></tr>
+<tr><td><code>+D répertoire</code></td><td>Affiche tous les fichiers ouverts dans un répertoire et ses sous-répertoires</td></tr>
+<tr><td><code>-t</code></td><td>Affiche uniquement les PID (pour scripting)</td></tr>
+<tr><td><code>-i</code></td><td>Voir les connexions réseau actives</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>1. Voir tous les fichiers ouverts</h3>
+
+<div class="code-block"><div class="code-line"><code>lsof</code></div></div>
+
+<p>Sans argument, <code>lsof</code> affiche TOUS les fichiers ouverts par TOUS les processus. La sortie est longue et détaillée.</p>
+
+<h3>2. Fichiers ouverts par un utilisateur</h3>
+
+<div class="code-block"><div class="code-line"><code>lsof -u ubuntu</code></div></div>
+
+<h3>3. Fichiers ouverts par un processus spécifique</h3>
+
+<div class="code-block"><div class="code-line"><code>lsof -c sshd</code></div></div>
+
+<h3>4. Connexions réseau actives</h3>
+
+<div class="code-block"><div class="code-line"><code>lsof -i</code></div></div>
+
+<p>Affiche toutes les connexions réseau (TCP, UDP). Pour filtrer par type :</p>
+
+<div class="code-block"><div class="code-line"><code># TCP uniquement
+lsof -i tcp
+
+# UDP uniquement
+lsof -i udp
+
+# Un port précis
+lsof -i :80
+
+# Connexions établies (established)
+lsof -i -sTCP:ESTABLISHED</code></div></div>
+
+<h3>5. Fichiers ouverts par un processus spécifique (par PID)</h3>
+
+<div class="code-block"><div class="code-line"><code>lsof -p 1234</code></div></div>
+
+<h3>6. Trouver quel processus utilise un port</h3>
+
+<div class="code-block"><div class="code-line"><code># Trouver le processus qui utilise le port 443
+lsof -i :443
+
+# Trouver le processus qui utilise le port 22
+lsof -i :22</code></div></div>
+
+<h3>7. Fichiers ouverts dans un répertoire</h3>
+
+<div class="code-block"><div class="code-line"><code>lsof +D /home</code></div></div>
+
+<p><code>+D</code> explore récursivement. Utile pour trouver quels processus accèdent à un dossier.</p>
+
+<h3>8. Combiner les critères (ET)</h3>
+
+<div class="code-block"><div class="code-line"><code># Fichiers réseau ouverts par l'utilisateur root ET le processus sshd
+lsof -a -u root -c sshd -i</code></div></div>
+
+<h3>9. Trouver les fichiers supprimés mais encore ouverts</h3>
+
+<p>C'est un cas très courant ! Un fichier supprimé mais toujours utilisé par un processus prend de la place sur le disque.</p>
+
+<div class="code-block"><div class="code-line"><code>lsof +L1</code></div></div>
+
+<p><code>+L1</code> affiche les fichiers avec un lien-count de 1 ou moins (donc supprimés mais ouverts).</p>
+
+<h3>10. Exclure un utilisateur</h3>
+
+<div class="code-block"><div class="code-line"><code># Tous les fichiers SAUF ceux de root
+lsof -u ^root</code></div></div>
+
+<h3>11. Mode silencieux (PID uniquement)</h3>
+
+<div class="code-block"><div class="code-line"><code># Pour scripting — obtenir juste les PID
+lsof -t -i :8080</code></div></div>
+
+<h3>12. Affichage optimisé (plus rapide)</h3>
+
+<div class="code-block"><div class="code-line"><code># Sans résolution DNS et sans conversion des ports en noms
+lsof -n -P</code></div></div>
+
+<h2>Comprendre la sortie de lsof</h2>
+
+<table>
+<tr><th>Colonne</th><th>Description</th></tr>
+<tr><td><code>COMMAND</code></td><td>Nom du processus</td></tr>
+<tr><td><code>PID</code></td><td>Identifiant du processus</td></tr>
+<tr><td><code>USER</code></td><td>Propriétaire du processus</td></tr>
+<tr><td><code>FD</code></td><td>Descripteur de fichier (r=read, w=write, u=read+write)</td></tr>
+<tr><td><code>TYPE</code></td><td>Type (REG=fichier régulier, DIR=répertoire, CHR=périphérique, FIFO=tube…)</td></tr>
+<tr><td><code>DEVICE</code></td><td>Périphérique (majeur, mineur)</td></tr>
+<tr><td><code>SIZE/OFF</code></td><td>Taille ou offset du fichier</td></tr>
+<tr><td><code>NODE</code></td><td>Numéro d'inœud (inode)</td></tr>
+<tr><td><code>NAME</code></td><td>Chemin du fichier ou adresse réseau</td></tr>
+</table>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>Diagnostic : processus qui utilise un port</h3>
+
+<div class="code-block"><div class="code-line"><code># Vous obtenez "Address already in use" ?
+lsof -i :3000
+# Affiche le processus qui bloque le port 3000</code></div></div>
+
+<h3>Diagnostic : espace disque occupé malgré la suppression</h3>
+
+<div class="code-block"><div class="code-line"><code># Un fichier a été supprimé mais prend toujours de la place ?
+lsof +L1
+# Affiche les fichiers supprimés mais encore ouverts
+# Pour libérer : redémarrez le processus concerné</code></div></div>
+
+<h3>Diagnostic : activité réseau suspecte</h3>
+
+<div class="code-block"><div class="code-line"><code># Voir toutes les connexions réseau
+lsof -i -n -P
+
+# Connexions sur un port précis
+lsof -i :443
+
+# Vérifier les processus qui écoutent (LISTEN)
+lsof -i -sTCP:LISTEN</code></div></div>
+
+<h3>Sécurité : vérifier les accès à un répertoire</h3>
+
+<div class="code-block"><div class="code-line"><code># Qui accède au répertoire /etc ?
+lsof +D /etc</code></div></div>
+
+<h3>Scripting : tuer tous les processus d'un utilisateur</h3>
+
+<div class="code-block"><div class="code-line"><code># Obtenir les PID et les tuer
+kill $(lsof -t -u utilisateur)
+# Équivalent à :
+pkill -u utilisateur</code></div></div>
+
+<h2>Résumé</h2>
+
+<p><code>lsof</code> est un outil puissant pour comprendre quels processus utilisent quels fichiers et connexions réseau. Ses utilisations les plus courantes sont le diagnostic de ports bloqués, la détection de fichiers supprimés encore ouverts, et l'investigation réseau.</p>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>lsof</code></td><td>Tous les fichiers ouverts</td></tr>
+<tr><td><code>lsof -i :port</code></td><td>Processus utilisant un port</td></tr>
+<tr><td><code>lsof -c nom</code></td><td>Fichiers d'un processus</td></tr>
+<tr><td><code>lsof -u user</code></td><td>Fichiers d'un utilisateur</td></tr>
+<tr><td><code>lsof +D /dir</code></td><td>Fichiers dans un répertoire</td></tr>
+<tr><td><code>lsof +L1</code></td><td>Fichiers supprimés encore ouverts</td></tr>
+<tr><td><code>lsof -n -P</code></td><td>Plus rapide (sans DNS)</td></tr>
+</table>
+
+<nav>
+<a href="149-yes-repeter-texte.html">&larr; Leçon 149 : yes — Répéter du texte en boucle</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
