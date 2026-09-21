@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 151 : at — Planifier une tâche unique</h1>
+
+<p><code>at</code> permet d'exécuter des commandes à une heure précise, une seule fois. Contrairement à <code>cron</code> qui répète des tâches périodiquement, <code>at</code> est idéal pour planifier une action ponctuelle dans le futur : un redémarrage différé, un rapport à générer demain matin, ou une alerte à une heure précise.</p>
+
+<h2>Installation</h2>
+
+<p><code>at</code> n'est pas toujours installé par défaut. Vérifiez d'abord :</p>
+
+<div class="code-block"><div class="code-line"><code>which at</code></div></div>
+
+<p>Si absent, installez-le :</p>
+
+<div class="code-block"><div class="code-line"><code># Debian/Ubuntu
+sudo apt install at
+
+# Fedora/RHEL
+sudo dnf install at
+
+# Arch Linux
+sudo pacman -S at</code></div></div>
+
+<p>Ensuite, activez et démarrez le service <code>atd</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>sudo systemctl enable --now atd</code></div></div>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block"><div class="code-line"><code>at [options] heure [date]</code></div></div>
+
+<p>Après avoir entré la commande, <code>at</code> ouvre un interpréteur où vous tapez les commandes à exécuter. Terminez par <code>Ctrl+D</code>.</p>
+
+<h2>Formats d'heure</h2>
+
+<p><code>at</code> comprend de nombreux formats :</p>
+
+<table>
+<tr><th>Format</th><th>Exemple</th><th>Description</th></tr>
+<tr><td><code>HH:MM</code></td><td><code>14:30</code></td><td>Heure au format 24h (aujourd'hui si déjà passée → demain)</td></tr>
+<tr><td><code>HH:MM JJ/MM</code></td><td><code>09:00 25/12</code></td><td>Date au format jour/mois</td></tr>
+<tr><td><code>HH:MM JJ.MM.AAAA</code></td><td><code>10:00 01.01.2027</code></td><td>Date complète avec année</td></tr>
+<tr><td><code>midnight</code></td><td><code>at midnight</code></td><td>Minuit (00:00)</td></tr>
+<tr><td><code>noon</code></td><td><code>at noon</code></td><td>Midi (12:00)</td></tr>
+<tr><td><code>teatime</code></td><td><code>at teatime</code></td><td>16:00 (l'heure du thé !)</td></tr>
+<tr><td><code>now + X minutes/heurs/days/weeks</code></td><td><code>at now + 2 hours</code></td><td>Dans un délai précis</td></tr>
+<tr><td><code>tomorrow</code></td><td><code>at 09:00 tomorrow</code></td><td>Demain à l'heure indiquée</td></tr>
+<tr><td><code>AM / PM</code></td><td><code>3pm</code></td><td>Format 12h (sans espace)</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>1. Planifier une commande simple</h3>
+
+<div class="code-block"><div class="code-line"><code>at 14:30
+</code></div></div>
+
+<p>L'interpréteur <code>at</code> s'ouvre. Tapez vos commandes :</p>
+
+<div class="code-block"><div class="code-line"><code>at> echo "Il est 14h30 !" >> ~/rapports/alerte.txt
+at> <Ctrl+D>
+job 1 at Mon Sep 21 14:30 2026</code></div></div>
+
+<h3>2. Planifier avec un délai relatif</h3>
+
+<div class="code-block"><div class="code-line"><code># Dans 1 heure
+at now + 1 hour
+
+# Dans 30 minutes
+at now + 30 minutes
+
+# Dans 3 jours
+at now + 3 days
+
+# Dans 2 semaines
+at now + 2 weeks</code></div></div>
+
+<h3>3. Planifier à une date précise</h3>
+
+<div class="code-block"><div class="code-line"><code># 25 décembre à 8h
+at 08:00 25/12
+
+# 1er janvier 2027 à minuit
+at midnight 01.01.2027
+
+# Demain à 7h
+at 07:00 tomorrow</code></div></div>
+
+<h3>4. Lire la commande depuis un fichier</h3>
+
+<p>Au lieu de taper交互ivement, envoyez un script :</p>
+
+<div class="code-block"><div class="code-line"><code>at 06:00 tomorrow < ~/scripts/backup-quotidien.sh</code></div></div>
+
+<h3>5. Planifier avec un here-document</h3>
+
+<div class="code-block"><div class="code-line"><code>at 20:00 <<EOF
+tar -czf /backup/home-$(date +\%Y\%m\%d).tar.gz /home
+echo "Sauvegarde terminée" | mail -s "Backup" admin@exemple.com
+EOF</code></div></div>
+
+<h3>6. Planifier une commande en une seule ligne avec pipe</h3>
+
+<div class="code-block"><div class="code-line"><code>echo "systemctl reboot" | at 03:00 tomorrow</code></div></div>
+
+<h2>Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-f fichier</code></td><td>Lire les commandes depuis un fichier</td></tr>
+<tr><td><code>-m</code></td><td>Envoyer un email même si la commande ne produit rien</td></tr>
+<tr><td><code>-M</code></td><td>Ne jamais envoyer d'email</td></tr>
+<tr><td><code>-v</code></td><td>Afficher la date d'exécution prévue</td></tr>
+<tr><td><code>-c job</code></td><td>Afficher le contenu d'un job at (par PID)</td></tr>
+<tr><td><code>-l</code></td><td>Lister les jobs en attente (équivalent à <code>atq</code>)</td></tr>
+<tr><td><code>-d job</code></td><td>Supprimer un job (équivalent à <code>atrm</code>)</td></tr>
+<tr><td><code>-q queue</code></td><td>Utiliser une file d'attente spécifique (a-z, A-Z)</td></tr>
+</table>
+
+<h2>Gérer les jobs</h2>
+
+<h3>Lister les jobs en attente</h3>
+
+<div class="code-block"><div class="code-line"><code>at -l
+# ou
+atq</code></div></div>
+
+<p>Sortie :</p>
+<div class="code-block"><div class="code-line"><code>3   Mon Sep 21 18:00 a  root
+4   Tue Sep 22 07:00 a  root</code></div></div>
+
+<p>Colonnes : PID, date/heure d'exécution, file, utilisateur.</p>
+
+<h3>Voir le contenu d'un job</h3>
+
+<div class="code-block"><div class="code-line"><code>at -c 3</code></div></div>
+
+<h3>Supprimer un job</h3>
+
+<div class="code-block"><div class="code-line"><code>at -d 3
+# ou
+atrm 3</code></div></div>
+
+<h2>Files d'attente (queues)</h2>
+
+<p>Par défaut, <code>at</code> utilise la file <code>a</code>. Vous pouvez utiliser les files <code>a</code> à <code>z</code> (et <code>A</code> à <code>Z</code>) pour isoler ou prioriser vos jobs.</p>
+
+<div class="code-block"><div class="code-line"><code># File 'b' — haute priorité
+at -q b 09:00 tomorrow
+
+# File 'z' — basse priorité
+at -q z 20:00</code></div></div>
+
+<h2>Restreindre l'accès</h2>
+
+<p>Par défaut, seul <code>root</code> peut utiliser <code>at</code>. Pour autoriser d'autres utilisateurs, utilisez deux fichiers :</p>
+
+<ul>
+<li><code>/etc/at.allow</code> : liste blanche — si ce fichier existe, seuls les utilisateurs listés peuvent utiliser <code>at</code></li>
+<li><code>/etc/at.deny</code> : liste noire — si <code>at.allow</code> n'existe pas, les utilisateurs listés dans <code>at.deny</code> sont interdits</li>
+</ul>
+
+<div class="code-block"><div class="code-line"><code># Interdire l'utilisateur 'guest' d'utiliser at
+echo "guest" | sudo tee /etc/at.deny</code></div></div>
+
+<h2>Exemples concrets</h2>
+
+<h3>Redémarrage différé</h3>
+
+<div class="code-block"><div class="code-line"><code># Redémarrer le serveur demain à 3h du matin
+echo "systemctl reboot" | at 03:00 tomorrow</code></div></div>
+
+<h3>Nettoyage de fichiers temporaires</h3>
+
+<div class="code-block"><div class="code-line"><code># Vider le cache demain à 5h
+at 05:00 tomorrow <<EOF
+find /tmp -type f -atime +7 -delete
+journalctl --vacuum-time=30d
+EOF</code></div></div>
+
+<h3>Rapport quotidien différé</h3>
+
+<div class="code-block"><div class="code-line"><code># Générer un rapport à 8h chaque matin (script externe)
+at 08:00 tomorrow -f ~/scripts/rapport-quotidien.sh</code></div></div>
+
+<h3>Éteindre le PC le soir</h3>
+
+<div class="code-block"><div class="code-line"><code># Éteindre à 23h
+at 23:00 <<EOF
+sync
+systemctl poweroff
+EOF</code></div></div>
+
+<h3>Notification par email</h3>
+
+<div class="code-block"><div class="code-line"><code># Avec notification email (si MTA configuré)
+at -m 10:00 next monday <<EOF
+echo "N'oubliez pas la réunion à 10h30 !" | mail -s "Rappel" $USER
+EOF</code></div></div>
+
+<h2>Vérifier l'exécution</h2>
+
+<p>Les jobs <code>at</code> s'exécutent même si vous êtes déconnecté. Les résultats sont envoyés par email à l'utilisateur. Vérifiez votre boîte mail locale :</p>
+
+<div class="code-block"><div class="code-line"><code>mail</code></div></div>
+
+<p>Ou redirigez la sortie explicitement :</p>
+
+<div class="code-block"><div class="code-line"><code>at 18:00 <<EOF
+~/scripts/rapport.sh > ~/logs/rapport-$(date +\%Y\%m\%d).log 2>&1
+EOF</code></div></div>
+
+<h2>Différence entre at, cron et batch</h2>
+
+<table>
+<tr><th>Outil</th><th>Usage</th><th>Répétition</th></tr>
+<tr><td><code>at</code></td><td>Une tâche ponctuelle à une heure précise</td><td>Une seule fois</td></tr>
+<tr><td><code>cron</code></td><td>Tâches régulières (quotidiennes, hebdomadaires…)</td><td>Périodique</td></tr>
+<tr><td><code>batch</code></td><td>Tâche exécutée quand la charge le permet</td><td>Une seule fois</td></tr>
+</table>
+
+<h2>Résumé</h2>
+
+<p><code>at</code> est l'outil idéal pour planifier des tâches uniques sans configurer un fichier <code>cron</code>. Il suffit d'une heure et d'une commande.</p>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>at 14:30</code></td><td>Planifier à 14h30</td></tr>
+<tr><td><code>at now + 2 hours</code></td><td>Dans 2 heures</td></tr>
+<tr><td><code>at midnight 25/12</code></td><td>Noël à minuit</td></tr>
+<tr><td><code>at -f script.sh 08:00</code></td><td>Exécuter un script à 8h</td></tr>
+<tr><td><code>at -l</code></td><td>Lister les jobs</td></tr>
+<tr><td><code>at -d 3</code></td><td>Supprimer le job 3</td></tr>
+<tr><td><code>at -c 3</code></td><td>Voir le contenu du job 3</td></tr>
+</table>
+
+<nav>
+<a href="150-lsof-fichiers-ouverts.html">&larr; Leçon 150 : lsof — Lister les fichiers ouverts</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
