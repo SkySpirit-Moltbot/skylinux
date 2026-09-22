@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 152 : paste — Fusionner des lignes de fichiers</h1>
+
+<p><code>paste</code> fusionne des lignes de fichiers <strong>côte à côte</strong>, en les séparant par un délimiteur. Si <code>cut</code> extrait des colonnes, <code>paste</code> fait l'inverse : il recompose des colonnes à partir de fichiers séparés. C'est l'outil idéal pour assembler des données tabulaires, créer des tableaux, ou fusionner deux listes en une seule.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block"><div class="code-line"><code>paste [options] fichier1 [fichier2 ...]</code></div></div>
+
+<p>Sans options, <code>paste</code> joint chaque ligne des fichiers avec une <strong>tabulation</strong> (<code>\t</code>) comme séparateur.</p>
+
+<h2>Exemple simple</h2>
+
+<p>Créez deux fichiers pour tester :</p>
+
+<div class="code-block"><div class="code-line"><code># Fichier 1 : noms
+echo -e "Alice\nBob\nCharlie" > noms.txt
+
+# Fichier 2 : villes
+echo -e "Genève\nZurich\nBâle" > villes.txt
+
+# Fusionner
+paste noms.txt villes.txt</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>Alice    Genève
+Bob      Zurich
+Charlie  Bâle</code></div></div>
+
+<h2>Options principales</h2>
+
+<h3>-d : Changer le délimiteur</h3>
+
+<p>Par défaut, <code>paste</code> utilise la tabulation. L'option <code>-d</code> permet de définir un ou plusieurs séparateurs.</p>
+
+<div class="code-block"><div class="code-line"><code># Utiliser un espace comme séparateur
+paste -d ' ' noms.txt villes.txt
+
+# Utiliser une virgule
+paste -d ',' noms.txt villes.txt
+
+# Utiliser plusieurs séparateurs (alternance)
+paste -d '|' noms.txt villes.txt</code></div></div>
+
+<h3>-s : Serial mode</h3>
+
+<p>Au lieu de fusionner ligne par ligne, <code>-s</code> joint toutes les lignes d'un même fichier.</p>
+
+<div class="code-block"><div class="code-line"><code># Joindre toutes les lignes d'un fichier avec des virgules
+paste -s -d ',' noms.txt</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>Alice,Bob,Charlie</code></div></div>
+
+<h3>-z : Mode delimited par NUL</h3>
+
+<p>Utilise le caractère NUL (<code>\0</code>) comme séparateur au lieu de newline. Utile avec <code>find -print0</code>.</p>
+
+<h2>Cas d'usage courants</h2>
+
+<h3>1. Créer un tableau CSV simple</h3>
+
+<div class="code-block"><div class="code-line"><code># Fichier noms
+echo -e "Alice\nBob" > /tmp/noms.txt
+
+# Fichier emails
+echo -e "alice@exemple.com\nbob@exemple.com" > /tmp/emails.txt
+
+# Fusionner en CSV (séparateur = virgule)
+paste -d ',' /tmp/noms.txt /tmp/emails.txt</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>Alice,alice@exemple.com
+Bob,bob@exemple.com</code></div></div>
+
+<h3>2. Combiner plusieurs colonnes</h3>
+
+<div class="code-block"><div class="code-line"><code># Trois fichiers : prénom, nom, âge
+echo -e "Jean\nMarie\nPaul" > /tmp/prenom.txt
+echo -e "Dupont\nMartin\nDurand" > /tmp/nom.txt
+echo -e "30\n25\n40" > /tmp/age.txt
+
+paste -d ' ' /tmp/prenom.txt /tmp/nom.txt /tmp/age.txt</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>Jean Dupont 30
+Marie Martin 25
+Paul Durand 40</code></div></div>
+
+<h3>3. Joindre deux listes en une ligne</h3>
+
+<p>Créer une ligne unique à partir d'un fichier multi-lignes :</p>
+
+<div class="code-block"><div class="code-line"><code># Liste de serveurs
+echo -e "srv-web-01\nsrv-db-01\nsrv-backup" > /tmp/servers.txt
+
+# Une seule ligne séparée par des espaces
+paste -s -d ' ' /tmp/servers.txt</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>srv-web-01 srv-db-01 srv-backup</code></div></div>
+
+<h3>4. Préparer une commande avec xargs</h3>
+
+<div class="code-block"><div class="code-line"><code># Créer une liste pour SSH
+paste -s -d ' ' /tmp/servers.txt | xargs -I {} echo "ssh {}"
+
+# Résultat : ssh srv-web-01 srv-db-01 srv-backup</code></div></div>
+
+<h3>5. Créer des numéros de ligne</h3>
+
+<p>Combiner <code>cat -n</code> (numérotation) avec <code>paste</code> :</p>
+
+<div class="code-block"><div class="code-line"><code># Numérotation automatique
+cat -n /tmp/servers.txt | paste - -</code></div></div>
+
+<p>Les deux tirets indiquent deux entrées depuis stdin (le résultat numéroté).</p>
+
+<h3>6. Préparer un fichier hosts</h3>
+
+<div class="code-block"><div class="code-line"><code># IP et noms
+echo -e "192.168.1.10\n192.168.1.11" > /tmp/ips.txt
+echo -e "serveur1\nserveur2" > /tmp/hostnames.txt
+
+# Format /etc/hosts
+paste -d ' ' /tmp/ips.txt /tmp/hostnames.txt</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>192.168.1.10 serveur1
+192.168.1.11 serveur2</code></div></div>
+
+<h3>7. Générer une ligne de titres pour un tableau</h3>
+
+<div class="code-block"><div class="code-line"><code>paste -s -d '\t' <(echo "Nom") <(echo "Prénom") <(echo "Âge")
+# ou avec des fichiers
+paste -s -d '\t' titres.txt</code></div></div>
+
+<h3>8. Combiner paste avec d'autres commandes</h3>
+
+<div class="code-block"><div class="code-line"><code># Lister des fichiers et leur taille
+ls -1 | head -5 > /tmp/fichiers.txt
+du -sh /tmp/* 2>/dev/null | head -5 > /tmp/tailles.txt
+paste /tmp/fichiers.txt /tmp/tailles.txt</code></div></div>
+
+<h2>Combiner avec cut</h2>
+
+<p><code>cut</code> extrait des colonnes, <code>paste</code> les recombine. Voici un enchaînement classique :</p>
+
+<div class="code-block"><div class="code-line"><code># Couper deux colonnes d'un CSV, puis les recombiner
+cut -d',' -f1,3 fichier.csv > /tmp/col1.txt
+cut -d',' -f2 fichier.csv > /tmp/col2.txt
+paste -d',' /tmp/col1.txt /tmp/col2.txt</code></div></div>
+
+<h2>Tableau récapitulatif</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-d 'sep'</code></td><td>Délimiteur entre les colonnes (défaut : tabulation)</td></tr>
+<tr><td><code>-s</code></td><td>Mode série : joint toutes les lignes d'un même fichier</td></tr>
+<tr><td><code>-z</code></td><td>Séparateur NUL au lieu de newline</td></tr>
+<tr><td><code>--serial</code></td><td>Alias de <code>-s</code></td></tr>
+</table>
+
+<h2>Résumé</h2>
+
+<p><code>paste</code> est le symétrique de <code>cut</code> : là où <code>cut</code> divise, <code>paste</code> rassemble. C'est l'outil parfait pour fusionner des listes, créer des tableaux simples, ou assembler des colonnes issues de sources différentes.</p>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>paste f1 f2</code></td><td>Fusionner f1 et f2 ligne par ligne (tab)</td></tr>
+<tr><td><code>paste -d',' f1 f2</code></td><td>Même chose avec virgule</td></tr>
+<tr><td><code>paste -s f1</code></td><td>Joindre toutes les lignes de f1</td></tr>
+<tr><td><code>paste -s -d'|' f1</code></td><td>Joindre avec pipe</td></tr>
+<tr><td><code>paste - <(echo "x")</code></td><td>Ajouter une colonne constante</td></tr>
+</table>
+
+<nav>
+<a href="151-at-taches-uniques.html">&larr; Leçon 151 : at — Planifier une tâche unique</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
