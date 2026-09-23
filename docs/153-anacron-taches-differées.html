@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Anacron — Exécuter des tâches sur des systèmes non-permanents</h1>
+
+<h2>Introduction</h2>
+<p>Si <code>cron</code> est parfait pour les serveurs qui tournent 24h/24, que se passe-t-il quand votre ordinateur ou serveur est éteint au moment où une tâche était programmée ? C'est là qu'intervient <strong>anacron</strong> (anachronistic cron).</p>
+<p>Anacron garantit que vos tâches planifiées seront exécutées <em>quand le système sera disponible</em>, pas seulement à un moment précis. C'est l'outil idéal pour les ordinateurs portables, les postes de travail, ou tout système qui n'est pas allumé en continu.</p>
+
+<h2>Différence entre cron et anacron</h2>
+<table>
+<tr><th>Caractéristique</th><th>cron</th><th>anacron</th></tr>
+<tr><td>Exécution précise à l'heure</td><td>✅ Oui</td><td>❌ Non</td></tr>
+<tr><td>Exécute si le système était éteint</td><td>❌ Non</td><td>✅ Oui</td></tr>
+<tr><td>Utilisé sur</td><td>Serveurs 24/7</td><td>Postes de travail, laptops</td></tr>
+<tr><td>Fréquence minimale</td><td>Minutes</td><td>Jours</td></tr>
+</table>
+
+<h2>Installation</h2>
+<p>Sur la plupart des systèmes, anacron est déjà installé. Vérifiez :</p>
+<div class="code-block"><div class="code-line"><code>which anacron</code></div></div>
+<p>Si absent, installez-le :</p>
+<div class="code-block"><div class="code-line"><code># Debian/Ubuntu
+sudo apt install anacron
+
+# Fedora/RHEL
+sudo dnf install anacron</code></div></div>
+
+<h2>Fichier de configuration principal</h2>
+<p>Le fichier de configuration d'anacron se trouve dans <code>/etc/anacrontab</code>. Seul root peut le modifier :</p>
+<div class="code-block"><div class="code-line"><code>sudo nano /etc/anacrontab</code></div></div>
+
+<h3>Format des entrées</h3>
+<p>Chaque ligne suit ce format :</p>
+<div class="code-block"><div class="code-line"><code>PÉRIODE  DÉLAI  IDENTIFIANT  COMMANDE</code></div></div>
+
+<ul>
+<li><strong>PÉRIODE</strong> : Fréquence d'exécution en jours (1 = quotidien, 7 = hebdomadaire, @monthly = mensuel)</li>
+<li><strong>DÉLAI</strong> : Minutes à attendre après le démarrage avant d'exécuter (évite de surcharger au démarrage)</li>
+<li><strong>IDENTIFIANT</strong> : Nom unique pour cette tâche (pour les logs)</li>
+<li><strong>COMMANDE</strong> : La commande ou script à exécuter</li>
+</ul>
+
+<h3>Exemple de fichier /etc/anacrontab</h3>
+<div class="code-block"><div class="code-line"><code># Format: PÉRIODE  DÉLAI  IDENTIFIANT  COMMANDE
+
+# Nettoyage des logs tous les jours, 10 min après démarrage
+1       10    cleanup-logs   /home/david/scripts/nettoyer-logs.sh
+
+# Mise à jour de la base locate chaque semaine, 5 min après démarrage
+7       5     updatedb       /usr/bin/updatedb
+
+# Sauvegarde mensuelle, 15 min après démarrage
+@monthly 15   backup-home   /home/david/scripts/backup.sh</code></div></div>
+
+<h2>Les délais (delay field)</h2>
+<p>Le champ délai est crucial pour éviter de surcharger le système au démarrage. Voici quelques exemples :</p>
+<table>
+<tr><th>Délai</th><th>Usage typique</th></tr>
+<tr><td>5-10 minutes</td><td>Tâches légères (nettoyage, mise à jour index)</td></tr>
+<tr><td>15-30 minutes</td><td>Tâches moyennes (sauvegardes, sync)</td></tr>
+<tr><td>60+ minutes</td><td>Tâches lourdes (compilation, gros backups)</td></tr>
+</table>
+
+<h2>Fichier de spool (suivi des exécutions)</h2>
+<p>Anacron conserve un historique des exécutions dans <code>/var/spool/anacron/</code> :</p>
+<div class="code-block"><div class="code-line"><code>ls -la /var/spool/anacron/</code></div></div>
+<div class="code-block"><div class="code-line"><code># Voir le contenu (date de dernière exécution)
+cat /var/spool/anacron/cleanup-logs</code></div></div>
+
+<p>Ces fichiers contiennent uniquement la date de dernière exécution de chaque tâche. Anacron les compare avec la période pour décider s'il faut réexécuter.</p>
+
+<h2>Gestion du service anacron</h2>
+<h3>Vérifier le statut</h3>
+<div class="code-block"><div class="code-line"><code># systemd
+sudo systemctl status anacron
+
+# ou
+ps aux | grep anacron</code></div></div>
+
+<h3>Démarrer/Arrêter/Redémarrer</h3>
+<div class="code-block"><div class="code-line"><code>sudo systemctl start anacron
+sudo systemctl stop anacron
+sudo systemctl restart anacron</code></div></div>
+
+<h3>Désactiver anacron (si besoin)</h3>
+<div class="code-block"><div class="code-line"><code># Désactiver au démarrage
+sudo systemctl disable anacron
+
+# Ou commenter les lignes dans /etc/anacrontab</code></div></div>
+
+<h2>Logs d'anacron</h2>
+<p>Les traces sont généralement dans <code>/var/log/syslog</code> ou <code>/var/log/anacron</code> selon la distribution :</p>
+<div class="code-block"><div class="code-line"><code># Voir les logs anacron
+grep anacron /var/log/syslog
+
+# Sur certaines distributions
+sudo cat /var/log/anacron</code></div></div>
+
+<h2>Créer un script pour anacron</h2>
+<p>Créez d'abord votre script, puis ajoutezz-le à anacron. Voici un exemple complet :</p>
+
+<h3>1. Créer le script</h3>
+<div class="code-block"><div class="code-line"><code>mkdir -p ~/scripts
+nano ~/scripts/nettoyer-logs.sh</code></div></div>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Nettoyer les anciens fichiers log de ~/logs/
+
+LOGDIR="$HOME/logs"
+JOURS=7
+
+if [ -d "$LOGDIR" ]; then
+    find "$LOGDIR" -name "*.log" -mtime +$JOURS -delete
+    echo "$(date): Nettoyage des logs de plus de $JOURS jours terminé" >> ~/logs/cleanup.log
+else
+    echo "Répertoire $LOGDIR non trouvé"
+    exit 1
+fi</code></div></div>
+<div class="code-block"><div class="code-line"><code># Rendre exécutable
+chmod +x ~/scripts/nettoyer-logs.sh</code></div></div>
+
+<h3>2. L'ajouter à anacron</h3>
+<div class="code-block"><div class="code-line"><code>sudo nano /etc/anacrontab</code></div></div>
+<p>Ajoutez cette ligne :</p>
+<div class="code-block"><div class="code-line"><code>7       15    clean-logs   /home/david/scripts/nettoyer-logs.sh</code></div></div>
+
+<h2>Tester anacron</h2>
+<h3>Forcer l'exécution manuelle</h3>
+<div class="code-block"><div class="code-line"><code># Exécuter une tâche spécifique (avec sudo)
+sudo anacron -f -n cleanup-logs
+
+# -f : forcer l'exécution (ignorer la date)
+# -n : exécuter maintenant (ignorer le délai)</code></div></div>
+
+<h3>Vérifier le fonctionnement</h3>
+<div class="code-block"><div class="code-line"><code># Simuler sans exécuter
+sudo anacron -T
+
+# Mode verbeux (debug)
+sudo anacron -d -f -n</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li><strong>Gardez les délais courts</strong> : Anacron ne devrait pas gêner l'utilisation normale. 5-15 minutes suffisent généralement.</li>
+<li><strong>Scripts idempotents</strong> : Vos scripts doivent pouvoir être exécutés plusieurs fois sans effet néfaste.</li>
+<li><strong>Logs dans les scripts</strong> : Ajoutez des messages de log pour suivre ce qui se passe.</li>
+<li><strong>Chemins absolus</strong> : Utilisez toujours des chemins absolus dans vos scripts.</li>
+<li><strong>Droits appropriés</strong> : Les scripts lancés par anacron s'exécutent avec les droits de root (par défaut).</li>
+</ul>
+
+<h2>Cas d'usage typique</h2>
+<table>
+<tr><th>Tâche</th><th>Période</th><th>Délai</th></tr>
+<tr><td>Nettoyage des caches</td><td>1 (quotidien)</td><td>10</td></tr>
+<tr><td>Mise à jour index locate</td><td>7 (hebdomadaire)</td><td>5</td></tr>
+<tr><td>Rotation des logs système</td><td>7</td><td>15</td></tr>
+<tr><td>Nettoyage corbeilles utilisateurs</td><td>30 (@monthly)</td><td>30</td></tr>
+<tr><td>Sauvegarde incrémentale</td><td>1</td><td>60</td></tr>
+</table>
+
+<h2>Configuration pour utilisateurs (anacron local)</h2>
+<p>Si vous êtes sur un système où vous n'avez pas accès root, vous pouvez créer votre propre configuration utilisateur. Certains systèmes supportent <code>~/.anacrontab</code> :</p>
+<div class="code-block"><div class="code-line"><code># Créer un anacron utilisateur (si supporté)
+mkdir -p ~/.local/share/anacron
+echo "1  10  mon-tache  ~/scripts/ma-tache.sh" > ~/.anacrontab
+
+# Lancer avec
+anacron -s -c ~/.anacrontab</code></div></div>
+
+<p>Note : Cette fonctionnalité dépend de la distribution et des droits disponibles.</p>
+
+<h2>Résumé</h2>
+<ul>
+<li><strong>Anacron</strong> exécute les tâches planifiées même si le système était éteint</li>
+<li>Configuration dans <code>/etc/anacrontab</code></li>
+<li>Format : <code>PÉRIODE  DÉLAI  IDENTIFIANT  COMMANDE</code></li>
+<li>Idéal pour les postes de travail et laptops</li>
+<li>Historique des exécutions dans <code>/var/spool/anacron/</code></li>
+<li>Combinez avec <code>cron</code> pour une couverture complète (cron pour les tâches temps réel, anacron pour les tâches quotidiennes)</li>
+</ul>
+
+<nav>
+<a href="152-paste-fusionner-lignes.html">&larr; paste — Fusionner des lignes de fichiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
