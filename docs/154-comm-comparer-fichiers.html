@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 154 : comm — Comparer deux fichiers ligne par ligne</h1>
+
+<p>La commande <code>comm</code> permet de comparer deux fichiers triés ligne par ligne. Elle affiche le résultat en trois colonnes : les lignes présentes uniquement dans le premier fichier, celles présentes uniquement dans le second, et celles communes aux deux. C'est un outil puissant pour identifier les différences entre fichiers triés.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>comm [OPTIONS] FICHIER1 FICHIER2</code></div>
+</div>
+
+<p>Important : <code>comm</code> exige que les deux fichiers soient triés. Si ce n'est pas le cas, vous devez les trier d'abord avec <code>sort</code>.</p>
+
+<h2>Exemple simple</h2>
+
+<p>Créons deux fichiers pour illustrer le fonctionnement de <code>comm</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Fichier 1</code></div>
+<div class="code-line"><code>pomme</code></div>
+<div class="code-line"><code>banane</code></div>
+<div class="code-line"><code>cerise</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Fichier 2</code></div>
+<div class="code-line"><code>banane</code></div>
+<div class="code-line"><code>cerise</code></div>
+<div class="code-line"><code>dattes</code></div>
+</div>
+
+<p>La commande <code>comm fichier1.txt fichier2.txt</code> produit :</p>
+
+<div class="code-block">
+<div class="code-line"><code>pomme</code></div>
+<div class="code-line"><code>banane</code></div>
+<div class="code-line"><code>cerise</code></div>
+<div class="code-line"><code>dattes</code></div>
+</div>
+
+<h2>Interprétation des colonnes</h2>
+
+<table>
+<tr><th>Colonne</th><th>Contenu</th><th>Exemple</th></tr>
+<tr><td>1ère colonne</td><td>Lignes uniquement dans le fichier 1</td><td>pomme</td></tr>
+<tr><td>2ème colonne</td><td>Lignes uniquement dans le fichier 2</td><td>dattes</td></tr>
+<tr><td>3ème colonne</td><td>Lignes communes aux deux fichiers</td><td>banane, cerise</td></tr>
+</table>
+
+<h2>Options principales</h2>
+
+<h3>-1, -2, -3 : Masquer les colonnes</h3>
+
+<p>Vous pouvez masquer une ou plusieurs colonnes pour n'afficher que ce qui vous intéresse :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Masquer la colonne 1 : afficher uniquement ce qui est dans fichier2 et commun</code></div>
+<div class="code-line"><code>comm -1 fichier1.txt fichier2.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Masquer les colonnes 1 et 2 : afficher uniquement les lignes communes</code></div>
+<div class="code-line"><code>comm -12 fichier1.txt fichier2.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Masquer la colonne 3 : afficher uniquement les différences</code></div>
+<div class="code-line"><code>comm -3 fichier1.txt fichier2.txt</code></div>
+</div>
+
+<h3>-i : Comparaison insensible à la casse</h3>
+
+<p>Par défaut, <code>comm</code> fait la distinction entre majuscules et minuscules. L'option <code>-i</code> permet d'ignorer la casse :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm -i fichier1.txt fichier2.txt</code></div>
+</div>
+
+<h3>--output-delimiter=CHAÎNE : Personnaliser les séparateurs</h3>
+
+<p>Par défaut, les colonnes sont séparées par des tabulations. Vous pouvez personnaliser ces séparateurs :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Remplacer les tabulations par des chaînes vides (pas de séparateur visible)</code></div>
+<div class="code-line"><code>comm --output-delimiter='' fichier1.txt fichier2.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Utiliser des séparateurs personnalisés</code></div>
+<div class="code-line"><code>comm --output-delimiter='A: ' --output-delimiter='B: ' --output-delimiter='AB: ' fichier1.txt fichier2.txt</code></div>
+</div>
+
+<h2>Cas d'utilisation pratiques</h2>
+
+<h3>Trouver les lignes communes à deux fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>comm -12 liste1.txt liste2.txt</code></div>
+</div>
+
+<p>Cette commande est très utile pour trouver les éléments communs entre deux listes, par exemple les utilisateurs présents dans deux groupes.</p>
+
+<h3>Trouver les différences entre deux fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>comm -3 fichier1.txt fichier2.txt</code></div>
+</div>
+
+<p>Cela affiche les lignes qui diffèrent entre les deux fichiers, en masquant les lignes communes.</p>
+
+<h3>Comparer des fichiers déjà triés</h3>
+
+<p>Si vos fichiers sont déjà triés, vous pouvez les comparer directement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Fichiers déjà triés</code></div>
+<div class="code-line"><code>comm fichier1_trie.txt fichier2_trie.txt</code></div>
+</div>
+
+<h3>Combiner avec sort pour des fichiers non triés</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trier puis comparer (via process substitution)</code></div>
+<div class="code-line"><code>comm <(sort fichier1.txt) <(sort fichier2.txt)</code></div>
+</div>
+
+<h3>Identifier les lignes uniques</h3>
+
+<p>Pour trouver les lignes présentes uniquement dans le premier fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm -23 <(sort fichier1.txt) <(sort fichier2.txt)</code></div>
+</div>
+
+<p>Pour les lignes uniquement dans le second fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>comm -13 <(sort fichier1.txt) <(sort fichier2.txt)</code></div>
+</div>
+
+<h2>Comparaison avec diff</h2>
+
+<table>
+<tr><th>comm</th><th>diff</th></tr>
+<tr><td>Compare des fichiers triés</td><td>Compare des fichiers quel qu'ils soit</td></tr>
+<tr><td>Résultat en 3 colonnes</td><td>Résultat en format patch/unifié</td></tr>
+<tr><td>Indique l'appartenance exacte</td><td>Indique les modifications ligne par ligne</td></tr>
+<tr><td>Plus rapide sur de gros fichiers triés</td><td>Plus détaillé pour les modifications</td></tr>
+</table>
+
+<p>Utilisez <code>comm</code> pour des comparaisons simples de listes triées, et <code>diff</code> pour des comparaisons plus détaillées de fichiers texte.</p>
+
+<h2>Exemple concret : comparer des listes d'utilisateurs</h2>
+
+<p>Imaginez que vous avez deux fichiers contenant des noms d'utilisateurs et que vous voulez savoir :</p>
+
+<ul>
+<li>Quels utilisateurs sont dans les deux fichiers</li>
+<li>Quels utilisateurs sont uniquement dans le premier</li>
+<li>Quels utilisateurs sont uniquement dans le second</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># admin_groupe1.txt contient : alice, bob, charlie</code></div>
+<div class="code-line"><code># admin_groupe2.txt contient : bob, charlie, david</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>comm <(sort admin_groupe1.txt) <(sort admin_groupe2.txt)</code></div>
+<div class="code-line"><code># Résultat :</code></div>
+<div class="code-line"><code># alice          (colonne 1 : uniquement dans groupe1)</code></div>
+<div class="code-line"><code># bob             (colonne 3 : dans les deux)</code></div>
+<div class="code-line"><code># charlie         (colonne 3 : dans les deux)</code></div>
+<div class="code-line"><code># david           (colonne 2 : uniquement dans groupe2)</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Toujours trier vos fichiers avant d'utiliser <code>comm</code></li>
+<li>Utiliser <code>comm -12</code> pour trouver rapidement les éléments communs</li>
+<li>Combiner avec <code>sort -u</code> si vous voulez éliminer les doublons avant comparaison</li>
+<li>Pour des fichiers volumineux, <code>comm</code> est plus efficace que <code>diff</code></li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>comm fichier1 fichier2</code></td><td>Compare deux fichiers triés</td></tr>
+<tr><td><code>comm -1 fichier1 fichier2</code></td><td>Masque la colonne 1</td></tr>
+<tr><td><code>comm -2 fichier1 fichier2</code></td><td>Masque la colonne 2</td></tr>
+<tr><td><code>comm -3 fichier1 fichier2</code></td><td>Masque la colonne 3</td></tr>
+<tr><td><code>comm -12 fichier1 fichier2</code></td><td>Affiche uniquement les lignes communes</td></tr>
+<tr><td><code>comm -i fichier1 fichier2</code></td><td>Ignore la casse</td></tr>
+</table>
+
+<nav>
+<a href="153-anacron-taches-differées.html">&larr; Leçon 153 : Anacron — Tâches différées sur systèmes non-permanents</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
