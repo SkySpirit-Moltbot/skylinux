@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 155 : time — Mesurer le temps d'exécution des commandes</h1>
+
+<p>La commande <code>time</code> permet de mesurer le temps qu'une commande met à s'exécuter. Elle affiche trois types de mesures : le temps réel (wall clock time), le temps CPU utilisateur et le temps CPU système. C'est un outil essentiel pour optimiser les performances de vos scripts et commandes.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>time [OPTIONS] COMMANDE</code></div>
+</div>
+
+<p><code>time</code> affiche ses résultats après l'exécution de la commande. Le format de sortie peut varier selon que vous utilisez le built-in Bash ou le binaire <code>/usr/bin/time</code>.</p>
+
+<h2>Exemple simple</h2>
+
+<div class="code-block">
+<div class="code-line"><code>time sleep 2</code></div>
+</div>
+
+<p>Résultat typique (bash built-in) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>real    0m2.003s</code></div>
+<div class="code-line"><code>user    0m0.001s</code></div>
+<div class="code-line"><code>sys     0m0.000s</code></div>
+</div>
+
+<h2>Comprendre les trois temps</h2>
+
+<table>
+<tr><th>Temps</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>real</code></td><td>Temps total écoulé (horloge murale)</td><td>Temps perceptible par l'utilisateur</td></tr>
+<tr><td><code>user</code></td><td>Temps CPU en mode utilisateur</td><td>Calcul pur par le programme</td></tr>
+<tr><td><code>sys</code></td><td>Temps CPU en mode système</td><td>Appels système (lecture fichier, etc.)</td></tr>
+</table>
+
+<p>La somme de <code>user</code> et <code>sys</code> représente le temps CPU total. Si <code>real</code> est nettement supérieur à cette somme, cela signifie que le programme a passé du temps à attendre (I/O, réseau, sommeil).</p>
+
+<h2>Le binaire /usr/bin/time</h2>
+
+<p>Il existe deux versions de <code>time</code> : le built-in Bash (intégré au shell) et le binaire système <code>/usr/bin/time</code>. Le binaire offre plus d'options.</p>
+
+<h3>Specifier le binaire systeme</h3>
+
+<div class="code-block">
+<div class="code-line"><code>/usr/bin/time sleep 2</code></div>
+</div>
+
+<h2>Options du binaire /usr/bin/time</h2>
+
+<h3>-v : Sortie détaillée</h3>
+
+<div class="code-block">
+<div class="code-line"><code>/usr/bin/time -v ls /usr</code></div>
+</div>
+
+<p>Cette commande affiche un rapport complet incluant :</p>
+
+<ul>
+<li>Temps d'exécution (réel, utilisateur, système)</li>
+<li>Mémoire maximale utilisée</li>
+<li>Nombre de fautes de page</li>
+<li>Swaps</li>
+<li>Signaux reçus</li>
+<li>Code de sortie</li>
+</ul>
+
+<h3>-p : Format POSIX portable</h3>
+
+<div class="code-block">
+<div class="code-line"><code>/usr/bin/time -p sleep 1</code></div>
+</div>
+
+<p>Résultat :</p>
+
+<div class="code-block">
+<div class="code-line"><code>real 1.00</code></div>
+<div class="code-line"><code>user 0.00</code></div>
+<div class="code-line"><code>sys 0.00</code></div>
+</div>
+
+<h3>-o fichier : Rediriger la sortie vers un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>/usr/bin/time -o /tmp/mon_temps.txt ls /home</code></div>
+</div>
+
+<p>La sortie de <code>time</code> est écrite dans le fichier, tandis que la sortie de la commande va sur la sortie standard.</p>
+
+<h3>-a : Ajouter au fichier (sans écraser)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>/usr/bin/time -a -o /tmp/mon_temps.txt ls /var</code></div>
+</div>
+
+<h3>-f format : Format personnalise</h3>
+
+<p>Vous pouvez définir votre propre format avec des variables :</p>
+
+<div class="code-block">
+<div class="code-line"><code>/usr/bin/time -f "Temps réel: %E\nMémoire max: %M Ko" ls /etc</code></div>
+</div>
+
+<table>
+<tr><th>Option de format</th><th>Description</th></tr>
+<tr><td><code>%E</code></td><td>Temps réel (format HH:MM:SS)</td></tr>
+<tr><td><code>%e</code></td><td>Temps réel en secondes</td></tr>
+<tr><td><code>%U</code></td><td>Temps utilisateur en secondes</td></tr>
+<tr><td><code>%S</code></td><td>Temps système en secondes</td></tr>
+<tr><td><code>%M</code></td><td>Mémoire maximale en Ko</td></tr>
+<tr><td><code>%x</code></td><td>Code de sortie</td></tr>
+<tr><td><code>%C</code></td><td>Commande et ses arguments</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Comparer deux methodes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Méthode 1 : boucle while</code></div>
+<div class="code-line"><code>time while read line; do echo "$line"; done < fichier.txt</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Méthode 2 : cat</code></div>
+<div class="code-line"><code>time cat fichier.txt</code></div>
+</div>
+
+<h3>Mesurer un script complet</h3>
+
+<div class="code-block">
+<div class="code-line"><code>time ./mon_script.sh</code></div>
+</div>
+
+<h3>Mesurer une commande avec des arguments</h3>
+
+<div class="code-block">
+<div class="code-line"><code>/usr/bin/time -v find /home -name "*.log" 2>/dev/null</code></div>
+</div>
+
+<h3>Benchmark d'une commande repetee</h3>
+
+<div class="code-block">
+<div class="code-line"><code>for i in {1..5}; do /usr/bin/time -f "%e" -o /tmp/bench.txt -a ls /usr; done</code></div>
+<div class="code-line"><code>echo "Temps moyen:"; awk '{s+=$1; c++} END {print s/c}' /tmp/bench.txt</code></div>
+</div>
+
+<h3>Rediriger la sortie de la commande (sans polluer)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>(time ls -R /usr) 2> /tmp/time_output.txt</code></div>
+</div>
+
+<h2>Capturer le resultat de time dans une variable</h2>
+
+<p>Avec Bash, vous pouvez capturer le résultat de <code>time</code> dans une variable en utilisant les parenthèses :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Capturer la sortie stderr de time</code></div>
+<div class="code-line"><code>output=$( { time sleep 1; } 2>&1 )</code></div>
+<div class="code-line"><code>echo "$output"</code></div>
+</div>
+
+<h2>Utilisation dans un script</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Fonction pour chronométrer une commande</code></div>
+<div class="code-line"><code>chrono() {</code></div>
+<div class="code-line"><code>    debut=$(date +%s)</code></div>
+<div class="code-line"><code>    "$@"</code></div>
+<div class="code-line"><code>    fin=$(date +%s)</code></div>
+<div class="code-line"><code>    echo "Durée: $((fin - debut)) secondes"</code></div>
+<div class="code-line"><code>}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Utilisation</code></div>
+<div class="code-line"><code>chrono wget -q https://example.com</code></div>
+</div>
+
+<h2>Interpretation des resultats</h2>
+
+<h3>real > user + sys</h3>
+
+<p>Le programme a attendu (I/O lent, réseau, sommeil, locks). C'est normal pour des commandes comme <code>sleep</code> ou <code>wget</code>.</p>
+
+<h3>user + sys ≈ real</h3>
+
+<p>Le programme est CPU-bound. Il utilise intensivement le processeur. Potentiellement optimisable.</p>
+
+<h3>real >> user + sys (souvent)</h3>
+
+<p>Programme très lent en I/O ou qui attend beaucoup. Peut indiquer un goulot d'étranglement.</p>
+
+<h2>time avec pipeline</h2>
+
+<p><code>time</code> fonctionne aussi avec les pipes :</p>
+
+<div class="code-block">
+<div class="code-line"><code>time ls -la /usr | sort -k5 -n | head -20</code></div>
+</div>
+
+<p>Le chronométrage couvre l'ensemble du pipeline, du début à la fin.</p>
+
+<h2>time dans un sous-shell</h2>
+
+<p>Pour chronométrer un pipeline entier et l'afficher correctement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Utiliser les accolades pour grouper</code></div>
+<div class="code-line"><code>{ time ls -la /usr; } 2>&1 | tail -5</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez <code>/usr/bin/time -v</code> pour des mesures détaillées</li>
+<li>Répétez les mesures plusieurs fois pour tenir compte des variations</li>
+<li>Mesurez dans des conditions similaires (charge système, cache, etc.)</li>
+<li>Utilisez <code>-o</code> pour rediriger les résultats vers un fichier de log</li>
+<li>Comparez toujours avec un point de référence avant d'optimiser</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>time commande</code></td><td>Chronomètre une commande simple</td></tr>
+<tr><td><code>/usr/bin/time -v commande</code></td><td>Sortie détaillée avec mémoire et I/O</td></tr>
+<tr><td><code>/usr/bin/time -o fichier</code></td><td>Écrit le résultat dans un fichier</td></tr>
+<tr><td><code>/usr/bin/time -f "%e"</code></td><td>Format personnalisé (secondes réelles)</td></tr>
+<tr><td><code>/usr/bin/time -p</code></td><td>Format POSIX portable</td></tr>
+</table>
+
+<nav>
+<a href="154-comm-comparer-fichiers.html">&larr; Leçon 154 : comm — Comparer deux fichiers ligne par ligne</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
