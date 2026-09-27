@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>pv — Surveiller la progression des données dans un pipe</h1>
+
+<p>La commande <code>pv</code> (Pipe Viewer) permet d'insérer dans un pipe UNIX et d'afficher en temps réel la quantité de données transférées, la vitesse de transfert et le temps restant estimé. C'est l'outil idéal pour savoir où en est une copie, une compression ou tout autre traitement de données volumineuses.</p>
+
+<h2>Installation</h2>
+
+<p><code>pv</code> n'est pas toujours installé par défaut :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ubuntu / Debian</code></div>
+<div class="code-line"><code>sudo apt install pv</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Fedora / RHEL / CentOS</code></div>
+<div class="code-line"><code>sudo dnf install pv</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Arch Linux</code></div>
+<div class="code-line"><code>sudo pacman -S pv</code></div>
+</div>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>pv [options] [fichier]</code></div>
+</div>
+
+<p>Sans argument de fichier, <code>pv</code> lit depuis l'entrée standard.</p>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-p</code></td><td>Afficher la barre de progression</td></tr>
+<tr><td><code>-t</code></td><td>Afficher le chronomètre (temps écoulé)</td></tr>
+<tr><td><code>-e</code></td><td>Afficher le temps restant estimé (ETA)</td></tr>
+<tr><td><code>-r</code></td><td>Afficher le débit actuel (bytes/s)</td></tr>
+<tr><td><code>-b</code></td><td>Afficher le nombre total d'octets transférés</td></tr>
+<tr><td><code>-n</code></td><td>Mode numérique : sortie uniquement des entiers pour scripting</td></tr>
+<tr><td><code>-L</code></td><td>Limiter la bande passante (ex : <code>-L 1M</code> pour 1 Mo/s)</td></tr>
+<tr><td><code>-s</code></td><td>Spécifier la taille totale attendue (pour le calcul de l'ETA)</td></tr>
+<tr><td><code>-W</code></td><td>Attendre que la première donnée arrive avant d'afficher</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Copie de fichier avec barre de progression</h3>
+
+<div class="code-block">
+<div class="code-line"><code>pv fichier_iso.iso > /dev/sdb1</code></div>
+</div>
+
+<p>Affiche la progression de la copie avec le débit et le temps restant.</p>
+
+<h3>Compression avec visualisation</h3>
+
+<div class="code-block">
+<div class="code-line"><code>pv gros_fichier.bin | gzip > gros_fichier.bin.gz</code></div>
+</div>
+
+<p>La compression s'effectue normalement, mais <code>pv</code> vous montre le débit et la progression. La taille totale est inconnue, donc pas d'ETA.</p>
+
+<h3>Compression avec taille connue pour l'ETA</h3>
+
+<div class="code-block">
+<div class="code-line"><code>pv -s $(stat -c%s gros_fichier.bin) gros_fichier.bin | gzip > backup.gz</code></div>
+</div>
+
+<p>En spécifiant la taille avec <code>-s</code>, <code>pv</code> peut calculer le temps restant.</p>
+
+<h3>Copie dd avec barre de progression</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo pv -s $(blockdev --getsize64 /dev/sda) /dev/sda | dd of=/dev/sdb bs=4M</code></div>
+</div>
+
+<p>Copie complète d'un disque avec barre de progression. L'option <code>-s</code> indique la taille totale du disque source.</p>
+
+<h3>Copie via SSH avec limitation de bande passante</h3>
+
+<div class="code-block">
+<div class="code-line"><code>pv fichier.tar.gz | ssh user@serveur "cat > /backup/fichier.tar.gz"</code></div>
+</div>
+
+<h3>Pipeline de traitement multiple</h3>
+
+<div class="code-block">
+<div class="code-line"><code>pv -cN source fichier.raw | \</code></div>
+<div class="code-line"><code>  ffmpeg -i - ... | \</code></div>
+<div class="code-line"><code>  pv -cN encodage | \</code></div>
+<div class="code-line"><code>  pv -cN transfert > output.mp4</code></div>
+</div>
+
+<p>Avec <code>-cN nom</code>, chaque instance <code>pv</code> affiche un nom distinct, permettant de suivre plusieurs étapes d'un pipeline.</p>
+
+<h3>Téléchargement avec barre de progression</h3>
+
+<div class="code-block">
+<div class="code-line"><code>curl -s URL | pv | tar xzf -</code></div>
+</div>
+
+<p>Télécharge une archive et l'extrait simultanément, en visualisant le débit.</p>
+
+<h3>Mode numérique pour scripting</h3>
+
+<div class="code-block">
+<div class="code-line"><code>pv -n fichier.bin > /dev/null</code></div>
+</div>
+
+<p>En mode <code>-n</code>, <code>pv</code> n'affiche qu'un nombre croissant de 0 à 100 (pourcentage), utile dans un script pour piloter des barres de progression personnalisées.</p>
+
+<h2>Cas d'usage concrets</h2>
+
+<h3>Copie disque à disque</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo pv /dev/sda -s $(blockdev --getsize64 /dev/sda) | sudo dd of=/dev/sdb bs=4M conv=fsync</code></div>
+</div>
+
+<h3>Synchronisation rsync avec progression</h3>
+
+<div class="code-block">
+<div class="code-line"><code>rsync -av --progress /source/ /dest/</code></div>
+</div>
+
+<p><code>rsync</code> dispose déjà de <code>--progress</code>, mais <code>pv</code> peut s'avérer utile pour les cas où <code>rsync</code> ne donne pas de statistiques satisfaisantes.</p>
+
+<h3>Création de backup avec tar et pv</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tar czf - /home | pv -s $(du -sb /home | cut -f1) | ssh user@backup "cat > backup_home.tar.gz"</code></div>
+</div>
+
+<h2>Format d'affichage</h2>
+
+<p>Par défaut, <code>pv</code> affiche sur une seule ligne qui se met à jour :</p>
+
+<div class="code-block">
+<div class="code-line"><code>GNU/Linux  ISO:  2.45GiB /  4.37GiB  56% [=====&gt;       ]  12.5MiB/s  ETA:  2m 35s</code></div>
+</div>
+
+<table>
+<tr><th>Élément</th><th>Signification</th></tr>
+<tr><td><code>2.45GiB / 4.37GiB</code></td><td>Données transférées / taille totale</td></tr>
+<tr><td><code>56%</code></td><td>Pourcentage de progression</td></tr>
+<tr><td><code>[=====>       ]</code></td><td>Barre de progression visuelle</td></tr>
+<tr><td><code>12.5MiB/s</code></td><td>Débit actuel</td></tr>
+<tr><td><code>ETA: 2m 35s</code></td><td>Temps restant estimé</td></tr>
+</table>
+
+<h2>Combiner avec d'autres outils</h2>
+
+<ul>
+<li><code>pv</code> + <code>gzip</code>/<code>bzip2</code>/<code>xz</code> : voir la progression d'une compression</li>
+<li><code>pv</code> + <code>dd</code> : copie de disque avec progression</li>
+<li><code>pv</code> + <code>ssh</code> : transfert réseau visualisé</li>
+<li><code>pv</code> + <code>tar</code> : archivage et extraction avec barre de progression</li>
+<li><code>pv</code> + <code>ffmpeg</code> : suivi de l'encodage vidéo</li>
+<li><code>pv</code> + <code>mysqldump</code> : export de base de données avec suivi</li>
+</ul>
+
+<h2>Limiter la bande passante</h2>
+
+<p>Pour simuler un transfert lent ou limiter l'usage réseau :</p>
+
+<div class="code-block">
+<div class="code-line"><code>pv -L 500k fichier.iso > /dev/null</code></div>
+</div>
+
+<p>Limite le transfert à 500 Ko/s.</p>
+
+<table>
+<tr><th>Suffixe</th><th>Signification</th></tr>
+<tr><td><code>k</code></td><td>Ko/s (kilooctets)</td></tr>
+<tr><td><code>m</code></td><td>Mo/s (mégaoctets)</td></tr>
+<tr><td><code>g</code></td><td>Go/s (gigaoctets)</td></tr>
+</table>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>pv fichier > cible</code></td><td>Copie avec barre de progression</td></tr>
+<tr><td><code>cat f | pv | gzip > f.gz</code></td><td>Compression visualisée</td></tr>
+<tr><td><code>pv -s TAILLE fichier</code></td><td>Avec ETA (temps restant)</td></tr>
+<tr><td><code>pv -L 1M fichier</code></td><td>Limiter à 1 Mo/s</td></tr>
+<tr><td><code>pv -cN etape1 fichier</code></td><td>Nommer chaque étape dans un pipeline</td></tr>
+<tr><td><code>pv -n fichier</code></td><td>Mode numérique (0-100) pour scripting</td></tr>
+</table>
+
+<p><code>pv</code> est un outil simple mais puissant. Un seul <code>pv</code> inséré dans un pipe peut transformer une opération mystérieuse en transparence totale. Indispensable pour toute copie, compression ou synchronisation de données volumineuses.</p>
+
+<nav>
+<a href="156-nohup-peristent-commands.html">&larr; nohup — Commandes persistantes après déconnexion</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
