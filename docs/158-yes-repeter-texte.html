@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>yes — Répéter du texte à l'infini</h1>
+
+<h2>Introduction</h2>
+<p>La commande <code>yes</code> est l'une des plus simples d'Unix : elle affiche une chaîne de texte en boucle, sans jamais s'arrêter. Elle semble anodine, mais elle est incroyablement utile pour automatiser des réponses, tester des canaux, et alimenter des scripts en données répétitives.</p>
+
+<h2>Utilisation de base</h2>
+<p>Sans argument, <code>yes</code> affiche <code>y</code> en continu :</p>
+<div class="code-block"><div class="code-line"><code>yes</code></div></div>
+
+<p>Vous pouvez spécifier n'importe quel texte :</p>
+<div class="code-block"><div class="code-line"><code>yes "oui"</code></div></div>
+
+<h2>Combiner yes avec d'autres commandes</h2>
+
+<h3>Répondre automatiquement à une question</h3>
+<p>Quand un programme demande une confirmation, <code>yes</code> peut répondre pour vous :</p>
+<div class="code-block"><div class="code-line"><code>yes | commande_interactive</code></div></div>
+
+<p>Par exemple, pour supprimer plusieurs fichiers sans confirmation :</p>
+<div class="code-block"><div class="code-line"><code>yes | rm -i *.log</code></div></div>
+
+<h3>Répondre "non" à tout</h3>
+<p>Vous pouvez aussi反向 — répondre non à chaque question :</p>
+<div class="code-block"><div class="code-line"><code>yes n | commande_quelconque</code></div></div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Créer un fichier avec des lignes répétées</h3>
+<div class="code-block"><div class="code-line"><code>yes "ligne de test" | head -20 > test.txt</code></div></div>
+
+<h3>Tester un pipe ou un canal</h3>
+<p><code>yes</code> est parfait pour générer un flux de données continu et tester le comportement de vos scripts :</p>
+<div class="code-block"><div class="code-line"><code>yes "donnee" | ./mon_script.sh</code></div></div>
+
+<h3>Combiner avec xargs</h3>
+<div class="code-block"><div class="code-line"><code>yes | xargs -n 1 echo "traitement"</code></div></div>
+
+<h3>Compter les répétitions avec head</h3>
+<p>Limitez le nombre de répétitions avec <code>head</code> :</p>
+<div class="code-block"><div class="code-line"><code>yes " repetition " | head -5</code></div></div>
+
+<h2>Options principales</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>--help</code></td><td>Afficher l'aide</td></tr>
+<tr><td><code>--version</code></td><td>Afficher la version</td></tr>
+</table>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>Automatiser les réponses oui/non</h3>
+<p>Très utile dans les scripts d'installation ou de configuration :</p>
+<div class="code-block"><div class="code-line"><code>yes | apt update && yes | apt upgrade</code></div></div>
+
+<h3>Générer du contenu pour des tests</h3>
+<p>Créer rapidement un fichier de test volumineux :</p>
+<div class="code-block"><div class="code-line"><code>yes "donnee test" | head -100000 > gros_fichier.txt</code></div></div>
+
+<h3>Simulation de charge</h3>
+<p>Pour tester des scripts qui traitent des lignes en entrée :</p>
+<div class="code-block"><div class="code-line"><code>yes "x" | while read line; do echo "traitement: $line"; done | head -10</code></div></div>
+
+<h2>Combiner avec d'autres outils</h2>
+<ul>
+<li><strong>wc -l</strong> — Compter les lignes générées : <code>yes | wc -l</code></li>
+<li><strong>sed</strong> — Modifier chaque ligne : <code>yes | sed 's/y/OUI/g' | head -5</code></li>
+<li><strong>awk</strong> — Ajouter un numéro de ligne : <code>yes | awk '{print NR, $0}' | head -5</code></li>
+<li><strong>grep</strong> — Filtrer les répétitions : <code>yes | grep --line-buffered "y" | head -3</code></li>
+</ul>
+
+<h2>Arrêter yes</h2>
+<p>Par défaut, <code>yes</code> tourne indefiniment. Pour l'arrêter :</p>
+<ul>
+<li><code>Ctrl + C</code> — Interruption classique</li>
+<li><code>Ctrl + D</code> — Fin de fichier (envoie EOF au processus)</li>
+<li>Piper vers <code>head</code> comme on l'a vu — le pipe se ferme quand <code>head</code> a lu assez de lignes</li>
+</ul>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li> Utilisez toujours <code>head</code> ou une autre limite quand vous pipez vers un script ou un fichier pour éviter de saturer le système ou le disque</li>
+<li> Préférez <code>yes</code> pour les réponses interactives dans les scripts d'automatisation</li>
+<li> <code>yes</code> sans argument répond "y" — idéal pour les confirmations</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Effet</th></tr>
+<tr><td><code>yes</code></td><td>Affiche "y" en boucle infinie</td></tr>
+<tr><td><code>yes "texte"</code></td><td>Affiche "texte" en boucle infinie</td></tr>
+<tr><td><code>yes | head -n</code></td><td>Affiche n répétitions puis s'arrête</td></tr>
+<tr><td><code>yes "oui" | commande</code></td><td>Envoie des réponses automatiques à une commande</td></tr>
+</table>
+
+<p><code>yes</code> est simple mais puissant. Quelques lignes de répétition peuvent sauver un script d'automatisation !</p>
+
+<nav>
+<a href="157-pv-surveillance-pipes.html">&larr; pv — Surveiller la progression des données dans un pipe</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
