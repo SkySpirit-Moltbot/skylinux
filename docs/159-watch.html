@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>watch — Exécuter une commande périodiquement</h1>
+
+<h2>Introduction</h2>
+<p>La commande <code>watch</code> permet d'exécuter une commande Linux de manière répétée et d'afficher le résultat en temps réel dans votre terminal. C'est l'outil idéal pour surveiller l'évolution d'un processus, d'un fichier, ou de n'importe quelle sortie de commande sans avoir à la relancer manuellement.</p>
+
+<h2>Utilisation de base</h2>
+<p>La syntaxe simple de <code>watch</code> :</p>
+<div class="code-block"><div class="code-line"><code>watch commande</code></div></div>
+
+<p>Par exemple, pour surveiller l'espace disque toutes les 2 secondes :</p>
+<div class="code-block"><div class="code-line"><code>watch df -h</code></div></div>
+
+<p>Par défaut, <code>watch</code> actualise l'affichage toutes les 2 secondes. Le résultat s'affiche dans tout l'écran du terminal, et l'écran est nettoyé avant chaque nouvelle exécution.</p>
+
+<h2>Options principales</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n secondes</code></td><td>Intervalle entre chaque exécution (par défaut : 2 secondes)</td></tr>
+<tr><td><code>-d</code></td><td>Mettre en surbrillance les différences entre deux exécutions</td></tr>
+<tr><td><code>-d=cumulative</code></td><td>Accumuler les différences au fil du temps</td></tr>
+<tr><td><code>-t</code></td><td>Masquer l'en-tête avec la commande et l'intervalle</td></tr>
+<tr><td><code>-b</code></td><td>Émettre un signal sonore si la commande échoue</td></tr>
+<tr><td><code>-e</code></td><td>Arrêter watch si la commande échoue</td></tr>
+<tr><td><code>-g</code></td><td>Quitter quand la sortie change</td></tr>
+</table>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Surveiller la mémoire disponible</h3>
+<div class="code-block"><div class="code-line"><code>watch free -h</code></div></div>
+
+<h3>Observer l'espace disque</h3>
+<div class="code-block"><div class="code-line"><code>watch df -h</code></div></div>
+
+<h3>Surveiller les processus d'un utilisateur</h3>
+<div class="code-block"><div class="code-line"><code>watch ps aux | grep username</code></div></div>
+
+<h3>Vérifier le contenu d'un répertoire</h3>
+<div class="code-block"><div class="code-line"><code>watch ls -la /chemin/vers/repertoire</code></div></div>
+
+<h3>Surveiller le nombre de connexions actives</h3>
+<div class="code-block"><div class="code-line"><code>watch 'netstat -an | grep :80 | wc -l'</code></div></div>
+
+<h3>Surveiller les connexions réseau actives</h3>
+<div class="code-block"><div class="code-line"><code>watch ss -tunapl</code></div></div>
+
+<h2>Mode différences avec -d</h2>
+<p>L'option <code>-d</code> est particulièrement utile pour visualiser ce qui change entre deux exécutions. Les différences sont mises en surbrillance en couleur :</p>
+<div class="code-block"><div class="code-line"><code>watch -d df -h</code></div></div>
+
+<p>Pour conserver l'historique des différences (cumulative) :</p>
+<div class="code-block"><div class="code-line"><code>watch -d=cumulative df -h</code></div></div>
+
+<h2>Intervalle personnalisé</h2>
+<p>Modifiez l'intervalle avec l'option <code>-n</code> (en secondes) :</p>
+<div class="code-block"><div class="code-line"><code>watch -n 5 df -h        # toutes les 5 secondes</code></div></div>
+<div class="code-block"><div class="code-line"><code>watch -n 0.5 ps aux     # toutes les demi-secondes</code></div></div>
+<div class="code-block"><div class="code-line"><code>watch -n 60 'command'   # chaque minute</code></div></div>
+
+<h2>Quitter automatiquement avec -g</h2>
+<p>L'option <code>-g</code> permet de quitter <code>watch</code> dès que la sortie change. Très utile pour attendre un événement précis :</p>
+<div class="code-block"><div class="code-line"><code>watch -g ls -l /chemin/vers/fichier</code></div></div>
+
+<h3>Cas d'utilisation courants</h3>
+<ul>
+<li><strong>Attendre qu'un fichier apparaisse :</strong> <code>watch -g ls -l /chemin/fichier && echo "Fichier détecté !"</code></li>
+<li><strong>Attendre qu'un service démarre :</strong> <code>watch -g systemctl status mon-service</code></li>
+</ul>
+
+<h2>Combiner avec d'autres outils</h2>
+
+<h3>Avec tail pour surveiller les logs en temps réel</h3>
+<div class="code-block"><div class="code-line"><code>watch -n 1 tail -20 /var/log/syslog</code></div></div>
+
+<h3>Avec grep pour filtrer en temps réel</h3>
+<div class="code-block"><div class="code-line"><code>watch -n 2 'ps aux | grep python | grep -v grep'</code></div></div>
+
+<h3>Avec des Scripts Bash</h3>
+<p>Vous pouvez exécuter des scripts plus complexes :</p>
+<div class="code-block"><div class="code-line"><code>watch -n 5 './mon_script.sh'</code></div></div>
+
+<h2>Arrêter watch</h2>
+<p>Pour quitter <code>watch</code> à tout moment :</p>
+<ul>
+<li><code>Ctrl + C</code> — Interruption classique</li>
+<li><code>Ctrl + Z</code> — Suspendre watch (puis <code>kill %1</code> pour tuer)</li>
+</ul>
+
+<h2>Masquer l'en-tête avec -t</h2>
+<p>Si vous souhaitez un affichage plus compact sans la barre de titre :</p>
+<div class="code-block"><div class="code-line"><code>watch -t df -h</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li> Utilisez des intervalles plus longs pour les commandes coûteuses en ressources</li>
+<li> Combinez avec <code>-d</code> pour visualiser rapidement les changements</li>
+<li> Utilisez <code>-g</code> pour attendre un événement précis sans surveillance permanente</li>
+<li> Évitez les intervalles inférieurs à 0.1 seconde sauf nécessité absolue</li>
+</ul>
+
+<h2>Cas d'utilisation avancés</h2>
+
+<h3>Surveiller plusieurs commandes avec un script</h3>
+<div class="code-block"><div class="code-line"><code>watch -n 2 'echo "=== CPU ===" && top -bn1 | head -5 && echo "=== MEMOIRE ===" && free -h'</code></div></div>
+
+<h3>Surveiller les modifications de fichiers</h3>
+<div class="code-block"><div class="code-line"><code>watch -d=cumulative 'find /tmp -type f | wc -l'</code></div></div>
+
+<h3>Attendre qu'un serveur soit joignable</h3>
+<div class="code-block"><div class="code-line"><code>watch -g 'nc -z localhost 8080 && echo "OK"'</code></div></div>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Effet</th></tr>
+<tr><td><code>watch cmd</code></td><td>Exécute cmd toutes les 2 secondes</td></tr>
+<tr><td><code>watch -n 5 cmd</code></td><td>Exécute cmd toutes les 5 secondes</td></tr>
+<tr><td><code>watch -d cmd</code></td><td>Met en surbrillance les différences</td></tr>
+<tr><td><code>watch -g cmd</code></td><td>Quitte quand la sortie change</td></tr>
+<tr><td><code>watch -t cmd</code></td><td>Masque l'en-tête</td></tr>
+</table>
+
+<p><code>watch</code> est un outil simple mais puissant pour toute surveillance en temps réel depuis le terminal. Combinez-le avec les autres commandes Linux pour créer des tableaux de bord personnalisés directement dans votre console.</p>
+
+<nav>
+<a href="158-yes-repeter-texte.html">&larr; yes — Répéter du texte à l'infini</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
