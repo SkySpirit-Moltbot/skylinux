@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>fzf — Fuzzy Finder, recherche floue en ligne de commande</h1>
+
+<h2>Introduction</h2>
+<p><code>fzf</code> (fuzzy finder) est un outil de recherche floue ultra-rapide et interactif pour le terminal. Il vous permet de filtrer rapidement des fichiers, du texte, des commandes, et bien plus encore — le tout avec une interface visuelle élégante. C'est l'un des outils les plus appréciés des utilisateurs Linux avancés.</p>
+
+<h2>Installation</h2>
+<p><code>fzf</code> est généralement disponible dans les dépôts de la plupart des distributions :</p>
+<div class="code-block"><div class="code-line"><code># Debian/Ubuntu
+sudo apt install fzf
+
+# Fedora
+sudo dnf install fzf
+
+# Arch Linux
+sudo pacman -S fzf
+
+# macOS
+brew install fzf</code></div></div>
+
+<p>Après l'installation, activez les raccourcis clavier intégrés :</p>
+<div class="code-block"><div class="code-line"><code># Ajoutez cette ligne à votre ~/.bashrc ou ~/.zshrc
+eval "$(fzf --bash)"</code></div></div>
+
+<h2>Principe de base</h2>
+<p><code>fzf</code> fonctionne sur le principe de la <strong>recherche floue</strong> (fuzzy search) : il trouve des correspondances même si vous ne tapez pas le texte exact. Par exemple, "lnx" trouvera "linux".</p>
+
+<h3>Syntaxe simple</h3>
+<div class="code-block"><div class="code-line"><code>fzf</code></div></div>
+<p>Sans argument, <code>fzf</code> lit depuis l'entrée standard (stdin) et affiche une interface interactive. Tapez pour filtrer, Entrée pour sélectionner, <code>Ctrl+C</code> pour quitter.</p>
+
+<h2>Recherche de fichiers</h2>
+<p>La commande la plus courante avec <code>fzf</code> est de combiner <code>find</code> ou <code>fd</code> avec <code>fzf</code> pour trouver des fichiers visuellement :</p>
+<div class="code-block"><div class="code-line"><code># Rechercher des fichiers dans le répertoire courant
+find . -type f | fzf
+
+# Avec preview (aperçu du contenu)
+fzf --preview 'cat {}'</code></div></div>
+
+<h3>Avec fd (plus rapide que find)</h3>
+<p><code>fd</code> est un alternative moderne à <code>find</code>, souvent utilisée avec <code>fzf</code> :</p>
+<div class="code-block"><div class="code-line"><code># Rechercher avec fd
+fd --type f | fzf
+
+# Aperçu avec bat ( coloration syntaxique)
+fzf --preview 'bat --color=always {}'</code></div></div>
+
+<h2>Raccourcis clavier intégrés</h2>
+<p>Quand <code>eval "$(fzf --bash)"</code> est activé, ces raccourcis deviennent disponibles :</p>
+<table>
+<tr><th>Raccourci</th><th>Action</th></tr>
+<tr><td><code>Ctrl+T</code></td><td>Ouvrir fzf pour sélectionner un fichier</td></tr>
+<tr><td><code>Ctrl+R</code></td><td>Rechercher dans l'historique des commandes</td></tr>
+<tr><td><code>Alt+C</code></td><td> cd vers le répertoire sélectionné (fuzzy directory navigation)</td></tr>
+</table>
+
+<h3>Ctrl+T — Sélection de fichiers</h3>
+<p>Appuyez sur <code>Ctrl+T</code> n'importe où dans le terminal. Une fenêtre fzf apparaît pour sélectionner un fichier dont le chemin sera inséré sur la ligne de commande :</p>
+<div class="code-block"><div class="code-line"><code># Après Ctrl+T, le chemin s'insère automatiquement
+cat [fichier_sélectionné]</code></div></div>
+
+<h3>Ctrl+R — Historique des commandes</h3>
+<p><code>Ctrl+R</code> ouvre fzf pour parcourir votre historique bash. Plus besoin de faire défiler avec les flèches :</p>
+<div class="code-block"><div class="code-line"><code># Appuyez sur Ctrl+R et tapez pour filtrer
+history | grep commande</code></div></div>
+
+<h3>Alt+C — Navigation dans les répertoires</h3>
+<p><code>Alt+C</code> (ou <code>Esc+C</code>) ouvre fzf pour sélectionner un répertoire et exécute un <code>cd</code> directement :</p>
+<div class="code-block"><div class="code-line"><code># Navigation rapide entre répertoires
+cd /home/user/projets
+# Devient : Alt+C puis taper "pro" puis Entrée</code></div></div>
+
+<h2>Options utiles</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>--height=30%</code></td><td>Hauteur de la fenêtre fzf (en pourcentage)</td></tr>
+<tr><td><code>--preview 'cmd'</code></td><td>Affiche un aperçu du fichier sélectionné</td></tr>
+<tr><td><code>--multi</code></td><td>Permet la sélection multiple (Tab pour ajouter)</td></tr>
+<tr><td><code>--nth=2..</code></td><td>Ignorer les premiers champs dans la recherche</td></tr>
+<tr><td><code>--reverse</code></td><td>Affichage inversé (résultats en haut)</td></tr>
+<tr><td><code>--bind 'key:action'</code></td><td>Lier des touches à des actions personnalisées</td></tr>
+</table>
+
+<h2>Combiner fzf avec d'autres commandes</h2>
+
+<h3>Ouvrir un fichier avec $EDITOR</h3>
+<div class="code-block"><div class="code-line"><code># Ouvrir le fichier sélectionné avec vim
+vim $(fzf)
+
+# Ou plus safely
+fzf --preview 'bat --color=always {}' | xargs $EDITOR</code></div></div>
+
+<h3>Se déplacer vers un dépôt git</h3>
+<div class="code-block"><div class="code-line"><code># cd vers un projet dans ~/projets
+cd ~/projets && cd $(find . -type d -name ".git" | sed 's/.git$//' | fzf)</code></div></div>
+
+<h3>Sélection multiple avec --multi</h3>
+<div class="code-block"><div class="code-line"><code># Sélectionner plusieurs fichiers avec Tab
+fzf --multi | xargs rm -i
+
+# Copier plusieurs fichiers
+fzf --multi | xargs cp -t /destination/</code></div></div>
+
+<h3>Filtrer la sortie d'une commande</h3>
+<div class="code-block"><div class="code-line"><code># Lister les processus et filtrer
+ps aux | fzf
+
+# Lister les connexions et filtrer
+ss -tuln | fzf</code></div></div>
+
+<h2>Preview (aperçu) des fichiers</h2>
+<p>L'option <code>--preview</code> affiche le contenu du fichier surligné pendant la navigation :</p>
+<div class="code-block"><div class="code-line"><code># Aperçu basique
+fzf --preview 'cat {}'
+
+# Aperçu avec coloration syntaxique (via bat)
+fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'
+
+# Limiter la hauteur de l'aperçu
+fzf --height=40% --preview 'bat --color=always {}'</code></div></div>
+
+<h3>Preview d'images dans le terminal</h3>
+<p>Si vous utilisez un terminal compatible (iTerm2, kitty, etc.), vous pouvez même prévisualiser des images :</p>
+<div class="code-block"><div class="code-line"><code># Installer chafa pour les images dans le terminal
+sudo apt install chafa
+
+# Prévisualiser des images
+fzf --preview 'chafa {}'</code></div></div>
+
+<h2>Recherche dans le contenu des fichiers</h2>
+<p>Combinez <code>fzf</code> avec <code>grep</code>, <code>rg</code> (ripgrep) ou <code>ag</code> (the silver searcher) pour rechercher dans le contenu :</p>
+<div class="code-block"><div class="code-line"><code># Rechercher un texte dans les fichiers
+rg --files-with-matches "motif" | fzf
+
+# Avec ripgrep et sélection
+rg -l "fonction" | fzf --preview 'bat --color=always {}'</code></div></div>
+
+<h2>fzf-tmux — Version tmux</h2>
+<p>Si vous utilisez <code>tmux</code>, <code>fzf-tmux</code> lance fzf dans un panneau tmux plutôt que dans le terminal :</p>
+<div class="code-block"><div class="code-line"><code># Installer fzf-tmux (souvent inclus avec fzf)
+fzf-tmux
+
+# Ou avec options
+fzf-tmux -d 50%   # Panneau en bas, 50% de hauteur</code></div></div>
+
+<h2>Variables d'environnement utiles</h2>
+<p>Configurez le comportement par défaut de <code>fzf</code> via des variables :</p>
+<div class="code-block"><div class="code-line"><code># Ajoutez à ~/.bashrc ou ~/.zshrc
+export FZF_DEFAULT_COMMAND='fd --type f'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d .'
+export FZF_DEFAULT_OPTS='--height=40% --layout=reverse --border'</code></div></div>
+
+<h2>Exemples pratiques complets</h2>
+
+<h3>Recherche de fichiers avec aperçu</h3>
+<div class="code-block"><div class="code-line"><code>fzf --height=50% \
+    --layout=reverse \
+    --border \
+    --preview 'bat --color=always {}' \
+    --bind 'ctrl-/:toggle-preview'</code></div></div>
+
+<h3>Kill process interactif</h3>
+<div class="code-block"><div class="code-line"><code>ps aux | fzf --multi | awk '{print $2}' | xargs kill</code></div></div>
+
+<h3>Switch entre branches git</h3>
+<div class="code-block"><div class="code-line"><code>git checkout $(git branch | fzf)</code></div></div>
+
+<h3>Sélection de variables d'environnement</h3>
+<div class="code-block"><div class="code-line"><code>env | fzf</code></div></div>
+
+<h3>Recherche fuzzy dans man</h3>
+<div class="code-block"><div class="code-line"><code>man fzf   # La documentation officielle de fzf</code></div></div>
+
+<h2>Intégration avec vim/neovim</h2>
+<p><code>fzf</code> s'intègre parfaitement avec vim via le plugin <code>fzf.vim</code> (si vous utilisez un plugin manager) :</p>
+<div class="code-block"><div class="code-line"><code>:FZF          " Ouvre fzf pour rechercher des fichiers
+:Files         " Alias pour FZF
+:Ag [pattern]  " Recherche avec ripgrep</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li> Activez toujours <code>eval "$(fzf --bash)"</code> pour profiter des raccourcis globaux</li>
+<li> Combinez <code>fzf</code> avec <code>fd</code> et <code>bat</code> pour une expérience optimale</li>
+<li> Utilisez <code>--multi</code> pour la sélection multiple quand c'est nécessaire</li>
+<li> Personnalisez les options par défaut via <code>FZF_DEFAULT_OPTS</code></li>
+<li> Créez des alias pour vos combinaisons favorites</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Effet</th></tr>
+<tr><td><code>fzf</code></td><td>Recherche floue interactive</td></tr>
+<tr><td><code>Ctrl+T</code></td><td>Sélectionner un fichier (après eval)</td></tr>
+<tr><td><code>Ctrl+R</code></td><td>Historique des commandes</td></tr>
+<tr><td><code>Alt+C</code></td><td>cd vers un répertoire</td></tr>
+<tr><td><code>fzf --preview 'cmd'</code></td><td>Avec aperçu du contenu</td></tr>
+<tr><td><code>fzf --multi</code></td><td>Sélection multiple</td></tr>
+</table>
+
+<p><code>fzf</code> transforme votre terminal en outil de recherche puissant et intuitif. Combiné avec <code>fd</code>, <code>bat</code> et les raccourcis clavier intégrés, il devient un outil indispensable au quotidien.</p>
+
+<nav>
+<a href="159-watch.html">&larr; watch — Exécuter une commande périodiquement</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
