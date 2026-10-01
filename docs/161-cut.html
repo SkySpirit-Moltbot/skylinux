@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>cut — Extraire des colonnes de texte</h1>
+
+<h2>Introduction</h2>
+<p><code>cut</code> est un outil simple mais puissant pour extraire des colonnes ou des champs spécifiques d'un texte. Que ce soit pour isoler une colonne dans un fichier CSV, extraire des caractères d'une ligne, ou manipuler des données structurées, <code>cut</code> fait le travail efficacement. C'est l'un des outils les plus directs du terminal quand il s'agit de traiter du texte en colonnes.</p>
+
+<h2>Syntaxe de base</h2>
+<div class="code-block"><div class="code-line"><code>cut [OPTION]... [FICHIER]...</code></div></div>
+<p>Si aucun fichier n'est spécifié, <code>cut</code> lit depuis l'entrée standard (stdin), ce qui le rend parfait pour les pipes.</p>
+
+<h2>Les trois modes de sélection</h2>
+<p><code>cut</code> fonctionne selon trois modes complémentaires :</p>
+
+<h3>1. Par octets (<code>-b</code>)</h3>
+<p>Sélection par position d'octet (byte position). Chaque caractère compte comme un ou plusieurs octets selon l'encodage.</p>
+<div class="code-block"><div class="code-line"><code># Extraire les 5 premiers octets de chaque ligne
+cut -b 1-5 fichier.txt
+
+# Extraire les octets 1, 3 et 5
+cut -b 1,3,5 fichier.txt
+
+# Extraire du début jusqu'à l'octet 10
+cut -b -10 fichier.txt
+
+# Extraire de l'octet 5 jusqu'à la fin
+cut -b 5- fichier.txt</code></div></div>
+
+<h3>2. Par caractères (<code>-c</code>)</h3>
+<p>Sélection par position de caractère. Plus fiable que <code>-b</code> pour les caractères multi-octets (UTF-8 par exemple).</p>
+<div class="code-block"><div class="code-line"><code># Extraire les 10 premiers caractères
+cut -c 1-10 fichier.txt
+
+# Extraire les caractères 5 à 10
+cut -c 5-10 fichier.txt
+
+# Extraire les caractères 1, 3 et 7
+cut -c 1,3,7 fichier.txt</code></div></div>
+
+<h3>3. Par délimiteur et champs (<code>-d</code> et <code>-f</code>)</h3>
+<p>Le mode le plus courant. On spécifie un délimiteur (tabulation par défaut) et on sélectionne les champs.</p>
+<div class="code-block"><div class="code-line"><code># Extraire le 2ème champ (délimité par tabulation)
+cut -f 2 fichier.txt
+
+# Extraire les champs 1 et 3
+cut -f 1,3 fichier.txt
+
+# Extraire du champ 2 au champ 5
+cut -f 2-5 fichier.txt</code></div></div>
+
+<h2>Spécifier un délimiteur personnalisé</h2>
+<p>Par défaut, <code>cut</code> utilise la tabulation comme délimiteur. L'option <code>-d</code> permet de changer cela :</p>
+<div class="code-block"><div class="code-line"><code># Utiliser les deux-points comme délimiteur (fichier /etc/passwd)
+cut -d ':' -f 1,7 /etc/passwd
+
+# Utiliser la virgule comme délimiteur (fichier CSV)
+cut -d ',' -f 1,3,5 donnees.csv
+
+# Utiliser le point-virgule
+cut -d ';' -f 2 fichier.txt
+
+# Utiliser un espace
+cut -d ' ' -f 1 fichier.txt</code></div></div>
+
+<h2>Combiner avec --complement</h2>
+<p>L'option <code>--complement</code> inverse la sélection — elle affiche tout SAUF les parties sélectionnées :</p>
+<div class="code-block"><div class="code-line"><code># Extraire tout SAUF le 1er champ
+cut --complement -d ':' -f 1 /etc/passwd
+
+# Extraire tout SAUF les 5 premiers caractères
+cut --complement -c 1-5 fichier.txt</code></div></div>
+
+<h2>Spécifier un séparateur de sortie</h2>
+<p>Par défaut, <code>cut</code> préserve le délimiteur dans la sortie. Utilisez <code>-s</code> (supprimer) ou <code>--output-delimiter</code> pour personnaliser :</p>
+<div class="code-block"><div class="code-line"><code># Changer le séparateur de sortie
+cut -d ':' -f 1,5 --output-delimiter=' - ' /etc/passwd
+
+# Utiliser un retour à la ligne comme séparateur
+cut -d ':' -f 1,5 --output-delimiter=$'\n' /etc/passwd</code></div></div>
+
+<h2>Cas d'utilisation pratiques</h2>
+
+<h3>Extraire des noms d'utilisateur</h3>
+<div class="code-block"><div class="code-line"><code># Depuis /etc/passwd : extraire juste les noms d'utilisateur
+cut -d ':' -f 1 /etc/passwd
+
+# Lister les shells utilisés
+cut -d ':' -f 7 /etc/passwd | sort | uniq</code></div></div>
+
+<h3>Traiter des fichiers CSV</h3>
+<div class="code-block"><div class="code-line"><code># Extraire la 1ère et 3ème colonne d'un CSV
+cut -d ',' -f 1,3 fichier.csv
+
+# Extraire toutes les colonnes de la 2ème à la 5ème
+cut -d ',' -f 2-5 fichier.csv</code></div></div>
+
+<h3>Extraire des informations système</h3>
+<div class="code-block"><div class="code-line"><code># Voir seulement les noms des processus (ps)
+ps aux | tail -n +2 | cut -d ' ' -f 1
+
+# Extraire les permissions de fichiers
+ls -l | cut -d ' ' -f 1
+
+# Extraire juste les IPs d'un fichier log
+grep "connect" log.txt | cut -d ' ' -f 8 | sort | uniq</code></div></div>
+
+<h3>Couper des chaînes de caractères fixes</h3>
+<div class="code-block"><div class="code-line"><code># Extraire l'extension d'un nom de fichier (caractères après le point)
+echo "document.pdf" | rev | cut -d '.' -f 1 | rev
+
+# Extraire le nom sans extension
+echo "document.pdf" | cut -d '.' -f 1
+
+# Extraire les 8 premiers caractères d'une date (AAAA-MM-JJ)
+echo "2024-12-25" | cut -c 1-4   # Résultat : 2024
+echo "2024-12-25" | cut -c 6-7   # Résultat : 12</code></div></div>
+
+<h2>Combiner avec d'autres commandes</h2>
+<p><code>cut</code> révèle tout son potentiel en pipeline :</p>
+<div class="code-block"><div class="code-line"><code># Lister les utilisateurs avec leur shell, triés
+cut -d ':' -f 1,7 /etc/passwd | sort
+
+# Compter les types de shells utilisés
+cut -d ':' -f 7 /etc/passwd | sort | uniq -c | sort -rn
+
+# Extraire et dédoublonner les IPs d'un log
+cat access.log | cut -d ' ' -f 1 | sort | uniq -c | sort -rn | head -10
+
+# Lister les montages (sans les en-têtes)
+df -h | tail -n +2 | cut -d ' ' -f 1,5
+
+# Traiter une sortie JSON simple (extraire une valeur)
+echo '{"name":"Alice","age":30}' | grep -o '"name":"[^"]*"' | cut -d '"' -f 4</code></div></div>
+
+<h2>Gestion des délimiteurs consécutifs</h2>
+<p>Par défaut, si le délimiteur apparaît plusieurs fois de suite, chaque occurrence compte. Pour ignorer les champs vides :</p>
+<div class="code-block"><div class="code-line"><code># Exemple avec espaces multiples
+echo "a  b  c" | cut -d ' ' -f 2    # Retourne vide (2ème espace)
+
+# Solution : d'abord normaliser les espaces
+echo "a  b  c" | tr -s ' ' | cut -d ' ' -f 2   # Retourne "b"</code></div></div>
+
+<h2>Spécifier plusieurs ranges de bytes/caractères</h2>
+<div class="code-block"><div class="code-line"><code># Caractères 1-5 ET 10-15
+cut -c 1-5,10-15 fichier.txt
+
+# Mélanger positions et ranges
+cut -c 1-3,7,12- fichier.txt</code></div></div>
+
+<h2>Tableau récapitulatif des options</h2>
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-b LIST</code></td><td>Sélectionner par octets</td></tr>
+<tr><td><code>-c LIST</code></td><td>Sélectionner par caractères</td></tr>
+<tr><td><code>-d DELIM</code></td><td>Définir le délimiteur (défaut: tabulation)</td></tr>
+<tr><td><code>-f LIST</code></td><td>Sélectionner par champs</td></tr>
+<tr><td><code>-s</code></td><td>Ne pas afficher les lignes sans délimiteur</td></tr>
+<tr><td><code>--complement</code></td><td>Inverse la sélection</td></tr>
+<tr><td><code>--output-delimiter=DELIM</code></td><td>Définir le séparateur de sortie</td></tr>
+<tr><td><code>--only-delimited</code></td><td>Alias de <code>-s</code></td></tr>
+</table>
+
+<h2>Format de la liste (LIST)</h2>
+<table>
+<tr><th>Format</th><th>Exemple</th><th>Résultat</th></tr>
+<tr><td><code>N</code></td><td><code>-f 3</code></td><td>Un seul champ</td></tr>
+<tr><td><code>N-M</code></td><td><code>-f 2-4</code></td><td>Du champ N au champ M</td></tr>
+<tr><td><code>N-</code></td><td><code>-f 3-</code></td><td>Du champ N jusqu'à la fin</td></tr>
+<tr><td><code>-M</code></td><td><code>-f -5</code></td><td>Du début jusqu'au champ M</td></tr>
+<tr><td><code>N,M,O</code></td><td><code>-f 1,3,5</code></td><td>Plusieurs champs</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Privilégiez <code>-c</code> à <code>-b</code> pour les fichiers UTF-8 — plus fiable avec les caractères accentués</li>
+<li>Utilisez <code>-d</code> pour les fichiers structurés (CSV, /etc/passwd, logs)</li>
+<li>Combinez avec <code>tr -s</code> pour normaliser les délimiteurs multiples</li>
+<li>Spécifiez toujours le délimiteur explicitement si vous n'utilisez pas la tabulation par défaut</li>
+<li>Pour des manipulations complexes, <code>awk</code> offre plus de flexibilité (voir leçon 47)</li>
+</ul>
+
+<h2>Résumé</h2>
+<table>
+<tr><th>Commande</th><th>Effet</th></tr>
+<tr><td><code>cut -c 1-10 fichier.txt</code></td><td>Extraire les 10 premiers caractères</td></tr>
+<tr><td><code>cut -d ':' -f 1 /etc/passwd</code></td><td>Extraire le 1er champ (délimité par :)</td></tr>
+<tr><td><code>cut -d ',' -f 2,4 fichier.csv</code></td><td>Extraire les colonnes 2 et 4 d'un CSV</td></tr>
+<tr><td><code>cut -d ':' -f 1,7 --output-delimiter='|'</code></td><td>Changer le séparateur de sortie</td></tr>
+<tr><td><code>cut --complement -d ':' -f 1</code></td><td>Afficher tout SAUF le 1er champ</td></tr>
+</table>
+
+<p><code>cut</code> est un outil ciblé et efficace pour extraire des colonnes. Pour des tâches simples, il surpasse des outils plus complexes comme <code>awk</code>. Combinez-le dans des pipelines pour traiter rapidement des données structurées sans écrire de script complet.</p>
+
+<nav>
+<a href="160-fzf-fuzzy-finder.html">&larr; fzf — Fuzzy Finder, recherche floue en ligne de commande</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
