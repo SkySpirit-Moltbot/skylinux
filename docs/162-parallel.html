@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>parallel — Exécuter des commandes en parallèle sous Linux</title>
+<meta name="description" content="Apprenez à utiliser GNU parallel pour exécuter plusieurs commandes en parallèle sous Linux. Accélérez vos scripts et traitements batch.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; font-size: 1.3rem; }
+h3 { color: #a855f7; margin: 15px 0 8px; font-size: 1.1rem; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 10px 12px; text-align: left; }
+th { background: rgba(0,217,255,0.1); color: #00d9ff; }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-header { background: rgba(0,217,255,0.05); padding: 8px 16px; font-size: 0.8rem; color: #666; border-bottom: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 10px 16px; }
+.code-num { color: #444; width: 30px; text-align: right; margin-right: 16px; font-size: 0.8rem; flex-shrink: 0; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+.info { background: rgba(0,217,255,0.06); border-left: 3px solid #00d9ff; padding: 12px 16px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+.info strong { color: #00d9ff; }
+.warning { background: rgba(255,200,0,0.06); border-left: 3px solid #ffc800; padding: 12px 16px; margin: 15px 0; border-radius: 0 8px 8px 0; }
+.warning strong { color: #ffc800; }
+.exemple { background: #111118; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin: 15px 0; }
+.exemple h4 { color: #a855f7; margin-bottom: 10px; font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 162 : parallel — Exécuter des commandes en parallèle</h1>
+
+<p>Quand vous devez traiter beaucoup de fichiers ou exécuter de nombreuses tâches, le faire séquentiellement prend un temps précieux. <strong>GNU parallel</strong> est un outil qui permet d'exécuter plusieurs commandes simultanément, en utilisant pleinement les cœurs de votre processeur.</p>
+
+<h2>1. Installation</h2>
+
+<p>Parallel est généralement disponible dans les dépôts de votre distribution :</p>
+
+<div class="code-block">
+<div class="code-header"># Ubuntu / Debian</div>
+<div class="code-line"><span class="code-num">1</span><code>sudo apt install parallel</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Fedora / RHEL / CentOS</div>
+<div class="code-line"><span class="code-num">1</span><code>sudo dnf install parallel</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-header"># Arch Linux</div>
+<div class="code-line"><span class="code-num">1</span><code>sudo pacman -S parallel</code></div>
+</div>
+
+<h2>2. Syntaxe de base</h2>
+
+<p>La syntaxe générale de <code>parallel</code> est simple :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel commande ::: argument1 argument2 argument3</code></div>
+</div>
+
+<p>Les arguments après <code>:::</code> sont passés à la commande. Par défaut, <code>parallel</code> utilise autant de jobs (tâches) que vous avez de cœurs CPU.</p>
+
+<h2>3. Exemples concrets</h2>
+
+<h3>3.1 Compression de plusieurs fichiers</h3>
+
+<p>Compresser 10 fichiers en parallèle (au lieu de les compresser un par un) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel gzip ::: fichier1.txt fichier2.txt fichier3.txt fichier4.txt fichier5.txt</code></div>
+</div>
+
+<h3>3.2 Traitement d'images avec ImageMagick</h3>
+
+<p>Redimensionner 100 photos en parallèle en utilisant 4 jobs simultanés :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel -j 4 convert -resize 800x600 {} {} ::: *.jpg</code></div>
+</div>
+
+<div class="info"><strong>Note :</strong> Ici <code>{}</code> représente le nom du fichier en cours de traitement. Vous pouvez utiliser <code>{.}</code> pour le nom sans l'extension.</div>
+
+<h3>3.3 Téléchargements parallèles avec curl</h3>
+
+<div class="code-block">
+<div class="code-line"><code>parallel curl -O ::: https://exemple.com/fichier1.zip https://exemple.com/fichier2.zip https://exemple.com/fichier3.zip</code></div>
+</div>
+
+<h3>3.4 Compter les lignes de plusieurs fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>parallel wc -l ::: fichier1.txt fichier2.txt fichier3.txt</code></div>
+</div>
+
+<h2>4. Lire les arguments depuis un fichier ou stdin</h2>
+
+<h3>4.1 Depuis un fichier avec <code>:::</code></h3>
+
+<div class="code-block">
+<div class="code-line"><code>parallel commande ::: "$(cat liste.txt)"</code></div>
+</div>
+
+<h3>4.2 pipe et <code>:::</code></h3>
+
+<div class="code-block">
+<div class="code-line"><code>cat urls.txt | parallel curl -O</code></div>
+</div>
+
+<h3>4.3 Avec <code>--pipe</code> pour stdin</h3>
+
+<p>Distribuer les lignes d'un fichier vers plusieurs processus :</p>
+
+<div class="code-block">
+<div class="code-line"><code>cat large_fichier.txt | parallel --pipe --block 10k commande</code></div>
+</div>
+
+<div class="info"><strong>--pipe</strong> divise stdin en blocs et exécute la commande sur chaque bloc.<br>
+<strong>--block</strong> définit la taille de chaque bloc (ici 10 Ko).</div>
+
+<h2>5. Contrôler le nombre de jobs simultanés</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-j N</code></td><td>Exécuter N jobs en parallèle (par défaut = nombre de CPU)</td></tr>
+<tr><td><code>-j 0</code></td><td>Exécuter autant de jobs que de cœurs CPU</td></tr>
+<tr><td><code>-j 1</code></td><td>Exécution séquentielle (1 seul job à la fois)</td></tr>
+<tr><td><code>--jobs N</code></td><td>Forme longue de -j</td></tr>
+</table>
+
+<div class="code-block">
+<div class="code-line"><code>parallel -j 2 commande ::: a b c d e f</code></div>
+</div>
+
+<h2>6. Placeholders utiles</h2>
+
+<table>
+<tr><th>Placeholder</th><th>Signification</th><th>Exemple</th></tr>
+<tr><td><code>{}</code></td><td>Argument complet</td><td><code>fichier.jpg</code></td></tr>
+<tr><td><code>{.}</code></td><td>Sans extension</td><td><code>fichier</code></td></tr>
+<tr><td><code>{/}</code></td><td>Juste le nom du fichier</td><td><code>fichier.jpg</code></td></tr>
+<tr><td><code>{//}</code></td><td>Répertoire parent</td><td><code>/home/user/photos</code></td></tr>
+<tr><td><code>{/.}</code></td><td>Nom sans extension</td><td><code>fichier</code></td></tr>
+</table>
+
+<h3>Exemple avec placeholders</h3>
+
+<div class="code-block">
+<div class="code-line"><code>parallel convert {} {.}_small.jpg ::: *.jpg</code></div>
+</div>
+
+<p>Cela convertit chaque <code>photo.jpg</code> en <code>photo_small.jpg</code>.</p>
+
+<h2>7. Garder l'ordre des résultats</h2>
+
+<p>Par défaut, les résultats peuvent arriver dans un ordre différent de celui des entrées (selon le temps d'exécution). Pour forcer l'ordre :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --keep-order commande ::: a b c</code></div>
+</div>
+
+<h2>8. Journal et progression</h2>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --bar commande ::: $(seq 1 100)</code></div>
+</div>
+
+<p>Affiche une barre de progression pendant l'exécution.</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --joblog mon_log.txt commande ::: args</code></div>
+</div>
+
+<p>Enregistre les détails de chaque job dans un fichier log.</p>
+
+<h2>9. Arrêter sur erreur</h2>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --halt now,fail=1 commande ::: args</code></div>
+</div>
+
+<table>
+<tr><th>Option</th><th>Comportement</th></tr>
+<tr><td><code>--halt now,fail=1</code></td><td>Arrête dès qu'un job échoue</td></tr>
+<tr><td><code>--halt now, fail=2</code></td><td>Arrête quand 2 jobs ont échoué</td></tr>
+<tr><td><code>--halt never</code></td><td>Ne s'arrête jamais (par défaut)</td></tr>
+</table>
+
+<h2>10. Chaînage de commandes avec <code>:::</code></h2>
+
+<p>Vous pouvez passer des arguments à plusieurs commandes :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel echo fichier {} "&&" gzip {} ::: txt log csv</code></div>
+</div>
+
+<h2>11. Scripts complexes avec <code>--pipepart</code></h2>
+
+<p>Pour distribuer efficacement de gros fichiers sur plusieurs cœurs :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --pipepart --block 100M -a gros_fichier.bin wc -l</code></div>
+</div>
+
+<div class="info"><strong>--pipepart</strong> est plus rapide que <code>--pipe</code> car il lit directement le fichier sans passer par un pipe.</div>
+
+<h2>12. Exemple complet : redimensionner des images</h2>
+
+<div class="exemple">
+<h4>Redimensionner toutes les photos d'un dossier en 800x600 avec 4 processus simultanés</h4>
+<div class="code-block">
+<div class="code-line"><code>mkdir -p petite_images && cd petite_images && parallel --bar -j 4 convert -resize 800x600 ../images/{} {} ::: *.jpg</code></div>
+</div>
+</div>
+
+<h2>13. Résumé des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-j N</code></td><td>Nombre de jobs parallèles</td></tr>
+<tr><td><code>--bar</code></td><td>Afficher une barre de progression</td></tr>
+<tr><td><code>--joblog</code></td><td>Log des jobs exécutés</td></tr>
+<tr><td><code>--halt</code></td><td>Arrêt sur erreur</td></tr>
+<tr><td><code>--pipe</code></td><td>Traiter stdin en parallèle</td></tr>
+<tr><td><code>--pipepart</code></td><td>Version rapide de --pipe</td></tr>
+<tr><td><code>{}</code></td><td>Placeholder pour l'argument</td></tr>
+<tr><td><code>--dry-run</code></td><td>Afficher sans exécuter</td></tr>
+</table>
+
+<h2>Exercices</h2>
+
+<ol>
+<li>Installez <code>parallel</code> sur votre système.</li>
+<li>Créez 10 fichiers texte et compressez-les en parallèle avec <code>gzip</code>.</li>
+<li>Utilisez <code>parallel</code> avec <code>wc -l</code> pour compter les lignes de plusieurs fichiers simultanément.</li>
+<li>Comparez le temps d'exécution entre un traitement séquentiel et parallèle avec <code>time</code>.</li>
+<li>Générez une liste de 20 URLs bidon et utilisez <code>parallel curl</code> pour les traiter.</li>
+</ol>
+
+<nav>
+<a href="161-cut.html">&larr; Leçon 161 : cut — Extraire des colonnes de texte</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
