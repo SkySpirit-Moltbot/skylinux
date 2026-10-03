@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 163 : base64 — Encoder et décoder en Base64</h1>
+
+<p>Base64 est un système de numération utilisant 64 caractères (A-Z, a-z, 0-9, + et /) pour représenter des données binaires sous forme de texte. C'est extrêmement utile pour transmettre des données binaires dans des contexts textuels (emails, JSON, URLs, etc.).</p>
+
+<h2>Principe de base</h2>
+
+<p>Chaque groupe de 3 octets (24 bits) est converti en 4 caractères Base64. Si le dernier groupe contient moins de 3 octets, des caractères de remplissage (<code>=</code>) sont ajoutés.</p>
+
+<table>
+<tr><th>Caractère</th><th>Valeur</th><th>Caractère</th><th>Valeur</th></tr>
+<tr><td>A - Z</td><td>0 - 25</td><td>a - z</td><td>26 - 51</td></tr>
+<tr><td>0 - 9</td><td>52 - 61</td><td>+</td><td>62</td></tr>
+<tr><td>/</td><td>63</td><td>=</td><td>Padding</td></tr>
+</table>
+
+<h2>Encoder un fichier ou du texte</h2>
+
+<h3>Encoder depuis stdin</h3>
+<div class="code-block"><div class="code-line"><code>echo "Bonjour le monde !" | base64</code></div></div>
+
+<h3>Encoder un fichier</h3>
+<div class="code-block"><div class="code-line"><code>base64 fichier.png > fichier.b64</code></div></div>
+
+<h3>Encoder avec saut de ligne (RFC standard)</h3>
+<div class="code-block"><div class="code-line"><code>base64 -w 0 fichier.png</code></div></div>
+
+<h2>Décoder du Base64</h2>
+
+<h3>Décoder depuis stdin</h3>
+<div class="code-block"><div class="code-line"><code>echo "Qm9uam91ciBsZSBtb25kZSAh" | base64 -d</code></div></div>
+
+<h3>Décoder un fichier Base64</h3>
+<div class="code-block"><div class="code-line"><code>base64 -d fichier.b64 > fichier_restored.png</code></div></div>
+
+<h2>Options utiles</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-d</code></td><td>Mode décodage</td></tr>
+<tr><td><code>-w COLS</code></td><td>Largeur des lignes (0 = pas de retour à la ligne)</td></tr>
+<tr><td><code>-i</code></td><td>Ignorer les caractères non-Base64 (valide aussi en décodage)</td></tr>
+<tr><td><code>--wrap=COLS</code></code></td><td>Alias de -w</td></tr>
+</table>
+
+<h2>Cas d'utilisation courants</h2>
+
+<h3>Encoder une image pour JSON</h3>
+<div class="code-block"><div class="code-line"><code>base64 -w 0 image.png</code></div></div>
+
+<h3>Encoder une clé SSH publique pour l'ajouter à un serveur distant</h3>
+<div class="code-block"><div class="code-line"><code>cat ~/.ssh/id_rsa.pub | base64</code></div></div>
+
+<h3>Encoder un mot de passe pour un header HTTP</h3>
+<div class="code-block"><div class="code-line"><code>echo -n "utilisateur:motdepasse" | base64</code></div></div>
+
+<h3>Decoder et voir le résultat directement</h3>
+<div class="code-block"><div class="code-line"><code>echo "SGVsbG8gV29ybGQ=" | base64 -d && echo ""</code></div></div>
+
+<h2>Avec les pipes</h2>
+
+<p>Combiner Base64 avec d'autres outils pour des transformations puissantes :</p>
+
+<div class="code-block"><div class="code-line"><code># Encoder le contenu d'un fichier tar sans le nommer explicitement</code></div></div>
+<div class="code-block"><div class="code-line"><code>tar cf - photos/ | base64 | wc -c</code></div></div>
+
+<div class="code-block"><div class="code-line"><code># Encoder et décoder en une seule commande (round-trip)</code></div></div>
+<div class="code-block"><div class="code-line"><code>echo "Test" | base64 | base64 -d</code></div></div>
+
+<h2>Gestion des erreurs</h2>
+
+<p>Si le texte Base64 est corrompu, <code>base64 -d</code> le_signalera :</p>
+
+<div class="code-block"><div class="code-line"><code>echo "Invalide!!!" | base64 -d 2>&amp;&amp; echo "OK" || echo "Erreur"</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez <code>-w 0</code> pour obtenir une sortie sur une seule ligne (idéal pour JSON, URLs, etc.)</li>
+<li>Pour encoder des fichiers binaires, vérifiez toujours que le décodage produit le bon résultat avec une somme de contrôle</li>
+<li>Combinez avec <code>tr -d '\n'</code> si vous avez besoin de supprimer tous les retours à la ligne</li>
+<li>Pour les URLs,要考虑 использование URL-safe Base64 (заменяет + на - и / на _)</li>
+</ul>
+
+<h2>URL-safe Base64</h2>
+
+<p>Pour les URLs et noms de fichiers, remplacez les caractères spéciaux :</p>
+
+<div class="code-block"><div class="code-line"><code># Encoder en Base64 URL-safe</code></div></div>
+<div class="code-block"><div class="code-line"><code>echo "données@sensibles/64" | base64 | tr '+/' '-_' | tr -d '='</code></div></div>
+
+<h2>Exercice pratique</h2>
+
+<ol>
+<li>Créez un fichier texte avec <code>echo "Linux c'est formidable !" > test.txt</code></li>
+<li>Encodez-le en Base64 : <code>base64 test.txt</code></li>
+<li>Copiez la sortie Base64</li>
+<li>Décodez-la : <code>echo "TGludXggYydlc3QgZm9ybWlkYWJsZSAhCg==" | base64 -d</code></li>
+<li>Vérifiez que le résultat correspond à l'original</li>
+</ol>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>echo "texte" | base64</code></td><td>Encoder du texte</td></tr>
+<tr><td><code>base64 fichier</code></td><td>Encoder un fichier</td></tr>
+<tr><td><code>echo "..." | base64 -d</code></td><td>Décoder du Base64</td></tr>
+<tr><td><code>base64 -d fichier.b64</code></td><td>Décoder un fichier</td></tr>
+<tr><td><code>base64 -w 0 fichier</code></td><td>Encoder sans retour à la ligne</td></tr>
+</table>
+
+<nav>
+<a href="162-parallel.html">&larr; Leçon 162 : parallel — Exécuter des commandes en parallèle</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
