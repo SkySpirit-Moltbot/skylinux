@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>timeout — Limiter le temps d'exécution d'une commande</h1>
+
+<p>La commande <code>timeout</code> permet d'exécuter une commande avec une limite de temps. Si la commande dépasse le délai imparti, elle est automatiquement terminée par un signal. C'est l'outil idéal pour éviter qu'un processus ne tourne indefiniment.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>timeout [OPTION] DURÉE COMMANDE [ARGUMENTS]</code></div>
+</div>
+
+<p>La <code>DURÉE</code> peut être exprimée en secondes (par défaut), ou avec un suffixe : <code>s</code> pour les secondes, <code>m</code> pour les minutes, <code>h</code> pour les heures, <code>d</code> pour les jours.</p>
+
+<h2>Exemples fondamentaux</h2>
+
+<h3>Timeout simple en secondes</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Arrêter la commande après 5 secondes</code></div>
+<div class="code-line"><code>timeout 5 sleep 10</code></div>
+<div class="code-line"><code># sleep 10 devrait durer 10 secondes, mais timeout l'arrête après 5</code></div>
+</div>
+
+<h3>Avec suffixe de temps</h3>
+
+<div class="code-block">
+<div class="code-line"><code>timeout 2m ma_commande      # 2 minutes</code></div>
+<div class="code-line"><code>timeout 1h script_long.sh   # 1 heure</code></div>
+<div class="code-line"><code>timeout 30s ping localhost  # 30 secondes</code></div>
+</div>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>--signal SIG</code></td><td>Envoie le signal spécifié au lieu de TERM (par défaut)</td></tr>
+<tr><td><code>-s SIG</code></td><td>Alias court pour --signal</td></tr>
+<tr><td><code>--preserve-status</code></td><td>Retourne le code de sortie de la commande même si elle a été tuée</td></tr>
+<tr><td><code>--kill-after=DURÉE</code></td><td>Envoie KILL si la commande ne s'arrête pas après le premier signal</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux</td></tr>
+</table>
+
+<h2>Envoyer un signal spécifique</h2>
+
+<p>Par défaut, <code>timeout</code> envoie <code>SIGTERM</code> (signal 15) pour arrêter la commande. Vous pouvez spécifier un autre signal avec <code>-s</code> ou <code>--signal</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Envoyer SIGINT (Ctrl+C) après 10 secondes</code></div>
+<div class="code-line"><code>timeout -s INT 10 curl https://exemple.com</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Envoyer SIGKILL (impossible à ignorer) après 5 secondes</code></div>
+<div class="code-line"><code>timeout -s KILL 5 grep -r "motif" /dossier/</code></div>
+</div>
+
+<h2>Forcer l'arrêt avec --kill-after</h2>
+
+<p>Si une commande ne répond pas au premier signal (elle peut ignorer SIGTERM), vous pouvez forcer un <code>SIGKILL</code> après un délai supplémentaire.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Envoie TERM après 10s, puis KILL après 5s supplémentaires si toujours active</code></div>
+<div class="code-line"><code>timeout --kill-after=5s 10m script_long.sh</code></div>
+</div>
+
+<h2>Conserver le code de sortie</h2>
+
+<p>Par défaut, si la commande est tuée par timeout, le code de retour est 124. Utilisez <code>--preserve-status</code> pour conserver le véritable code de sortie de la commande.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Sans --preserve-status : le code de sortie sera 124 (timeout)</code></div>
+<div class="code-line"><code>timeout 2 cat fichier_inexistant</code></div>
+<div class="code-line"><code>echo $?  # 124</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec --preserve-status : on obtient le vrai code d'erreur</code></div>
+<div class="code-line"><code>timeout --preserve-status 2 cat fichier_inexistant</code></div>
+<div class="code-line"><code>echo $?  # 1 (fichier inexistant)</code></div>
+</div>
+
+<h2>Codes de sortie spéciaux</h2>
+
+<table>
+<tr><th>Code</th><th>Signification</th></tr>
+<tr><td><code>124</code></td><td>La commande a été terminée par timeout</td></tr>
+<tr><td><code>125</code></td><td>Erreur interne de timeout</td></tr>
+<tr><td><code>126</code></td><td>La commande n'a pas pu être exécutée</td></tr>
+<tr><td><code>127</code></td><td>La commande n'existe pas</td></tr>
+<tr><td>Autre</td><td>Code de retour normal de la commande</td></tr>
+</table>
+
+<h2>Utilisation dans les scripts Bash</h2>
+
+<h3>Avec un pipe</h3>
+
+<p>Si vous utilisez un pipe, timeout doit encadrer l'ensemble du pipeline :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Timeout sur un pipeline entier</code></div>
+<div class="code-line"><code>timeout 30s cat gros_fichier | grep "motif" | head -20</code></div>
+</div>
+
+<h3>Vérifier si une commande a expiré</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash</code></div>
+<div class="code-line"><code>timeout 60s curl -s https://api.exemple.com/donnees > /tmp/data.json</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>if [ $? -eq 124 ]; then</code></div>
+<div class="code-line"><code>    echo "La requête a expiré après 60 secondes"</code></div>
+<div class="code-line"><code>    exit 1</code></div>
+<div class="code-line"><code>fi</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code>echo "Données récupérées avec succès"</code></div>
+</div>
+
+<h2>Cas d'utilisation courants</h2>
+
+<ul>
+<li><strong>Scripts de sauvegarde</strong> — limiter le temps d'une opération de backup nocturne</li>
+<li><strong>Requêtes réseau</strong> — éviter qu'une requête curl ou wget ne reste bloquée indefiniment</li>
+<li><strong>Tests de performance</strong> — imposer un temps maximum à une commande de benchmark</li>
+<li><strong>Scripts Cron</strong> — protéger contre des processus qui viendraient à se bloquer</li>
+<li><strong>Téléchargements</strong> — abandonner un téléchargement qui ne répond plus</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Exemple concret : télécharger avec timeout</code></div>
+<div class="code-line"><code>timeout 30 curl -O https://fichier-lourd.example.com/backup.tar.gz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Limiter la durée d'un script de sauvegarde</code></div>
+<div class="code-line"><code>timeout 2h /opt/scripts/sauvegarde-quotidienne.sh</code></div>
+</div>
+
+<h2>Comparaison avec d'autres approches</h2>
+
+<table>
+<tr><th>Méthode</th><th>Commande</th><th>Avantage</th></tr>
+<tr><td>timeout (recommandé)</td><td><code>timeout 10s cmd</code></td><td>Simple, portable, propre</td></tr>
+<tr><td>Bash GNU extension</td><td><code>timeout 10 cmd</code> (sans timeout)</td><td>Intégré au shell (extension)</td></tr>
+<tr><td>ping loop</td><td><code>ping -W1 -c10 host</code></td><td>Spécifique aux pings</td></tr>
+<tr><td>Perl</td><td><code>perl -e 'alarm 10; exec @ARGV' cmd</code></td><td>Portable mais complexe</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Choisissez toujours un temps suffisant pour que la commande termine normalement — timeout est une safety net, pas une course</li>
+<li>Utilisez <code>--kill-after</code> quand vous savez que certaines commandes peuvent ignorer SIGTERM</li>
+<li>Dans les scripts critiques, vérifiez le code de retour (124 = timeout) pour adapter le comportement</li>
+<li>Combinez avec <code>--preserve-status</code> quand le code de sortie de la commande vous intéresse</li>
+</ul>
+
+<nav>
+<a href="163-base64-encoder-decoder.html">&larr; base64 — Encoder et décoder en Base64</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
