@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>curl et wget — Télécharger depuis le terminal</h1>
+
+<p>Les commandes <code>curl</code> et <code>wget</code> sont deux outils essentiels pour télécharger des fichiers et interroger des API depuis le terminal. wget brille par sa simplicité pour les téléchargements récursifs, tandis que curl excelle dans l'interaction avec les API et le transfert de données arbitraires.</p>
+
+<h2>wget — Téléchargement simple et récursif</h2>
+
+<h3>Téléchargement basique</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger un fichier unique</code></div>
+<div class="code-line"><code>wget https://example.com/fichier.zip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Télécharger avec un nom personnalisé</code></div>
+<div class="code-line"><code>wget -O mon_fichier.zip https://example.com/fichier.zip</code></div>
+</div>
+
+<h3>Options courantes de wget</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-O nom</code></td><td>Définir le nom du fichier de sortie</td></tr>
+<tr><td><code>-c</code></td><td>Reprendre un téléchargement interrompu (continue)</td></tr>
+<tr><td><code>-q</code></td><td>Mode silencieux (pas de sortie)</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux</td></tr>
+<tr><td><code>-b</code></td><td>Passer en arrière-plan après le démarrage</td></tr>
+<tr><td><code>--limit-rate=500k</code></td><td>Limiter la vitesse de téléchargement (500 Ko/s)</td></tr>
+<tr><td><code>-r</code></td><td>Téléchargement récursif</td></tr>
+<tr><td><code>-np</code></td><td>Ne pas remonter dans les répertoires parents</td></tr>
+<tr><td><code>-l 5</code></td><td>Profondeur de récursion (5 niveaux)</td></tr>
+</table>
+
+<h3>Reprendre un téléchargement interrompu</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger avec reprise automatique</code></div>
+<div class="code-line"><code>wget -c https://example.com/gros_fichier.tar.gz</code></div>
+</div>
+
+<h3>Téléchargement récursif d'un site</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger un site web entier (à utiliser responsibly)</code></div>
+<div class="code-line"><code>wget -r -l 2 -np https://example.com/docs/</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Limiter la profondeur et le taux de téléchargement</code></div>
+<div class="code-line"><code>wget -r -l 3 --limit-rate=200k https://example.com/site/</code></div>
+</div>
+
+<h3>Télécharger plusieurs fichiers avec une liste</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un fichier avec les URLs</code></div>
+<div class="code-line"><code>echo -e "https://example.com/fichier1.zip\nhttps://example.com/fichier2.zip" > urls.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Télécharger tous les fichiers de la liste</code></div>
+<div class="code-line"><code>wget -i urls.txt</code></div>
+</div>
+
+<h2>curl — Transfert de données多功能</h2>
+
+<h3>Téléchargement basique</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger et afficher la sortie dans le terminal</code></div>
+<div class="code-line"><code>curl https://example.com/fichier.zip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Télécharger et sauvegarder dans un fichier</code></div>
+<div class="code-line"><code>curl -o mon_fichier.zip https://example.com/fichier.zip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Télécharger en utilisant le nom original du fichier</code></div>
+<div class="code-line"><code>curl -O https://example.com/fichier.zip</code></div>
+</div>
+
+<h3>Options courantes de curl</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-o fichier</code></td><td>Sauvegarder la sortie dans un fichier nommé</td></tr>
+<tr><td><code>-O</code></td><td>Utiliser le nom de fichier original du serveur</td></tr>
+<tr><td><code>-L</code></td><td>Suivre les redirections HTTP</td></tr>
+<tr><td><code>-I</code></td><td>Afficher uniquement les en-têtes HTTP</td></tr>
+<tr><td><code>-s</code></td><td>Mode silencieux (sans barre de progression ni erreurs)</td></tr>
+<tr><td><code>-S</code></td><td>Afficher les erreurs même en mode silencieux</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux (afficher les en-têtes)</td></tr>
+<tr><td><code>-X méthode</code></td><td>Définir la méthode HTTP (GET, POST, PUT, DELETE...)</td></tr>
+<tr><td><code>-d données</code></td><td>Envoyer des données (pour POST)</td></tr>
+<tr><td><code>-H "En-tête: valeur"</code></td><td>Ajouter un en-tête HTTP personnalisé</td></tr>
+<tr><td><code>-u utilisateur:mdp</code></td><td>Authentification basique</td></tr>
+<tr><td><code>-k</code></td><td>Ignorer les erreurs de certificat SSL</td></tr>
+<tr><td><code>--limit-rate 500k</code></td><td>Limiter la vitesse de transfert</td></tr>
+</table>
+
+<h2>Interagir avec les API REST</h2>
+
+<h3>Requêtes GET simples</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Obtenir une réponse JSON d'une API</code></div>
+<div class="code-line"><code>curl https://api.exemple.com/utilisateurs</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Suivre les redirections et mode silencieux</code></div>
+<div class="code-line"><code>curl -Ls https://api.exemple.com/donnees</code></div>
+</div>
+
+<h3>Envoyer des données avec POST</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Envoyer un JSON POST</code></div>
+<div class="code-line"><code>curl -X POST https://api.exemple.com/utilisateurs \</code></div>
+<div class="code-line"><code>  -H "Content-Type: application/json" \</code></div>
+<div class="code-line"><code>  -d '{"nom": "Alice", "email": "alice@example.com"}'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Envoyer des données de formulaire</code></div>
+<div class="code-line"><code>curl -X POST https://form.exemple.com/submit \</code></div>
+<div class="code-line"><code>  -d "nom=Alice" -d "message=Bonjour"</code></div>
+</div>
+
+<h3>Utiliser des en-têtes personnalisés</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter des en-têtes personnalisés</code></div>
+<div class="code-line"><code>curl -H "Authorization: Bearer TOKEN_SECRET" \</code></div>
+<div class="code-line"><code>     -H "Accept: application/json" \</code></div>
+<div class="code-line"><code>     https://api.exemple.com/profil</code></div>
+</div>
+
+<h3>Authentification</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Authentification basique HTTP</code></div>
+<div class="code-line"><code>curl -u admin:password https://api.exemple.com/admin</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Token Bearer (JWT)</code></div>
+<div class="code-line"><code>curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIs..." \</code></div>
+<div class="code-line"><code>     https://api.exemple.com/secure</code></div>
+</div>
+
+<h2>Télécharger avec reprise et limitation</h2>
+
+<div class="code-block">
+<div class="code-line"><code># wget : reprendre un téléchargement interrompu</code></div>
+<div class="code-line"><code>wget -c https://example.com/gros_fichier.tar.gz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># curl : télécharge et affiche la progression</code></div>
+<div class="code-line"><code>curl -L -C - -o sortie.tar.gz https://example.com/gros_fichier.tar.gz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Limiter le débit à 500 Ko/s</code></div>
+<div class="code-line"><code>wget --limit-rate=500k https://example.com/fichier.zip</code></div>
+<div class="code-line"><code>curl --limit-rate 500k -O https://example.com/fichier.zip</code></div>
+</div>
+
+<h2>Inspecter les en-têtes HTTP</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher uniquement les en-têtes de réponse</code></div>
+<div class="code-line"><code>curl -I https://example.com</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Afficher les en-têtes avec la réponse complète</code></div>
+<div class="code-line"><code>curl -i https://example.com</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Vérifier les en-têtes avec wget</code></div>
+<div class="code-line"><code>wget -S https://example.com 2>&1 | head -20</code></div>
+</div>
+
+<h2>FTP — Téléchargement depuis un serveur de fichiers</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger un fichier via FTP anonyme</code></div>
+<div class="code-line"><code>wget ftp://ftp.exemple.com/fichier.zip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># FTP avec authentification</code></div>
+<div class="code-line"><code>wget --user=monuser --password=monmdp ftp://ftp.exemple.com/fichier.zip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec curl</code></div>
+<div class="code-line"><code>curl -u monuser:monmdp -O ftp://ftp.exemple.com/fichier.zip</code></div>
+</div>
+
+<h2>Combiner avec d'autres outils</h2>
+
+<h3>Télécharger et décompresser en une ligne</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger et extraire directement</code></div>
+<div class="code-line"><code>wget -qO- https://example.com/archive.tar.gz | tar xz</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Télécharger via curl et pipe vers tar</code></div>
+<div class="code-line"><code>curl -Ls https://example.com/archive.tar.gz | tar xz</code></div>
+</div>
+
+<h3>Télécharger et traiter avec jq</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger un JSON et l'afficher joliment</code></div>
+<div class="code-line"><code>curl -s https://api.exemple.com/utilisateurs | jq '.'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Extraire une valeur spécifique</code></div>
+<div class="code-line"><code>curl -s https://api.exemple.com/utilisateurs/1 | jq -r '.email'</code></div>
+</div>
+
+<h3>Envoyer un fichier sur un serveur</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Upload avec curl</code></div>
+<div class="code-line"><code>curl -X PUT -T mon_fichier.zip https://upload.exemple.com/receive</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Upload multipart/form-data</code></div>
+<div class="code-line"><code>curl -F "fichier=@rapport.pdf" https://upload.exemple.com/upload</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Choisissez wget</strong> pour les téléchargements de fichiers uniques ou récursifs — il reprend automatiquement les téléchargements interrompus</li>
+<li><strong>Choisissez curl</strong> pour interagir avec les API REST, envoyer des données ou tester des endpoints</li>
+<li>Utilisez <code>-s</code> (curl) ou <code>-q</code> (wget) dans les scripts pour éviter le bruit dans les logs</li>
+<li>Combinez <code>-L</code> avec curl pour suivre automatiquement les redirections</li>
+<li>Pour les serveurs avec des certificats auto-signés, utilisez <code>-k</code> avec curl (avec précaution)</li>
+<li>Protégez vos tokens et mots de passe — évitez de les mettre en clair dans les commandes visibles</li>
+</ul>
+
+<nav>
+<a href="164-timeout-limiter-execution.html">&larr; timeout — Limiter le temps d'exécution d'une commande</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
