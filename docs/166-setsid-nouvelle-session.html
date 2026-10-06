@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>setsid — Lancer un programme dans une nouvelle session</h1>
+
+<p>La commande <code>setsid</code> permet de démarrer un programme dans une <strong>nouvelle session Linux</strong>, complètement détaché du terminal qui l'a lancé. Contrairement à <code>nohup</code> qui protège uniquement contre les signaux de déconnexion, <code>setsid</code> crée une nouvelle session avec son propre groupe de processus, isolant le programme du terminal parent.</p>
+
+<h2>Comprendre les sessions sous Linux</h2>
+
+<p>Sous Linux, chaque terminal appartient à une <strong>session</strong>. Chaque session contient un ou plusieurs <strong>groupes de processus</strong> (process groups), eux-mêmes composés de processus individuels.</p>
+
+<ul>
+<li><strong>SID (Session ID)</strong> : l'identifiant de la session</li>
+<li><strong>PGID (Process Group ID)</strong> : l'identifiant du groupe de processus</li>
+<li><strong>PID (Process ID)</strong> : l'identifiant du processus lui-même</li>
+</ul>
+
+<p>Quand vous lancez un programme depuis un terminal, il appartient à la même session que ce terminal. Si vous fermez le terminal, le signal <code>SIGHUP</code> est envoyé à tous les processus de la session, ce qui les arrête généralement.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>setsid commande [arguments]</code></div>
+</div>
+
+<p>Pour запустить un programme en arrière-plan dans une nouvelle session :</p>
+
+<div class="code-block">
+<div class="code-line"><code>setsid monscript.sh</code></div>
+<div class="code-line"><code>setsid firefox</code></div>
+<div class="code-line"><code>setsid python3 mon programme.py</code></div>
+</div>
+
+<h2>Exemples pratiques</h2>
+
+<h3>Lancer un script en arrière-plan complet</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer un script qui tourne indépendamment du terminal</code></div>
+<div class="code-line"><code>setsid ./backup.sh</code></div>
+<div class="code-line"><code>echo "Le script s'exécute même si vous fermez ce terminal"</code></div>
+</div>
+
+<h3>Rediriger les sorties</h3>
+
+<p>Par défaut, <code>setsid</code> rattache stdin/stdout/stderr au terminal parent. Pour完全ement détacher :</p>
+
+<div class="code-block">
+<div class="code-line"><code>setsid sh -c 'exec monscript.sh > /var/log/monscript.log 2>&1 &'</code></div>
+</div>
+
+<h3>Lancer une application graphique</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer Firefox dans une nouvelle session</code></div>
+<div class="code-line"><code>setsid firefox</code></div>
+<div class="code-line"><code># Firefox ne se fermera pas si vous fermez le terminal</code></div>
+</div>
+
+<h3>Combiner avec cd pour changer de répertoire</h3>
+
+<div class="code-block">
+<div class="code-line"><code>setsid sh -c 'cd /home/user/projets && ./serveur &'</code></div>
+</div>
+
+<h2>setsid vs nohup vs Ctrl+Z vs &amp;</h2>
+
+<table>
+<tr><th>Commande</th><th>Nouvelle session</th><th>Protège de SIGHUP</th><th>Détaché du tty</th></tr>
+<tr><td><code>&amp;</code></td><td>Non</td><td>Non</td><td>Non</td></tr>
+<tr><td><code>Ctrl+Z</code></td><td>Non</td><td>Non</td><td>Non</td></tr>
+<tr><td><code>nohup</code></td><td>Non</td><td>Oui</td><td>Partiellement</td></tr>
+<tr><td><code>setsid</code></td><td>Oui ✅</td><td>Oui ✅</td><td>Oui ✅</td></tr>
+</table>
+
+<h2>Vérifier la session d'un processus</h2>
+
+<p>Pour voir le SID (Session ID) d'un processus :</p>
+
+<div class="code-block">
+<div class="code-line"><code>ps -o pid,sid,cmd</code></div>
+<div class="code-line"><code># ou pour un processus spécifique</code></div>
+<div class="code-line"><code>ps -o pid,sid,cmd -C firefox</code></div>
+</div>
+
+<p>Un processus <strong>détaché</strong> aura un SID différent de celui du terminal (visible avec <code>ps</code> ou <code>tty</code>).</p>
+
+<h2>Cas d'utilisation courants</h2>
+
+<ul>
+<li><strong>Scripts de démarrage</strong> : lancer des services au démarrage du système</li>
+<li><strong>Applications graphiques</strong> : éviter qu'une application GUI ne se ferme quand le terminal meurt</li>
+<li><strong>Server daemon</strong> : créer des serveurs qui survivent à la déconnexion</li>
+<li><strong>Automatisation</strong> : scripts qui doivent tourner même si la session SSH se coupe</li>
+</ul>
+
+<h2>Exemple concret : serveur persistant</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un serveur qui survit à la déconnexion</code></div>
+<div class="code-line"><code>setsid python3 -m http.server 8080 > /var/log/serveur.log 2>&1 &</code></div>
+<div class="code-line"><code>echo "Serveur démarré avec PID: $!"</code></div>
+<div class="code-line"><code>disown</code></div>
+</div>
+
+<h2>Conclusion</h2>
+
+<p><code>setsid</code> est l'outil idéal quand vous avez besoin de <strong>détacher complètement</strong> un processus du terminal. Il crée une nouvelle session, ce qui offre une isolation plus forte que <code>nohup</code>. Pour une protection maximale, combinez-le avec la redirection des sorties et <code>disown</code>.</p>
+
+<nav>
+<a href="165-curl-wget-telechargement.html">&larr; curl et wget — Télécharger depuis le terminal</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
