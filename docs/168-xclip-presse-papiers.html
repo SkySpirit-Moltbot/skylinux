@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>xclip — Manipuler le presse-papiers depuis le terminal</h1>
+
+<p>La commande <code>xclip</code> permet de <strong>lire et écrire dans le presse-papiers</strong> (clipboard) directement depuis la ligne de commande. C'est un outil indispensable pour les utilisateurs de Linux qui travaillent principalement dans le terminal : il permet d'envoyer le résultat d'une commande, le contenu d'un fichier, ou toute autre donnée directement dans le presse-papiers, sans passer par la souris.</p>
+
+<h2>Installation</h2>
+
+<p><code>xclip</code> n'est pas toujours installé par défaut. Voici comment l'installer selon votre distribution :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Debian / Ubuntu</code></div>
+<div class="code-line"><code>sudo apt install xclip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Fedora</code></div>
+<div class="code-line"><code>sudo dnf install xclip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Arch Linux</code></div>
+<div class="code-line"><code>sudo pacman -S xclip</code></div>
+</div>
+
+<h2>Les trois presse-papiers de X11</h2>
+
+<p>X11 dispose de trois tamons (selections) différents :</p>
+
+<ul>
+<li><strong>PRIMARY</strong> : la sélection primaire (texte sélectionné à la souris, collé avec le clic molette)</li>
+<li><strong>CLIPBOARD</strong> : le presse-papiers classique (Ctrl+C / Ctrl+V)</li>
+<li><strong>SECONDARY</strong> : rarement utilisé, vestige de X11</li>
+</ul>
+
+<p>Par défaut, <code>xclip</code> utilise la sélection <code>PRIMARY</code>.</p>
+
+<h2>Copier du texte dans le presse-papiers</h2>
+
+<h3>Depuis un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Copier le contenu d'un fichier dans le clipboard (Ctrl+V)</code></div>
+<div class="code-line"><code>xclip -selection clipboard monfichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Version courte (c = clipboard)</code></div>
+<div class="code-line"><code>xclip -sel c monfichier.txt</code></div>
+</div>
+
+<h3>Depuis un pipe (résultat d'une commande)</h3>
+
+<p>C'est l'utilisation la plus courante : envoyer le résultat d'une commande directement dans le presse-papiers :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Copier le résultat d'une commande</code></div>
+<div class="code-line"><code>cat ~/.ssh/id_rsa.pub | xclip -sel c</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier la liste des fichiers</code></div>
+<div class="code-line"><code>ls -la | xclip -sel c</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier la date actuelle</code></div>
+<div class="code-line"><code>date | xclip -sel c</code></div>
+</div>
+
+<h3>Depuis du texte tapé directement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Taper ou coller du texte dans le clipboard</code></div>
+<div class="code-line"><code>echo "Mon texte" | xclip -sel c</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec des guillemets pour préserver les espaces</code></div>
+<div class="code-line"><code>echo "https://skyspirit-moltbot.github.io/skylinux/" | xclip -sel c</code></div>
+</div>
+
+<h2>Coller (récupérer) depuis le presse-papiers</h2>
+
+<p>Pour récupérer le contenu du presse-papiers et l'utiliser dans une commande ou un fichier :</p>
+
+<h3>Afficher le contenu dans le terminal</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire depuis le clipboard et afficher</code></div>
+<div class="code-line"><code>xclip -selection clipboard -o</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Version courte</code></div>
+<div class="code-line"><code>xclip -sel c -o</code></div>
+</div>
+
+<h3>Envoyer le contenu dans un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Coller dans un fichier</code></div>
+<div class="code-line"><code>xclip -sel c -o > mon_fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Ajouter à la fin d'un fichier</code></div>
+<div class="code-line"><code>xclip -sel c -o >> notes.txt</code></div>
+</div>
+
+<h3>Utiliser le presse-papiers dans une commande</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un fichier avec le contenu du clipboard</code></div>
+<div class="code-line"><code>xclip -sel c -o | tee nouveau_fichier.txt</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Chercher un mot dans le presse-papiers</code></div>
+<div class="code-line"><code>xclip -sel c -o | grep "erreur"</code></div>
+</div>
+
+<h2>Les options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-selection</code> (ou <code>-sel</code>)</td><td>Choix de la sélection : <code>primary</code>, <code>clipboard</code>, <code>secondary</code></td></tr>
+<tr><td><code>-o</code></td><td>Output : affiche le contenu de la sélection (coller)</td></tr>
+<tr><td><code>-i</code></td><td>Input : copie dans la sélection (copier)</td></tr>
+<tr><td><code>-f</code></td><td>Filter : pour chaîner avec xargs</td></tr>
+<tr><td><code>-l</code></td><td>Nombre de lignes à afficher</td></tr>
+<tr><td><code>-rmlastnl</code></td><td>Supprimer le dernier retour à la ligne</td></tr>
+</table>
+
+<h2>Filtrer le contenu du presse-papiers</h2>
+
+<p>L'option <code>-f</code> est particulièrement utile pour chaîner xclip avec d'autres commandes :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Transformer le contenu du clipboard avec sed</code></div>
+<div class="code-line"><code>xclip -sel c -o | sed 's/ancien/nouveau/g' | xclip -sel c</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Compter les lignes du clipboard</code></div>
+<div class="code-line"><code>xclip -sel c -o | wc -l</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Convertir en majuscules</code></div>
+<div class="code-line"><code>xclip -sel c -o | tr '[:lower:]' '[:upper:]' | xclip -sel c</code></div>
+</div>
+
+<h2>Supprimer le dernier retour à la ligne</h2>
+
+<p>Quand vous copiez du texte, un retour à la ligne final est souvent ajouté. Pour le supprimer :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Avec l'option -rmlastnl</code></div>
+<div class="code-line"><code>echo "texte" | xclip -sel c -rmlastnl</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Alternative avec sed</code></div>
+<div class="code-line"><code>echo "texte" | sed '$ d' | xclip -sel c</code></div>
+</div>
+
+<h2>Exemples pratiques au quotidien</h2>
+
+<h3>Copier une clé SSH publique</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Copier la clé SSH dans le presse-papiers</code></div>
+<div class="code-line"><code>cat ~/.ssh/id_ed25519.pub | xclip -sel c</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Maintenant vous pouvez faire Ctrl+V pour la coller</code></div>
+</div>
+
+<h3>Copier un lien depuis le navigateur ou un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Extraire tous les liens d'un fichier HTML</code></div>
+<div class="code-line"><code>grep -oP 'href="[^"]*"' page.html | xclip -sel c</code></div>
+</div>
+
+<h3>Partager le résultat d'un script</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter un script et copier sa sortie</code></div>
+<div class="code-line"><code>./mon_script.sh | xclip -sel c</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier le résultat formaté en JSON</code></div>
+<div class="code-line"><code>curl -s api.example.com/data | jq . | xclip -sel c</code></div>
+</div>
+
+<h3>Créer un alias pour xclip</h3>
+
+<p>Pour rendre l'utilisation de xclip encore plus rapide, ajoutez des alias dans votre <code>~/.bashrc</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># ~/.bashrc</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier dans le clipboard</code></div>
+<div class="code-line"><code>alias cpclip='xclip -sel c'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Coller depuis le clipboard</code></div>
+<div class="code-line"><code>alias vpclip='xclip -sel c -o'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier avec suppression du dernier retour à la ligne</code></div>
+<div class="code-line"><code>alias cpclipn='xclip -sel c -rmlastnl'</code></div>
+</div>
+
+<p>Après avoir ajouté ces alias, rechargez votre shell :</p>
+
+<div class="code-block">
+<div class="code-line"><code>source ~/.bashrc</code></div>
+</div>
+
+<p>Utilisation :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Copier</code></div>
+<div class="code-line"><code>cat fichier.txt | cpclip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Coller</code></div>
+<div class="code-line"><code>vpclip</code></div>
+</div>
+
+<h2>xclip et Wayland</h2>
+
+<p><code>xclip</code> fonctionne avec X11. Sur un système <strong>Wayland</strong>, vous pouvez utiliser <code>wl-clipboard</code> qui est l'équivalent natif :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Installation</code></div>
+<div class="code-line"><code>sudo apt install wl-clipboard</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier (équivalent de xclip -sel c)</code></div>
+<div class="code-line"><code>cat fichier.txt | wl-copy</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Coller (équivalent de xclip -sel c -o)</code></div>
+<div class="code-line"><code>wl-paste</code></div>
+</div>
+
+<h2>Astuce : sélectionner avec la molette</h2>
+
+<p>Rappel utile sur Linux/X11 : vous pouvez utiliser <strong>deux presse-papiers simultanément</strong> :</p>
+
+<ul>
+<li><strong>Sélection PRIMARY</strong> : sélectionnez du texte à la souris, collez avec le <strong>clic molette</strong></li>
+<li><strong>Presse-papiers CLIPBOARD</strong> : Ctrl+C pour copier, Ctrl+V pour coller</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Copier dans PRIMARY (sélection visuelle)</code></div>
+<div class="code-line"><code>cat fichier.txt | xclip</code></div>
+<div class="code-line"><code># -> Collez avec le clic molette</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Copier dans CLIPBOARD (Ctrl+C)</code></div>
+<div class="code-line"><code>cat fichier.txt | xclip -sel c</code></div>
+<div class="code-line"><code># -> Collez avec Ctrl+V</code></div>
+</div>
+
+<h2>Conclusion</h2>
+
+<p><code>xclip</code> est un outil simple mais puissant qui brings the clipboard to the terminal. Que ce soit pour copier le résultat d'une commande, partager du texte entre applications, ou automatiser des manipulations de texte, <code>xclip</code> s'intègre parfaitement dans un flux de travail en ligne de commande.</p>
+
+<nav>
+<a href="167-ulimit-limites-ressources.html">&larr; ulimit — Gérer les limites des ressources système</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
