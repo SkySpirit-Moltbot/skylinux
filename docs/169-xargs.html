@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>xargs — Construire et exécuter des commandes à partir de résultats</h1>
+
+<p>La commande <code>xargs</code> est un outil fondamental sous Linux. Elle permet de <strong>construire et exécuter des commandes à partir de données reçues en entrée</strong> (stdin). En d'autres termes, elle transforme le résultat d'une commande en arguments pour une autre commande. C'est le pont parfait entre deux commandes qui ne savent pas communiquer autrement.</p>
+
+<h2>Le principe fondamental</h2>
+
+<p>xargs lit des données depuis l'entrée standard (stdin) et les <strong>transforme en arguments</strong> pour une commande que vous spécifiez. Le schéma classique est :</p>
+
+<div class="code-block">
+<div class="code-line"><code>commande_source | xargs commande_destination</code></div>
+</div>
+
+<p>Sans xargs, beaucoup de commandes ne savent pas lire depuis un pipe. Par exemple, <code>rm</code> ne peut pas recevoir des noms de fichiers via un pipe — xargs comble ce vide.</p>
+
+<h2>L'exemple le plus simple</h2>
+
+<p>Supposons que vous vouliez supprimer tous les fichiers dont le nom contient "temp" — vous ne pouvez pas faire <code>ls | rm</code>, mais vous pouvez faire :</p>
+
+<div class="code-block">
+<div class="code-line"><code>ls | grep temp | xargs rm</code></div>
+</div>
+
+<p>xargs prend chaque ligne résultat de <code>grep temp</code> et la passe comme argument à <code>rm</code>.</p>
+
+<h2>Les options fondamentales</h2>
+
+<h3>-n : nombre d'arguments par commande</h3>
+
+<p>Par défaut, xargs passe <strong>tous les arguments d'un coup</strong> à la commande. L'option <code>-n 1</code> force l'appel de la commande <strong>une fois par argument</strong> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer chaque fichier UN PAR UN (plus sûr)</code></div>
+<div class="code-line"><code>ls | grep temp | xargs -n 1 rm</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Créer un fichier par nom trouvé</code></div>
+<div class="code-line"><code>ls *.txt | xargs -n 1 touch</code></div>
+</div>
+
+<p><code>-n 1</code> est très utile pour le <strong>débogage</strong> ou quand une commande ne supporte pas plusieurs arguments.</p>
+
+<h3>-I : remplacer une chaîne dans la commande</h3>
+
+<p>L'option <code>-I</code> (ou <code>--replace</code>) permet d'utiliser les arguments entrants <strong>à n'importe quelle position</strong> dans la commande, pas seulement en fin :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Copier chaque fichier vers un répertoire de sauvegarde</code></div>
+<div class="code-line"><code>ls *.log | xargs -I {} cp {} /backup/{}.bak</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Créer une archive par fichier</code></div>
+<div class="code-line"><code>ls *.txt | xargs -I {} tar -czf {}.tar.gz {}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Afficher avec un préfixe</code></div>
+<div class="code-line"><code>echo -e "fichier1.txt\nfichier2.txt" | xargs -I {} echo "Traitement de : {}"</code></div>
+</div>
+
+<p><code>{}</code> est le <strong>placeholder</strong> par défaut qui sera remplacé par chaque argument. Vous pouvez utiliser un autre marqueur avec <code>-I AUTRE</code>.</p>
+
+<h3>-d : delimiter personnalisé</h3>
+
+<p>Par défaut, xargs utilise l'<strong>espace</strong> et le <strong>retour à la ligne</strong> comme séparateurs. L'option <code>-d</code> permet de définir un autre délimiteur :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Traiter une chaîne séparée par des virgules</code></div>
+<div class="code-line"><code>echo "fichier1,fichier2,fichier3" | xargs -d ',' rm</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Traiter une chaîne séparée par des deux-points</code></div>
+<div class="code-line"><code>echo "serveur1:srv2:srv3" | xargs -d ':' -n 1 ping -c 1</code></div>
+</div>
+
+<h2>find + xargs : le duo classique</h2>
+
+<p>La combinaison la plus puissante sous Linux. <code>find</code> cherche les fichiers, <code>xargs</code> les traite :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer tous les fichiers .tmp</code></div>
+<div class="code-line"><code>find /tmp -name "*.tmp" | xargs rm</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Modifier les permissions de tous les fichiers trouvés</code></div>
+<div class="code-line"><code>find . -name "*.sh" | xargs chmod 755</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Rechercher une chaîne dans tous les fichiers .c</code></div>
+<div class="code-line"><code>find /src -name "*.c" | xargs grep "main("</code></div>
+</div>
+
+<p><strong>Important</strong> : sur certains systèmes, les noms de fichiers peuvent contenir des espaces ou des caractères spéciaux. Utilisez alors <code>-print0</code> avec <code>xargs -0</code> pour une traitement sûr :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Version sécurisée avec caractères spéciaux dans les noms</code></div>
+<div class="code-line"><code>find /tmp -name "*.tmp" -print0 | xargs -0 rm</code></div>
+</div>
+
+<h2>-p et -t : mode interactif et verbose</h2>
+
+<h3>-p : demander confirmation avant chaque exécution</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Demander confirmation avant chaque suppression</code></div>
+<div class="code-line"><code>ls | grep temp | xargs -p rm</code></div>
+</div>
+
+<p>Sortie attendue :</p>
+<div class="code-block">
+<div class="code-line"><code>rm temp1.txt ?...y</code></div>
+<div class="code-line"><code>rm temp2.txt ?...n</code></div>
+</div>
+
+<h3>-t : afficher la commande avant de l'exécuter</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir exactement quelles commandes seront exécutées</code></div>
+<div class="code-line"><code>ls *.txt | xargs -t rm</code></div>
+</div>
+
+<p>Très utile pour <strong>comprendre et vérifier</strong> avant de lancer un traitement destructeur.</p>
+
+<h2>-0 : gérer les noms de fichiers avec espaces</h2>
+
+<p>Associé à <code>find -print0</code>, <code>-0</code> est la solution pour les noms de fichiers qui contiennent des <strong>espaces, guillemets ou retours à la ligne</strong> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer en toute sécurité (noms avec espaces)</code></div>
+<div class="code-line"><code>find /photos -name "*.jpg" -print0 | xargs -0 rm</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Déplacer tous les fichiers avec des noms spéciaux</code></div>
+<div class="code-line"><code>find /uploads -name "*.pdf" -print0 | xargs -0 -I {} mv {} /archives/</code></div>
+</div>
+
+<h2>-P : exécuter en parallèle</h2>
+
+<p>L'option <code>-P</code> permet de parallèleiser les executions. Au lieu d'appeler la commande séquentiellement, xargs peut en lancer plusieurs <strong>simultanément</strong> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser 4 fichiers en parallèle</code></div>
+<div class="code-line"><code>ls *.txt | xargs -P 4 gzip</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Créer 8 threads pour le traitement</code></div>
+<div class="code-line"><code>find /photos -name "*.jpg" | xargs -P 8 -I {} convert {} -resize 800x600 {}.small.jpg</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Paralléliser avec le nombre de CPUs disponibles</code></div>
+<div class="code-line"><code>ls *.log | xargs -P $(nproc) gzip</code></div>
+</div>
+
+<h2>Combiner avec d'autres outils</h2>
+
+<h3>Avec grep</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les fichiers qui contiennent un motif</code></div>
+<div class="code-line"><code>grep -rl "TODO" | xargs sed -i 's/TODO/FINI/g'</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lister les fichiers modifiés récemment et afficher leur contenu</code></div>
+<div class="code-line"><code>find . -mtime -7 | xargs grep -l "error"</code></div>
+</div>
+
+<h3>Avec tar</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer une archive de chaque fichier individuellement</code></div>
+<div class="code-line"><code>ls *.log | xargs -I {} tar -czf {}.tar.gz {}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Archiver les résultats d'une recherche</code></div>
+<div class="code-line"><code>find /var/log -name "*.log" | xargs tar -czf logs-sauvegarde.tar.gz</code></div>
+</div>
+
+<h3>Avec git</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer tous les fichiers non-suivis</code></div>
+<div class="code-line"><code>git status --porcelain | grep '^?' | awk '{print $2}' | xargs rm</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Ajouter les fichiers modifiés au staging</code></div>
+<div class="code-line"><code>git status -s | awk '{print $2}' | xargs git add</code></div>
+</div>
+
+<h3>Avec docker</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer plusieurs containers par leur ID</code></div>
+<div class="code-line"><code>docker ps -aq | xargs docker rm -f</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Supprimer toutes les images dangling</code></div>
+<div class="code-line"><code>docker images -f dangling=true -q | xargs docker rmi</code></div>
+</div>
+
+<h2>Tableau récapitulatif des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-n N</code></td><td>Passer N arguments par exécution (défaut : tous)</td></tr>
+<tr><td><code>-I {}</code></td><td>Remplacer {} par les arguments dans la commande</td></tr>
+<tr><td><code>-0</code></td><td>Utiliser le séparateur null (avec find -print0)</td></tr>
+<tr><td><code>-d SEP</code></td><td>Utiliser SEP comme délimiteur d'entrée</td></tr>
+<tr><td><code>-p</code></td><td>Mode interactif : demander confirmation</td></tr>
+<tr><td><code>-t</code></td><td>Afficher la commande avant de l'exécuter (verbose)</td></tr>
+<tr><td><code>-P N</code></td><td>Exécuter N commandes en parallèle</td></tr>
+<tr><td><code>-r</code></td><td>Ne rien faire si l'entrée est vide</td></tr>
+<tr><td><code>-s N</code></td><td>Limiter la taille totale de la commande à N caractères</td></tr>
+</table>
+
+<h2>xargs vs substitution de commande</h2>
+
+<p>xargs n'est pas toujours nécessaire — la <strong>substitution de commande</strong> <code>$(...)</code> fait parfois le même travail de manière plus lisible :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Avec xargs</code></div>
+<div class="code-line"><code>ls *.txt | xargs rm</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Avec substitution de commande (bash)</code></div>
+<div class="code-line"><code>rm $(ls *.txt)</code></div>
+</div>
+
+<p>Mais xargs est <strong>supérieur</strong> quand :</p>
+<ul>
+<li>Le nombre de résultats est très grand (la substitution peut dépasser la limite du shell)</li>
+<li>Vous avez besoin de parallélisation (<code>-P</code>)</li>
+<li>Vous voulez un comportement interactif (<code>-p</code>)</li>
+<li>Les noms de fichiers contiennent des caractères spéciaux</li>
+</ul>
+
+<h2>Exemples pratiques complets</h2>
+
+<h3>Nettoyage organisé</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Déplacer tous les fichiers .bak vers un dossier</code></div>
+<div class="code-line"><code>find . -name "*.bak" -print0 | xargs -0 -I {} mv {} ./backup/</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Lister et créer un rapport des fichiers modifiés</code></div>
+<div class="code-line"><code>find . -mtime -30 | xargs ls -lh | tee rapport.txt</code></div>
+</div>
+
+<h3>Traitement d'images (ImageMagick)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Redimensionner toutes les photos en parallèle (4 threads)</code></div>
+<div class="code-line"><code>ls *.jpg | xargs -P 4 -I {} convert {} -resize 800x600 vignettes/{}</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Ajouter un filigrane à toutes les images</code></div>
+<div class="code-line"><code>ls *.png | xargs -I {} composite -dissolve 30% watermark.png {} {}.watermarked.png</code></div>
+</div>
+
+<h3>Automatisation système</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Redémarrer tous les services listés dans un fichier</code></div>
+<div class="code-line"><code>cat services.txt | xargs -t systemctl restart</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Envoyer un ping à plusieurs serveurs</code></div>
+<div class="code-line"><code>cat servers.txt | xargs -P 10 -I {} sh -c 'ping -c 1 {} && echo "{} OK" || echo "{} ECHEC"'</code></div>
+</div>
+
+<h3>Génération de code</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer plusieurs fichiers depuis une liste</code></div>
+<div class="code-line"><code>echo -e "module1\nmodule2\nmodule3" | xargs -I {} touch {}.py</code></div>
+<div class="code-line"><code></code></div>
+<div class="code-line"><code># Générer des fichiers de test</code></div>
+<div class="code-line"><code>seq 1 100 | xargs -I {} touch test_{}.txt</code></div>
+</div>
+
+<h2>Erreurs courantes</h2>
+
+<h3>Argument list too long</h3>
+
+<p>Si vous avez des milliers de fichiers, xargs peut quand même dépasser la limite. <code>-n</code> et <code>-s</code> помогают :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Limiter à 100 fichiers par appel</code></div>
+<div class="code-line"><code>find . -name "*.txt" | xargs -n 100 rm</code></div>
+</div>
+
+<h3>xargs avec une entrée vide ne fait rien</h3>
+
+<p>Par défaut xargs <strong>exécute quand même</strong> la commande même si l'entrée est vide (avec des arguments inexistants). Utilisez <code>-r</code> pour éviter cela :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ne rien faire si grep ne trouve rien</code></div>
+<div class="code-line"><code>ls | grep "invisible" | xargs -r rm</code></div>
+</div>
+
+<h2>Conclusion</h2>
+
+<p><code>xargs</code> est l'un des outils les plus polyvalents de la boîte à outils Linux. Il transforme les tuyaux (pipes) en véritable langage de script en permettant à n'importe quelle commande de consommer le résultat d'une autre. Maîtrisez <code>-n</code>, <code>-I</code>, <code>-0</code> et <code>-P</code>, et vous aurez un levier puissant pour automatiser et paralléliser vos tâches.</p>
+
+<nav>
+<a href="168-xclip-presse-papiers.html">&larr; xclip — Manipuler le presse-papiers depuis le terminal</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
