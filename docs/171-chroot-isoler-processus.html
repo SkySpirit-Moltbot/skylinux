@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>chroot — Isoler des processus dans un environnement restreint</h1>
+
+<p>La commande <code>chroot</code> (change root) permet d'exécuter un programme dans un environnement isolé, en lui faisant croire que la racine du système de fichiers est ailleurs. C'est l'ancêtre de la containerisation, encore utilisé aujourd'hui pour l'isolement et la sécurité.</p>
+
+<h2>Principe de fonctionnement</h2>
+
+<p>Normalement, sous Linux, la racine <code>/</code> correspond au véritable sommet de l'arborescence. Avec <code>chroot</code>, on substitue mentalement un répertoire arbitraire comme nouvelle racine. Le processus enfermé ne peut pas accéder aux fichiers en dehors de cette cage.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe de base
+chroot /nouveau/root commande [args]</code></div>
+</div>
+
+<h2>Cas d'utilisation courants</h2>
+
+<ul>
+<li><strong>Isoler un service</strong> : limiter les dégâts en cas de compromission</li>
+<li><strong>Réinstaller le chargeur de démarrage</strong> : depuis un live CD, chrooter dans le système installé pour réparer GRUB</li>
+<li><strong>Tests et construction</strong> : compiler dans un environnement propre sans polluer le système hôte</li>
+<li><strong>Environnements de recovery</strong> : outils de dépannage qui doivent intervenir sur un système blessé</li>
+</ul>
+
+<h2>Préparer un environnement chroot</h2>
+
+<p>Un chroot fonctionnel nécessite une arborescence minimale. Voici les ingrédients essentiels :</p>
+
+<h3>1. Créer la structure de base</h3>
+<div class="code-block">
+<div class="code-line"><code># Créer le répertoire qui deviendra la nouvelle racine
+sudo mkdir -p /opt/chroot-test</code></div>
+<div class="code-line"><code># Une arborescence minimale : /bin, /lib, /etc, /usr
+sudo mkdir -p /opt/chroot-test/{bin,lib,lib64,etc,usr}</code></div>
+</div>
+
+<h3>2. Copier les binaires nécessaires</h3>
+<div class="code-block">
+<div class="code-line"><code># Bash et les commandes de base
+sudo cp /bin/bash /opt/chroot-test/bin/
+sudo cp /bin/ls /opt/chroot-test/bin/
+sudo cp /bin/cat /opt/chroot-test/bin/</code></div>
+</div>
+
+<h3>3. Copier les bibliothèques partagées</h3>
+<div class="code-block">
+<div class="code-line"><code># Lister les dépendances d'un binaire
+ldd /bin/bash</code></div>
+<div class="code-line"><code># Exemple de sortie :
+# linux-vdso.so.1 (0x00007ffd...)
+# libtinfo.so.6 => /lib/x86_64-linux-gnu/libtinfo.so.6 (...)
+# libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (...)
+# libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (...)
+# /lib64/ld-linux-x86-64.so.2 => /lib64/ld-linux-x86-64.so.2 (...)</code></div>
+<div class="code-line"><code># Copier les bibliothèques dans l'environnement chroot
+sudo cp /lib/x86_64-linux-gnu/libtinfo.so.6 /opt/chroot-test/lib/
+sudo cp /lib/x86_64-linux-gnu/libdl.so.2 /opt/chroot-test/lib/
+sudo cp /lib/x86_64-linux-gnu/libc.so.6 /opt/chroot-test/lib/
+sudo cp /lib64/ld-linux-x86-64.so.2 /opt/chroot-test/lib64/</code></div>
+</div>
+
+<h3>4. Entrer dans le chroot</h3>
+<div class="code-block">
+<div class="code-line"><code>sudo chroot /opt/chroot-test /bin/bash</code></div>
+<div class="code-line"><code># Vous êtes maintenant dans l'environnement isolé
+# ls / affiche le contenu de /opt/chroot-test (vu comme /)
+ls /</code></div>
+<div class="code-line"><code># Les真正的 fichiers du système sont inaccessibles
+ls /bin/bash  # ERREUR : fichier non trouvé
+# Le monde extérieur est invisible</code></div>
+</div>
+
+<h2>Sortir du chroot</h2>
+<div class="code-block">
+<div class="code-line"><code># Taper exit ou Ctrl+D
+exit</code></div>
+</div>
+
+<h2>Chroot pour la réparation système</h2>
+
+<p>Le scénario le plus fréquent : votre système ne démarre plus, vous bootez sur un live CD/USB, et vous devez chrooter dans votre système installé pour réparer GRUB ou un autre composant.</p>
+
+<h3>Procédure type de réparation GRUB</h3>
+<div class="code-block">
+<div class="code-line"><code># 1. Identifier la partition système
+sudo fdisk -l</code></div>
+<div class="code-line"><code># 2. Monter la partition root (ex: /dev/sda1) sur /mnt
+sudo mount /dev/sda1 /mnt</code></div>
+<div class="code-line"><code># 3. Monter les systèmes de fichiers virtuels nécessaires
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /proc /mnt/proc
+sudo mount --bind /sys /mnt/sys</code></div>
+<div class="code-line"><code># 4. Chrooter dans le système installé
+sudo chroot /mnt</code></div>
+<div class="code-line"><code># 5. Réinstaller GRUB sur le bon disque
+grub-install /dev/sda
+update-grub</code></div>
+<div class="code-line"><code># 6. Sortir et démonter
+exit
+sudo umount /mnt/dev /mnt/proc /mnt/sys /mnt</code></div>
+</div>
+
+<h2>Limites de chroot</h2>
+
+<p><code>chroot</code> n'est pas une solution de sécurité parfaite. Un processus privilégié (root) peut s'échapper en utilisant <code>ptrace</code> ou en recréant des устройства. C'est pourquoi les conteneurs modernes (Docker, LXC) utilisent des mécanismes plus robustes comme les namespaces et les cgroups.</p>
+
+<table>
+<tr><th>Caractéristique</th><th>chroot</th><th>Docker/LXC</th></tr>
+<tr><td>Isolation fichiers</td><td>✓</td><td>✓</td></tr>
+<tr><td>Isolation réseau</td><td>✗</td><td>✓</td></tr>
+<tr><td>Isolation processus</td><td>✗</td><td>✓</td></tr>
+<tr><td>Limite ressources (cgroups)</td><td>✗</td><td>✓</td></tr>
+<tr><td>Complexité</td><td>Basse</td><td>Moyenne</td></tr>
+</table>
+
+<h2>Combiner chroot avec d'autres outils</h2>
+
+<h3>Avec unione — créer un environnement Debian minimal</h3>
+<div class="code-block">
+<div class="code-line"><code># Créer un chroot Debian minimal avec debootstrap
+sudo apt install debootstrap
+sudo debootstrap jammy /opt/debian-chroot http://archive.ubuntu.com/ubuntu</code></div>
+<div class="code-line"><code># Entrer dans le chroot Debian
+sudo chroot /opt/debian-chroot</code></div>
+<div class="code-line"><code># Dans le chroot, vous êtes dans un vrai système Debian
+apt update
+apt install nginx
+# Le service nginx tourne dans l'environnement isolé</code></div>
+</div>
+
+<h3>Avec schroot — gérer plusieurs environnements chroot</h3>
+<div class="code-block">
+<div class="code-line"><code># Installer schroot
+sudo apt install schroot</code></div>
+<div class="code-line"><code># Configurer un chroot dans /etc/schroot/schroot.conf
+[mon-chroot]
+type=directory
+description=Mon environnement isolé
+location=/opt/chroot-test
+users=monuser
+groups=sudo</code></div>
+<div class="code-line"><code># Utiliser schroot pour entrer proprement
+schroot -c mon-chroot</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Toujours créer un utilisateur non-root</strong> dans le chroot pour les tâches courantes</li>
+<li><strong>Ne jamais donner accès root</strong> depuis l'intérieur du chroot à des utilisateurs non autorisés</li>
+<li><strong>Vérifier les dépendances</strong> : un binaire a besoin de ses bibliothèques pour fonctionner</li>
+<li><strong>Utiliser <code>ldd</code></code> pour identifier les dépendances avant de copier</li>
+<li><strong>Préférer <code>--rbind</code></code> pour monter /dev, /proc, /sys dans les chroots de réparation</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>chroot /path command</code></td><td>Exécuter command avec /path comme nouvelle racine</td></tr>
+<tr><td><code>ldd /bin/binary</code></td><td>Lister les bibliothèques partagées d'un binaire</td></tr>
+<tr><td><code>debootstrap</code></td><td>Créer un chroot Debian/Ubuntu complet</td></tr>
+<tr><td><code>schroot</code></td><td>Gérer plusieurs environnements chroot facilement</td></tr>
+</table>
+
+<p><code>chroot</code> est un outil simple mais puissant. Bien qu'il ne soit pas adapté à l'isolement de production, il reste indispensable pour la réparation système, la compilation isolé et la création d'environnements de test léger.</p>
+
+<nav>
+<a href="170-xz-compression-moderne.html">&larr; xz — Compression moderne et performante</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
