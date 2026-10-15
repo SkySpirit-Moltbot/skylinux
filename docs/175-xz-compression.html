@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>xz — Compression moderne et performante</h1>
+
+<h2>Introduction</h2>
+<p><code>xz</code> est un outil de compression de fichiers qui utilise l'algorithme LZMA2. Il offre un excellent taux de compression, souvent supérieur à <code>gzip</code> et <code>bzip2</code>, tout en restant rapide et efficace en mémoire.</p>
+
+<p>Les fichiers compressés avec <code>xz</code> portent l'extension <code>.xz</code>. C'est le format par défaut utilisé par de nombreuses distributions Linux pour leurs paquets et archives.</p>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>xz [OPTIONS] [FICHIER...]</code></div>
+</div>
+
+<p>Sans option, <code>xz</code> compresse le fichier et le remplace par sa version compressée.</p>
+
+<h2>Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>-z</code></td><td>Compresser (par défaut)</td><td><code>xz -z fichier</code></td></tr>
+<tr><td><code>-d</code></td><td>Décompresser (équivalent à <code>unxz</code>)</td><td><code>xz -d fichier.xz</code></td></tr>
+<tr><td><code>-k</code></td><td>Garder le fichier original</td><td><code>xz -k fichier</code></td></tr>
+<tr><td><code>-f</code></td><td>Forcer l'écrasement du fichier de sortie</td><td><code>xz -f fichier</code></td></tr>
+<tr><td><code>-c</code></td><td>Écrire sur la sortie standard</td><td><code>xz -c fichier > out.xz</code></td></tr>
+<tr><td><code>-0 à -9</code></td><td>Niveau de compression (0=rapide, 9=meilleur)</td><td><code>xz -9 fichier</code></td></tr>
+<tr><td><code>-e</code></td><td>Mode extrême (compression encore meilleure)</td><td><code>xz -e -9 fichier</code></td></tr>
+<tr><td><code>-T N</code></td><td>Nombre de threads (parallélisation)</td><td><code>xz -T 4 fichier</code></td></tr>
+<tr><td><code>-l</code></td><td>Lister les informations d'un fichier compressé</td><td><code>xz -l fichier.xz</code></td></tr>
+</table>
+
+<h2>Exemples fondamentaux</h2>
+
+<h3>1. Compresser un fichier</h3>
+<p>Compresser un fichier (le fichier original est remplacé) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz document.txt</code></div>
+</div>
+
+<p>Résultat : <code>document.txt.xz</code></p>
+
+<h3>2. Décompresser un fichier</h3>
+<p>Restaurer le fichier original :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -d document.txt.xz</code></div>
+</div>
+
+<p>Ou simplement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>unxz document.txt.xz</code></div>
+</div>
+
+<h3>3. Garder le fichier original</h3>
+<p>Avec l'option <code>-k</code>, le fichier source est conservé :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -k fichier_volumineux.log</code></div>
+</div>
+
+<h3>4. Compression vers stdout</h3>
+<p>Envoyer le résultat compressé ailleurs sans modifier l'original :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -c fichier.txt > backup.xz</code></div>
+</div>
+
+<h3>5. Décompression vers stdout</h3>
+<p>Afficher le contenu décompressé sans créer de fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -d -c fichier.xz</code></div>
+</div>
+
+<h2>Niveaux de compression</h2>
+
+<p><code>xz</code> propose 10 niveaux de compression, de <code>-0</code> (le plus rapide) à <code>-9</code> (le plus compact). Le niveau par défaut est <code>-6</code>.</p>
+
+<table>
+<tr><th>Niveau</th><th>Description</th><th>Usage mémoire</th></tr>
+<tr><td><code>-0</code></td><td>Très rapide, compression faible</td><td>~1 MB</td></tr>
+<tr><td><code>-1</code></td><td>Rapide</td><td>~2 MB</td></tr>
+<tr><td><code>-2</code></td><td></td><td>~5 MB</td></tr>
+<tr><td><code>-3</code></td><td></td><td>~14 MB</td></tr>
+<tr><td><code>-4</code></td><td></td><td>~32 MB</td></tr>
+<tr><td><code>-5</code></td><td></td><td>~64 MB</td></tr>
+<tr><td><code>-6</code></td><td>Par défaut</td><td>~64 MB</td></tr>
+<tr><td><code>-7</code></td><td></td><td>~256 MB</td></tr>
+<tr><td><code>-8</code></td><td></td><td>~512 MB</td></tr>
+<tr><td><code>-9</code></td><td>Meilleure compression</td><td>~1 GB</td></tr>
+</table>
+
+<h3>Compression rapide</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xz -0 fichier.log</code></div>
+</div>
+
+<h3>Meilleure compression possible</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xz -9e fichier.log</code></div>
+</div>
+
+<p>L'option <code>-e</code> (extreme) combine <code>-9</code> avec des options supplémentaires pour un taux de compression encore meilleur, au prix d'un temps de traitement plus long.</p>
+
+<h2>Comparaison des niveaux</h2>
+
+<p>Exemple pour comparer les tailles obtenues :</p>
+
+<div class="code-block">
+<div class="code-line"><code>ls -lh fichier</code></div>
+<div class="code-line"><code>xz -0 fichier && ls -lh fichier.xz</code></div>
+<div class="code-line"><code>xz -6 fichier && ls -lh fichier.xz</code></div>
+<div class="code-line"><code>xz -9 fichier && ls -lh fichier.xz</code></div>
+</div>
+
+<h2>Parallélisation avec -T</h2>
+
+<p><code>xz</code> peut utiliser plusieurs cœurs de processeur pour accélérer la compression :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -T 4 gros_fichier.iso</code></div>
+</div>
+
+<p>Pour utiliser tous les cœurs disponibles automatiquement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -T 0 gros_fichier.iso</code></div>
+</div>
+
+<h2>Utiliser xz avec tar</h2>
+
+<p>La combinaison classique pour créer une archive compressée :</p>
+
+<h3>Créer une archive compressée</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tar -cJf archive.tar.xz repertoire/</code></div>
+</div>
+
+<p>L'option <code>J</code> (avec <code>tar</code>) indique d'utiliser <code>xz</code> pour la compression.</p>
+
+<h3> Lister le contenu sans extraire</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tar -tJf archive.tar.xz</code></div>
+</div>
+
+<h3>Extraire une archive compressée</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tar -xJf archive.tar.xz</code></div>
+</div>
+
+<h3>Extraire vers un répertoire spécifique</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tar -xJf archive.tar.xz -C /home/user/restaurer/</code></div>
+</div>
+
+<h2>Variantes et outils associés</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>xz</code></td><td>Compresseur principal</td></tr>
+<tr><td><code>unxz</code></td><td>Alias pour <code>xz -d</code> (décompression)</td></tr>
+<tr><td><code>lzma</code></td><td>Format LZMA classique (ancien)</td></tr>
+<tr><td><code>xzcat</code></td><td>Décompresser vers stdout (comme <code>zcat</code>)</td></tr>
+<tr><td><code>xzcmp</code></td><td>Comparer deux fichiers xz compressés</td></tr>
+<tr><td><code>xzgrep</code></td><td>Rechercher dans un fichier compressé</td></tr>
+<tr><td><code>xzless</code></td><td>Afficher page par page un fichier compressé</td></tr>
+<tr><td><code>xzmore</code></td><td>Afficher page par page (alternative)</td></tr>
+</table>
+
+<h3>xzcat — Lire sans décompresser</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xzcat archive.tar.xz | tar -tf -</code></div>
+</div>
+
+<h3>xzgrep — Rechercher dans un fichier compressé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xzgrep "erreur" journal.xz</code></div>
+</div>
+
+<h2>Informations sur un fichier compressé</h2>
+
+<p>L'option <code>-l</code> affiche les détails d'un fichier <code>.xz</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -l fichier.xz</code></div>
+</div>
+
+<p>Exemple de sortie :</p>
+
+<div class="code-block">
+<div class="code-line"><code>Strms  Blocks   Compressed  Uncompressed  Ratio  Check
+   1       1     1 234 567 B    10 000 000 B  0.124  CRC64</code></div>
+</div>
+
+<h2>Décompression automatique</h2>
+
+<p>Si vous essayez de décompresser un fichier qui n'est pas au format <code>xz</code>, <code>xz</code> le détecte et ne fait rien (ou signale une erreur selon les options).</p>
+
+<div class="code-block">
+<div class="code-line"><code>xz -d fichier_incorrect.xyz 2> /dev/null || echo "Format non supporté"</code></div>
+</div>
+
+<h2>Script : compression avec choix du niveau</h2>
+
+<p>Voici un script utile pour compresser avec différents niveaux :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+# Compresser un fichier avec choix du niveau
+FICHIER="$1"
+NIVEAU="${2:-6}"
+
+if [ -z "$FICHIER" ]; then
+    echo "Usage: $0 <fichier> [niveau 0-9]"
+    exit 1
+fi
+
+echo "Compression de $FICHIER au niveau $NIVEAU..."
+xz -"$NIVEAU" -k "$FICHIER"
+echo "Terminé !"
+ls -lh "${FICHIER}.xz"</code></div>
+</div>
+
+<h2>xz vs gzip vs bzip2 vs zstd</h2>
+
+<table>
+<tr><th>Format</th><th>Extension</th><th>Compression</th><th>Vitesse</th><th>Usage</th></tr>
+<tr><td><code>gzip</code></td><td>.gz</td><td>Bonne</td><td>Très rapide</td><td>Usage quotidien</td></tr>
+<tr><td><code>bzip2</code></td><td>.bz2</td><td>Très bonne</td><td>Moyenne</td><td>Fichiers texte</td></tr>
+<tr><td><code>xz</code></td><td>.xz</td><td>Excellente</td><td>Lente</td><td>Archives, paquets</td></tr>
+<tr><td><code>zstd</code></td><td>.zst</td><td>Très bonne</td><td>Très rapide</td><td>Sauvegardes</td></tr>
+</table>
+
+<p><code>xz</code> est particulièrement recommandé pour :</p>
+
+<ul>
+<li>Les archives destinées à être distribuées (taille minimale)</li>
+<li>Les paquets des distributions Linux</li>
+<li>Les sauvegardes où l'espace de stockage compte</li>
+<li>Les fichiers qui ne sont pas souvent décompressés</li>
+</ul>
+
+<h2>Bonnes pratiques</h2>
+
+<h3>1. Compression normale (par défaut)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xz fichier.log</code></div>
+</div>
+
+<h3>2. Compression maximale avec parallélisation</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xz -9e -T 0 gros_fichier.iso</code></div>
+</div>
+
+<h3>3. Compression rapide pour du temporaire</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xz -0 -k fichier_temporaire.log</code></div>
+</div>
+
+<h3>4. Archive complète avec tar</h3>
+
+<div class="code-block">
+<div class="code-line"><code>tar -cJf sauvegarde_$(date +%Y%m%d).tar.xz /home/user/documents/</code></div>
+</div>
+
+<h3>5. Décompression et extraction simultanées</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xz -d -c archive.tar.xz | tar -xf - -C /destination/</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Résultat</th></tr>
+<tr><td><code>xz fichier</code></td><td>Compresser (niveau 6 par défaut)</td></tr>
+<tr><td><code>xz -d fichier.xz</code></td><td>Décompresser</td></tr>
+<tr><td><code>xz -k fichier</code></td><td>Compresser en gardant l'original</td></tr>
+<tr><td><code>xz -9 fichier</code></td><td>Meilleure compression</td></tr>
+<tr><td><code>xz -0 fichier</code></td><td>Compression la plus rapide</td></tr>
+<tr><td><code>xz -T 0 fichier</code></td><td>Tous les cœurs CPU</td></tr>
+<tr><td><code>xz -l fichier.xz</code></td><td>Informations sur le fichier</td></tr>
+<tr><td><code>tar -cJf f.tar.xz dir/</code></td><td>Archive compressée avec tar</td></tr>
+<tr><td><code>xzcat fichier.xz</code></td><td>Décompresser vers stdout</td></tr>
+<tr><td><code>xzgrep "mot" fichier.xz</code></td><td>Rechercher dans le fichier compressé</td></tr>
+</table>
+
+<p><code>xz</code> est un outil puissant qui offre d'excellents taux de compression pour les fichiers qui doivent être stockés ou distribués de manière efficace. Combinez-le avec <code>tar</code> pour créer des archives compressées modernes et compactes.</p>
+
+<nav>
+<a href="174-fmt-formater-texte.html">&larr; Leçon 174 : fmt — Formater le texte en paragraphs</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
