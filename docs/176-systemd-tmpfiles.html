@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>systemd-tmpfiles — Gérer les fichiers et répertoires temporaires</h1>
+
+<h2>Introduction</h2>
+<p>Sous Linux, de nombreux programmes créent des fichiers et répertoires temporaires dans <code>/tmp</code>, <code>/run</code> ou <code>/var/tmp</code>. Avec le temps, ces fichiers peuvent s'accumuler et consomme inutilement de l'espace disque.</p>
+
+<p><code>systemd-tmpfiles</code> est l'outil fourni par systemd pour gérer automatiquement le cycle de vie de ces fichiers et répertoires temporaires : création, nettoyage et suppression automatique selon des règles définies.</p>
+
+<h2>Pourquoi utiliser systemd-tmpfiles ?</h2>
+
+<ul>
+<li><strong>Automatisation</strong> : le système nettoie automatiquement les fichiers obsolètes au démarrage ou périodiquement</li>
+<li><strong>Configuration centralisée</strong> : un seul fichier de configuration pour tous les fichiers temporaires</li>
+<li><strong>Fiabilité</strong> : gère les droits, propriétaires et permissions des fichiers créés</li>
+<li><strong>Intégration systemd</strong> : fonctionne avec les timers systemd pour des nettoyages réguliers</li>
+</ul>
+
+<h2>Emplacements des fichiers de configuration</h2>
+
+<table>
+<tr><th>Emplacement</th><th>Description</th></tr>
+<tr><td><code>/usr/lib/tmpfiles.d/*.conf</code></td><td>Fichiers fournis par les paquets système</td></tr>
+<tr><td><code>/etc/tmpfiles.d/*.conf</code></td><td>Fichiers de configuration utilisateur (recommandé)</td></tr>
+<tr><td><code>/run/tmpfiles.d/*.conf</code></td><td>Fichiers temporaires volatiles (effacés au reboot)</td></tr>
+</table>
+
+<p>Les fichiers dans <code>/etc/tmpfiles.d/</code> ont la priorité sur ceux de <code>/usr/lib/tmpfiles.d/</code>.</p>
+
+<h2>Format d'un fichier de configuration</h2>
+
+<p>Chaque ligne d'un fichier <code>.conf</code> suit ce format :</p>
+
+<div class="code-block">
+<div class="code-line"><code>Type Utilisateur Groupe Mode Age Argument</code></div>
+</div>
+
+<h2>Les types de lignes</h2>
+
+<table>
+<tr><th>Type</th><th>Description</th></tr>
+<tr><td><code>d</code></td><td>Créer un répertoire (s'il n'existe pas)</td></tr>
+<tr><td><code>D</code></td><td>Créer ou vider un répertoire</td></tr>
+<tr><td><code>f</code></td><td>Créer un fichier (s'il n'existe pas)</td></tr>
+<tr><td><code>F</code></td><td>Créer ou vider un fichier</td></tr>
+<tr><td><code>L</code></td><td>Créer un lien symbolique</td></tr>
+<tr><td><code>c</code></td><td>Créer un périphérique (character device)</td></tr>
+<tr><td><code>b</code></td><td>Créer un périphérique (block device)</td></tr>
+<tr><td><code>p</code></td><td>Créer un tube nommé (pipe)</td></tr>
+<tr><td><code>w</code></td><td>Écrire du contenu dans un fichier</td></tr>
+<tr><td><code>x</code></td><td>Ne pas nettoyer automatiquement (exclure)</td></tr>
+<tr><td><code>X</code></td><td>Nettoyer recursively sans supprimer le répertoire parent</td></tr>
+<tr><td><code>r</code></td><td>Supprimer uniquement les fichiers (recursive)</td></tr>
+<tr><td><code>R</code></td><td>Supprimer récursivement répertoire et sous-répertoires</td></tr>
+<tr><td><code>z</code></td><td>Définir propriétaire, groupe et permissions récursivement</td></tr>
+<tr><td><code>Z</code></td><td>Définir propriétaire, groupe et permissions récursivement (avec subvolumes)</td></tr>
+</table>
+
+<h2>Exemples concrets</h2>
+
+<h3>1. Créer un répertoire temporaire pour une application</h3>
+
+<div class="code-block">
+<div class="code-line"><code># /etc/tmpfiles.d/monapp.conf
+# Type  Utilisateur  Groupe  Mode  Age  Chemin
+d       /run/monapp   root    0755  1d  -</code></div>
+</div>
+
+<p>Ce fichier crée le répertoire <code>/run/monapp</code> avec les droits <code>0755</code> (rwxr-xr-x) et le supprime automatiquement après <code>1 jour</code> d'inactivité.</p>
+
+<h3>2. Créer un fichier avec du contenu</h3>
+
+<div class="code-block">
+<div class="code-line"><code># /etc/tmpfiles.d/monapp.conf
+# Type  Utilisateur  Groupe  Mode  Age  Argument
+f       /run/monapp/pid  root   0644  -   /run/monapp/daemon.pid</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>w /run/daemon.pid - - - - 12345</code></div>
+</div>
+
+<p>L'option <code>w</code> écrit le contenu spécifié dans le fichier.</p>
+
+<h3>3. Créer un lien symbolique</h3>
+
+<div class="code-block">
+<div class="code-line"><code>L /etc/monapp/config - - - - /etc/monapp/config.production</code></div>
+</div>
+
+<h3>4. Nettoyer un répertoire automatiquement</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Nettoyer le cache tous les jours après 7 jours d'inactivité
+R /var/cache/monapp - - 7d -</code></div>
+</div>
+
+<h3>5. Définir les permissions d'un répertoire existant</h3>
+
+<div class="code-block">
+<div class="code-line"><code>z /var/log/monapp daemon daemon 0755 -</code></div>
+</div>
+
+<p>L'option <code>z</code> définit récursivement le propriétaire, le groupe et les permissions.</p>
+
+<h2>Syntaxe détaillée des champs</h2>
+
+<h3>Champ Age (durée de vie)</h3>
+
+<table>
+<tr><th>Syntaxe</th><th>Signification</th></tr>
+<tr><td><code>-</code></td><td>Pas de limite (ne jamais supprimer)</td></tr>
+<tr><td><code>10s</code></td><td>10 secondes</td></tr>
+<tr><td><code>5m</code></td><td>5 minutes</td></tr>
+<tr><td><code>2h</code></td><td>2 heures</td></tr>
+<tr><td><code>1d</code></td><td>1 jour</td></tr>
+<tr><td><code>1w</code></td><td>1 semaine</td></tr>
+<tr><td><code>1month</code></td><td>1 mois</td></tr>
+<tr><td><code>~</code></td><td>Au démarrage seulement (supprimer au prochain boot)</td></tr>
+</table>
+
+<h3>Champ Mode (permissions)</h3>
+
+<p>Spécifié en notation octale (ex: <code>0755</code>, <code>0644</code>).</p>
+
+<h2>Commandes de base</h2>
+
+<h3>Créer les fichiers/répertoires définis</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --create</code></div>
+</div>
+
+<p>Cette commande crée tous les fichiers et répertoires définis dans les fichiers de configuration. Elle est automatiquement exécutée au démarrage par systemd via le service <code>systemd-tmpfiles-setup.service</code>.</p>
+
+<h3>Nettoyer les fichiers temporaires</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --clean</code></div>
+</div>
+
+<p>Supprime les fichiers qui ont dépassé leur durée de vie définie. Cette commande est exécutée périodiquement par <code>systemd-tmpfiles-clean.timer</code>.</p>
+
+<h3>Supprimer tous les fichiers temporaires</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --remove</code></div>
+</div>
+
+<p>Supprime immédiatement tous les fichiers correspondant aux règles de type <code>R</code> ou <code>r</code>.</p>
+
+<h3>Vérifier le statut</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --status</code></div>
+</div>
+
+<p>Affiche l'état des services tmpfiles.</p>
+
+<h3>Tester une configuration</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --create --dry-run /etc/tmpfiles.d/monapp.conf</code></div>
+</div>
+
+<p>L'option <code>--dry-run</code> (ou <code>--purge</code> pour certains) permet de vérifier ce qui serait créé sans le faire.</p>
+
+<h2>Exemple complet : fichier de configuration pour une application</h2>
+
+<div class="code-block">
+<div class="code-line"><code># /etc/tmpfiles.d/monapp.conf
+# Configuration tmpfiles pour MonApp
+
+# Répertoire de travail (créer au démarrage, nettoyer après 7 jours)
+d /run/monapp root 0755 7d -</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Fichier PID (permissions restrictives)
+f /run/monapp/monapp.pid root root 0644 - -</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Lien symbolique vers la configuration
+L /etc/monapp/current - - - - /etc/monapp/config.v2</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Définir les permissions du répertoire de logs
+z /var/log/monapp monapp monapp 0755 -</code></div>
+</div>
+
+<h2>Services systemd associés</h2>
+
+<table>
+<tr><th>Service</th><th>Description</th></tr>
+<tr><td><code>systemd-tmpfiles-setup.service</code></td><td>Crée les fichiers/répertoires temporaires au démarrage</td></tr>
+<tr><td><code>systemd-tmpfiles-setup-dev.service</code></td><td>Crée les fichiers du pseudo-terminal /dev</td></tr>
+<tr><td><code>systemd-tmpfiles-clean.service</code></td><td>Nettoie les fichiers temporaires</td></tr>
+<tr><td><code>systemd-tmpfiles-clean.timer</code></td><td>Déclenche le nettoyage périodiquement</td></tr>
+</table>
+
+<h3>Vérifier le timer</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-timers systemd-tmpfiles-clean.timer</code></div>
+</div>
+
+<h2>Nettoyage manuel</h2>
+
+<h3>Nettoyer maintenant</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --clean</code></div>
+</div>
+
+<h3>Voir ce qui serait supprimé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --clean --dry-run</code></div>
+</div>
+
+<h2>Fichier tmpfiles.d système par défaut</h2>
+
+<p>Le système contient déjà des configurations par défaut :</p>
+
+<div class="code-block">
+<div class="code-line"><code>cat /usr/lib/tmpfiles.d/tmp.conf</code></div>
+</div>
+
+<p>Exemple typique :</p>
+
+<div class="code-block">
+<div class="code-line"><code># /usr/lib/tmpfiles.d/tmp.conf
+# Nettoyer /tmp tous les jours après 30 jours
+D /tmp 1777 root root 30d</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Nettoyer /var/tmp tous les jours après 30 jours
+D /var/tmp 1777 root root 30d</code></div>
+</div>
+
+<h2>Créer son propre fichier de configuration</h2>
+
+<h3>1. Créer le fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/tmpfiles.d/monservice.conf</code></div>
+</div>
+
+<h3>2. Ajouter les règles</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer le répertoire au démarrage, nettoyer après 24h
+d /run/monservice root 0755 1d -</code></div>
+</div>
+
+<h3>3. Créer les fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --create /etc/tmpfiles.d/monservice.conf</code></div>
+</div>
+
+<h3>4. Vérifier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>ls -la /run/monservice</code></div>
+</div>
+
+<h2>Exclure des fichiers du nettoyage</h2>
+
+<p>Pour éviter qu'un fichier ou répertoire soit supprimé automatiquement, utilisez le type <code>x</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Ne jamais nettoyer ce répertoire
+x /var/log/monservice/important - - -</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Placez vos configurations personnalisées dans <code>/etc/tmpfiles.d/</code> (pas dans <code>/usr/lib/tmpfiles.d/</code>)</li>
+<li>Utilisez des noms de fichiers descriptifs (<code>monservice.conf</code>)</li>
+<li>Définissez toujours un âge raisonnable pour éviter l'accumulation</li>
+<li>Testez vos configurations avec <code>--dry-run</code> avant de les appliquer</li>
+<li>Surveillez l'espace disque avec <code>df -h /tmp /var/tmp</code></li>
+</ul>
+
+<h2>Dépannage</h2>
+
+<h3>Le répertoire n'est pas créé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemd-tmpfiles --create /etc/tmpfiles.d/monapp.conf
+journalctl -u systemd-tmpfiles-setup</code></div>
+</div>
+
+<h3>Vérifier les règles actives</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-tmpfiles --cat-config</code></div>
+</div>
+
+<h3>Erreur de permissions</h3>
+
+<p>Assurez-vous que le fichier de configuration appartient à <code>root:root</code> et a les permissions <code>0644</code>.</p>
+
+<h2>Résumé des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Action</th></tr>
+<tr><td><code>systemd-tmpfiles --create</code></td><td>Créer les fichiers/répertoires</td></tr>
+<tr><td><code>systemd-tmpfiles --clean</code></td><td>Nettoyer les fichiers expirés</td></tr>
+<tr><td><code>systemd-tmpfiles --remove</code></td><td>Supprimer tous les fichiers temporaires</td></tr>
+<tr><td><code>systemd-tmpfiles --status</code></td><td>Afficher le statut</td></tr>
+<tr><td><code>systemd-tmpfiles --cat-config</code></td><td>Voir toutes les règles actives</td></tr>
+</table>
+
+<p><code>systemd-tmpfiles</code> est un outil puissant pour gérer automatiquement le cycle de vie des fichiers et répertoires temporaires sur un système Linux. En définissant des règles claires, vous pouvez éviter l'accumulation de fichiers obsolètes et libérer de l'espace disque automatiquement.</p>
+
+<nav>
+<a href="175-xz-compression.html">&larr; Leçon 175 : xz — Compression moderne et performante</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
