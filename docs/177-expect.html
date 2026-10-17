@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>expect — Automatiser les tâches interactives</h1>
+
+<h2>Introduction</h2>
+<p>Quand vous utilisez Linux, certaines commandes vous demandent de saisir des informations de manière interactive : un mot de passe, une confirmation, un choix dans un menu. Comment automatiser ces tâches dans un script ?</p>
+
+<p><code>expect</code> est un outil qui permet d'automatiser les applications interactives en simulant les saisies utilisateur. Il lit la sortie du programme, attend des motifs spécifiques, puis envoie les réponses appropriées.</p>
+
+<h2>Installation</h2>
+
+<div class="code-block">
+<div class="code-line"><code>sudo apt install expect        # Debian/Ubuntu</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dnf install expect        # Fedora</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo pacman -S expect         # Arch Linux</code></div>
+</div>
+
+<h2>Principe de fonctionnement</h2>
+
+<p>expect fonctionne sur un principe simple :</p>
+<ol>
+<li>Lance un programme interactif</li>
+<li>Attend qu'un texte apparaisse (un "motif" ou pattern)</li>
+<li>Envoie une réponse automatique</li>
+<li>Répète jusqu'à la fin du programme</li>
+</ol>
+
+<h2>Premier script expect</h2>
+
+<h3>Exemple : automatiser ssh-copy-id</h3>
+
+<p>Le script <code>ssh-copy-id</code> demande normally d'entrer un mot de passe. Avec expect, vous pouvez l'automatiser :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -f
+
+# Définir les variables
+set USER "admin"
+set HOST "serveur.example.com"
+set PASSWORD "MonMotDePasse123"
+
+# Lancer ssh-copy-id
+spawn ssh-copy-id "$USER@$HOST"
+
+# Attendre le prompt du mot de passe et le fournir
+expect "password:"
+send "$PASSWORD\r"
+
+# Attendre la fin de l'exécution
+expect eof</code></div>
+</div>
+
+<p>Explications :</p>
+<ul>
+<li><code>#!/usr/bin/expect -f</code> : shebang pour exécuter le script avec expect</li>
+<li><code>set</code> : définit une variable</li>
+<li><code>spawn</code> : lance le programme à automatiser</li>
+<li><code>expect</code> : attend qu'un texte apparaisse</li>
+<li><code>send</code> : envoie du texte au programme</li>
+<li><code>\r</code> : simule la touche Entrée</li>
+<li><code>expect eof</code> : attend la fin du programme</li>
+</ul>
+
+<h3>Rendre le script exécutable</h3>
+
+<div class="code-block">
+<div class="code-line"><code>chmod +x deploy_key.exp
+./deploy_key.exp</code></div>
+</div>
+
+<h2>Les commandes de base d'expect</h2>
+
+<h3>spawn</h3>
+<p>Lance un processus fils. Tous les échanges suivants se font avec ce processus.</p>
+
+<div class="code-block">
+<div class="code-line"><code>spawn commande arg1 arg2</code></div>
+</div>
+
+<h3>expect</h3>
+<p>Attend qu'un motif apparaisse dans la sortie du programme. Les motifs peuvent être :</p>
+<ul>
+<li>Une chaîne de texte exacte</li>
+<li>Une expression régulière</li>
+<li><code>timeout</code> : délai maximal d'attente</li>
+<li><code>eof</code> : fin du fichier (le programme s'est terminé)</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code>expect "password:"</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>expect {
+    "yes/no" { send "yes\r" }
+    "password:" { send "$password\r" }
+    timeout { puts "Trop long!"; exit 1 }
+}</code></div>
+</div>
+
+<h3>send</h3>
+<p>Envoie du texte au programme en cours. N'oubliez pas <code>\r</code> pour simuler Entrée.</p>
+
+<div class="code-block">
+<div class="code-line"><code>send "mon texte\r"</code></div>
+</div>
+
+<h3>set</h3>
+<p>Définit une variable. Pour utiliser une variable, préfixez-la par <code>$</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>set variable "valeur"
+puts $variable</code></div>
+</div>
+
+<h3>interact</h3>
+<p>Transfère le contrôle à l'utilisateur. Le programme continue à s'exécuter, mais l'utilisateur peut intervenir manuellement.</p>
+
+<div class="code-block">
+<div class="code-line"><code>spawn ssh admin@serveur
+expect "password:"
+send "$password\r"
+interact</code></div>
+</div>
+
+<h2>Gestion des timeout</h2>
+
+<p>Par défaut, expect attend indéfiniment. Utilisez <code>set timeout</code> pour définir un délai maximal en secondes :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -f
+set timeout 30
+
+spawn ftp serveur.example.com
+expect "Name.*:"
+send "anonymous\r"
+expect "Password:"
+send "monemail@example.com\r"
+expect "ftp>"
+send "ls\r"
+
+# Attendre le résultat pendant 10 secondes
+set timeout 10
+expect "ftp>"
+send "quit\r"
+expect eof</code></div>
+</div>
+
+<h2>Variables d'environnement utiles</h2>
+
+<table>
+<tr><th>Variable</th><th>Description</th></tr>
+<tr><td><code>timeout</code></td><td>Délai d'attente par défaut (en secondes)</td></tr>
+<tr><td><code>spawn_id</code></td><td>Identifiant du processus courant</td></tr>
+<tr><td><code>expect_out(buffer)</code></td><td>Contenu mis en tampon depuis le dernier expect</td></tr>
+</table>
+
+<h2>Exemple complet : sauvegarde automatique avec rsync sur SSH</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -f
+
+# Configuration
+set RSYNC_USER "backup"
+set RSYNC_HOST "backup.serveur.com"
+set RSYNC_PORT "2222"
+set PASSWORD "MotDePasseBackup"
+set SOURCE "/home/data/"
+set DESTINATION "/backup/data/"
+
+# Timeout global
+set timeout 120
+
+# Lancer rsync sur SSH
+spawn rsync -avz -e "ssh -p $RSYNC_PORT" "$SOURCE" "$RSYNC_USER@$RSYNC_HOST:$DESTINATION"
+
+# Gérer les différents cas
+expect {
+    "yes/no" {
+        send "yes\r"
+        exp_continue
+    }
+    "password:" {
+        send "$PASSWORD\r"
+    }
+    timeout {
+        puts "Erreur: timeout"
+        exit 1
+    }
+    eof {
+        puts "Transfert terminé"
+    }
+}</code></div>
+</div>
+
+<h2>Patterns et expressions régulières</h2>
+
+<h3>Patterns simples</h3>
+
+<div class="code-block">
+<div class="code-line"><code>expect "password:"
+expect "Are you sure"
+expect "Select an option:"</code></div>
+</div>
+
+<h3>Patterns avec expressions régulières</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Correspond à "Password: " ou "password: " (insensible à la casse)
+expect -regexp "(?i)password:"
+
+# Correspond à une adresse IP
+expect -regexp "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+
+# Correspond à n'importe quel texte
+expect {
+    "Error" { puts "Erreur détectée"; exit 1 }
+    "Success" { puts "Succès!" }
+}</code></div>
+</div>
+
+<h3>Utiliser les correspondances</h3>
+
+<div class="code-block">
+<div class="code-line"><code>expect -regexp "Upload:\\s*(\\d+)%"
+expect $expect_out(1,string)  ;# Contient le nombre capturé</code></div>
+</div>
+
+<h2>Automatiser mysql en ligne de commande</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -f
+
+set mysql_password "rootpass"
+set query "SELECT COUNT(*) FROM users;"
+
+spawn mysql -u root -p
+
+expect "password:"
+send "$mysql_password\r"
+
+expect "mysql>"
+send "$query\r"
+
+expect "mysql>"
+send "EXIT\r"
+
+expect eof</code></div>
+</div>
+
+<h2>Scripts expect dans un script bash</h2>
+
+<p>Vous pouvez aussi intégrer des blocs expect directement dans un script bash :</p>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+
+PASSWORD="MonMotDePasse"
+
+# Utiliser expect-begin/expect-end dans un script bash
+/usr/bin/expect <<EOF
+set timeout 10
+spawn su - root
+expect "Password:"
+send "$PASSWORD\r"
+expect "#"
+send "whoami\r"
+send "exit\r"
+expect eof
+EOF
+
+echo "Fin du script bash"</code></div>
+</div>
+
+<h2>Gérer les erreurs</h2>
+
+<h3>Vérifier le code de retour</h3>
+
+<div class="code-block">
+<div class="code-line"><code>spawn commande
+expect eof
+catch wait result
+set exit_code [lindex $result 3]
+
+if {$exit_code != 0} {
+    puts "Erreur: commande terminée avec le code $exit_code"
+    exit 1
+}</code></div>
+</div>
+
+<h3>Utiliser une procédure d'erreur</h3>
+
+<div class="code-block">
+<div class="code-line"><code>proc fail {} {
+    puts "Erreur détectée"
+    exit 1
+}
+
+spawn commande
+expect {
+    "Error" { fail }
+    timeout { puts "Timeout!"; fail }
+    eof
+}</code></div>
+</div>
+
+<h2>Logging et débogage</h2>
+
+<h3>Activer le mode débogage</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -d -f
+
+# -d active le mode debug (affiche les expect/send)
+# -d affiche aussi les informations de débogage</code></div>
+</div>
+
+<h3>Log dans un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>log_file -a sortie.log
+
+spawn commande
+expect "prompt>"
+send "ls\r"
+expect eof
+
+log_file  ;# Ferme le fichier log</code></div>
+</div>
+
+<h2>Exemple : automatiser sudo</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -f
+
+set password [lindex $argv 0]
+set commande [lindex $argv 1]
+
+spawn sudo $commande
+
+expect {
+    "password" { send "$password\r" }
+    eof
+}
+
+expect eof</code></div>
+</div>
+
+<p>Utilisation :</p>
+
+<div class="code-block">
+<div class="code-line"><code>./sudo_auto.exp MonMotDePasse "apt update"</code></div>
+</div>
+
+<h2>Exemple : connexion FTP automatique</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -f
+
+set server "ftp.example.com"
+set username "ftpuser"
+set password "ftppass"
+set timeout 60
+
+spawn ftp $server
+
+expect "Name.*:"
+send "$username\r"
+
+expect "Password:"
+send "$password\r"
+
+expect "ftp>"
+send "cd /pub\r"
+
+expect "ftp>"
+send "ls\r"
+
+expect "ftp>"
+send "get fichier.txt\r"
+
+expect "ftp>"
+send "bye\r"
+
+expect eof</code></div>
+</div>
+
+<h2>Combiner expect et ssh</h2>
+
+<div class="code-block">
+<div class="code-line"><code>#!/usr/bin/expect -f
+
+set USER [lindex $argv 0]
+set HOST [lindex $argv 1]
+set PASS [lindex $argv 2]
+set CMD  [lindex $argv 3]
+
+spawn ssh $USER@$HOST $CMD
+
+expect {
+    "yes/no" { 
+        send "yes\r"
+        exp_continue
+    }
+    "password:" {
+        send "$PASS\r"
+    }
+    timeout {
+        puts "Connexion timeout"
+        exit 1
+    }
+}
+
+expect eof</code></div>
+</div>
+
+<p>Utilisation :</p>
+
+<div class="code-block">
+<div class="code-line"><code>./ssh_cmd.exp admin serveur.com MotDePasse "df -h"</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Utilisez des variables</strong> pour les informations sensibles (mots de passe)</li>
+<li><strong>Définissez toujours un timeout</strong> pour éviter les blocages</li>
+<li><strong>Sécurisez vos scripts</strong> : chmod 700 pour les scripts contenant des mots de passe</li>
+<li><strong>Testez d'abord manuellement</strong> pour connaître les messages exacts</li>
+<li><strong>Utilisez -d pour déboguer</strong> avant de mettre en production</li>
+<li><strong>Préférez les clés SSH</strong> quand c'est possible (plus sécurisé)</li>
+</ul>
+
+<h2>Alternative : sshpass</h2>
+
+<p>Pour les cas simples comme ssh/scp avec mot de passe, <code>sshpass</code> est une alternative plus légère :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo apt install sshpass</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Copier une clé avec sshpass (moins sécurisé)
+sshpass -p 'MotDePasse' ssh-copy-id user@serveur
+
+# Copier des fichiers
+sshpass -p 'MotDePasse' scp fichier.txt user@serveur:/path/
+
+# Exécuter une commande
+sshpass -p 'MotDePasse' ssh user@serveur "ls -la"</code></div>
+</div>
+
+<p><strong>Note</strong> : sshpass transmet le mot de passe en argument, ce qui le rend visible dans la liste des processus. Pour un usage régulier, privilégiez les clés SSH ou expect qui permet de saisir le mot de passe de manière plus sécurisée.</p>
+
+<h2>Résumé des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>spawn</code></td><td>Lancer un programme interactif</td></tr>
+<tr><td><code>expect</code></td><td>Attendre un motif dans la sortie</td></tr>
+<tr><td><code>send</code></td><td>Envoyer du texte au programme</td></tr>
+<tr><td><code>set</code></td><td>Définir une variable</td></tr>
+<tr><td><code>interact</code></td><td>Transférer le contrôle à l'utilisateur</td></tr>
+<tr><td><code>expect eof</code></td><td>Attendre la fin du programme</td></tr>
+<tr><td><code>exp_continue</code></td><td>Continuer après un expect (boucle)</td></tr>
+<tr><td><code>timeout</code></td><td>Délai d'attente maximal</td></tr>
+</table>
+
+<p><code>expect</code> est un outil puissant pour automatiser les tâches interactives sous Linux. Bien qu'il existe des alternatives plus modernes (clés SSH, sshpass), expect reste indispensable pour automatiser des applications anciennes ou complexes qui ne supportent pas d'autres méthodes d'authentification.</p>
+
+<nav>
+<a href="176-systemd-tmpfiles.html">&larr; Leçon 176 : systemd-tmpfiles — Gérer les fichiers temporaires</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
