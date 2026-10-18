@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>GNU parallel — Exécuter des commandes en parallèle</h1>
+
+<h2>Introduction</h2>
+<p>Vous avez une liste de 100 fichiers à traiter, une commande à exécuter sur 50 serveurs, ou des milliers d'opérations indépendantes à effectuer ? Les faire une par une prendrait des heures. <code>GNU parallel</code> vous permet d'exécuter ces tâches en parallèle, en utilisant tous les cœurs de votre processeur.</p>
+
+<p>Imaginez : au lieu de traiter 100 images une par une en 10 minutes, parallel les traite toutes en parallèle et termine en quelques secondes.</p>
+
+<h2>Installation</h2>
+
+<div class="code-block">
+<div class="code-line"><code>sudo apt install parallel        # Debian/Ubuntu</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dnf install parallel        # Fedora</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo pacman -S parallel         # Arch Linux</code></div>
+</div>
+
+<h2>Le concept de base</h2>
+
+<p>parallel prend des entrées (sur stdin, depuis un fichier, ou depuis des arguments) et exécute une commande pour chaque entrée, en parallèle. Par défaut, il utilise autant de jobs que vous avez de cœurs CPU.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Syntaxe générale
+parallel "commande {}" ::: argument1 argument2 argument3</code></div>
+</div>
+
+<p>Le symbole <code>{}</code> représente l'argument courant. D'autres placeholders existent :</p>
+
+<table>
+<tr><th>Placeholder</th><th>Description</th></tr>
+<tr><td><code>{}</code></td><td>L'argument entier</td></tr>
+<tr><td><code>{.}</code></td><td>L'argument sans extension</td></tr>
+<tr><td><code>{/}</code></td><td>Juste le nom du fichier (sans chemin)</td></tr>
+<tr><td><code>{//}</code></td><td>Juste le répertoire</td></tr>
+<tr><td><code>{/.}</code></td><td>Nom du fichier sans extension</td></tr>
+</table>
+
+<h2>Premiers exemples</h2>
+
+<h3>Exemple 1 : traiter plusieurs fichiers</h3>
+
+<p>Compresser 4 fichiers avec gzip en parallèle :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel gzip {} ::: fichier1.txt fichier2.txt fichier3.txt fichier4.txt</code></div>
+</div>
+
+<p>Cela lancera 4 processus gzip simultanément.</p>
+
+<h3>Exemple 2 : lire depuis un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer une liste de serveurs
+echo -e "serveur1\nserveur2\nserveur3" > serveurs.txt
+
+# Pinguer tous les serveurs en parallèle
+parallel -a serveurs.txt ping -c 1 {}</code></div>
+</div>
+
+<h3>Exemple 3 : utiliser un pipe</h3>
+
+<div class="code-block">
+<div class="code-line"><code>cat servers.txt | parallel ping -c 1 {}</code></div>
+</div>
+
+<h3>Exemple 4 : traiter des fichiers d'un répertoire</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Compresser tous les fichiers .log du répertoire courant
+ls *.log | parallel gzip
+
+# Redimensionner toutes les images avec ImageMagick
+ls *.jpg | parallel convert {} -resize 800x600 {.}_800.jpg</code></div>
+</div>
+
+<h2>Contrôler le nombre de jobs</h2>
+
+<p>Par défaut, parallel utilise autant de jobs que de cœurs CPU. Vous pouvez ajuster avec <code>-j</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Utiliser seulement 2 jobs simultanés
+parallel -j 2 gzip {} ::: fichier1.txt fichier2.txt fichier3.txt
+
+# Utiliser la moitié des cœurs
+parallel -j 50% gzip {} ::: *.txt
+
+# Travailler séquentiellement (1 job à la fois)
+parallel -j 1 gzip {} ::: *.txt</code></div>
+</div>
+
+<h3>Quand utiliser peu de jobs ?</h3>
+<ul>
+<li>Les tâches utilisent beaucoup de RAM</li>
+<li>Les tâches font des accès disque intensifs</li>
+<li>Vous voulez laisser de la puissance pour autre chose</li>
+<li>Les tâches écrivent dans le même fichier</li>
+</ul>
+
+<h2>Options utiles</h2>
+
+<h3>-n : nombre d'arguments par commande</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Traiter 2 arguments à la fois
+parallel -n 2 echo "Fichiers:" {} {} ::: fichier1.txt fichier2.txt fichier3.txt</code></div>
+</div>
+
+<h3>--dry-run : voir sans exécuter</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher les commandes sans les exécuter
+parallel --dry-run gzip {} ::: *.txt</code></div>
+</div>
+
+<h3>-v : mode verbeux</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Afficher les commandes au fur et à mesure
+parallel -v gzip {} ::: *.txt</code></div>
+</div>
+
+<h3>--bar : barre de progression</h3>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --bar gzip {} ::: *.txt</code></div>
+</div>
+
+<h3>--eta : temps restant estimé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --eta gzip {} ::: *.txt</code></div>
+</div>
+
+<h3>--halt onerr : arrêter en cas d'erreur</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Arrêter si une commande échoue
+parallel --halt onerr gzip {} ::: *.txt
+
+# Arrêter si plus de 2 commandes échouent
+parallel --halt now,fail=2 gzip {} ::: *.txt</code></div>
+</div>
+
+<h2>Utiliser plusieurs sources d'arguments</h2>
+
+<p>Vous pouvez combiner plusieurs sources d'arguments. Elles seront combinées de différentes façons avec <code>:::+</code> et <code>:::</code>.</p>
+
+<h3>Produit cartésien (toutes les combinaisons)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter gzip sur fichier1.txt et fichier2.txt AVEC serveur1 et serveur2
+# = 4 combinaisons
+parallel echo "Compresser {} vers {}" ::: fichier1.txt fichier2.txt ::: serveur1 serveur2</code></div>
+</div>
+
+<h3>Arguments correspondants (:::+)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Associer les arguments un à un
+parallel echo "Traitement: {} -> {}" ::: input1.txt input2.txt :::+ output1.txt output2.txt</code></div>
+</div>
+
+<p>Avec <code>:::+</code>, le premier argument de la première liste est combiné avec le premier argument de la seconde liste, etc.</p>
+
+<h2>Placeholders avancés</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Avec un fichier /home/user/photos/vacances.jpg
+# {}   = /home/user/photos/vacances.jpg
+# {.}  = /home/user/photos/vacances
+# {/}  = vacances.jpg
+# {//} = /home/user/photos
+# {/.} = vacances
+
+# Créer une miniature
+ls /home/user/photos/*.jpg | parallel convert {} -resize 200x200 {/.}_thumb.jpg</code></div>
+</div>
+
+<h2>Redirections et sortie</h2>
+
+<h3>Sortie dans l'ordre des arguments</h3>
+
+<p>Par défaut, la sortie peut apparaître dans le désordre (selon l'ordre de terminaison des jobs). Pour forcer l'ordre :</p>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --keep-order gzip {} ::: *.txt</code></div>
+</div>
+
+<h3>Regrouper la sortie</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Grouper la sortie par argument
+parallel --group echo "Résultat de {}:" {} ::: A B C</code></div>
+</div>
+
+<h3>Rediriger stdout et stderr séparément</h3>
+
+<div class="code-block">
+<div class name="code-line"><code>parallel "commande {}" ::: *.txt > resultats.txt 2> erreurs.txt</code></div>
+</div>
+
+<h3>Identifier la source dans la sortie</h3>
+
+<div class="code-block">
+<div class="code-line"><code>parallel --tag echo "{} traité" ::: *.txt</code></div>
+</div>
+
+<h2>Scripts et fonctions</h2>
+
+<h3>Utiliser une fonction bash</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+
+# Définir une fonction
+convert_image() {
+    convert "$1" -resize 800x600 "${1%.jpg}_800.jpg"
+}
+export -f convert_image
+
+# Appeler la fonction avec parallel
+ls *.jpg | parallel convert_image</code></div>
+</div>
+
+<h3>Script externe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># script.sh
+#!/bin/bash
+echo "Traitement de $1"
+gzip "$1"
+
+# Rendre exécutable
+chmod +x script.sh
+
+# L'appeler depuis parallel
+parallel ./script.sh {} ::: *.txt</code></div>
+</div>
+
+<h2>Exemple concret : redimensionner des images</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Créer 100 images de test
+mkdir -p photos
+for i in $(seq 1 100); do convert -size 4000x3000 xc:blue photos/image_$i.jpg; done
+
+# Redimensionner en parallèle (4 jobs simultanés pour préserver la RAM)
+parallel -j 4 convert {} -resize 800x600 {.}_small.jpg ::: photos/*.jpg
+
+echo "100 images redimensionnées en parallèle !"</code></div>
+</div>
+
+<h2>Exemple concret : pinguer plusieurs serveurs</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Liste de serveurs à tester
+echo -e "google.com\ngithub.com\nwikipedia.org\ncloudflare.com" > servers.txt
+
+# Pinguer tous les serveurs en parallèle et afficher le temps moyen
+cat servers.txt | parallel -j 4 "ping -c 3 {} | tail -1"</code></div>
+</div>
+
+<h2>Exemple concret : téléchargement parallèle</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Télécharger plusieurs fichiers en parallèle
+parallel curl -O {} ::: \
+    https://example.com/fichier1.zip \
+    https://example.com/fichier2.zip \
+    https://example.com/fichier3.zip</code></div>
+</div>
+
+<h2>Exemple concret : backup sur plusieurs machines</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer rsync sur plusieurs serveurs en parallèle
+echo -e "serveur1:/backup\nserveur2:/backup\nserveur3:/backup" > destinations.txt
+
+cat destinations.txt | parallel rsync -av /home/data/ {}</code></div>
+</div>
+
+<h2>Combiner avec xargs</h2>
+
+<p>parallel est souvent comparé à xargs, mais il est plus puissant :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Avec xargs (séquentiel par défaut)
+ls *.txt | xargs gzip
+
+# Avec parallel (parallèle)
+ls *.txt | parallel gzip
+
+# parallel peut aussi remplacer xargs :
+ls *.txt | parallel -X xargs-like gzip</code></div>
+</div>
+
+<h2>Limiter la bande passante avec --rate</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Limiter à 1MB/s par job (utile pour ne pas saturer le réseau)
+parallel --rate 1M curl -O {} ::: https://example.com/file1 https://example.com/file2</code></div>
+</div>
+
+<h2>Jobs dépendants avec --fd</h2>
+
+<p>Pour des workflows complexes où un job dépend d'un autre :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Voir la documentation avancée
+man parallel_tutorial</code></div>
+</div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Commencez prudemment</strong> : lancez avec <code>--dry-run</code> pour vérifier</li>
+<li><strong>Surveillez la mémoire</strong> : trop de jobs simultanés peut épuiser la RAM</li>
+<li><strong>Vérifiez l'ordre de sortie</strong> : utilisez <code>--keep-order</code> si l'ordre compte</li>
+<li><strong>Utilisez --bar ou --eta</strong> pour suivre la progression sur des tâches longues</li>
+<li><strong>Mettez les chemins entre quotes</strong> si vos fichiers ont des espaces</li>
+<li><strong>Testez avec peu d'arguments</strong> avant de lancer sur des centaines</li>
+</ul>
+
+<h2>Résumé des options courantes</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-j N</code></td><td>Nombre de jobs parallèles</td></tr>
+<tr><td><code>-j 50%</code></td><td>Utiliser 50% des cœurs CPU</td></tr>
+<tr><td><code>--dry-run</code></td><td>Afficher sans exécuter</td></tr>
+<tr><td><code>--bar</code></td><td>Afficher une barre de progression</td></tr>
+<tr><td><code>--eta</code></td><td>Afficher le temps restant</td></tr>
+<tr><td><code>--tag</code></td><td>Préfixer chaque ligne avec l'argument</td></tr>
+<tr><td><code>--halt onerr</code></td><td>Arrêter en cas d'erreur</td></tr>
+<tr><td><code>-a fichier</code></td><td>Lire les arguments depuis un fichier</td></tr>
+<tr><td><code>{}</code></td><td>Placeholder pour l'argument</td></tr>
+<tr><td><code>{.}</code></td><td>Argument sans extension</td></tr>
+<tr><td><code>{/}</code></td><td>Nom du fichier seul</td></tr>
+<tr><td><code>:::</code></td><td>Séparateur d'arguments</td></tr>
+<tr><td><code>:::+</code></td><td>Arguments appariés un à un</td></tr>
+</table>
+
+<p><code>GNU parallel</code> est un outil essentiel pour quiconque travaille avec de grandes quantités de tâches indépendantes. Que ce soit pour le traitement d'images, les sauvegardes, les téléchargements ou l'administration de serveurs, il transforme des heures de travail séquentiel en minutes de traitement parallèle.</p>
+
+<nav>
+<a href="177-expect.html">&larr; Leçon 177 : expect — Automatiser les tâches interactives</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
