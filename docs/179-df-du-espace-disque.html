@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>df et du — Gérer l'espace disque</h1>
+
+<p>Sous Linux, surveiller l'espace disque est une tâche essentielle pour tout administrateur ou utilisateur. Deux commandes permettent de répondre à cette problématique : <code>df</code> pour voir l'espace disponible sur les systèmes de fichiers, et <code>du</code> pour analyser l'espace occupé par les fichiers et répertoires. Dans cette leçon, vous apprendrez à les maîtriser.</p>
+
+<h2>1. df — Espace disque disponible</h2>
+
+<p>La commande <code>df</code> (<strong>d</strong>isk <strong>f</strong>ree) affiche l'espace disque utilisé et disponible sur tous les systèmes de fichiers montés.</p>
+
+<h3>Utilisation de base</h3>
+<div class="code-block"><div class="code-line"><code>df</code></div></div>
+
+<p>Par défaut, <code>df</code> affiche les tailles en blocs de 1 Ko, ce qui rend la lecture difficile. Utilisez l'option <code>-h</code> pour un format lisible par l'humain :</p>
+<div class="code-block"><div class="code-line"><code>df -h</code></div></div>
+
+<p>Résultat typique :</p>
+<div class="code-block"><div class="code-line"><code>Sys. de fichiers Taille Utilisé Dispo Uti% Monté sur
+/dev/sda1          50G    23G   27G  46% /
+tmpfs              2.0G     0  2.0G   0% /dev/shm
+/dev/sdb1         200G    85G  115G  43% /mnt/backup</code></div></div>
+
+<h3>Options utiles de df</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>df -h</code></td><td>Tailles en format lisible (Ko, Mo, Go)</td></tr>
+<tr><td><code>df -a</code></td><td>Affiche tous les systèmes de fichiers, y compris ceux de 0 bloc</td></tr>
+<tr><td><code>df -T</code></td><td>Affiche le type de système de fichiers (ext4, xfs, tmpfs…)</td></tr>
+<tr><td><code>df -i</code></td><td>Affiche l'utilisation des inodes au lieu des blocs</td></tr>
+<tr><td><code>df -h /home</code></td><td>Information uniquement pour le point de montage /home</td></tr>
+<tr><td><code>df -BG</code></td><td>Arrondit à la Gio (utile pour des valeurs exactes)</td></tr>
+</table>
+
+<h3>Comprendre les colonnes</h3>
+
+<ul>
+<li><strong>Sys. de fichiers</strong> — Le périphérique ou label du système de fichiers</li>
+<li><strong>Taille</strong> — Capacité totale</li>
+<li><strong>Utilisé</strong> — Espace déjà alloué</li>
+<li><strong>Dispo</strong> — Espace restant disponible</li>
+<li><strong>Uti%</strong> — Pourcentage d'utilisation (un indicateur d'alerte à surveiller)</li>
+<li><strong>Monté sur</strong> — Le point de montage</li>
+</ul>
+
+<h3>Alertes automatiques</h3>
+
+<p>Pour trouver rapidement les partitions proches de 90% d'utilisation :</p>
+<div class="code-block"><div class="code-line"><code>df -h | awk 'NR>1 && int($5) >= 90 {print $0}'</code></div></div>
+
+<p>Ou avec un affichage plus propre :</p>
+<div class="code-block"><div class="code-line"><code>df -h --output=source,size,used,avail,pcent,target -l | awk 'NR>1 && int($5) >= 80'</code></div></div>
+
+<hr>
+
+<h2>2. du — Espace utilisé par les fichiers</h2>
+
+<p>La commande <code>du</code> (<strong>d</strong>isk <strong>u</strong>sage) calcule et affiche l'espace disque utilisé par les fichiers et répertoires.</p>
+
+<h3>Utilisation de base</h3>
+<div class="code-block"><div class="code-line"><code>du</code></div></div>
+
+<p>Sans argument, <code>du</code> affiche l'espace utilisé par chaque fichier et sous-répertoire dans le répertoire courant — ce qui peut être très long. Mieux vaut utiliser <code>-h</code> :</p>
+<div class="code-block"><div class="code-line"><code>du -h</code></div></div>
+
+<h3>Voir uniquement le total d'un répertoire</h3>
+
+<p>Pour connaître la taille totale d'un répertoire sans le détail de chaque sous-dossier :</p>
+<div class="code-block"><div class="code-line"><code>du -sh /var/log</code></div></div>
+
+<p>Résultat :</p>
+<div class="code-block"><div class="code-line"><code>1.2G    /var/log</code></div></div>
+
+<p>L'option <code>-s</code> (summary) affiche uniquement le total, et <code>-h</code> rend le résultat lisible.</p>
+
+<h3>Voir les plus gros répertoires</h3>
+
+<p>Pour trouver les répertoires qui consomment le plus d'espace, triez par taille :</p>
+<div class="code-block"><div class="code-line"><code>du -h / | sort -rh | head -20</code></div></div>
+
+<p>Ou pour un répertoire précis, trié par taille décroissante :</p>
+<div class="code-block"><div class="code-line"><code>du -sh /home/* | sort -rh</code></div></div>
+
+<h3>Options utiles de du</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>du -h</code></td><td>Format lisible (Ko, Mo, Go)</td></tr>
+<tr><td><code>du -sh</code></td><td>Summary uniquement — taille totale du répertoire</td></tr>
+<tr><td><code>du -a</code></td><td>Affiche les fichiers individuels en plus des répertoires</td></tr>
+<tr><td><code>du -d N</code></td><td>Limite l'affichage à N niveaux de profondeur (profondeur = N)</td></tr>
+<tr><td><code>du --max-depth=1</code></td><td>N'affiche que le premier niveau de sous-répertoires</td></tr>
+<tr><td><code>du -c</code></td><td>Affiche un total à la fin</td></tr>
+<tr><td><code>du -BM</code></td><td>Affiche les tailles en Mio arrondis</td></tr>
+<tr><td><code>du -s --exclude="*.log"</code></td><td>Exclut les fichiers correspondant au motif</td></tr>
+<tr><td><code>du --apparent-size</code></td><td>Calcule la taille apparente (contenu réel du fichier)</td></tr>
+</table>
+
+<h3>Exemples pratiques</h3>
+
+<p><strong>Voir la taille des sous-répertoires directs de /home :</strong></p>
+<div class="code-block"><div class="code-line"><code>du -sh /home/*</code></div></div>
+
+<p><strong>Voir les 10 plus gros fichiers dans /var/log :</strong></p>
+<div class="code-block"><div class="code-line"><code>du -ah /var/log | sort -rh | head -10</code></div></div>
+
+<p><strong>Limiter à 2 niveaux de profondeur :</strong></p>
+<div class="code-block"><div class="code-line"><code>du -h --max-depth=2 /</code></div></div>
+
+<p><strong>Exclure un type de fichier :</strong></p>
+<div class="code-block"><div class="code-line"><code>du -sh --exclude="*.tmp" /tmp</code></div></div>
+
+<hr>
+
+<h2>3. Cas pratiques combinés</h2>
+
+<h3>Trouver ce qui remplit le disque</h3>
+
+<p>Quand le disque est plein et que vous ne savez pas pourquoi, une approche systématique fonctionne le mieux :</p>
+<div class="code-block"><div class="code-line"><code># Étape 1 : voir les partitions
+df -h
+
+# Étape 2 : voir les gros répertoires à la racine
+sudo du -sh /* 2>/dev/null | sort -rh | head -10
+
+# Étape 3 : creuser dans le plus gros répertoire
+sudo du -sh /var/* 2>/dev/null | sort -rh | head -10</code></div></div>
+
+<h3>Nettoyer les anciens journaux</h3>
+
+<p>Identifier les gros fichiers de log et leur ancienneté :</p>
+<div class="code-block"><div class="code-line"><code>find /var/log -name "*.gz" -o -name "*.old" | xargs du -h 2>/dev/null | sort -rh</code></div></div>
+
+<p>Puis supprimer les logs de plus de 30 jours :</p>
+<div class="code-block"><div class="code-line"><code>sudo find /var/log -name "*.log" -mtime +30 -exec rm -v {} \;</code></div></div>
+
+<h3>Surveillance d'un serveur</h3>
+
+<p>Créer un petit script de surveillance :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Alerte si une partition dépasse 85%
+df -h | awk 'NR>1 && int($5) >= 85 {
+  print "ALERTE: " $6 " est à " $5 " sur " $1
+}'</code></div></div>
+
+<hr>
+
+<h2>4. ncdu — une alternative graphique</h2>
+
+<p>Si <code>du</code> est trop statique, <code>ncdu</code> (NCurses Disk Usage) offre une interface interactive et naviguer dans les répertoires. Installez-le et utilisez-le ainsi :</p>
+<div class="code-block"><div class="code-line"><code>sudo apt install ncdu       # Debian/Ubuntu
+sudo dnf install ncdu       # Fedora
+sudo pacman -S ncdu         # Arch
+
+ncdu /</code></div></div>
+
+<p>Naviguez avec les flèches, entrez dans un dossier avec <code>Entrée</code>, remontez avec <code>..</code>, et supprimez avec <code>d</code>.</p>
+
+<hr>
+
+<h2>5. Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Usage</th></tr>
+<tr><td><code>df -h</code></td><td>Espace disque disponible sur toutes les partitions</td></tr>
+<tr><td><code>df -h /point/mont</code></td><td>Espace pour une partition précise</td></tr>
+<tr><td><code>du -sh /dir</code></td><td>Taille totale d'un répertoire</td></tr>
+<tr><td><code>du -h --max-depth=1</code></td><td>Tailles du premier niveau de sous-répertoires</td></tr>
+<tr><td><code>du -ah /dir | sort -rh | head</code></td><td>Les fichiers et répertoires les plus gros</td></tr>
+<tr><td><code>ncdu /dir</code></td><td>Interface interactive pour explorer l'espace disque</td></tr>
+</table>
+
+<p><code>df</code> répond à la question <em>"où en est mon disque ?"</em>, tandis que <code>du</code> répond à <em>"qu'est-ce qui prend tant de place ?"</em>. Les deux sont indispensables pour maintenir un système en bonne santé.</p>
+
+<nav>
+<a href="178-gnu-parallel.html">&larr; GNU Parallel — Calcul parallèle</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
