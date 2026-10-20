@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>systemd-cgroups — Limiter et contrôler les ressources système</h1>
+
+<h2>Introduction</h2>
+<p>Sous Linux, les <strong>cgroups</strong> (control groups) sont un mécanisme du noyau qui permet d'allouer, de limiter et de prioriser les ressources système (CPU, mémoire, E/S disque, réseau) entre différents processus ou groupes de processus.</p>
+
+<p><code>systemd</code> intègre nativement la gestion des cgroups. Chaque service géré par systemd est automatiquement placé dans un <strong>slice</strong> (tranche), lui-même structuré en <strong>scopes</strong> et <strong>services</strong>. Cette hiérarchie permet un contrôle fin des ressources.</p>
+
+<h2>Pourquoi utiliser les cgroups ?</h2>
+
+<ul>
+<li><strong>Isolation</strong> : empêcher un service de consummer toutes les ressources</li>
+<li><strong>Limitation</strong> : fixer des plafonds mémoire ou CPU pour des applications</li>
+<li><strong>Priorisation</strong> : donner plus ou moins de bande-passante à certains services</li>
+<li><strong>Comptabilité</strong> : surveiller la consommation de chaque groupe</li>
+<li><strong>Containers</strong> : Docker, Podman et systemd-nspawn utilisent les cgroups en interne</li>
+</ul>
+
+<h2>Concepts clés</h2>
+
+<h3>Slice (tranche)</h3>
+<p>Un slice est une unité hiérarchique qui contient des processus. Il existe 4 slices par défaut :</p>
+
+<table>
+<tr><th>Slice</th><th>Description</th></tr>
+<tr><td><code>-.slice</code></td><td>Slice racine (contient tous les autres)</td></tr>
+<tr><td><code>system.slice</code></td><td>Services système classiques</td></tr>
+<tr><td><code>user.slice</code></td><td>Session utilisateur</td></tr>
+<tr><td><code>machine.slice</code></td><td>Machines virtuelles et conteneurs</td></tr>
+</table>
+
+<h3>Scope (étendue)</h3>
+<p>Un scope est un groupe de processus externes gérés dynamiquement (par exemple, les processus d'une session de connexion).</p>
+
+<h3>Service (service)</h3>
+<p>Un service est un groupe de processus lancé et géré par systemd via un fichier unit.</p>
+
+<h2>Visualiser les slices et la hiérarchie</h2>
+
+<h3>Voir la hiérarchie des slices</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-cgls</code></div>
+</div>
+
+<p>Cette commande affiche l'arborescence complète des cgroups, avec les processus et la consommation de chaque groupe.</p>
+
+<h3>Voir les slices actifs</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-cgtop</code></div>
+</div>
+
+<p>Équivalent de <code>top</code> pour les cgroups. Affiche en temps réel l'utilisation CPU, mémoire et E/S de chaque slice.</p>
+
+<h3>Voir le slice d'un processus</h3>
+
+<div class="code-block">
+<div class="code-line"><code>cat /proc/PID/cgroup</code></div>
+</div>
+
+<p>Affiche les chemins cgroups auxquels appartient le processus <code>PID</code>.</p>
+
+<h3>Connaître le slice d'un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl show nginx.service -p Slice</code></div>
+</div>
+
+<h2>Limiter la mémoire (Memory)</h2>
+
+<h3>Via systemctl</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl set-property nginx.service MemoryMax=512M</code></div>
+</div>
+
+<p>Limite la mémoire maximale du service nginx à <code>512 Mo</code>. Cette modification est appliquée immédiatement et peut être rendue permanente avec <code>--runtime=false</code>.</p>
+
+<h3>Via le fichier unit</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/systemd/system/monservice.service</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Service]
+MemoryMax=1G
+MemoryHigh=800M</code></div>
+</div>
+
+<table>
+<tr><th>Directive</th><th>Description</th></tr>
+<tr><td><code>MemoryMax</code></td><td>Quantité maximale de mémoire autorisée (hard limit)</td></tr>
+<tr><td><code>MemoryHigh</code></td><td>Seuil à partir duquel le processus est ralenti (throttling)</td></tr>
+<tr><td><code>MemoryLow</code></td><td>Quantité minimale garantie (pas de throttling en dessous)</td></tr>
+<tr><td><code>MemorySwapMax</code></td><td>Taille maximale du swap autorisée</td></tr>
+</table>
+
+<h3>Vérifier les limites mémoire</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl show monservice.service | grep -i memory</code></div>
+</div>
+
+<h2>Limiter le CPU</h2>
+
+<h3>Via systemctl</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl set-property monservice.service CPUWeight=200</code></div>
+</div>
+
+<p>Plus la valeur est élevée, plus le service a de priorité CPU par rapport aux autres.</p>
+
+<h3>Via le fichier unit</h3>
+
+<div class="code-block">
+<div class="code-line"><code>[Service]
+CPUAccounting=true
+CPUWeight=500
+CPUQuota=50%</code></div>
+</div>
+
+<table>
+<tr><th>Directive</th><th>Description</th></tr>
+<tr><td><code>CPUAccounting</code></td><td>Activer la comptabilisation CPU (requis pour les autres directives)</td></tr>
+<tr><td><code>CPUWeight</code></td><td>Priorité relative CPU (1-10000, défaut 100)</td></tr>
+<tr><td><code>CPUQuota</code></td><td>Pourcentage maximal du CPU (ex: 50% = 1/2 cœur)</td></tr>
+<tr><td><code>AllowedCPUs</code></td><td>Liste des CPUs spécifiques autorisés</td></tr>
+</table>
+
+<h3>Limiter à 2 cœurs CPU</h3>
+
+<div class="code-block">
+<div class="code-line"><code>AllowedCPUs=0-1</code></div>
+</div>
+
+<h2>Limiter l'E/S disque</h2>
+
+<h3>Via systemctl</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl set-property monservice.service IOWeight=500</code></div>
+</div>
+
+<p>Définit la priorité d'E/S du service (1-10000, plus élevé = plus prioritaire).</p>
+
+<h3>Limiter le débit en écriture</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl set-property monservice.service IODeviceWeight=/dev/sda 100</code></div>
+</div>
+
+<h3>Via le fichier unit</h3>
+
+<div class="code-block">
+<div class="code-line"><code>[Service]
+IOAccounting=true
+IOWeight=400
+IODeviceWeight=/dev/sda 200</code></div>
+</div>
+
+<table>
+<tr><th>Directive</th><th>Description</th></tr>
+<tr><td><code>IOAccounting</code></td><td>Activer la comptabilisation E/S</td></tr>
+<tr><td><code>IOWeight</code></td><td>Poids global pour l'ordonnancement des E/S</td></tr>
+<tr><td><code>IODeviceWeight</code></td><td>Poids pour un périphérique spécifique</td></tr>
+<tr><td><code>IOReadBandwidthMax</code></td><td>Débit maximal en lecture (octets/s)</td></tr>
+<tr><td><code>IOWriteBandwidthMax</code></td><td>Débit maximal en écriture (octets/s)</td></tr>
+</table>
+
+<h3>Limiter à 10 Mo/s en écriture</h3>
+
+<div class="code-block">
+<div class="code-line"><code>IOWriteBandwidthMax=/dev/sda 10M</code></div>
+</div>
+
+<h2>Créer un slice personnalisé</h2>
+
+<h3>Pourquoi créer un slice ?</h3>
+<p>Pour isoler un groupe de services avec des limites communes. Par exemple, un slice pour tous les services web avec un plafond CPU partagé.</p>
+
+<h3>Créer le fichier unit</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/systemd/system/mon-slice.slice</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Unit]
+Description=Mon slice personnalisé pour les services web
+Before=services.target</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Slice]
+CPUWeight=200
+MemoryMax=2G
+IOWeight=300</code></div>
+</div>
+
+<h3>Appliquer et vérifier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl daemon-reload
+sudo systemctl start mon-slice.slice
+systemctl status mon-slice.slice</code></div>
+</div>
+
+<h3>Assigner un service à un slice</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/systemd/system/monservice.service</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Unit]
+Description=Mon service dans mon slice
+
+[Service]
+Slice=mon-slice.slice
+ExecStart=/usr/bin/monservice
+Restart=always</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl daemon-reload
+sudo systemctl restart monservice.service
+systemctl show monservice.service -p Slice</code></div>
+</div>
+
+<h3>Lister les services d'un slice</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-units --type=service --all --slice=mon-slice.slice</code></div>
+</div>
+
+<h2>Limiter les tâches (processus)</h2>
+
+<h3>Nombre maximal de tâches</h3>
+
+<div class="code-block">
+<div class="code-line"><code>[Slice]
+TasksMax=100</code></div>
+</div>
+
+<p>Limite le nombre total de tâches (threads + processus) dans le slice. Par défaut, <code>TasksMax=15%</code> représente 15% du maximum système.</p>
+
+<h3>Voir la limite par défaut</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl show system.slice | grep TasksMax</code></div>
+</div>
+
+<h2>Limiter le réseau (Network)</h2>
+
+<p>Les cgroups réseau permettent de limiter la bande-passante réseau via <code>tc</code> (traffic control). systemd offre une intégration via <code>netclass</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>[Slice]
+NetworkAccount=true
+NetworkWeight=500</code></div>
+</div>
+
+<table>
+<tr><th>Directive</th><th>Description</th></tr>
+<tr><td><code>NetworkAccount</code></td><td>Activer la comptabilisation réseau</td></tr>
+<tr><td><code>NetworkWeight</code></td><td>Poids pour la priorisation du trafic (1-10000)</td></tr>
+</table>
+
+<p>Pour un contrôle plus fin (limites de débit absolues), utilisez <code>tc</code> directement ou <code>systemd-networkd</code> avec <code>netdev</code>.</p>
+
+<h2>Créer un slice pour un utilisateur</h2>
+
+<h3>Limiter les ressources d'un utilisateur</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl set-property --runtime user-1000.slice MemoryMax=4G CPUQuota=200%</code></div>
+</div>
+
+<p>Appliqué à l'utilisateur avec UID 1000, cela limite sa session à 4 Go de RAM et 2 cœurs CPU.</p>
+
+<h3>Rendre la limite permanente</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo mkdir -p /etc/systemd/system/user-.slice.d/</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/systemd/system/user-.slice.d/limits.conf</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Slice]
+MemoryMax=4G
+CPUQuota=200%</code></div>
+</div>
+
+<h2>Surveillance et diagnostics</h2>
+
+<h3>Vérifier la consommation d'un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl status monservice.service</code></div>
+</div>
+
+<h3>Voir les stats d'un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl show monservice.service</code></div>
+</div>
+
+<p>Les propriétés incluent : <code>MemoryCurrent</code>, <code>CPUUsageNSec</code>, <code>TasksCurrent</code>, <code>IOReadBytes</code>, <code>IOWriteBytes</code>.</p>
+
+<h3>Surveillance temps réel</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-cgtop</code></div>
+</div>
+
+<p>Appuyez sur <code>h</code> pour l'aide, <code>p</code> pour trier par chemin, <code>r</code> pour trier par consommation CPU, <code>m</code> pour la mémoire.</p>
+
+<h3>Voir les cgroups via /sys/fs/cgroup</h3>
+
+<div class="code-block">
+<div class="code-line"><code>ls /sys/fs/cgroup/</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>cat /sys/fs/cgroup/system.slice/monservice.service/memory.max</code></div>
+</div>
+
+<h3>Réinitialiser les limites d'un service</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl set-property monservice.service --runtime</code></div>
+</div>
+
+<p>Sans argument, cela supprime les propriétés personnalisées du service.</p>
+
+<h2>Exemple complet : slice pour base de données</h2>
+
+<div class="code-block">
+<div class="code-line"><code># /etc/systemd/system/db.slice
+[Unit]
+Description=Slice pour les services de base de données
+Before=slices.target</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Slice]
+CPUAccounting=true
+CPUWeight=1000
+MemoryAccounting=true
+MemoryMax=8G
+MemoryHigh=6G
+IOAccounting=true
+IOWeight=800
+TasksMax=500</code></div>
+</div>
+
+<p>Attribuez vos services PostgreSQL, MySQL ou MongoDB à ce slice pour leur réserver des ressources prioritaires.</p>
+
+<h2>Rendre les modifications permanentes</h2>
+
+<h3>Méthode 1 : Fichier drop-in</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo mkdir -p /etc/systemd/system/monservice.service.d/</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/systemd/system/monservice.service.d/limits.conf</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Service]
+MemoryMax=1G
+CPUQuota=100%</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl daemon-reload
+sudo systemctl restart monservice.service</code></div>
+</div>
+
+<h3>Méthode 2 : Directement dans le fichier unit</h3>
+
+<p>Éditez le fichier dans <code>/etc/systemd/system/</code> (jamais dans <code>/lib/systemd/system/</code> car il serait écrasé lors des mises à jour).</p>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Activez toujours <code>CPUAccounting=true</code> et <code>MemoryAccounting=true</code> sur le slice parent pour que les limites fonctionnent</li>
+<li>Utilisez <code>MemoryHigh</code> (limite souple) plutôt que <code>MemoryMax</code> (limite stricte) pour éviter les kills OOM brusques</li>
+<li>Groupez les services par fonctionnalité dans des slices dédiés (web, base de données, batch)</li>
+<li>Surveillez avec <code>systemd-cgtop</code> pour ajuster les limites</li>
+<li>Testez les limites avec des charges réalistes avant production</li>
+<li>Documentez vos slices et les raisons des limites choisies</li>
+</ul>
+
+<h2>Dépannage</h2>
+
+<h3>Le service est tué par OOM (Out of Memory)</h3>
+<p>Augmentez <code>MemoryMax</code> ou utilisez <code>MemoryHigh</code> pour un amortissement progressif. Vérifiez avec <code>journalctl -xe</code>.</p>
+
+<h3>Le service est limité en CPU</h3>
+<p>Augmentez <code>CPUQuota</code> ou réduisez le <code>CPUWeight</code> des autres services.</p>
+
+<h3>Les limites ne s'appliquent pas</h3>
+<p>Vérifiez que le service appartient bien au slice avec <code>systemctl show monservice.service -p Slice</code>.</p>
+
+<h3>Voir les logs d'un slice</h3>
+
+<div class="code-block">
+<div class="code-line"><code>journalctl -k -u system.slice</code></div>
+</div>
+
+<h2>Résumé des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Action</th></tr>
+<tr><td><code>systemd-cgls</code></td><td>Afficher la hiérarchie des cgroups</td></tr>
+<tr><td><code>systemd-cgtop</code></td><td>Surveillance en temps réel par cgroup</td></tr>
+<tr><td><code>systemctl set-property X MemoryMax=1G</code></td><td>Limiter la mémoire d'un service</td></tr>
+<tr><td><code>systemctl set-property X CPUQuota=50%</code></td><td>Limiter le CPU d'un service</td></tr>
+<tr><td><code>systemctl show X | grep -i memory</code></td><td>Voir les stats mémoire d'un service</td></tr>
+<tr><td><code>cat /proc/PID/cgroup</code></td><td>Voir les cgroups d'un processus</td></tr>
+</table>
+
+<p>Les cgroups systemd offrent un contrôle puissant et granulaire sur les ressources système. En combinant slices, services et directives de limitation, vous pouvez isoler, prioriser et surveiller chaque charge de travail sur votre serveur Linux.</p>
+
+<nav>
+<a href="179-df-du-espace-disque.html">&larr; Leçon 179 : df et du — Gérer l'espace disque</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
