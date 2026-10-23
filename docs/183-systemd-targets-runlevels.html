@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>183. Les targets systemd et l'héritage des runlevels</h1>
+
+<p>Sur les systèmes Linux modernes, <strong>systemd</strong> a remplacé le système historique des runlevels SysVinit par un concept plus flexible : les <strong>targets</strong>. Comprendre les targets est essentiel pour contrôler l'état de votre système, diagnostics de boot, et configuration avancée des services.</p>
+
+<h2>Runlevels vs Targets : pourquoi ce changement ?</h2>
+
+<p>Les runlevels SysV (0 à 6) étaient simples mais rigides : chaque runlevel déclenchait un ensemble fixe de services, sans possibilité de dépendances complexes. systemd targets offrent :</p>
+
+<ul>
+<li>Des dépendances réelles entre services (au lieu de scripts numérotés)</li>
+<li>La possibilité de combiner plusieurs targets (ex: réseau + syslog)</li>
+<li>Un parallelisme réel au démarrage (plus rapide)</li>
+<li>Une migration plus douce via les alias de runlevels</li>
+</ul>
+
+<h2>Les targets principaux</h2>
+
+<table>
+<tr><th>Target</th><th>Équivalent SysV</th><th>Description</th></tr>
+<tr><td><code>graphical.target</code></td><td>5</td><td>Mode graphique complet avec display manager</td></tr>
+<tr><td><code>multi-user.target</code></td><td>3</td><td>Mode multi-utilisateur texte (sans graphique)</td></tr>
+<tr><td><code>rescue.target</code></td><td>1</td><td>Mode rescue (single user), services de base uniquement</td></tr>
+<tr><td><code>emergency.target</code></td><td>-</td><td>Shell d'urgence, montage minimal du système</td></tr>
+<tr><td><code>shutdown.target</code></td><td>0</td><td>Arrêt du système</td></tr>
+<tr><td><code>reboot.target</code></td><td>6</td><td>Redémarrage</td></tr>
+<tr><td><code>default.target</code></td><td>-</td><td>Target par défaut (généralement graphical ou multi-user)</td></tr>
+</table>
+
+<h2>Visualiser le target actuel</h2>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl get-default</code></div>
+</div>
+
+<p>Cette commande affiche quel target est défini comme défaut au boot. Exemple de sortie :</p>
+
+<div class="code-block">
+<div class="code-line"><code>graphical.target</code></div>
+</div>
+
+<h2>Changer le target par défaut</h2>
+
+<p>Pour passer au mode texte au prochain démarrage :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl set-default multi-user.target</code></div>
+</div>
+
+<p>Pour repasser en mode graphique :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl set-default graphical.target</code></div>
+</div>
+
+<p>Le système crée un lien symbolique dans <code>/etc/systemd/system/default.target</code>.</p>
+
+<h2>Basculer de target sans redémarrer</h2>
+
+<p>Vous pouvez changer de target à chaud (attention : cela peut fermer votre session) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl isolate multi-user.target</code></div>
+</div>
+
+<p>Cette commande arrête tous les services non requis par <code>multi-user.target</code> et démarre ceux qui lui sont nécessaires. Votre session graphique sera fermée.</p>
+
+<h2>Lister toutes les targets disponibles</h2>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-units --type=target --all</code></div>
+</div>
+
+<p>Ou de façon plus concise :</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-unit-files --type=target</code></div>
+</div>
+
+<h2>Voir quels services sont actifs dans un target</h2>
+
+<p>Pour connaître tous les services chargés par un target spécifique :</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-dependencies graphical.target</code></div>
+</div>
+
+<p>Pour voir uniquement les services directs (premier niveau) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-dependencies --plain graphical.target</code></div>
+</div>
+
+<h2>Targets spéciales utiles</h2>
+
+<h3>emergency.target — Shell d'urgence</h3>
+
+<p>En cas de problème au boot, ajoutez <code>systemd.unit=emergency.target</code> à la ligne de commande du kernel dans GRUB. Vous aurez accès à un shell minimal où le système de fichiers racine est montée en lecture seule.</p>
+
+<h3>rescue.target — Mode rescue</h3>
+
+<p>Moins minimal que emergency, il monte le système normalement mais n'active que les services essentiels. Idéal pour les récupérations après un problème.</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl rescue</code></div>
+</div>
+
+<h3>halt.target et poweroff.target</h3>
+
+<p>Pour arrêter le système de façon propre :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl halt</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl poweroff</code></div>
+</div>
+
+<h2>Créer une target personnalisée</h2>
+
+<p>Vous pouvez créer vos propres targets pour des configurations spécifiques. Exemple : un target "serveur" qui n'active que les services nécessaires à un serveur web :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/systemd/system/serveur.target</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>[Unit]
+Description=Target pour serveur web minimal
+Requires=multi-user.target
+After=multi-user.target
+AllowIsolate=yes</code></div>
+</div>
+
+<p>Puis activez vos services spécifiques :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl enable nginx mariadb</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl enable --now serveur.target</code></div>
+</div>
+
+<h2>Comprendre les alias de runlevels</h2>
+
+<p>Pour la compatibilité, systemd crée des liens symboliques qui mapent les anciens runlevels vers les targets :</p>
+
+<table>
+<tr><th>Lien symbolique</th><th>Target réel</th></tr>
+<tr><td><code>/etc/rc.d/rc0.d/K*</code></td><td>指向 <code>shutdown.target</code></td></tr>
+<tr><td><code>/etc/rc.d/rc1.d/K*</code></td><td>指向 <code>rescue.target</code></td></tr>
+<tr><td><code>/etc/rc.d/rc2.d/S*</code></td><td>指向 <code>multi-user.target</code></td></tr>
+<tr><td><code>/etc/rc.d/rc3.d/S*</code></td><td>指向 <code>multi-user.target</code></td></tr>
+<tr><td><code>/etc/rc.d/rc4.d/S*</code></td><td>指向 <code>multi-user.target</code></td></tr>
+<tr><td><code>/etc/rc.d/rc5.d/S*</code></td><td>指向 <code>graphical.target</code></td></tr>
+<tr><td><code>/etc/rc.d/rc6.d/K*</code></td><td>指向 <code>reboot.target</code></td></tr>
+</table>
+
+<p>La commande <code>telinit</code> reste fonctionnelle pour la rétrocompatibilité :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo telinit 3</code></div>
+</div>
+
+<p>Cette commande équivalent à :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl isolate multi-user.target</code></div>
+</div>
+
+<h2>Analyser le processus de boot avec les targets</h2>
+
+<p>Pour voir combien de temps prend chaque target au démarrage :</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-analyze critical-chain</code></div>
+</div>
+
+<p>Pour un affichage plus détaillé par service :</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-analyze blame | head -20</code></div>
+</div>
+
+<h2>Target want et require — Comprendre les dépendances</h2>
+
+<p>Quand vous définissez un service, vous utilisez <code>WantedBy=</code> et <code>RequiredBy=</code> dans la section <code>[Install]</code> pour préciser quels targets doivent l'activer :</p>
+
+<div class="code-block">
+<div class="code-line"><code>[Install]
+WantedBy=multi-user.target
+WantedBy=graphical.target</code></div>
+</div>
+
+<p><code>WantedBy</code> : le service sera démarré si le target est actif (faible dépendance).</p>
+<p><code>RequiredBy</code> : le target ne peut pas démarrer si ce service échoue (forte dépendance).</p>
+
+<h2>Exercice pratique</h2>
+
+<h3>Étape 1 : Identifier votre configuration actuelle</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl get-default
+whoami  # Vérifiez que vous êtes bien root ou avec sudo</code></div>
+</div>
+
+<h3>Étape 2 : Passer temporairement en mode texte</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl isolate multi-user.target</code></div>
+</div>
+
+<p>Après cette commande, vous serez en mode texte. Revenez en mode graphique :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl isolate graphical.target</code></div>
+</div>
+
+<h3>Étape 3 : Explorer les dépendances</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl list-dependencies network.target</code></div>
+</div>
+
+<h2>Résumé des commandes essentielles</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>systemctl get-default</code></td><td>Affiche le target par défaut</td></tr>
+<tr><td><code>systemctl set-default TARGET</code></td><td>Définit le target par défaut</td></tr>
+<tr><td><code>systemctl isolate TARGET</code></td><td>Bascule vers TARGET à chaud</td></tr>
+<tr><td><code>systemctl list-units --type=target</code></td><td>Liste les targets actives</td></tr>
+<tr><td><code>systemctl list-dependencies TARGET</code></td><td>Liste les services d'un target</td></tr>
+<tr><td><code>systemd-analyze critical-chain</code></td><td>Affiche la chaîne critique du boot</td></tr>
+<tr><td><code>telinit N</code></td><td>Change de runlevel (compatibilité SysV)</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez <code>isolate</code> avec précaution en production — cela change l'état du système</li>
+<li>Préférez <code>set-default</code> pour les changements permanents de target</li>
+<li>Sur un serveur headless, définissez <code>multi-user.target</code> comme défaut (plus rapide au boot)</li>
+<li>Gardez <code>graphical.target</code> par défaut sur les machines de bureau</li>
+<li>En cas de problème au boot, essayez <code>emergency.target</code> avant de réinstaller</li>
+</ul>
+
+<nav>
+<a href="182-systemd-run.html">&larr; 182. systemd-run — Exécuter des commandes dans un contexte systemd isolé</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
