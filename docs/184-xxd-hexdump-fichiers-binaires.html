@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>184. xxd — Visualiser et éditer en hexadécimal</h1>
+
+<p>Quand vous devez examiner le contenu brut d'un fichier — headers, données binaires, caractères invisibles — les éditeurs de texte classiques montrent leurs limites. <strong>xxd</strong> est l'outil idéal pour visualiser n'importe quel fichier en hexadécimal, et même pour créer des fichiers binaires à partir de texte.</p>
+
+<h2>Principe fondamental : hexadécimal vs texte</h2>
+
+<p>Chaque octet d'un fichier est représenté par un nombre hexadécimal (base 16) allant de <code>00</code> à <code>ff</code> (0 à 255 en décimal). xxd affiche trois colonnes :</p>
+
+<ul>
+<li><strong>Offset</strong> : la position du premier octet de la ligne (en hexadécimal)</li>
+<li><strong>Hexadécimal</strong> : les octets grouped par paires (16 octets par ligne)</li>
+<li><strong>Texte ASCII</strong> : la même donnée interpretée comme du texte lisible</li>
+</ul>
+
+<h2>Installation</h2>
+
+<p>xxd fait partie du paquet <strong>vim-common</strong> sur la plupart des distributions :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo apt install vim-common      # Debian/Ubuntu</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo dnf install vim-common      # Fedora</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>sudo pacman -S vim               # Arch</code></div>
+</div>
+
+<p>Vérifiez l'installation :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd --version</code></div>
+</div>
+
+<h2>Affichage basique</h2>
+
+<p>Visualisez un fichier entier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd fichier.bin</code></div>
+</div>
+
+<p>Exemple de sortie pour un fichier texte :</p>
+
+<div class="code-block">
+<div class="code-line"><code>00000000: 4865 6c6c 6f20 776f 726c 6421 0a         Hello world!.</code></div>
+</div>
+
+<p>Interprétation :</p>
+<ul>
+<li><code>00000000</code> = offset (position 0)</li>
+<li><code>4865 6c6c 6f20 776f 726c 6421 0a</code> = octets en hexadécimal</li>
+<li><code>Hello world!.</code> = représentation ASCII (les points sont des caractères non imprimables)</li>
+</ul>
+
+<h2>Limiter le nombre d'octets affichés</h2>
+
+<p>Pour n'afficher que les N premiers octets :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -l 32 fichier.bin</code></div>
+</div>
+
+<p>Pour n'afficher que les N derniers octets (skip + length) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -s 100 -l 32 fichier.bin</code></div>
+</div>
+
+<p>Depuis la fin du fichier avec un offset négatif :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -s -64 fichier.bin   # Les 64 derniers octets</code></div>
+</div>
+
+<h2>Colonnes et format</h2>
+
+<h3>Format par défaut (3 colonnes)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xxd fichier.txt</code></div>
+</div>
+
+<h3>Format pure hexadécimal (sans ASCII)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -p fichier.txt</code></div>
+</div>
+
+<p>Ce format est utile pour le piping et le traitement automatisé.</p>
+
+<h3>Format-postscript (compact)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -ps fichier.txt</code></div>
+</div>
+
+<h3>Format C array (pour inclure dans du code)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -i fichier.bin</code></div>
+</div>
+
+<p>Produces output like:</p>
+
+<div class="code-block">
+<div class="code-line"><code>unsigned char fichier_bin[] = {
+  0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x0a
+};
+unsigned int fichier_bin_len = 13;</code></div>
+</div>
+
+<h2>Créer un fichier binaire depuis hexadécimal</h2>
+
+<p>La vraie puissance de xxd : la conversion inverse. Pipez du hexadécimal vers xxd avec l'option <code>-r</code> (reverse) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>echo "48656c6c6f" | xxd -r -p > hello.bin</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>cat hello.bin
+# Affiche : Hello</code></div>
+</div>
+
+<p>Ou depuis un fichier hexadécimal :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -r -p hexdump.txt > output.bin</code></div>
+</div>
+
+<h2>Combiner lecture et écriture : édition inline</h2>
+
+<p>Pour modifier des octets spécifiques dans un fichier binaire, utilisez xxd avec un éditeur de texte :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd fichier.bin | sed 's/48656c6c6f/426974204d61/' | xxd -r > fichier_modifie.bin</code></div>
+</div>
+
+<p>Cette technique permet de faire des remplacements précis sans logiciel spécialisé.</p>
+
+<h2>Visualiser les caractères non imprimables</h2>
+
+<p>Quand xxd affiche des points (<code>.</code>), cela signifie que les octets correspondent à des caractères de contrôle ou non-ASCII. Voici les codes courants :</p>
+
+<table>
+<tr><th>Hex</th><th>Décimal</th><th>Signification</th></tr>
+<tr><td><code>00</code></td><td>0</td><td>Caractère nul (fin de chaîne C)</td></tr>
+<tr><td><code>0a</code></td><td>10</td><td>Line Feed (saut de ligne)</td></tr>
+<tr><td><code>0d</code></td><td>13</td><td>Carriage Return (retour chariot)</td></tr>
+<tr><td><code>20</code></td><td>32</td><td>Espace</td></tr>
+<tr><td><code>7f</code></td><td>127</td><td>DEL (suppression)</td></tr>
+<tr><td><code>ff</code></td><td>255</td><td>Caractère UTF-8 sur plusieurs octets ou binaire</td></tr>
+</table>
+
+<h2>Analyser les headers de fichiers</h2>
+
+<h3>MAGIC numbers courants</h3>
+
+<p>Chaque type de fichier a une signature hexadécimale caractéristique :</p>
+
+<table>
+<tr><th>Fichier</th><th>Signature hex</th><th>Explication</th></tr>
+<tr><td>JPEG</td><td><code>ff d8 ff</code></td><td>Début d'une image JPEG</td></tr>
+<tr><td>PNG</td><td><code>89 50 4e 47</code></td><td>"PNG" en ASCII, préfixé 0x89</td></tr>
+<tr><td>PDF</td><td><code>25 50 44 46</code></td><td>"%PDF" en ASCII</td></tr>
+<tr><td>ZIP</td><td><code>50 4b 03 04</code></td><td>"PK" (PKZip)</td></tr>
+<tr><td>ELF (Linux)</td><td><code>7f 45 4c 46</code></td><td>".ELF" en ASCII</td></tr>
+<tr><td>MP3</td><td><code>49 44 33</code></td><td>"ID3" (tag metadata)</td></tr>
+</table>
+
+<h3>Vérifier le type réel d'un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>xxd image.jpg | head -3</code></div>
+</div>
+
+<p>Si le fichier est vraiment un JPEG, vous verrez <code>ffd8ff</code> au début. Si vous voyez autre chose, le fichier est peut-être corrompu ou mal nommé.</p>
+
+<h2>xxd vs hexdump vs od</h2>
+
+<p>Linux propose plusieurs outils d'affichage hexa. Voici leurs différences :</p>
+
+<table>
+<tr><th>Outil</th><th>Caractère</th><th>Usage typique</th></tr>
+<tr><td><code>xxd</code></td><td>Format visuel 3 colonnes avec ASCII</td><td>Débogage, inspection manuelle</td></tr>
+<tr><td><code>hexdump -C</code></td><td>Similaire à xxd, format canonique</td><td>Remplacement standard BSD</td></tr>
+<tr><td><code>od -A x -t x1z</code></td><td>Format octal par défaut, moins lisible</td><td>Conversion octal/hex, compatibilité SysV</td></tr>
+</table>
+
+<p>Pour une sortie similaire à xxd, utilisez :</p>
+
+<div class="code-block">
+<div class="code-line"><code>hexdump -C fichier.bin | head -10</code></div>
+</div>
+
+<h2>Exporter des données binaires dans un script</h2>
+
+<p>Parfois vous avez besoin d'encoder des données binaires dans un script shell. xxd + base64 peut aider :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Encoder un fichier en base64 (sûr pour le texte)
+base64 fichier.bin > fichier.b64
+
+# Decoder
+base64 -d fichier.b64 > fichier2.bin
+
+# Vérifier que c'est identique
+diff fichier.bin fichier2.bin && echo "OK"</code></div>
+</div>
+
+<h2>Reconstruire un fichier depuis une capture</h2>
+
+<p>Si vous avez une capture d'écran ou un copier-coller d'une sortie hexadécimale, vous pouvez la reconvertir :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Nettoyer la sortie xxd pour ne garder que l'hexadécimal
+xxd -p fichier.bin | tr -d '\n' | fold -w2 | while read b; do printf "\x$b"; done > fichier2.bin</code></div>
+</div>
+
+<p>Ou plus simplement avec xxd seul :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd -p fichier.bin | xxd -r -p > fichier2.bin</code></div>
+</div>
+
+<h2>Atelier pratique : corriger un header PNG corrompu</h2>
+
+<p>Imaginons qu'un fichier PNG start par <code>89 50 4e 47 0d 0a 1a 0a</code> (correct). Si vous observez :</p>
+
+<div class="code-block">
+<div class="code-line"><code>xxd monimage.png | head -2</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code>00000000: 8950 4e47 0a0a 1a0a ...                  PNG........</code></div>
+</div>
+
+<p>Le header est légèrement différent (<code>0d0a</code> devenu <code>0a0a</code>). Pour le corriger :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un correctif
+cp monimage.png monimage_corrige.png
+
+# Remplacer les octets à l'offset 4-5 (0d0a -> 0d0a correct, ici juste pour l'exemple)
+xxd monimage_corrige.png | sed 's/0a0a 1a0a/0d0a 1a0a/' | xxd -r > monimage_fixed.png</code></div>
+</div>
+
+<h2>Résumé des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>xxd fichier</code></td><td>Affichage par défaut (offset + hex + ASCII)</td></tr>
+<tr><td><code>xxd -p fichier</code></td><td>Format pure hexadécimal continu</td></tr>
+<tr><td><code>xxd -ps fichier</code></td><td>Format post-script compact</td></tr>
+<tr><td><code>xxd -i fichier</code></td><td>Format tableau C (pour inclusion dans du code)</td></tr>
+<tr><td><code>xxd -l N fichier</code></td><td>Limiter à N octets</td></tr>
+<tr><td><code>xxd -s N fichier</code></td><td>Commencer à l'offset N</td></tr>
+<tr><td><code>xxd -s -N fichier</code></td><td>Commencer N octets avant la fin</td></tr>
+<tr><td><code>xxd -r fichier</code></td><td>Mode reverse : convertir hex → binaire</td></tr>
+<tr><td><code>xxd -c N fichier</code></td><td>Afficher N octets par ligne (défaut 16)</td></tr>
+<tr><td><code>xxd -g N fichier</code></td><td>Grouper les octets par N (défaut 2)</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez <code>xxd | head</code> pour éviter de saturer le terminal avec les gros fichiers</li>
+<li>Pour les fichiers de plus de quelques Mo, privilégiez <code>xxd -l 256</code> pour n'inspecter que le header</li>
+<li>Combinez avec <code>file</code> pour une identification automatique avant xxd</li>
+<li>La commande <code>xxd -r</code> est votre couteau suisse pour la conversion hex → binaire</li>
+<li>N'hésitez pas à utiliser <code>diff &lt;(xxd f1) &lt;(xxd f2)</code> pour comparer deux fichiers binaires visuellement</li>
+</ul>
+
+<nav>
+<a href="183-systemd-targets-runlevels.html">&larr; 183. Les targets systemd et l'héritage des runlevels</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
