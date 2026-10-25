@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>185. systemd-run — Exécuter des commandes dans un contexte systemd isolé</h1>
+
+<p>Vous avez besoin de lancer une commande avec un timeout, un utilisateur spécifique, des limites de ressources, ou un environnement isolé, sans créer un service permanent ? <strong>systemd-run</strong> est l'outil parfait. Il crée un unité systemd transient (temporaire) pour exécuter n'importe quelle commande dans un contexte systemd contrôlé.</p>
+
+<h2>Pourquoi utiliser systemd-run ?</h2>
+
+<p>Quand vous exécutez une commande directement dans le shell, elle hérite de votre session, de vos variables, de vos droits. <code>systemd-run</code> permet de :</p>
+
+<ul>
+<li><strong>Isoler</strong> la commande dans son propre contexte systemd</li>
+<li><strong>Appliquer des limites</strong> de mémoire, CPU, nombre de fichiers ouverts</li>
+<li><strong>Définir une priorité</strong> nice différente</li>
+<li><strong>Changer d'utilisateur</strong> ou de groupe pour la commande</li>
+<li><strong>Définir un working directory</strong> précis</li>
+<li><strong>Obtenir des métriques</strong> précises (temps CPU, mémoire utilisée)</li>
+<li><strong>Créer un scope transient</strong> pour regrouper plusieurs processus</li>
+</ul>
+
+<h2>Syntaxe de base</h2>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-run [OPTIONS] COMMAND [ARGUMENTS...]</code></div>
+</div>
+
+<p>Exemple le plus simple :</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-run echo "Bonjour depuis systemd"</code></div>
+</div>
+
+<p>La sortie indique le nom de l'unité créée :</p>
+
+<div class="code-block">
+<div class="code-line"><code>Running as unit: run-r1234567890abc.service</code></div>
+</div>
+
+<h2>Les deux modes : service vs scope</h2>
+
+<h3>Par défaut : unité de type service (.service)</h3>
+
+<p> systemd-run crée une unité transient de type <code>service</>. L'option <code>--scope</code> change ce comportement.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Mode service (par défaut)
+systemd-run --unit=mon-service date
+
+# Mode scope
+systemd-run --scope sleep 30</code></div>
+</div>
+
+<h3>Différence fondamentale</h3>
+
+<table>
+<tr><th>Mode</th><th>Type d'unité</th><th>Utilisation</th><th>监控</th></tr>
+<tr><td><code>--scope</code> (défaut pour shell interactif)</td><td>scope</td><td>Regrouper des processus liés</td><td>Limité</td></tr>
+<tr><td>Service (défaut pour commande simple)</td><td>service</td><td>Exécuter une commande isolée</td><td>Complet</td></tr>
+</table>
+
+<h2>Options de timeout et d'exécution</h2>
+
+<h3>Définir un timeout maximal</h3>
+
+<p>Par défaut, systemd-run n'a pas de timeout. Utilisez <code>--on-active</code>, <code>--on-boot</code>, etc., ou <code>--timer-timeout</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># La commande sera arrêtée après 30 secondes
+systemd-run --timer-timeout=30 sleep 60</code></div>
+</div>
+
+<p>Ou via l'option <code>-r</code> (remain_after_exit) pour un service qui reste actif :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Avec un timeout de 30 secondes
+systemd-run --property=TimeoutStartSec=30 sleep 60</code></div>
+</div>
+
+<h3>Exécuter après un délai</h3>
+
+<p>Planifier l'exécution dans le futur :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter dans 5 minutes
+systemd-run --on-active="5min" echo "5 minutes plus tard"</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Exécuter au prochain démarrage
+systemd-run --on-boot echo "Au démarrage"</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Exécuter dans 1 heure
+systemd-run --on-active="+1h" rsync -a /home/ backup:/backups/</code></div>
+</div>
+
+<h3>Exécuter à une heure précise</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter demain à 3h du matin
+systemd-run --on-calendar="*-*-* 03:00:00" /opt/backup.sh</code></div>
+</div>
+
+<h2>Exécuter avec un autre utilisateur ou groupe</h2>
+
+<h3>Changer d'utilisateur</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter en tant que l'utilisateur www-data
+systemd-run --uid=www-data whoami
+# Affiche : www-data</code></div>
+</div>
+
+<h3>Changer d'utilisateur ET de groupe</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter en tant que l'utilisateur et groupe www-data
+systemd-run --uid=www-data --gid=www-data whoami</code></div>
+</div>
+
+<h3>Spécifier plusieurs groupes supplémentaires</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-run --uid=www-data --set-group=www-data,adm id</code></div>
+</div>
+
+<h2>Limiter les ressources</h2>
+
+<p>systemd-run peut appliquer des limites de ressources via les propriétés systemd :</p>
+
+<h3>Limite de mémoire</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Limiter à 512 Mo de mémoire
+systemd-run --property=MemoryMax=512M stress --vm 1 --vm-bytes 1G</code></div>
+</div>
+
+<p>Le processus sera tué si il dépasse 512 Mo.</p>
+
+<h3>Limite de temps CPU</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Limiter à 50% d'un cœur CPU
+systemd-run --property=CPUQuota=50% ./mon_script_cpu_intensif.sh</code></div>
+</div>
+
+<h3>Limite sur le nombre de fichiers ouverts</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-run --property=LimitNOFILE=100 ./script_qui_ouvre_des_fichiers.sh</code></div>
+</div>
+
+<h3>Combiner plusieurs limites</h3>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-run \
+  --property=MemoryMax=1G \
+  --property=CPUQuota=200% \
+  --property=LimitNOFILE=4096 \
+  ./traitement_lourd.sh</code></div>
+</div>
+
+<h2>Définir un répertoire de travail</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter depuis un répertoire spécifique
+systemd-run --working-directory=/var/log ls -la</code></div>
+</div>
+
+<h2>Définir des variables d'environnement</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Avec une variable d'environnement
+systemd-run --set-env=MA_VARIABLE=valeur echo $MA_VARIABLE</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Avec plusieurs variables
+systemd-run \
+  --set-env=DB_HOST=localhost \
+  --set-env=DB_PORT=5432 \
+  ./script_database.sh</code></div>
+</div>
+
+<h2>Définir la priorité nice</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Exécuter avec une priorité basse (pour les tâches de fond non critiques)
+systemd-run --nice=19 rsync -a /home/ backup:/backups/</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Exécuter avec une priorité haute (moins courant)
+systemd-run --nice=-10 ./tache_critique.sh</code></div>
+</div>
+
+<h2>Nommer l'unité explicitement</h2>
+
+<div class="code-block">
+<div class="code-line"><code># Donner un nom lisible à l'unité
+systemd-run --unit=sauvegarde-quotidienne /opt/backup.sh
+
+# Résultat : Running as unit: sauvegarde-quotidienne.service</code></div>
+</div>
+
+<p>Sans <code>--unit</code>, systemd génère un nom automatique comme <code>run-r123abc456.service</code>.</p>
+
+<h2>Visualiser les logs de l'unité</h2>
+
+<p>Une fois l'unité créée, ses logs sont accessibles via <code>journalctl</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Lancer avec génération de logs
+systemd-run --unit=mon-test date
+
+# Consulter les logs
+journalctl -u mon-test</code></div>
+</div>
+
+<p>Pour une exécution avec sortie capturée automatiquement :</p>
+
+<div class="code-block">
+<div class="code-line"><code># La sortie stdout/stderr est automatiquement journalisée
+systemd-run --unit=test-logs sh -c 'echo "Test"; ls /tmp'
+journalctl -u test-logs --no-pager</code></div>
+</div>
+
+<h2>Scopes transient : regrouper plusieurs processus</h2>
+
+<p>Un scope permet de rattacher plusieurs processus à un même groupe de contrôle systemd :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un scope et y lancer un processus
+systemd-run --scope --unit=mon-groupe sleep 30 &</code></div>
+</div>
+<div class="code-block">
+<div class="code-line"><code># Ajouter un autre processus au même scope (depuis un autre terminal)
+systemd-run --scope --unit=mon-groupe sleep 20
+
+# Vérifier les processus du scope
+systemctl status mon-groupe.scope</code></div>
+</div>
+
+<p>Tous les processus du scope partagent les mêmes limites et peuvent être arrêtés d'un coup :</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemctl stop mon-groupe.scope   # Arrête tous les processus du scope</code></div>
+</div>
+
+<h2>Atelier pratique : backup isolé avec ressources limitées</h2>
+
+<h3>Scénario</h3>
+
+<p>Vous voulez exécuter une sauvegarde rsync qui ne doit pas dépasser 1 Go de RAM et 50% CPU, tournant en tant qu'utilisateur <code>backup</code>, depuis le répertoire <code>/backups</code>.</p>
+
+<div class="code-block">
+<div class="code-line"><code>systemd-run \
+  --unit=backup-quotidien \
+  --uid=backup \
+  --gid=backup \
+  --working-directory=/backups \
+  --property=MemoryMax=1G \
+  --property=CPUQuota=50% \
+  rsync -a /home/ /backups/home-$(date +%Y%m%d)/</code></div>
+</div>
+
+<h3>Vérifier l'exécution</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Statut de l'unité
+systemctl status backup-quotidien.service
+
+# Logs
+journalctl -u backup-quotidien -f
+
+# Ressources utilisées
+systemctl show backup-quotidien.service | grep -E "Memory|CPU"</code></div>
+</div>
+
+<h2>Atelier pratique : tâche périodique avec timer</h2>
+
+<p>Combiner systemd-run avec un timer transient pour une tâche qui s'exécute une fois :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un service transient
+systemd-run \
+  --unit=nettoyage-temp \
+  --on-active="+1h" \
+  --property=MemoryMax=256M \
+  find /tmp -type f -atime +7 -delete</code></div>
+</div>
+
+<p>Pour une exécution répétée, utilisez un timer permanent :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer le service
+cat > /etc/systemd/system/nettoyage-tmp.service << 'EOF'
+[Unit]
+Description=Nettoyage fichiers temporaires
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/find /tmp -type f -atime +7 -delete
+MemoryMax=256M
+EOF
+
+# Créer le timer
+cat > /etc/systemd/system/nettoyage-tmp.timer << 'EOF'
+[Unit]
+Description=Exécuter nettoyage-tmp.service chaque jour à 2h
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+
+# Activer et démarrer
+systemctl enable --now nettoyage-tmp.timer</code></div>
+</div>
+
+<h2>Résumé des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>systemd-run COMMAND</code></td><td>Exécuter une commande dans un service transient</td></tr>
+<tr><td><code>--scope</code></td><td>Créer un scope au lieu d'un service</td></tr>
+<tr><td><code>--unit=NOM</code></td><td>Nommer explicitement l'unité</td></tr>
+<tr><td><code>--uid=USER</code></td><td>Exécuter en tant que cet utilisateur</td></tr>
+<tr><td><code>--gid=GROUP</code></td><td>Exécuter en tant que ce groupe</td></tr>
+<tr><td><code>--working-directory=DIR</code></td><td>Définir le répertoire de travail</td></tr>
+<tr><td><code>--set-env=VAR=VAL</code></td><td>Définir une variable d'environnement</td></tr>
+<tr><td><code>--nice=N</code></td><td>Définir la priorité nice (de -20 à 19)</td></tr>
+<tr><td><code>--property=X=Y</code></td><td>Définir une propriété systemd (MemoryMax, CPUQuota, etc.)</td></tr>
+<tr><td><code>--on-active=DELAI</code></td><td>Exécuter après un délai (ex: 5min, 1h)</td></tr>
+<tr><td><code>--on-boot=DELAI</code></td><td>Exécuter après le prochain démarrage</td></tr>
+<tr><td><code>--on-calendar=CALENDAR</code></td><td>Exécuter à une date/heure précise</td></tr>
+<tr><td><code>--timer-timeout=DUREE</code></td><td>Timeout global pour la tâche planifiée</td></tr>
+<tr><td><code>--property=StandardOutput=journal</code></td><td>Capturer la sortie dans les logs</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Nommez vos unités avec <code>--unit</code> pour faciliter le suivi dans <code>journalctl -u</code></li>
+<li>Utilisez toujours des limites de ressources (<code>MemoryMax</code>, <code>CPUQuota</code>) pour les tâches non surveillées</li>
+<li>Exécutez avec un utilisateur non-root (<code>--uid</code>) sauf si vraiment nécessaire</li>
+<li>Combinez avec <code>--set-env</code> pour un environnement propre et reproductible</li>
+<li>Consultez les logs avec <code>journalctl -u NOM -xe</code> après l'exécution</li>
+<li>Pour les tâches récurrentes, préférez créer de vrais fichiers unit dans <code>/etc/systemd/system/</code></li>
+<li>systemd-run est idéal pour les scripts de maintenance,备份, ou tâches de conversion qui risqueraient de tourner indéfiniment</li>
+</ul>
+
+<nav>
+<a href="184-xxd-hexdump-fichiers-binaires.html">&larr; 184. xxd — Visualiser et éditer en hexadécimal</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
