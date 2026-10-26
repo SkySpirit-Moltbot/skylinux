@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>186. Cron — Automatiser des tâches sous Linux</h1>
+
+<p>Vous voulez qu'une commande s'exécute automatiquement tous les jours à 3h du matin, ou chaque lundi à midi ? <strong>cron</strong> est l'outil de planification de tâches le plus utilisé sous Linux. Il permet d'automatiser presque tout : sauvegardes, nettoyage, monitoring, rapports...</p>
+
+<h2>Comment fonctionne cron ?</h2>
+
+<p>cron est un <strong>daemon</strong> (service en arrière-plan) qui vérifie toutes les minutes s'il doit exécuter des tâches planifiées. Chaque utilisateur dispose de son propre fichier de tâches appelé <strong>crontab</strong> (cron table).</p>
+
+<p>Les principaux composants :</p>
+
+<ul>
+<li><strong>cron daemon</strong> (<code>crond</code>) — le service qui tourne en arrière-plan</li>
+<li><strong>crontab</strong> — le fichier contenant les tâches planifiées d'un utilisateur</li>
+<li><strong>crontab -e</strong> — la commande pour éditer sa crontab</li>
+<li><strong>/etc/cron.*/</strong> — répertoires contenant des scripts exécutés automatiquement</li>
+</ul>
+
+<h2>Le format d'une ligne cron</h2>
+
+<p>Chaque ligne de crontab contient 5 champs de temps suivis de la commande :</p>
+
+<div class="code-block">
+<div class="code-line"><code>┌───────────── minute  (0 - 59)
+│ ┌───────────── heure    (0 - 23)
+│ │ ┌───────────── jour     (1 - 31)
+│ │ │ ┌───────────── mois    (1 - 12)
+│ │ │ │ ┌───────────── jour de semaine (0 - 7, 0 et 7 = dimanche)
+│ │ │ │ │
+* * * * * commande</code></div>
+</div>
+
+<h3>Exemples de planification</h3>
+
+<table>
+<tr><th>Expression</th><th>Signification</th></tr>
+<tr><td><code>* * * * *</code></td><td>Chaque minute</td></tr>
+<tr><td><code>0 * * * *</code></td><td>Chaque heure (à la minute 0)</td></tr>
+<tr><td><code>0 0 * * *</code></td><td>Chaque jour à minuit</td></tr>
+<tr><td><code>0 3 * * *</code></td><td>Chaque jour à 3h du matin</td></tr>
+<tr><td><code>0 9 * * 1</code></td><td>Chaque lundi à 9h</td></tr>
+<tr><td><code>30 14 1 * *</code></td><td>Le 1er du mois à 14h30</td></tr>
+<tr><td><code>0 8 * * 1-5</code></td><td>Chaque jour de semaine à 8h</td></tr>
+<tr><td><code>*/5 * * * *</code></td><td>Toutes les 5 minutes</td></tr>
+<tr><td><code>0 */2 * * *</code></td><td>Toutes les 2 heures</td></tr>
+<tr><td><code>0 0 1,15 * *</code></td><td>Les 1er et 15 de chaque mois à minuit</td></tr>
+</table>
+
+<h2>Modifier sa crontab</h2>
+
+<h3>Ouvrir l'éditeur</h3>
+
+<div class="code-block">
+<div class="code-line"><code>crontab -e</code></div>
+</div>
+
+<p>La première fois, cron vous demande de choisir un éditeur.，推荐 <code>nano</code> pour les débutants.</p>
+
+<h3>Ajouter une tâche</h3>
+
+<p>Dans l'éditeur, ajoutez une ligne comme celle-ci :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Exemple : sauvegarde quotidienne à 3h du matin
+0 3 * * * rsync -a /home/ /backup/home-$(date +\%Y\%m\%d)/</code></div>
+</div>
+
+<p><strong>Important :</strong> le signe <code>%</code> a une signification spéciale dans crontab. Utilisez <code>\%</code> pour obtenir un vrai signe pourcent dans la commande.</p>
+
+<h3>Lister ses tâches</h3>
+
+<div class="code-block">
+<div class="code-line"><code>crontab -l</code></div>
+</div>
+
+<h3>Supprimer toute sa crontab</h3>
+
+<div class="code-block">
+<div class="code-line"><code>crontab -r</code></div>
+</div>
+
+<p>L'option <code>-i</code> demande une confirmation : <code>crontab -ri</code></p>
+
+<h2>Les répertoires cron prédéfinis</h2>
+
+<p>Si vous ne voulez pas apprendre le format cron complet, des scripts dans ces répertoires sont exécutés automatiquement :</p>
+
+<table>
+<tr><th>Répertoire</th><th>Fréquence d'exécution</th></tr>
+<tr><td><code>/etc/cron.hourly/</code></td><td>Toutes les heures</td></tr>
+<tr><td><code>/etc/cron.daily/</code></td><td>Une fois par jour</td></tr>
+<tr><td><code>/etc/cron.weekly/</code></td><td>Une fois par semaine</td></tr>
+<tr><td><code>/etc/cron.monthly/</code></td><td>Une fois par mois</td></tr>
+</table>
+
+<p>Pour ajouter une tâche quotidienne, placez-y un script exécutable :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Rendre le script exécutable
+sudo cp mon-script.sh /etc/cron.daily/
+sudo chmod +x /etc/cron.daily/mon-script.sh</code></div>
+</div>
+
+<h2>Atelier pratique : automatiser une sauvegarde</h2>
+
+<h3>Étape 1 — Créer le script de sauvegarde</h3>
+
+<div class="code-block">
+<div class="code-line"><code>mkdir -p ~/bin
+cat > ~/bin/backup.sh << 'EOF'
+#!/bin/bash
+# Sauvegarde du répertoire personnel vers /backup
+SOURCE=/home/$USER
+DEST=/backup
+DATE=$(date +%Y%m%d)
+
+mkdir -p "$DEST"
+rsync -a --delete "$SOURCE/" "$DEST/backup-$DATE/"
+echo "Sauvegarde terminée : $DATE" | tee "$DEST/log.txt"
+EOF
+
+chmod +x ~/bin/backup.sh</code></div>
+</div>
+
+<h3>Étape 2 — Planifier avec cron</h3>
+
+<div class="code-block">
+<div class="code-line"><code>crontab -e</code></div>
+</div>
+
+<p>Ajoutez cette ligne :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Sauvegarde chaque jour à 3h du matin
+0 3 * * * /home/votre-user/bin/backup.sh >> /home/votre-user/backup.log 2>&1</code></div>
+</div>
+
+<p><code>>> /home/votre-user/backup.log 2>&1</code> redirige la sortie standard et les erreurs vers un fichier de log.</p>
+
+<h3>Étape 3 — Vérifier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier que cron fonctionne
+sudo systemctl status cron
+
+# Voir les exécutions dans les logs
+grep CRON /var/log/syslog</code></div>
+</div>
+
+<h2>Atelier pratique : nettoyer les fichiers temporaires</h2>
+
+<p>Supprimer automatiquement les fichiers de <code>/tmp</code> plus anciens que 7 jours :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Éditer la crontab
+crontab -e</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Chaque dimanche à 2h du matin
+0 2 * * 0 find /tmp -type f -atime +7 -delete 2>/dev/null</code></div>
+</div>
+
+<h2>Atelier pratique : surveiller l'espace disque</h2>
+
+<p>Recevoir un e-mail si l'espace disque est bas (nécessite un serveur mail configuré) :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier l'espace tous les jours à 8h
+0 8 * * * df -h | awk 'NR>1 {print $5 " " $6}' | while read usage point; do
+  pct=${usage%\%}
+  if [ "$pct" -gt 85 ]; then
+    echo "Attention : $point à $usage" | mail -s "Alerte disque" admin@example.com
+  fi
+done</code></div>
+</div>
+
+<h2>Utiliser des variables d'environnement dans la crontab</h2>
+
+<p>Vous pouvez définir des variables au début de votre crontab :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Définir le PATH
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Définir l'éditeur
+EDITOR=nano
+
+# Définir des variables personnalisées
+MES_BACKUPS=/backup
+
+# Maintenant les commandes utilisent ces variables
+0 3 * * * $MES_BACKUPS/script.sh</code></div>
+</div>
+
+<h2>Spécifier l'utilisateur</h2>
+
+<p>Dans <code>/etc/crontab</code> et les fichiers de <code>/etc/cron.d/</code>, le format inclut un champ utilisateur :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Format /etc/crontab :
+# minute heure jour mois jour_semaine utilisateur commande
+0 3 * * * root rsync -a /home/ /backup/</code></div>
+</div>
+
+<h3>Le répertoire /etc/cron.d/</h3>
+
+<p>Pour les tâches système, placez un fichier dans <code>/etc/cron.d/</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo nano /etc/cron.d/nettoyage</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Nettoyer les logs chaque semaine
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+0 4 * * 0 root find /var/log -name "*.log" -mtime +30 -delete</code></div>
+</div>
+
+<h2>Protéger sa crontab</h2>
+
+<h3>Empêcher un utilisateur de'utiliser cron</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Interdire cron à un utilisateur
+sudo echo "toto" >> /etc/cron.deny
+
+# Vérifier
+crontab -u toto -l
+# Affiche : crontab: you (toto) are not allowed to use this program</code></div>
+</div>
+
+<h3>N'autoriser que certains utilisateurs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer /etc/cron.deny s'il existe
+# Créer /etc/cron.allow avec les utilisateurs autorisés
+sudo echo "admin" | sudo tee /etc/cron.allow
+sudo chmod 644 /etc/cron.allow</code></div>
+</div>
+
+<h2>Journaliser les exécutions</h2>
+
+<p>Par défaut, cron enregistre les exécutions dans <code>/var/log/syslog</code> (sur Debian/Ubuntu) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>grep CRON /var/log/syslog | tail -20</code></div>
+</div>
+
+<p>Pour un log dédié à cron, modifiez <code>/etc/rsyslog.conf</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>cron.*  /var/log/cron.log</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code>sudo systemctl restart rsyslog</code></div>
+</div>
+
+<h2>Erreurs courantes</h2>
+
+<h3>La commande ne trouve pas le programme</h3>
+
+<p>Utilisez le <strong>chemin absolu</strong> des commandes :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Incorrect (peut échouer)
+* * * * * rsync -a /home/ /backup/
+
+# Correct
+* * * * * /usr/bin/rsync -a /home/ /backup/</code></div>
+</div>
+
+<p>Ou définissez le <code>PATH</code> en haut de la crontab :</p>
+
+<div class="code-block">
+<div class="code-line"><code>PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin</code></div>
+</div>
+
+<h3>Les variables d'environnement ne sont pas chargées</h3>
+
+<p>cron exécute les commandes dans un environnement minimal. Si votre script utilise <code>~</code> ou des variables comme <code>$HOME</code>, spécifiez-les explicitement :</p>
+
+<div class="code-block">
+<div class="code-line"><code>HOME=/home/votre-user
+0 3 * * * $HOME/bin/backup.sh</code></div>
+</div>
+
+<h3>Caractères spéciaux non échappés</h3>
+
+<p>Le signe <code>%</code> dans une commande cron est interpreté comme un retour à la ligne. Échappez-le :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Incorrect : le % sera interprété
+0 3 * * * echo $(date) > /tmp/log.txt
+
+# Correct : le % est échappé
+0 3 * * * echo $(date +\%Y-\%m-\%d) > /tmp/log.txt</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>crontab -e</code></td><td>Éditer sa table cron</td></tr>
+<tr><td><code>crontab -l</code></td><td>Lister ses tâches cron</td></tr>
+<tr><td><code>crontab -r</code></td><td>Supprimer toute sa crontab</td></tr>
+<tr><td><code>sudo systemctl status cron</code></td><td>Vérifier que le daemon cron tourne</td></tr>
+<tr><td><code>grep CRON /var/log/syslog</code></td><td>Voir les exécutions récentes</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez toujours des <strong>chemins absolus</strong> dans les commandes cron</li>
+<li>Redirigez la sortie vers un <strong>fichier de log</strong> (<code>>> fichier.log 2>&1</code>)</li>
+<li>Définissez le <code>PATH</code> en haut de votre crontab pour éviter les erreurs "command not found"</li>
+<li>Pour les tâches système, préférez les fichiers dans <code>/etc/cron.d/</code> plutôt que modifier <code>/etc/crontab</code></li>
+<li>Testez votre commande manuellement avant de la mettre dans cron</li>
+<li>Surveillez les logs régulièrement pour détecter les échecs</li>
+<li>Préférez les scripts dans <code>/etc/cron.hourly/</code>, <code>cron.daily/</code>, etc. pour les tâches simples</li>
+</ul>
+
+<nav>
+<a href="185-systemd-run.html">&larr; 185. systemd-run — Exécuter des commandes dans un contexte systemd isolé</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
