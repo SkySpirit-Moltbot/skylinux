@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>187. ln — Liens symboliques et liens durs</h1>
+
+<p>Vous avez besoin qu'un fichier ou dossier soit accessible à plusieurs endroits sans le dupliquer ? La commande <strong>ln</strong> crée des liens — des références supplémentaires vers un même fichier sur le disque. C'est un outil fondamental pour organiser vos fichiers sous Linux.</p>
+
+<h2>Pourquoi utiliser des liens ?</h2>
+
+<p>Imaginons que vous ayez un projet dans <code>/home/user/projet/</code> et que vous vouliez y accéder rapidement depuis votre bureau. Vous avez deux solutions :</p>
+
+<ul>
+<li><strong>Copier le fichier</strong> — consomme de l'espace supplémentaire et diverge avec le temps</li>
+<li><strong>Créer un lien</strong> — une référence qui pointe vers le fichier original, sans duplication</li>
+</ul>
+
+<h2>Les deux types de liens</h2>
+
+<h3>Lien dur (hard link)</h3>
+
+<p>Un lien dur est un <strong>second nom pour le même inode</strong> (la structure interne qui représente le fichier). Le fichier et son lien sont indiscernables pour le système.</p>
+
+<h3>Lien symbolique (symlink)</h3>
+
+<p>Un lien symbolique est un <strong>fichier spécial qui contient le chemin</strong> vers un autre fichier. Il fonctionne comme un raccourci : si le fichier cible est supprimé, le lien symbolique devient "cassée".</p>
+
+<h2>Créer un lien symbolique</h2>
+
+<div class="code-block">
+<div class="code-line"><code>ln -s fichier_original lien_symbolique</code></div>
+</div>
+
+<h3>Exemple concret</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un lien symbolique vers un fichier
+ln -s /home/user/documents/rapport.pdf ~/Bureau/rapport.pdf
+
+# Créer un lien symbolique vers un répertoire
+ln -s /var/log /home/user/log-système
+
+# Créer un lien avec un nom différent
+ln -s /opt/application ~/mon-app</code></div>
+</div>
+
+<h3>Visualiser les liens</h3>
+
+<div class="code-block">
+<div class="code-line"><code>ls -la ~/Bureau/</code></div>
+</div>
+
+<p>La sortie affiche le lien avec une flèche (<code>-&gt;</code>) qui montre sa cible :</p>
+
+<div class="code-block">
+<div class="code-line"><code>lrwxrwxrwx 1 user user 38 oct 27 08:00 rapport.pdf -&gt; /home/user/documents/rapport.pdf</code></div>
+</div>
+
+<p>解读一下权限栏位：<code>l</code> au début indique un lien symbolique. La taille (38) correspond à la longueur du chemin cible, pas à la taille du fichier.</p>
+
+<h2>Créer un lien dur</h2>
+
+<div class="code-block">
+<div class="code-line"><code>ln fichier_original lien_dur</code></div>
+</div>
+
+<h3>Exemple</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un lien dur vers un fichier
+ln /home/user/documents/data.csv /home/user/backup/data.csv
+
+# Vérifier que c'est bien le même inode
+ls -li /home/user/documents/data.csv /home/user/backup/data.csv</code></div>
+</div>
+
+<p>Les deux fichiers affichent le <strong>même numéro d'inode</strong>, ce qui confirme qu'ils pointent vers la même donnée sur le disque.</p>
+
+<h2>Lien dur vs lien symbolique : lequel choisir ?</h2>
+
+<table>
+<tr><th>Caractéristique</th><th>Lien dur</th><th>Lien symbolique</th></tr>
+<tr><td>Cross-filesystem</td><td>Non (même partition)</td><td>Oui (chemin absolu ou relatif)</td></tr>
+<tr><td>Vers répertoire</td><td>Non (dangereux)</td><td>Oui</td></tr>
+<tr><td>Si cible supprimée</td><td>Fichier toujours accessible</td><td>Lien "cassée" (orphelin)</td></tr>
+<tr><td>Visibilité</td><td>Invisible pour l'utilisateur</td><td>Fichier spécial avec -&gt;</td></tr>
+<tr><td>Inode</td><td>Même inode que l'original</td><td>Inode différent</td></tr>
+<tr><td>Performance</td><td>Légèrement plus rapide</td><td>Légèrement plus lent (un redirect)</td></tr>
+</table>
+
+<h3>Quand utiliser le lien dur ?</h3>
+
+<ul>
+<li>Faire des sauvegardes rapides sans copier les données</li>
+<li>Permettre à plusieurs utilisateurs d'accéder au même fichier sous des noms différents</li>
+<li>Économiser de l'espace pour des fichiers volumineux utilisés à plusieurs endroits</li>
+</ul>
+
+<h3>Quand utiliser le lien symbolique ?</h3>
+
+<ul>
+<li>Créer des raccourcis vers des fichiers ou répertoires</li>
+<li>Pointer vers un fichier sur une autre partition</li>
+<li>Simplifier des chemins longs ou complexes</li>
+<li>Déployer des configurations partagées</li>
+</ul>
+
+<h2>Atelier pratique : organiser votre projet</h2>
+
+<h3>Étape 1 — Structure initiale</h3>
+
+<div class="code-block">
+<div class="code-line"><code>mkdir -p ~/projet/src ~/projet/docs
+echo "Code source du projet" > ~/projet/src/main.py
+echo "Documentation" > ~/projet/docs/README.txt</code></div>
+</div>
+
+<h3>Étape 2 — Créer des liens pour un accès rapide</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lien vers le code source sur le bureau
+ln -s ~/projet/src ~/Bureau/code-projet
+
+# Lien vers la documentation
+ln -s ~/projet/docs/README.txt ~/Bureau/readme-projet.txt
+
+# Vérifier
+ls -la ~/Bureau/</code></div>
+</div>
+
+<h3>Étape 3 — Utiliser un lien symbolique pour une configuration</h3>
+
+<p>Si vous avez une configuration dans votre dossier personnel qui doit aussi être utilisée par un service :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un lien symbolique pour que le service accède à votre config
+sudo ln -s /home/user/.config/mon-app.conf /etc/mon-app.conf
+
+# Redémarrer le service pour prendre en compte
+sudo systemctl restart mon-app</code></div>
+</div>
+
+<h3>Étape 4 — Vérifier que tout fonctionne</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lire le fichier via le lien symbolique
+cat ~/Bureau/readme-projet.txt
+
+# Vérifier que le lien n'est pas cassé
+test -e ~/Bureau/code-projet && echo "OK" || echo "Lien cassé"</code></div>
+</div>
+
+<h2>Créer des liens symboliques relatifs vs absololus</h2>
+
+<h3>Lien absolu</h3>
+
+<div class="code-block">
+<div class="code-line"><code>ln -s /home/user/documents/fichier.txt ~/lien.txt</code></div>
+</div>
+
+<p>Le lien contient le chemin complet. Il fonctionne tant que la cible existe à cet endroit.</p>
+
+<h3>Lien relatif</h3>
+
+<div class="code-block">
+<div class="code-line"><code>cd ~/Bureau
+ln -s ../documents/fichier.txt lien-relatif.txt</code></div>
+</div>
+
+<p>Le lien contient un chemin relatif. Il reste valide si vous déplacez tout le répertoire (à condition que la structure relative soit préservée).</p>
+
+<h3>Quelle option choisir ?</h3>
+
+<ul>
+<li><strong>Absolu</strong> : plus simple à comprendre, plus prévisible</li>
+<li><strong>Relatif</strong> : plus portable, fonctionne après un déplacement de l'arborescence</li>
+</ul>
+
+<h2>Atelier pratique : versioning avec des liens</h2>
+
+<p>Imaginons que vous avez plusieurs versions d'un projet et voulez toujours accéder à la dernière :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Structure avec versions
+mkdir -p ~/projets/monapp/v1.0 ~/projets/monapp/v2.0 ~/projets/monapp/v3.0
+
+# Créer un lien "latest" qui pointe toujours vers la dernière version
+ln -sfn ~/projets/monapp/v3.0 ~/projets/monapp/latest
+
+# L'option -n fait que si "latest" existe déjà, il est remplacé
+# Sans -n, ln -s créerait un fichier "latest" dans le répertoire cible</code></div>
+</div>
+
+<h3>Options utiles de ln</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-s</code></td><td>Créer un lien symbolique (par défaut : lien dur)</td></tr>
+<tr><td><code>-f</code></td><td>Forcer l'écrasement si le lien existe déjà</td></tr>
+<tr><td><code>-n</code></td><td>Treat destination as a normal file if it is a symbolic link to a directory</td></tr>
+<tr><td><code>-i</code></td><td>Demander confirmation avant d'écraser</td></tr>
+<tr><td><code>-v</code></td><td>Mode verbeux : afficher ce qui est créé</td></tr>
+</table>
+
+<h2>Résoudre les problèmes courants</h2>
+
+<h3>Le message "Too many levels of symbolic links"</h3>
+
+<p>Cela signifie que vous avez un lien symbolique qui pointe en boucle. Vérifiez :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver où pointe le lien
+readlink lien-probleme
+
+# Résoudre le lien symbolique récursivement
+readlink -f lien-probleme</code></div>
+</div>
+
+<h3>Le lien symbolique est cassé après un déplacement</h3>
+
+<p>Si vous avez déplacé un fichier cible, le lien symbolique ne fonctionne plus. Vous pouvez :</p>
+
+<ul>
+<li>Recréer le lien vers le nouvel emplacement</li>
+<li>Pointer vers un chemin absolue plutôt que relatif</li>
+</ul>
+
+<div class="code-block">
+<div class="code-line"><code># Recréer le lien
+rm ancien-lien
+ln -s /nouveau/chemin/fichier.txt ancien-lien</code></div>
+</div>
+
+<h3>Lien vers un fichier qui n'existe pas encore</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer d'abord le lien
+ln -s /chemin/fichier-future.txt lien.txt
+
+# Puis créer le fichier cible
+echo "contenu" > /chemin/fichier-future.txt</code></div>
+</div>
+
+<p>Le lien symbolique peut pointer vers une cible qui n'existe pas encore. C'est utile pour préparer une structure avant de créer les fichiers.</p>
+
+<h2>Supprimer un lien</h2>
+
+<p>Un lien symbolique se supprime comme un fichier ordinaire avec <code>rm</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Supprimer le lien (pas le fichier cible !)
+rm lien_symbolique
+
+# Supprimer plusieurs liens
+rm lien1.txt lien2.txt lien3.txt
+
+# Vérifier que le fichier original existe toujours
+ls fichier_original</code></div>
+</div>
+
+<h2>Cas d'usage réels</h2>
+
+<h3>Gestion de versions de logiciel</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Installer une nouvelle version
+sudo ln -sfn /opt/apache-maven-3.9.6 /opt/maven
+
+# Maven est maintenant accessible via /opt/maven
+/opt/maven/bin/mvn --version</code></div>
+</div>
+
+<h3>Configuration système</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Votre configuration Git dans votre dossier personnel
+ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
+
+# Vos alias bash
+ln -sf ~/dotfiles/.bash_aliases ~/.bash_aliases</code></div>
+</div>
+
+<h3>Raccourcis pour des chemins longs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Raccourcir l'accès à un serveur
+ln -s /mnt/serveur-fichier/societe/projets/2026/contrats ~/contrats-2026
+
+# Accéder facilement
+cd ~/contrats-2026</code></div>
+</div>
+
+<h3>Partager une bibliothèque entre projets</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Partager la même bibliothèque entre deux projets
+ln -s /usr/local/lib/malib.so ~/projet1/lib.so
+ln -s /usr/local/lib/malib.so ~/projet2/lib.so</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>ln -s source lien</code></td><td>Créer un lien symbolique</td></tr>
+<tr><td><code>ln source lien</code></td><td>Créer un lien dur</td></tr>
+<tr><td><code>ln -sf source lien</code></td><td>Remplacer un lien existant</td></tr>
+<tr><td><code>readlink lien</code></td><td>Voir la cible d'un lien symbolique</td></tr>
+<tr><td><code>readlink -f lien</code></td><td>Résoudre complètement le lien (suivre les chaînes)</td></tr>
+<tr><td><code>ls -la fichier</code></td><td>Voir le type de fichier (l = symlink)</td></tr>
+<tr><td><code>rm lien</code></td><td>Supprimer un lien (pas la cible)</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Utilisez des <strong>liens symboliques</strong> pour la plupart des cas (répertoires, cross-filesystem, clarté)</li>
+<li>Réservez les <strong>liens durs</strong> aux cas où vous voulez une seconde entrée vers un fichier sans vous préoccuper du lien symbolique</li>
+<li>Vérifiez toujours que la cible existe avant de créer un lien symbolique</li>
+<li>Utilisez des <strong>chemins absolus</strong> pour les liens qui traversent des partitions ou des utilisateurs</li>
+<li>Documentez vos liens symboliques importants pour ne pas les supprimer par erreur</li>
+<li>Utilisez <code>-v</code> (mode verbeux) pour comprendre ce que <code>ln</code> fait exactement</li>
+</ul>
+
+<nav>
+<a href="186-cron-introduction.html">&larr; 186. Cron — Automatiser des tâches sous Linux</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
