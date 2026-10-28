@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>188. df et du — Gérer l'espace disque</h1>
+
+<p>Votre disque est plein et vous ne savez pas pourquoi ? Les commandes <strong>df</strong> (disk free) et <strong>du</strong> (disk usage) sont vos premiers outils pour diagnostiquer l'espace disque sous Linux. L'une montre l'espace disponible sur les partitions, l'autre montre ce qui consomme de la place dans vos répertoires.</p>
+
+<h2>df — Espace disponible sur les partitions</h2>
+
+<p><code>df</code> affiche l'espace disque libre et utilisé pour chaque système de fichiers monté.</p>
+
+<h3>Utilisation de base</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df</code></div>
+</div>
+
+<p>Résultat typique :</p>
+
+<div class="code-block">
+<div class="code-line"><code>Sys. de fichiers blocs de 1K   Utilisé    Disponible Uti% Monté sur
+/dev/sda1              20480000  15340000    5140000  75% /
+tmpfs                   1024000         48    1023952   1% /dev/shm
+/dev/sda2              51200000  32000000   19200000  63% /home
+tmpfs                    512000      1200     510800   1% /run</code></div>
+</div>
+
+<h3>Affichage lisible par l'homme (-h)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df -h</code></div>
+</div>
+
+<p>Résultat avec des tailles lisibles (Ko, Mo, Go) :</p>
+
+<div class="code-block">
+<div class="code-line"><code>Sys. de fichiers Taille  Utilisé  Dispo Uti% Monté sur
+/dev/sda1              20G     15G    5G  75% /
+/dev/sda2              49G     31G    18G  63% /home
+tmpfs                1000M    48K   1000M   1% /dev/shm</code></div>
+</div>
+
+<h3>Afficher uniquement le système de fichiers local (-l)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df -lh</code></div>
+</div>
+
+<h3>Voir un répertoire ou fichier précis</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df -h /home
+df -h /var/log</code></div>
+</div>
+
+<p>Affiche les statistiques du système de fichiers contenant ce chemin.</p>
+
+<h3>Afficher les inodes (-i)</h3>
+
+<p>Les inodes stockent les métadonnées des fichiers. Un disque peut être plein d'inodes même avec de l'espace libre :</p>
+
+<div class="code-block">
+<div class="code-line"><code>df -i
+df -i /</code></div>
+</div>
+
+<h3>Afficher le type de système de fichiers (-T)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df -hT
+df -hT /home</code></div>
+</div>
+
+<p>Affiche une colonne supplémentaire avec le type (ext4, xfs, nfs, tmpfs…).</p>
+
+<h3>Options utiles de df</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-h</code></td><td>Tailles lisibles (Ko, Mo, Go)</td></tr>
+<tr><td><code>-H</code></td><td>Comme -h mais avec 1000 au lieu de 1024</td></tr>
+<tr><td><code>-T</code></td><td>Afficher le type de système de fichiers</td></tr>
+<tr><td><code>-i</code></td><td>Afficher les inodes (pas les blocs)</td></tr>
+<tr><td><code>-l</code></td><td>N'afficher que les systèmes de fichiers locaux</td></tr>
+<tr><td><code>-a</code></td><td>Inclure les systèmes de fichiers avec 0 blocs</td></tr>
+<tr><td><code>--sync</code></td><td>Synchroniser les systèmes de fichiers avant l'affichage</td></tr>
+</table>
+
+<h2>du — Espace utilisé par les fichiers et répertoires</h2>
+
+<p><code>du</code> estime l'espace disque utilisé par les fichiers et répertoires.</p>
+
+<h3>Utilisation de base</h3>
+
+<div class="code-block">
+<div class="code-line"><code>du /home</code></div>
+</div>
+
+<p>Cela affiche la taille de chaque sous-répertoire dans <code>/home</code>.</p>
+
+<h3>Affichage lisible par l'homme (-h)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>du -h /home</code></div>
+</div>
+
+<h3>Voir uniquement le total pour un répertoire (-s)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>du -sh /home
+du -sh /var/log
+du -sh /</code></div>
+</div>
+
+<p>Retourne uniquement la taille totale, sans le détail des sous-répertoires.</p>
+
+<h3>Trier par taille (--max-depth)</h3>
+
+<p>Pour trouver les répertoires qui consomment le plus d'espace :</p>
+
+<div class="code-block">
+<div class="code-line"><code>du -h --max-depth=1 /home | sort -h</code></div>
+</div>
+
+<p><code>--max-depth=1</code> limite l'affichage à un niveau de profondeur, et <code>sort -h</code> trie par taille lisible.</p>
+
+<h3>Exclure un type de fichier (--exclude)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Exclure les fichiers .log
+du -sh --exclude="*.log" /var
+
+# Exclure les fichiers d'un type précis
+du -sh --exclude="*.tmp" /tmp</code></div>
+</div>
+
+<h3>Utiliser un fichier comme référence (--apparent-size)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>du -sh --apparent-size fichier.tar.gz</code></div>
+</div>
+
+<p>Affiche la taille apparente (contenu) plutôt que l'espace disque réellement utilisé.</p>
+
+<h3>Options utiles de du</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-h</code></td><td>Tailles lisibles (Ko, Mo, Go)</td></tr>
+<tr><td><code>-s</code></td><td>Afficher uniquement le total (pas les sous-répertoires)</td></tr>
+<tr><td><code>-a</code></td><td>Afficher aussi les fichiers (pas seulement les répertoires)</td></tr>
+<tr><td><code>--max-depth=N</code></td><td>Limiter la profondeur d'affichage</td></tr>
+<tr><td><code>--exclude=PATTERN</code></td><td>Exclure les fichiers correspondant au motif</td></tr>
+<tr><td><code>-c</code></td><td>Ajouter une ligne de total à la fin</td></tr>
+<tr><td><code>-L</code></td><td>Suivre les liens symboliques</td></tr>
+<tr><td><code>--apparent-size</code></td><td>Afficher la taille apparente (pas l'allocation disque)</td></tr>
+<tr><td><code>-m</code></td><td>Afficher en mégaoctets</td></tr>
+</table>
+
+<h2>Atelier pratique : diagnostiquer un disque plein</h2>
+
+<h3>Étape 1 — Vérifier l'état général des partitions</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df -h</code></div>
+</div>
+
+<p>Repérez les partitions à plus de 80-90% d'utilisation. Ce sont vos priorités.</p>
+
+<h3>Étape 2 — Trouver les répertoires les plus volumineux</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Racine : afficher les répertoires de premier niveau
+du -h --max-depth=1 / 2>/dev/null | sort -rh | head -10</code></div>
+</div>
+
+<p>Cette commande affiche les 10 plus grands répertoires à la racine.</p>
+
+<h3>Étape 3 — Explorer le répertoire le plus gros</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Si /home est le plus gros
+du -h --max-depth=1 /home | sort -rh | head -10
+
+# Puis drill-down dans le sous-répertoire suspect
+du -h --max-depth=1 /home/user/téléchargements | sort -rh | head -10</code></div>
+</div>
+
+<h3>Étape 4 — Trouver les fichiers volumineux</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les fichiers de plus de 100 Mo dans /home
+find /home -type f -size +100M -exec ls -lh {} \;</code></div>
+</div>
+
+<h3>Étape 5 — Vérifier les logs</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Taille totale des logs
+du -sh /var/log
+
+# Les fichiers de log les plus volumineux
+find /var/log -type f -name "*.log" -exec ls -lh {} \; | sort -k5 -rh | head -10</code></div>
+</div>
+
+<h3>Étape 6 — Nettoyer les fichiers temporaires</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir la taille du cache apt
+du -sh /var/cache/apt/archives
+
+# Vider le cache apt (libère de l'espace sans risque)
+sudo apt clean
+
+# Voir la taille des thumbnails
+du -sh ~/.cache/thumbnails</code></div>
+</div>
+
+<h2>Atelier pratique : surveillance automatique</h2>
+
+<h3>Créer un script de surveillance de l'espace disque</h3>
+
+<div class="code-block">
+<div class="code-line"><code>#!/bin/bash
+# surveillance-disque.sh
+
+SEUIL=80
+
+df -h | grep -E '^/dev/' | while read ligne; do
+  utilisation=$(echo "$ligne" | awk '{print $5}' | sed 's/%//')
+  partition=$(echo "$ligne" | awk '{print $1}')
+  po=$(echo "$ligne" | awk '{print $4}')
+
+  if [ "$utilisation" -ge "$SEUIL" ]; then
+    echo "ALERTE: $partition à ${utilisation}% (il reste $po)"
+  fi
+done</code></div>
+</div>
+
+<h3>Rendre le script exécutable</h3>
+
+<div class="code-block">
+<div class="code-line"><code>chmod +x surveillance-disque.sh
+./surveillance-disque.sh</code></div>
+</div>
+
+<h3>Automatiser avec cron</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter une tâche cron pour vérifier chaque jour à 8h
+(crontab -l 2>/dev/null; echo "0 8 * * * /home/user/surveillance-disque.sh") | crontab -</code></div>
+</div>
+
+<h2>Comprendre la différence entre taille et espace utilisé</h2>
+
+<p>Un fichier de 1 octet occupe <strong>au minimum un bloc</strong> sur le disque (souvent 4 Ko). C'est pourquoi <code>du</code> et la taille réelle d'un fichier peuvent différer.</p>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un tout petit fichier
+echo "test" > /tmp/petit.txt
+
+# Taille réelle du fichier
+ls -l /tmp/petit.txt
+
+# Espace disque utilisé (différent !)
+du -h /tmp/petit.txt</code></div>
+</div>
+
+<p>Pour voir la taille apparente (le contenu réel), utilisez <code>--apparent-size</code> avec <code>du</code> ou <code>stat</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>stat /tmp/petit.txt
+# Size: 5 octets (contenu)
+# Blocks: 8 (espace disque utilisé, 8 blocs de 512 octets = 4 Ko)</code></div>
+</div>
+
+<h2>Cas d'usage réels</h2>
+
+<h3>Vérifier avant une grande installation</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df -h
+# Si / a moins de 2 Go libre, réfléchissez avant d'installer de gros logiciels</code></div>
+</div>
+
+<h3>Nettoyer un serveur web</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Trouver les logs nginx/apache volumineux
+du -sh /var/log/nginx/
+du -sh /var/log/apache2/
+
+# Tronquer les vieux logs (conserver le fichier, vider le contenu)
+sudo truncate -s 0 /var/log/nginx/access.log.old</code></div>
+</div>
+
+<h3>Monitorer un serveur de fichiers</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier rapidement l'espace libre sur le serveur de fichiers
+df -h /mnt/partage
+
+# Trouver les 10 plus gros dossiers partagés
+du -h --max-depth=2 /mnt/partage 2>/dev/null | sort -rh | head -10</code></div>
+</div>
+
+<h3>Préparer une sauvegarde</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier l'espace nécessaire pour /home
+du -sh /home
+
+# Vérifier l'espace disponible sur la partition de sauvegarde
+df -h /backup
+
+# Comparer avant de lancer rsync ou tar
+du -sh /home && df -h /backup</code></div>
+</div>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>df -h</code></td><td>Espace libre sur toutes les partitions (tailles lisibles)</td></tr>
+<tr><td><code>df -h /chemin</code></td><td>Espace de la partition contenant /chemin</td></tr>
+<tr><td><code>df -i</code></td><td>Afficher les inodes (métadonnées) par partition</td></tr>
+<tr><td><code>du -sh /repertoire</code></td><td>Espace total utilisé par un répertoire</td></tr>
+<tr><td><code>du -h --max-depth=1</code></td><td>Espace de chaque sous-répertoire (1 niveau)</td></tr>
+<tr><td><code>du -h | sort -rh</code></td><td>Trier les répertoires par taille décroissante</td></tr>
+<tr><td><code>find -type f -size +100M</code></td><td>Trouver les fichiers de plus de 100 Mo</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Vérifiez régulièrement l'espace disque avec <code>df -h</code>, surtout sur les serveurs</li>
+<li>Configurez des alertes quand une partition dépasse 80-90% d'utilisation</li>
+<li>Utilisez <code>du -h --max-depth=1</code> pour identifier rapidement les répertoires qui consomment le plus</li>
+<li>Ne confondez pas taille de fichier (contenu) et espace disque (allocation) — pour ça, <code>stat</code> est votre ami</li>
+<li>Nettoyez régulièrement les fichiers temporaires et les vieux logs</li>
+<li>Surveillez aussi les inodes avec <code>df -i</code> — un disque peut être plein d'inodes même avec de l'espace libre</li>
+<li>Avant une opération volumineuse (compilation, téléchargement), vérifiez toujours l'espace disponible</li>
+</ul>
+
+<nav>
+<a href="187-ln-liens-symboliques.html">&larr; 187. ln — Liens symboliques et liens durs</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
