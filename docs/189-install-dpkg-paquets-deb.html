@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>189. dpkg, apt et install — Installer des logiciels hors ligne</h1>
+
+<p>Vous êtes sur un système sans internet ou avez téléchargé un paquet Debian (.deb) manuellement ? La commande <strong>dpkg</strong> est l'outil de base pour installer, supprimer et gérer des paquets sous Debian et ses dérivées (Ubuntu, Linux Mint…). Dans cette leçon, vous apprendrez à installer des logiciels depuis des fichiers .deb, à résoudre les dépendances manquantes, et à nettoyer votre système.</p>
+
+<h2>Comprendre le format .deb</h2>
+
+<p>Un fichier <code>.deb</code> est un paquet Debian. Il contient le logiciel à installer ainsi que des métadonnées (nom, version, dépendances, scripts de pré/post-installation).</p>
+
+<p>Deux outils principaux coexistent :</p>
+<ul>
+<li><strong>dpkg</strong> — l'outil bas niveau. Il installe directement un fichier .deb, mais <em>ne télécharge pas les dépendances</em>.</li>
+<li><strong>apt</strong> — l'outil haut niveau. Il utilise dpkg en interne, mais gère automatiquement les dépendances depuis les dépôts.</li>
+</ul>
+
+<h2>dpkg — Installation directe d'un fichier .deb</h2>
+
+<h3>Installer un paquet (.deb)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dpkg -i paquet.deb</code></div>
+</div>
+
+<p>Exemple concret :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dpkg -i code_1.75.0-1678414834_amd64.deb</code></div>
+</div>
+
+<p><code>-i</code> (ou <code>--install</code>) installe le paquet depuis le fichier .deb donné.</p>
+
+<h3>Vérifier si un paquet est installé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg -l | grep nom_du_paquet
+dpkg -l firefox</code></div>
+</div>
+
+<p>Résultat typique :</p>
+
+<div class="code-block">
+<div class="code-line"><code>ii  firefox  121.0+build2-0ubuntu0.22.04.1  amd64  Maroon FireFox web browser</code></div>
+</div>
+
+<p>La première colonne indique l'état :</p>
+<table>
+<tr><th>État</th><th>Signification</th></tr>
+<tr><td><code>ii</code></td><td>Correctement installé</td></tr>
+<tr><td><code>rc</code></td><td>Fichiers de configuration seuls restants (paquet supprimé)</td></tr>
+<tr><td><code>un</code></td><td>Paquet connu mais non installé</td></tr>
+<tr><td><code>pn</code></td><td>Paquet installé puis supprimé</td></tr>
+<tr><td><code>iu</code></td><td>Installé mais dans un état incohérent (dépendances manquantes)</td></tr>
+</table>
+
+<h3>Lister tous les paquets installés</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg -l</code></div>
+</div>
+
+<p>Ou filtrer avec <code>grep</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg -l | grep "^ii" | less</code></div>
+</div>
+
+<h3>Voir les fichiers d'un paquet installé</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg -L firefox</code></div>
+</div>
+
+<p>Affiche tous les fichiers installés par le paquet Firefox.</p>
+
+<h3>Identifier le paquet qui a installé un fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg -S /usr/bin/firefox
+firefox: /usr/bin/firefox</code></div>
+</div>
+
+<p>Très utile quand vous trouvez un exécutable et voulez savoir quel paquet l'a installé.</p>
+
+<h3>Supprimer un paquet (conserver les fichiers de configuration)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dpkg -r nom_du_paquet
+sudo dpkg -r firefox</code></div>
+</div>
+
+<p><code>-r</code> (ou <code>--remove</code>) supprime le paquet mais conserve les fichiers de configuration dans <code>/etc</code>.</p>
+
+<h3>Supprimer un paquet (avec fichiers de configuration)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dpkg -P nom_du_paquet
+sudo dpkg -P firefox</code></div>
+</div>
+
+<p><code>-P</code> (ou <code>--purge</code>) supprime complètement le paquet, y compris ses fichiers de configuration.</p>
+
+<h3>Options utiles de dpkg</h3>
+
+<table>
+<tr><th>Option</th><th>Description</th></tr>
+<tr><td><code>-i fichier.deb</code></td><td>Installer un paquet depuis un fichier .deb</td></tr>
+<tr><td><code>-r nom_paquet</code></td><td>Supprimer le paquet (conserver config)</td></tr>
+<tr><td><code>-P nom_paquet</code></td><td>Purger le paquet (supprimer config aussi)</td></tr>
+<tr><td><code>-l motif</code></td><td>Lister les paquets correspondant au motif</td></tr>
+<tr><td><code>-L paquet</code></td><td>Lister les fichiers installés par un paquet</td></tr>
+<tr><td><code>-s paquet</code></td><td>Afficher le statut d'un paquet</td></tr>
+<tr><td><code>-S fichier</code></td><td>Identifier quel paquet a installé ce fichier</td></tr>
+<tr><td><code>--configure paquet</code></td><td>Reconfigurer un paquet partiellement installé</td></tr>
+<tr><td><code>--audit</code></td><td>Détecter les paquets dans un état incohérent</td></tr>
+</table>
+
+<h2>Résoudre les dépendances manquantes</h2>
+
+<p>Le point faible de <code>dpkg -i</code> : si un paquet a des dépendances non satisfaites, l'installation échoue. Exemple :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dpkg -i virtualbox.deb
+Sélection du paquet virtualbox précédemment désélectionné.
+(Lecture de la base de données... 163120 fichiers et répertoires installés.)
+Préparation du dépaquetage de 'virtualbox.deb'...
+Dépaquetage de virtualbox (7.0.10-158379~Ubuntu~jammy) ...
+dpkg: des problèmes de dépendances empéchent la configuration de virtualbox :
+ virtualbox dépend de libqt5opengl5 (>= 5.0.2) ; mais :
+  Le paquet libqt5opengl5 n'est pas installé.
+ virtualbox dépend de libpython3.10 (>= 3.10.0) ; mais :
+  Le paquet libpython3.10 n'est pas installé.</code></div>
+</div>
+
+<h3>La solution : dpkg --configure -a</h3>
+
+<p>Après avoir installé les dépendances manuellement, lancez :</p>
+
+<div class="code-block">
+<div class="code-line"><code>sudo dpkg --configure -a</code></div>
+</div>
+
+<p>Cela reprend la configuration de tous les paquets laissés dans un état incohérent.</p>
+
+<h3>La solution complète : gdebi</h3>
+
+<p>L'outil <code>gdebi</code> télécharge et installe automatiquement les dépendances d'un fichier .deb :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Installer gdebi (si pas déjà présent)
+sudo apt install gdebi
+
+# Installer un .deb avec ses dépendances
+sudo gdebi virtualbox.deb</code></div>
+</div>
+
+<h3>Identifier les dépendances d'un paquet</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Voir les dépendances d'un paquet installé
+dpkg -s virtualbox | grep Depends</code></div>
+</div>
+
+<p>Ou sans l'installer, directement depuis un fichier .deb :</p>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg-deb -I virtualbox.deb Depends</code></div>
+</div>
+
+<h2>dpkg-deb — Inspecter et manipuler les fichiers .deb</h2>
+
+<p><code>dpkg-deb</code> est l'outil pour inspecter l'intérieur d'un fichier .deb sans l'installer.</p>
+
+<h3>Afficher les informations d'un paquet</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg-deb -I virtualbox.deb</code></div>
+</div>
+
+<p>Affiche le nom, version, architecture, taille installée, dépendances, description.</p>
+
+<h3>Lister le contenu d'un fichier .deb</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg-deb -c virtualbox.deb</code></div>
+</div>
+
+<p>Montre tous les fichiers qui seraient installés par ce paquet.</p>
+
+<h3>Extraire le contenu d'un .deb</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un répertoire de travail
+mkdir extrait && cd extrait
+
+# Extraire le contenu du .deb
+dpkg-deb -x virtualbox.deb virtualbox-contenu
+
+# Explorer
+ls virtualbox-contenu/
+# usr/  DEBIAN/</code></div>
+</div>
+
+<h3>Extraire uniquement les fichiers de contrôle (métadonnées)</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg-deb -e virtualbox.deb DEBIAN-control</code></div>
+</div>
+
+<p>Crée un répertoire <code>DEBIAN/</code> contenant les scripts de contrôle et métadonnées.</p>
+
+<h2>Atelier pratique : installer un logiciel hors ligne</h2>
+
+<h3>Scénario : installer VS Code sur un PC sans internet</h3>
+
+<p>Vous avez téléchargé <code>code_1.75.0-1678414834_amd64.deb</code> depuis un autre ordinateur.</p>
+
+<h3>Étape 1 — Vérifier le fichier</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Vérifier que le fichier existe et est un .deb valide
+file code_1.75.0-1678414834_amd64.deb
+# code_1.75.0-1678414834_amd64.deb: Debian binary package (format 2.0)
+
+# Afficher les informations du paquet
+dpkg-deb -I code_1.75.0-1678414834_amd64.deb</code></div>
+</div>
+
+<h3>Étape 2 — Lister les fichiers qui seront installés</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg-deb -c code_1.75.0-1678414834_amd64.deb | head -20</code></div>
+</div>
+
+<h3>Étape 3 — Vérifier les dépendances</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg-deb -I code_1.75.0-1678414834_amd64.deb | grep Depends
+# Depends: gtk-3-0, libnotify4, libnss3, libxkbfile1, ...</code></div>
+</div>
+
+<h3>Étape 4 — Vérifier si les dépendances sont satisfaites</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Essayer l'installation directe
+sudo dpkg -i code_1.75.0-1678414834_amd64.deb 2>&1 | head -30</code></div>
+</div>
+
+<p>Si des dépendances manquent, elles seront listées.</p>
+
+<h3>Étape 5 — Corriger les dépendances avec apt</h3>
+
+<p>Si votre système a accès à internet mais vous préférez installer le .deb :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Forcer apt à corriger les dépendances après dpkg
+sudo apt install -f</code></div>
+</div>
+
+<p><code>apt install -f</code> corrige les dépendances brisées en installant ce qui manque depuis les dépôts.</p>
+
+<h3>Étape 6 — Vérifier l'installation</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Confirmer que le paquet est installé
+dpkg -l | grep code
+
+# Vérifier que l'exécutable est accessible
+which code
+# /usr/bin/code</code></div>
+</div>
+
+<h2>Atelier pratique : créer un mini dépôt local</h2>
+
+<p>Si vous devez installer le même logiciel sur plusieurs machines sans internet, créez un dépôt local.</p>
+
+<h3>Structurer le dépôt</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer la structure du dépôt
+mkdir -p /opt/mon-depot
+cp ~/Téléchargements/*.deb /opt/mon-depot/
+
+# Entrer dans le répertoire
+cd /opt/mon-depot</code></div>
+</div>
+
+<h3>Générer les index du dépôt (sans serveur web)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Installer dpkg-dev pour créer les index
+sudo apt install dpkg-dev
+
+# Générer le fichier Packages.gz
+dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+
+# Vérifier
+ls -lh Packages.gz</code></div>
+</div>
+
+<h3>Utiliser le dépôt local</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Ajouter le dépôt local à apt
+# Sur chaque machine, créer un fichier de configuration :
+sudo nano /etc/apt/sources.list.d/local-depot.list</code></div>
+</div>
+
+<p>Contenu du fichier :</p>
+
+<div class="code-block">
+<div class="code-line"><code>deb [trusted=yes] file:///opt/mon-depot/ ./</code></div>
+</div>
+
+<div class="code-block">
+<div class="code-line"><code># Mettre à jour la liste des paquets
+sudo apt update
+
+# Installer un logiciel depuis le dépôt local
+sudo apt install code</code></div>
+</div>
+
+<h3>Partager le dépôt via un serveur web ou clé USB</h3>
+
+<p>Si vous avez un serveur web accessible sur le réseau local :</p>
+
+<div class="code-block">
+<div class="code-line"><code># Copier le dépôt sur le serveur web
+scp -r /opt/mon-depot user@mon-serveur:/var/www/html/depot/
+
+# Sur les machines clientes, utiliser l'URL http :
+# deb http://adresse-ip-serveur/depot/ ./</code></div>
+</div>
+
+<h2>Atelier pratique : nettoyer les restes de paquets supprimés</h2>
+
+<h3>Trouver les paquets dans un état incohérent</h3>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg --audit</code></div>
+</div>
+
+<p>Ou lister les paquets dont l'état commence par <code>iU</code> ou <code>ir</code> :</p>
+
+<div class="code-block">
+<div class="code-line"><code>dpkg -l | grep -E "^[iu][^n]"</code></div>
+</div>
+
+<h3>Reconfigurer un paquet problématique</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Reconfigurer un paquet spécifique
+sudo dpkg --configure nom_du_paquet
+
+# Reconfigurer tous les paquets en attente
+sudo dpkg --configure -a</code></div>
+</div>
+
+<h3>Supprimer les fichiers de configuration orphelins</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Lister les paquets avec uniquement des fichiers de config restants
+dpkg -l | grep "^rc"
+
+# Purger tous les restes de configuration
+dpkg -l | grep "^rc" | awk '{print $2}' | xargs sudo dpkg -P</code></div>
+</div>
+
+<h3>Vérifier l'espace disque avant/après nettoyage</h3>
+
+<div class="code-block">
+<div class="code-line"><code>df -h /</code></div>
+</div>
+
+<h2>Atelier pratique : extraire et réempaqueter un .deb</h2>
+
+<p>Utile pour modifier un paquet sans l'installer.</p>
+
+<h3>Extraire le contenu</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Créer un répertoire de travail
+mkdir ~/deb-travail && cd ~/deb-travail
+
+# Extraire le contenu
+dpkg-deb -x /chemin/vers/paquet.deb extraction
+
+# Extraire les métadonnées
+dpkg-deb -e /chemin/vers/paquet.deb extraction/DEBIAN</code></div>
+</div>
+
+<h3>Modifier le contenu (exemple : changer un fichier de config)</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Modifier un fichier dans extraction/
+nano ~/deb-travail/extraction/etc/ma-config.conf
+
+# Vérifier les modifications
+diff -u /chemin/vers/paquet.deb.extracted/etc/ma-config.conf ~/deb-travail/extraction/etc/ma-config.conf</code></div>
+</div>
+
+<h3>Réempaqueter en .deb</h3>
+
+<div class="code-block">
+<div class="code-line"><code># Réempaqueter
+dpkg-deb --build ~/deb-travail/extraction
+mv ~/deb-travail/extraction.deb ~/deb-travail/paquet-modifie.deb
+
+# Vérifier le nouveau paquet
+dpkg-deb -I ~/deb-travail/paquet-modifie.deb</code></div>
+</div>
+
+<h2>Comprendre les scripts de contrôle d'un .deb</h2>
+
+<p>Un fichier .deb contient un répertoire <code>DEBIAN/</code> avec des scripts qui s'exécutent à différentes étapes :</p>
+
+<table>
+<tr><th>Fichier</th><th>Quand</th><th>À quoi ça sert</th></tr>
+<tr><td><code>preinst</code></td><td>Avant l'installation</td><td>Arrêter un service, créer un utilisateur</td></tr>
+<tr><td><code>postinst</code></td><td>Après l'installation</td><td>Configurer, redémarrer un service</td></tr>
+<tr><td><code>prerm</code></td><td>Avant la suppression</td><td>Arrêter le service proprement</td></tr>
+<tr><td><code>postrm</code></td><td>Après la suppression</td><td>Nettoyer les fichiers, supprimer des utilisateurs</td></tr>
+</table>
+
+<p>Vous pouvez examiner ces scripts dans le répertoire <code>DEBIAN/</code> d'un .deb extrait.</p>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Description</th></tr>
+<tr><td><code>sudo dpkg -i fichier.deb</code></td><td>Installer un fichier .deb directement</td></tr>
+<tr><td><code>sudo dpkg -r paquet</code></td><td>Supprimer un paquet (conserver config)</td></tr>
+<tr><td><code>sudo dpkg -P paquet</code></td><td>Purger un paquet (supprimer config)</td></tr>
+<tr><td><code>dpkg -l motif</code></td><td>Lister les paquets correspondant au motif</td></tr>
+<tr><td><code>dpkg -L paquet</code></td><td>Lister les fichiers d'un paquet installé</td></tr>
+<tr><td><code>dpkg -S fichier</code></td><td>Trouver le paquet qui a installé ce fichier</td></tr>
+<tr><td><code>dpkg --configure -a</code></td><td>Reconfigurer tous les paquets en attente</td></tr>
+<tr><td><code>dpkg --audit</code></td><td>Détecter les paquets incohérents</td></tr>
+<tr><td><code>dpkg-deb -I fichier.deb</code></td><td>Afficher les infos d'un fichier .deb</td></tr>
+<tr><td><code>dpkg-deb -c fichier.deb</code></td><td>Lister le contenu d'un fichier .deb</td></tr>
+<tr><td><code>dpkg-deb -x fichier.deb rep</code></td><td>Extraire le contenu d'un .deb</td></tr>
+<tr><td><code>sudo apt install -f</code></td><td>Corriger les dépendances brisées</td></tr>
+</table>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li>Toujours vérifier le contenu d'un .deb avec <code>dpkg-deb -I</code> avant de l'installer</li>
+<li>Utiliser <code>dpkg -l | grep nom</code> pour vérifier si un logiciel est déjà installé avant d'installer un .deb</li>
+<li>Si <code>dpkg -i</code> échoue à cause de dépendances, lancez ensuite <code>sudo apt install -f</code> pour corriger</li>
+<li>Sur un système sans internet, installez d'abord les dépendances manuellement, puis le .deb</li>
+<li>Utilisez <code>gdebi</code> pour une installation plus simple des fichiers .deb (il gère les dépendances)</li>
+<li>Purgez régulièrement les restes de configuration avec <code>dpkg -l | grep "^rc"</code></li>
+<li>Ne supprimez jamais le répertoire <code>/var/lib/dpkg</code> — il contient la base de données de tous les paquets installés</li>
+<li>Pour multiplier les installations sur plusieurs machines, créez un dépôt local avec <code>dpkg-scanpackages</code></li>
+</ul>
+
+<nav>
+<a href="188-df-du-espace-disque.html">&larr; 188. df et du — Gérer l'espace disque</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
