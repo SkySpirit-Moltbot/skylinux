@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>191. factor — Décomposer les nombres en facteurs premiers</h1>
+
+<p>Vous avez un nombre et vous voulez savoir par quels nombres premiers il est composé ? <code>factor</code> est là pour ça. Cette commande, souvent méconnue, decompose un nombre en ses facteurs premiers en une fraction de seconde.</p>
+
+<h2>Principe fondamental</h2>
+
+<p>Tout nombre entier supérieur à 1 peut être écrit comme un produit de nombres premiers. Par exemple, <code>12 = 2 × 2 × 3</code>. La commande <code>factor</code> trouve automatiquement cette décomposition.</p>
+
+<div class="code-block"><div class="code-line"><code>$ factor 12</code></div></div>
+<div class="code-block"><div class="code-line"><code>12: 2 2 3</code></div></div>
+
+<h2>Utilisation de base</h2>
+
+<h3>Factoriser un seul nombre</h3>
+
+<div class="code-block"><div class="code-line"><code>$ factor 100</code></div></div>
+<div class="code-block"><div class="code-line"><code>100: 2 2 5 5</code></div></div>
+
+<h3>Factoriser plusieurs nombres d'un coup</h3>
+
+<div class="code-block"><div class="code-line"><code>$ factor 15 21 35 49</code></div></div>
+<div class="code-block"><div class="code-line"><code>15: 3 5
+21: 3 7
+35: 5 7
+49: 7 7</code></div></div>
+
+<h3>Factorisation d'un nombre premier</h3>
+
+<p>Un nombre premier n'a que lui-même comme facteur :</p>
+
+<div class="code-block"><div class="code-line"><code>$ factor 17</code></div></div>
+<div class="code-block"><div class="code-line"><code>17: 17</code></div></div>
+
+<h2>Exemples concrets</h2>
+
+<h3>Trouver le plus grand diviseur commun (PGDC)</h3>
+
+<div class="code-block"><div class="code-line"><code># PGDC de 48 et 18
+$ factor 48
+48: 2 2 2 3
+$ factor 18
+18: 2 3 3
+# Facteurs communs: 2 et 3 → PGDC = 2 × 3 = 6</code></div></div>
+
+<h3>Vérifier si un nombre est premier</h3>
+
+<div class="code-block"><div class="code-line"><code># Si le résultat ne contient que le nombre lui-même, c'est un premier
+$ factor 97
+97: 97
+
+$ factor 99
+99: 3 3 11</code></div></div>
+
+<h3>Analyser les facteurs d'un résultat de calcul</h3>
+
+<div class="code-block"><div class="code-line"><code>$ factor $((2**20))</code></div></div>
+<div class="code-block"><div class="code-line"><code>1048576: 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</code></div></div>
+
+<h3>Factorisation dans un script</h3>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Vérifier si un nombre est premier
+est_premier() {
+    local n=$1
+    if [ $n -lt 2 ]; then
+        return 1
+    fi
+    # Compter les facteurs (sauf 1 et n lui-même)
+    nb_facteurs=$(factor $n | awk '{print NF-1}')
+    if [ $nb_facteurs -eq 1 ]; then
+        return 0  # Premier
+    else
+        return 1  # Pas premier
+    fi
+}
+
+for nb in 2 7 15 23 100 997; do
+    if est_premier $nb; then
+        echo "$nb est premier"
+    else
+        echo "$nb n'est pas premier"
+    fi
+done</code></div></div>
+
+<h2>Comprendre la décomposition</h2>
+
+<h3>Les premiers nombres premiers</h3>
+
+<table>
+<tr><th>Nombre</th><th>Facteurs premiers</th><th>Observation</th></tr>
+<tr><td>1</td><td>(aucun)</td><td>1 n'est ni premier ni composé</td></tr>
+<tr><td>2</td><td>2</td><td>Le plus petit premier</td></tr>
+<tr><td>6</td><td>2 3</td><td>2 × 3</td></tr>
+<tr><td>7</td><td>7</td><td>Premier</td></tr>
+<tr><td>8</td><td>2 2 2</td><td>2³</td></tr>
+<tr><td>9</td><td>3 3</td><td>3²</td></tr>
+<tr><td>10</td><td>2 5</td><td>2 × 5</td></tr>
+<tr><td>12</td><td>2 2 3</td><td>2² × 3</td></tr>
+<tr><td>60</td><td>2 2 3 5</td><td>2² × 3 × 5</td></tr>
+</table>
+
+<h3>Notation puissance</h3>
+
+<div class="code-block"><div class="code-line"><code>$ factor 360
+360: 2 2 2 3 3 5
+# → 2³ × 3² × 5¹ = 360</code></div></div>
+
+<h2>Applications pratiques</h2>
+
+<h3>Trouver le plus petit multiple commun (PPCM)</h3>
+
+<div class="code-block"><div class="code-line"><code># PPCM(8, 12)
+# Factorisations: 8 = 2³, 12 = 2² × 3
+# PPCM = 2³ × 3 = 24
+$ echo $(( (8 * 12) / 6 ))  # PGDC(8,12)=2, donc PPCM = 8*12/2 = 48... non
+# Méthode propre:
+factor 8 12
+# 8: 2 2 2
+# 12: 2 2 3
+# PPCM prend le max de chaque facteur: 2³ × 3 = 24</code></div></div>
+
+<h3>Utiliser factor avec des plages de nombres</h3>
+
+<div class="code-block"><div class="code-line"><code># Générer une plage et factoriser chaque nombre
+$ seq 10 15 | while read n; do factor $n; done</code></div></div>
+<div class="code-block"><div class="code-line"><code>10: 2 5
+11: 11
+12: 2 2 3
+13: 13
+14: 2 7
+15: 3 5</code></div></div>
+
+<h3>Trouver tous les diviseurs d'un nombre</h3>
+
+<div class="code-block"><div class="code-line"><code># Lister tous les diviseurs à partir des facteurs premiers
+$ factor 12
+12: 2 2 3
+
+# Diviseurs: 1, 2, 3, 4, 6, 12
+# Tous les produits possibles de 2^a × 3^b avec a∈{0,1,2} et b∈{0,1}</code></div></div>
+
+<h2>Limites et performance</h2>
+
+<p><code>factor</code> utilise un algorithme de division trial qui est efficace pour des nombres jusqu'à environ 10¹². Au-delà, d'autres outils comme <code>openssl prime</code> ou des bibliothèques spécialisées seront plus adaptés.</p>
+
+<div class="code-block"><div class="code-line"><code># Limite pratique
+$ factor 9999999967
+9999999967: 9999999967
+# 9999999967 est-il premier ? (factor met du temps pour les très grands nombres)</code></div></div>
+
+<h2>Exercices</h2>
+
+<ol>
+<li>Factorisez les nombres suivants : 36, 48, 64, 100, 256.</li>
+<li>Trouvez 5 nombres premiers entre 1 et 100 à l'aide de <code>factor</code>.</li>
+<li>Écrivez un script qui affiche les 20 premiers nombres et leurs facteurs.</li>
+<li>Déterminez le PGDC de 72 et 48 en utilisant <code>factor</code>.</li>
+<li>Calculez le PPCM de 15 et 20 à partir des décompositions en facteurs premiers.</li>
+</ol>
+
+<nav>
+<a href="190-which-localiser-commandes.html">&larr; 190. which — Localiser une commande sur le système</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
