@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>192. uptime, tload et free — Surveillance rapide du système</h1>
+
+<p>Besoin d'un aperçu rapide de l'état de votre système ? Trois commandes suffisent : <code>uptime</code> pour le temps de fonctionnement, <code>tload</code> pour une charge visuelle, et <code>free</code> pour la mémoire. Simples, rapides, et toujours disponibles.</p>
+
+<h2>uptime — Depuis combien de temps le système tourne-t-il ?</h2>
+
+<p><code>uptime</code> affiche depuis combien de temps le système fonctionne, combien d'utilisateurs sont connectés, et la charge moyenne sur 1, 5 et 15 minutes.</p>
+
+<h3>Utilisation de base</h3>
+
+<div class="code-block"><div class="code-line"><code>$ uptime</code></div></div>
+<div class="code-block"><div class="code-line"><code>14:32:01 up 23 days,  3:17,  2 users,  load average: 0.15, 0.10, 0.08</code></div></div>
+
+<h3>Comprendre la sortie</h3>
+
+<table>
+<tr><th>Élément</th><th>Signification</th></tr>
+<tr><td><code>14:32:01</code></td><td>Heure actuelle du système</td></tr>
+<tr><td><code>up 23 days, 3:17</code></td><td>Le système tourne depuis 23 jours et 3 heures 17 minutes</td></tr>
+<tr><td><code>2 users</code></td><td>2 utilisateurs connectés actuellement</td></tr>
+<tr><td><code>load average: 0.15, 0.10, 0.08</code></td><td>Charge moyenne sur 1, 5 et 15 minutes</td></tr>
+</table>
+
+<h3>Options utiles</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher l'heure de démarrage (depuis quand le système est up)
+$ uptime -s
+2025-10-09 11:15:00
+
+# Mode compact (une seule ligne)
+$ uptime -p
+up 3 weeks, 2 days, 14 hours, 32 minutes
+
+# Afficher le temps depuis le dernier arrêt
+$ uptime -V   # version uniquement</code></div></div>
+
+<h3>Interpréter la charge système</h3>
+
+<p>La charge moyenne représente le nombre moyen de processus en attente d'exécution CPU. Sur un système à 4 cœurs :</p>
+
+<table>
+<tr><th>Charge moyenne</th><th>Interprétation</th></tr>
+<tr><td>Moins de 1.0 par cœur</td><td>Le système n'est pas saturé, tout va bien</td></tr>
+<tr><td>Proche de 1.0 par cœur</td><td>Utilisation optimale, files d'attente courtes</td></tr>
+<tr><td>Supérieur à 1.0 par cœur</td><td>Goulot d'étranglement, des processus attendent</td></tr>
+<tr><td>Charge = 8 sur 4 cœurs</td><td>Surcharge sévère, système très lent</td></tr>
+</table>
+
+<div class="code-block"><div class="code-line"><code># Connaître le nombre de cœurs
+$ nproc
+4
+
+# Charge de 2.5 sur 4 cœurs = 62.5% d'utilisation
+$ uptime
+14:32:01 up 23 days,  3:17,  2 users,  load average: 2.50, 1.80, 1.20</code></div></div>
+
+<h2>free — Combien de mémoire disponible ?</h2>
+
+<p><code>free</code> affiche la quantité de mémoire RAM et swap utilisée, totale et libre.</p>
+
+<h3>Utilisation de base</h3>
+
+<div class="code-block"><div class="code-line"><code>$ free</code></div></div>
+<div class="code-block"><div class="code-line"><code>              total        used        free      shared  buff/cache   available
+Mem:        8192000     3145728     2097152      102400     2949120     4587520
+Swap:       2097152           0     2097152</code></div></div>
+
+<h3>Comprendre les colonnes</h3>
+
+<table>
+<tr><th>Colonne</th><th>Signification</th></tr>
+<tr><td><code>total</code></td><td>Mémoire totale installée (ici 8 Go)</td></tr>
+<tr><td><code>used</code></td><td>Mémoire actuellement utilisée par les programmes</td></tr>
+<tr><td><code>free</code></td><td>Mémoire totalement libre, non utilisée</td></tr>
+<tr><td><code>shared</code></td><td>Mémoire partagée entre plusieurs processus</td></tr>
+<tr><td><code>buff/cache</code></td><td>Mémoire utilisée par le noyau pour les buffers et le cache</td></tr>
+<tr><td><code>available</code></td><td>Mémoire réellement disponible pour les nouveaux programmes (free + buff/cache)</td></tr>
+</table>
+
+<h3>Options utiles</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher en mégaoctets (plus lisible)
+$ free -m
+              total        used        free      shared  buff/cache   available
+Mem:           8192        3072        2048         128        2880        4608
+Swap:          2048           0        2048
+
+# Afficher en gigaoctets
+$ free -g
+              total        used        free      shared  buff/cache   available
+Mem:              7           2           1           0           2           4
+Swap:             1           0           1
+
+# Afficher en unités human-readable (automatique)
+$ free -h
+              total        used        free      shared  buff/cache   available
+Mem:          8.0Gi       3.0Gi       2.0Gi       128Mi       2.8Gi       4.5Gi
+Swap:         2.0Gi          0B       2.0Gi
+
+# Rafraîchir automatiquement toutes les 2 secondes
+$ free -h -s 2
+
+# Afficher les totaux en bas
+$ free -t
+              total        used        free      shared  buff/cache   available
+Mem:        8192000     3145728     2097152      102400     2949120     4587520
+Swap:       2097152           0     2097152
+Total:     10289152     3145728     2097152</code></div></div>
+
+<h3>Interpréter la mémoire</h3>
+
+<p>Sous Linux, la mémoire <code>buff/cache</code> n'est pas "perdue". Le noyau l'utilise pour accélérer les accès disque. Si un programme a besoin de mémoire, il la récupère instantanément depuis le cache. La colonne <code>available</code> est donc la vraie mesure de la mémoire libre.</p>
+
+<div class="code-block"><div class="code-line"><code># Exemple: système en manque de mémoire
+$ free -h
+              total        used        free      shared  buff/cache   available
+Mem:          8.0Gi       7.8Gi       0.1Gi       128Mi       0.1Gi       0.1Gi
+# → available très bas = mémoire insuffisante, risque de swap</code></div></div>
+
+<h3>Surveiller avec un intervalle</h3>
+
+<div class="code-block"><div class="code-line"><code># Mettre à jour toutes les 3 secondes, 5 fois
+$ free -h -s 3 -c 5</code></div></div>
+
+<h2>tload — La charge en graphique ASCII</h2>
+
+<p><code>tload</code> affiche un graphique ASCII en temps réel de la charge système dans votre terminal. Pratique pour voir visuellement l'évolution de la charge.</p>
+
+<h3>Utilisation de base</h3>
+
+<div class="code-block"><div class="code-line"><code># Afficher le graphique (se met à jour en temps réel)
+$ tload</code></div></div>
+<div class="code-block"><div class="code-line"><code>0.35 [|     ] 0.30 [||   ] 0.25 [|||  ]
+    0.40 [||   ] 0.35 [||   ] 0.30 [|||  ]
+    0.45 [|||  ] 0.40 [||   ] 0.35 [||   ]</code></div></div>
+
+<h3>Options utiles</h3>
+
+<div class="code-block"><div class="code-line"><code># Spécifier le nombre de caractères de largeur (80 = pleine largeur)
+$ tload 80
+
+# Spécifier un délai de rafraîchissement en secondes
+$ tload -d 5   # mettre à jour toutes les 5 secondes
+
+# Quitter avec Ctrl+C</code></div></div>
+
+<h3>Exemple concret</h3>
+
+<div class="code-block"><div class="code-line"><code># Terminal 1: lancer une charge CPU
+$ yes > /dev/null &
+
+# Terminal 2: voir la charge monter
+$ tload
+0.15 [         ] 0.80 [||||||] 1.20 [||||||||||]
+    0.15 [         ] 0.90 [|||||||] 1.40 [|||||||||||||]
+    0.18 [         ] 1.00 [||||||||] 1.60 [|||||||||||||||]
+
+# Terminal 1: arrêter la charge
+$ kill %1</code></div></div>
+
+<h2>Combiner les trois pour un diagnostic rapide</h2>
+
+<div class="code-block"><div class="code-line"><code># Script de diagnostic rapide
+#!/bin/bash
+echo "=== UPTIME ==="
+uptime
+echo ""
+echo "=== MÉMOIRE ==="
+free -h
+echo ""
+echo "=== NOMBRE DE CŒURS ==="
+nproc
+echo ""
+echo "=== PROCESSUS LES PLUS GOURMANDS ==="
+ps aux --sort=-%cpu | head -6</code></div></div>
+
+<h3>Sortie typique</h3>
+
+<div class="code-block"><div class="code-line"><code>=== UPTIME ===
+14:32:01 up 23 days,  3:17,  2 users,  load average: 0.15, 0.10, 0.08
+=== MÉMOIRE ===
+              total        used        free      shared  buff/cache   available
+Mem:          8.0Gi       3.0Gi       2.0Gi       128Mi       2.8Gi       4.5Gi
+Swap:         2.0Gi          0B       2.0Gi
+=== NOMBRE DE CŒURS ===
+4
+=== PROCESSUS LES PLUS GOURMANDS ===
+USER       PID %CPU %MEM    COMMAND
+root         1  0.0  0.1    systemd
+www-data  1234  2.5  1.2    nginx
+postgres  2345  1.8  3.5    postgres</code></div></div>
+
+<h2>Exercices</h2>
+
+<ol>
+<li>Exécutez <code>uptime</code> et notez le load average. Est-il bas, normal ou élevé par rapport au nombre de cœurs ?</li>
+<li>Utilisez <code>free -h</code> et expliquez la différence entre <code>free</code> et <code>available</code>.</li>
+<li>Lancez <code>tload</code> dans un terminal et observez l'évolution pendant que vous utilisez votre ordinateur.</li>
+<li>Créez un alias <code>sysinfo</code> qui affiche uptime, free et le nombre de cœurs en une seule commande.</li>
+<li>Simulez une charge élevée avec <code>stress-ng --cpu 2</code> (si installé) et observez comment <code>uptime</code> et <code>free</code> réagissent.</li>
+</ol>
+
+<nav>
+<a href="191-factor-nombres.html">&larr; 191. factor — Décomposer les nombres en facteurs premiers</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
