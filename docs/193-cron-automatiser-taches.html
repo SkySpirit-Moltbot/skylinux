@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Cron — Automatiser des tâches sous Linux</h1>
+
+<h2>Qu'est-ce que cron ?</h2>
+<p>Cron est un <strong>daemon</strong> (service en arrière-plan) qui exécute automatiquement des commandes ou des scripts à des moments précis. C'est l'outil de base pour planifier des tâches récurrentes sur un système Linux — sauvegardes automatiques, rotations de logs, vérifications, etc.</p>
+
+<h2>Le format d'une tâche cron</h2>
+<p>Chaque tâche cron est définie par une ligne dans le fichier <code>crontab</code> avec cinq champs de temps suivis de la commande à exécuter :</p>
+
+<div class="code-block"><div class="code-line"><code>* * * * *  commande</code></div></div>
+
+<table>
+<tr><th>Champ</th><th>Valeurs possibles</th><th>Description</th></tr>
+<tr><td>1er</td><td>0-59</td><td>Minute</td></tr>
+<tr><td>2e</td><td>0-23</td><td>Heure</td></tr>
+<tr><td>3e</td><td>1-31</td><td>Jour du mois</td></tr>
+<tr><td>4e</td><td>1-12</td><td>Mois</td></tr>
+<tr><td>5e</td><td>0-6</td><td>Jour de la semaine (0 = dimanche)</td></tr>
+</table>
+
+<h2>Exemples concrets</h2>
+
+<h3>Exécuter toutes les minutes</h3>
+<div class="code-block"><div class="code-line"><code>* * * * *  /home/david/script.sh</code></div></div>
+
+<h3>Exécuter chaque heure pile</h3>
+<div class="code-block"><div class="code-line"><code>0 * * * *  /home/david/script.sh</code></div></div>
+
+<h3>Exécuter chaque jour à 3h du matin</h3>
+<div class="code-block"><div class="code-line"><code>0 3 * * *  /home/david/script.sh</code></div></div>
+
+<h3>Exécuter chaque lundi à 8h</h3>
+<div class="code-block"><div class="code-line"><code>0 8 * * 1  /home/david/script.sh</code></div></div>
+
+<h3>Exécuter le 1er de chaque mois à minuit</h3>
+<div class="code-block"><div class="code-line"><code>0 0 1 * *  /home/david/script.sh</code></div></div>
+
+<h3>Exécuter toutes les 5 minutes</h3>
+<div class="code-block"><div class="code-line"><code>*/5 * * * *  /home/david/script.sh</code></div></div>
+
+<h2>Spécialités : @reboot, @hourly, @daily</h2>
+<p>Cron propose des raccourcis pratiques pour les cas les plus courants :</p>
+
+<table>
+<tr><th>Raccourci</th><th>Équivalent</th><th>Description</th></tr>
+<tr><td><code>@reboot</code></td><td>—</td><td>Au démarrage de la machine</td></tr>
+<tr><td><code>@yearly</code></td><td><code>0 0 1 1 *</code></td><td>Une fois par an (1er janvier)</td></tr>
+<tr><td><code>@monthly</code></td><td><code>0 0 1 * *</code></td><td>Le 1er du mois</td></tr>
+<tr><td><code>@weekly</code></td><td><code>0 0 * * 0</code></td><td>Chaque dimanche</td></tr>
+<tr><td><code>@daily</code></td><td><code>0 0 * * *</code></td><td>Chaque jour à minuit</td></tr>
+<tr><td><code>@hourly</code></td><td><code>0 * * * *</code></td><td>Chaque heure pile</td></tr>
+</table>
+
+<h2>Gestion du crontab</h2>
+
+<h3>Éditer le crontab de l'utilisateur courant</h3>
+<div class="code-block"><div class="code-line"><code>crontab -e</code></div></div>
+
+<h3>Lister les tâches cron de l'utilisateur</h3>
+<div class="code-block"><div class="code-line"><code>crontab -l</code></div></div>
+
+<h3>Supprimer tout le crontab de l'utilisateur</h3>
+<div class="code-block"><div class="code-line"><code>crontab -r</code></div></div>
+
+<h3>Éditer le crontab système</h3>
+<p>Le fichier <code>/etc/crontab</code> est réservé à l'administrateur et inclut un champ supplémentaire pour le пользователь :</p>
+<div class="code-block"><div class="code-line"><code>sudo nano /etc/crontab</code></div></div>
+
+<h2>Redirection de sortie</h2>
+<p>Par défaut, cron envoie les sorties par e-mail. Pour éviter cela, redirigez la sortie vers <code>/dev/null</code> :</p>
+<div class="code-block"><div class="code-line"><code>0 3 * * *  /home/david/script.sh > /dev/null 2>&1</code></div></div>
+
+<p>Pour enregistrer la sortie dans un fichier log :</p>
+<div class="code-block"><div class="code-line"><code>0 3 * * *  /home/david/script.sh >> /home/david/logs/script.log 2>&1</code></div></div>
+
+<h2>Variables d'environnement dans cron</h2>
+<p>Cron exécute les commandes avec un environnement limité. Le <code>PATH</code> est souvent minimal. Définissez vos propres variables en haut du crontab :</p>
+<div class="code-block"><div class="code-line"><code>PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+SHELL=/bin/bash
+
+0 3 * * *  /home/david/backup.sh</code></div></div>
+
+<h2>Vérifier que cron fonctionne</h2>
+<div class="code-block"><div class="code-line"><code>sudo systemctl status cron</code></div></div>
+
+<p>Sur certaines distributions (comme CentOS/RHEL), le service s'appelle <code>crond</code> :</p>
+<div class="code-block"><div class="code-line"><code>sudo systemctl status crond</code></div></div>
+
+<h2>Logs cron</h2>
+<p>Les executions de cron sont enregistrées dans les logs système. Sur Debian/Ubuntu :</p>
+<div class="code-block"><div class="code-line"><code>grep CRON /var/log/syslog</code></div></div>
+
+<p>Sur les systèmes avec journald :</p>
+<div class="code-block"><div class="code-line"><code>journalctl -u cron | grep CRON</code></div></div>
+
+<h2>Exemple complet : sauvegarde quotidienne</h2>
+<div class="code-block"><div class="code-line"><code># Variables d'environnement
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Sauvegarde quotidienne à 3h du matin
+0 3 * * *  /home/david/backup.sh >> /home/david/logs/backup.log 2>&1
+
+# Nettoyage des logs toutes les semaines (dimanche à 4h)
+0 4 * * 0  /home/david/clean-logs.sh > /dev/null 2>&1</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+<ul>
+<li>Utilisez toujours des <strong>chemins absolus</strong> dans les commandes cron</li>
+<li>Redirigez la sortie vers un log pour faciliter le débogage</li>
+<li>Définissez le <code>PATH</code> en haut du crontab pour éviter les commandes introuvables</li>
+<li>Testez d'abord votre script manuellement avant de l'automatiser avec cron</li>
+<li>Protégez vos scripts avec des permissions restrictives (<code>chmod 700</code>)</li>
+</ul>
+
+<h2>En résumé</h2>
+<p>Cron est l'outil indispensable pour automatiser des tâches récurrentes sous Linux. Son format en cinq champs (minute, heure, jour, mois, jour de semaine) permet de couvrir tous les cas d'usage. Combiné avec des scripts shell, il devient un outil puissant pour l'administration système automatique.</p>
+
+<nav>
+<a href="192-uptime-tload-free.html">&larr; uptime, tload et free — Surveillance rapide du système</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
