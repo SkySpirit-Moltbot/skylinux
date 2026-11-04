@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>at — Planifier une tâche unique (avancé)</h1>
+
+<h2>📖 Introduction</h2>
+<p>La commande <code>at</code> permet de planifier l'exécution d'une commande ou d'un script à un moment précis et précis. Contrairement à <code>cron</code> qui répète des tâches périodiquement, <code>at</code> exécute une tâche une seule fois.</p>
+<p>C'est l'outil idéal pour différer une action sans créer une entrée cron permanente.</p>
+
+<h2>🔧 Prérequis</h2>
+<p>Le démon <code>atd</code> doit être actif pour que <code>at</code> fonctionne :</p>
+<div class="code-block"><div class="code-line"><code># Vérifier l'état du service
+sudo systemctl status atd
+
+# Le démarrer s'il ne l'est pas
+sudo systemctl enable --now atd</code></div></div>
+
+<h2>🚀 Utilisation de base</h2>
+
+<h3>Syntaxe générale</h3>
+<div class="code-block"><div class="code-line"><code>at [options] HEURE
+echo "commande" | at [options] HEURE</code></div></div>
+
+<h3>Planifier pour une heure précise</h3>
+<div class="code-block"><div class="code-line"><code># Exécuter à 14h30 aujourd'hui
+echo "tar -czf /backup/home.tar.gz /home" | at 14:30
+
+# Exécuter à 23h00 aujourd'hui
+echo "systemctl restart nginx" | at 23:00</code></div></div>
+
+<h3>Planifier pour une date précise</h3>
+<div class="code-block"><div class="code-line"><code># Demain à 8h
+at 8:00 tomorrow
+
+# Mercredi prochain à 10h
+at 10:00 wednesday
+
+# 15 janvier à 9h
+at 9:00am January 15
+
+# 25 décembre 2026 à midi
+at noon December 25 2026</code></div></div>
+
+<h2>⏰ Formats d'heure acceptés</h2>
+
+<table>
+<tr><th>Format</th><th>Exemple</th><th>Description</th></tr>
+<tr><td><code>HH:MM</code></td><td><code>14:30</code></td><td>Heure au format 24h</code></td></tr>
+<tr><td><code>HH:MM JJ/MM/AAAA</code></td><td><code>14:30 25/12/2026</code></td><td>Avec date</td></tr>
+<tr><td><code>now + N minutes</code></td><td><code>now + 30 minutes</code></td><td>Dans N minutes</td></tr>
+<tr><td><code>now + N hours</code></td><td><code>now + 3 hours</code></td><td>Dans N heures</td></tr>
+<tr><td><code>now + N days</code></td><td><code>now + 2 days</code></td><td>Dans N jours</td></tr>
+<tr><td><code>now + N weeks</code></td><td><code>now + 1 week</code></td><td>Dans N semaines</td></tr>
+<tr><td><code>midnight</code></td><td><code>midnight</code></td><td>Minuit (00:00)</td></tr>
+<tr><td><code>noon</code></td><td><code>noon</code></td><td>Midi (12:00)</td></tr>
+<tr><td><code>teatime</code></td><td><code>teatime</code></td><td>16h00 (tradition britannique !)</td></tr>
+<tr><td><code>tomorrow</code></td><td><code>10:00 tomorrow</code></td><td>Demain à l'heure indiquée</td></tr>
+</table>
+
+<h2>💡 Exemples pratiques</h2>
+
+<h3>Planifier avec un script interactif</h3>
+<div class="code-block"><div class="code-line"><code># Entrer en mode interactif
+at 15:00
+# Puis taper les commandes :
+tar -czf /backup/donnees.tar.gz /home
+mail -s "Backup terminé" root@localhost
+# Terminer avec Ctrl+D</code></div></div>
+
+<h3>Redirection et sortie</h3>
+<p>Par défaut, la sortie de la commande planifiée est envoyée par e-mail à l'utilisateur. Vous pouvez rediriger cette sortie :</p>
+<div class="code-block"><div class="code-line"><code># Exécuter et enregistrer la sortie dans un fichier
+echo "/opt/monscript.sh > /var/log/script.log 2>&1" | at 6:00 tomorrow
+
+# Ignorer la sortie
+echo "/opt/monscript.sh > /dev/null 2>&1" | at 6:00 tomorrow</code></div></div>
+
+<h3>Spécifier une file d'attente</h3>
+<p>Les tâches <code>at</code> sont placées dans des files (queues) nommées avec des lettres :</p>
+<div class="code-block"><div class="code-line"><code># File 'a' (par défaut)
+echo "commande" | at -q a 10:00
+
+# File 'b' (pour les tâches moins urgentes)
+echo "commande" | at -q b 10:00</code></div></div>
+
+<h2>📋 Gérer les tâches planifiées</h2>
+
+<h3>Lister les tâches en attente</h3>
+<div class="code-block"><div class="code-line"><code>atq</code></div></div>
+<p>Ou équivalent :</p>
+<div class="code-block"><div class="code-line"><code>at -l</code></div></div>
+
+<h3>Voir le contenu d'une tâche</h3>
+<div class="code-block"><div class="code-line"><code>at -c NUMERO_TACHE</code></div></div>
+<p>Cela affiche le script shell complet qui sera exécuté, y compris l'environnement.</p>
+
+<h3>Supprimer une tâche</h3>
+<div class="code-block"><div class="code-line"><code>atrm NUMERO_TACHE</code></div></div>
+<p>Ou équivalent :</p>
+<div class="code-block"><div class="code-line"><code>at -d NUMERO_TACHE</code></div></div>
+
+<h3>Exemple complet</h3>
+<div class="code-block"><div class="code-line"><code># Planifier une tâche
+$ echo "df -h >> /var/log/disk.log" | at 23:00
+job 15 at Wed Nov  4 23:00:00 2026
+
+# Lister les tâches
+$ atq
+15  Wed Nov  4 23:00:00 2026 a root
+
+# Voir le contenu
+$ at -c 15
+#!/bin/sh
+# ...
+df -h >> /var/log/disk.log
+
+# Supprimer si besoin
+$ atrm 15</code></div></div>
+
+<h2>⚙️ Fichiers de configuration</h2>
+
+<h3>/etc/at.allow et /etc/at.deny</h3>
+<p>Ces fichiers contrôlent qui peut utiliser <code>at</code> :</p>
+<ul>
+<li>Si <code>/etc/at.allow</code> existe, seuls les utilisateurs listés peuvent utiliser <code>at</code></li>
+<li>Si seul <code>/etc/at.deny</code> existe, tous les utilisateurs SAUF ceux listés peuvent l'utiliser</li>
+<li>Si aucun des deux n'existe, seul <code>root</code> peut l'utiliser</li>
+</ul>
+<div class="code-block"><div class="code-line"><code># Interdire l'utilisation de at à un utilisateur
+echo "toto" | sudo tee /etc/at.deny
+
+# Autoriser uniquement root (supprimer at.deny, créer at.allow)
+sudo rm /etc/at.deny
+echo "root" | sudo tee /etc/at.allow</code></div></div>
+
+<h2>🔒 Sécurité et bonnes pratiques</h2>
+
+<ul>
+<li><strong>Restreindre l'accès</strong> — Utilisez <code>/etc/at.deny</code> pour interdire aux utilisateurs non autorisés</li>
+<li><strong>Vérifier les tâches</strong> — Utilisez <code>at -c</code> avant de supprimer une tâche pour vérifier son contenu</li>
+<li><strong>Logs</strong> — Les exécutions sont enregistrées dans <code>/var/log/cron</code> ou via <code>journalctl</code></li>
+<li><strong>Environnement</strong> — Les tâches <code>at</code> s'exécutent avec un environnement minimal. Précisez les chemins complets.</li>
+</ul>
+
+<h2>🔄 Comparaison avec d'autres outils</h2>
+
+<table>
+<tr><th>Fonctionnalité</th><th>at</th><th>cron</th><th>batch</th></tr>
+<tr><td>Exécution unique</td><td>✅</td><td>❌</td><td>✅</td></tr>
+<tr><td>Exécution périodique</td><td>❌</td><td>✅</td><td>❌</td></tr>
+<tr><td>Exécution quand charge &lt; 0.8</td><td>❌</td><td>❌</td><td>✅</td></tr>
+<tr><td>Interface interactive</td><td>✅</td><td>❌</td><td>❌</td></tr>
+<tr><td>Gestion par utilisateur</td><td>✅</td><td>✅</td><td>✅</td></tr>
+</table>
+
+<h2>⚡ Astuces avancées</h2>
+
+<h3>Combiner avec des conditions</h3>
+<div class="code-block"><div class="code-line"><code># Planifier uniquement si un fichier existe
+echo "[ -f /tmp/pret ] && /opt/monscript.sh" | at 14:00
+
+# Planifier avec un timeout
+echo "timeout 300 /opt/monscript.sh" | at 14:00</code></div></div>
+
+<h3>Planifier dans un répertoire précis</h3>
+<div class="code-block"><div class="code-line"><code># Exécuter depuis un répertoire précis
+cd /projet && tar -czf backup.tar.gz data | at 2:00 tomorrow</code></div></div>
+
+<h3>Script complet comme tâche</h3>
+<div class="code-block"><div class="code-line"><code># Lire les commandes depuis un fichier
+at 3:00 tomorrow -f /opt/scripts/sauvegarde.sh</code></div></div>
+
+<h2>⚠️ Notes importantes</h2>
+<ul>
+<li>Les tâches <code>at</code> qui ne peuvent pas être exécutées (système éteint) sont perdues. Pour les systèmes间歇, utilisez <code>anacron</code>.</li>
+<li>L'environnement d'exécution est minimal. Utilisez toujours des chemins absolus.</li>
+<li>La sortie est envoyée par e-mail local. Vérifiez votre boîte ou redirigez vers un fichier.</li>
+</ul>
+
+<nav>
+<a href="194-tree-arborescence-repertoires.html">&larr; tree — Afficher une arborescence de répertoires</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
