@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>shuf — Générer de l'aléatoire en ligne de commande</h1>
+
+<h2>📖 Introduction</h2>
+<p>La commande <code>shuf</code> (pour <em>shuffle</em>, soit mélangé en français) permet de générer des permutations aléatoires à partir d'une entrée. C'est l'outil idéal pour mélanger des lignes, sélectionner aléatoirement des éléments ou produire des nombres dans un ordre imprévisible.</p>
+<p>Très utile pour les scripts de test, les tirages au sort, ou la sélection aléatoire de données.</p>
+
+<h2>🔧 Syntaxe de base</h2>
+<div class="code-block"><div class="code-line"><code>shuf [OPTIONS] [FICHIER]
+echo "élément1 élément2 élément3" | shuf</code></div></div>
+
+<h2>🎲 Utilisations courantes</h2>
+
+<h3>Générer une permutation de nombres</h3>
+<div class="code-block"><div class="code-line"><code># Générer les nombres de 1 à 10 dans un ordre aléatoire
+shuf -i 1-10
+
+# Résultat possible :
+# 7
+# 3
+# 10
+# 1
+# 5
+# 9
+# 2
+# 8
+# 4
+# 6</code></div></div>
+
+<h3>Mélanger les lignes d'un fichier</h3>
+<div class="code-block"><div class="code-line"><code># Mélanger toutes les lignes
+shuf liste.txt
+
+# Mélanger et afficher le résultat à l'écran
+shuf /etc/passwd | head -5</code></div></div>
+
+<h3>Sélectionner N éléments aléatoirement</h3>
+<p>L'option <code>-n</code> (pour <em>head count</em>) limite la sortie aux N premières lignes :</p>
+<div class="code-block"><div class="code-line"><code># Sélectionner 3 lignes au hasard
+shuf -n 3 liste.txt
+
+# Choisir 5 nombres entre 1 et 50
+shuf -i 1-50 -n 5
+
+# Résultat possible :
+# 23
+# 7
+# 41
+# 15
+# 38</code></div></div>
+
+<h2>🎯 Options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Exemple</th></tr>
+<tr><td><code>-i MIN-MAX</code></td><td>Générer des nombres dans cet intervalle</td><td><code>shuf -i 1-100</code></td></tr>
+<tr><td><code>-n N</code></td><td>Limiter la sortie à N lignes</td><td><code>shuf -n 5</code></td></tr>
+<tr><td><code>-e</code></td><td>Les arguments sont les éléments à traiter</td><td><code>shuf -e rouge vert bleu</code></td></tr>
+<tr><td><code>-o FICHIER</code></td><td>Écrire le résultat dans un fichier</td><td><code>shuf -o resultat.txt</code></td></tr>
+<tr><td><code>-r</code></td><td>Répétition possible (tirage avec remise)</td><td><code>shuf -r -n 10</code></td></tr>
+</table>
+
+<h2>💡 Exemples pratiques</h2>
+
+<h3>Tirage au sort simple</h3>
+<div class="code-block"><div class="code-line"><code># Avec des mots-clés
+shuf -e "Pierre" "Paul" "Jacques" "Marie" "Lucie"
+
+# Résultat : une personne est tirée au hasard
+shuf -e "Pierre" "Paul" "Jacques" | head -1</code></div></div>
+
+<h3>Sélectionner un fichier aléatoire</h3>
+<div class="code-block"><div class="code-line"><code># Choisir une image au hasard dans un dossier
+ls ~/Images/*.jpg | shuf -n 1
+
+# Définir un fond d'écran aléatoire (script)
+FOND=$(ls ~/Images/wallpapers/*.jpg | shuf -n 1)
+gsettings set org.gnome.desktop.background picture-uri "file://$FOND"</code></div></div>
+
+<h3>Créer un mot de passe aléatoire</h3>
+<div class="code-block"><div class="code-line"><code># Générer un mot de passe de 16 caractères
+cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | shuf -n 1
+
+# Version plus lisible avec shuf uniquement
+printf '%s\n' {a..z} {A..Z} {0..9} | shuf -r -n 16 | tr -d '\n'
+echo</code></div></div>
+
+<h3>Échantillonnage pour les tests</h3>
+<div class="code-block"><div class="code-line"><code># Prendre 10% des lignes au hasard
+TOTAL=$(wc -l < donnees.csv)
+TAILLE=$((TOTAL / 10))
+shuf -n $TAILLE donnees.csv > echantillon.csv
+
+# Sélectionner 20% des utilisateurs pour un test A/B
+getent passwd | shuf -n $(( $(getent passwd | wc -l) * 20 / 100 ))</code></div></div>
+
+<h3>Mélanger un playlist (exemple)</h3>
+<div class="code-block"><div class="code-line"><code># Créer une playlist dans un ordre aléatoire
+ls ~/Musique/*.mp3 | shuf > playlist_melangee.m3u
+
+# Jouer la musique dans un ordre aléatoire (avec mplayer)
+shuf -e ~/Musique/*.mp3 | xargs mplayer</code></div></div>
+
+<h3>Répétition avec -r (tirage avec remise)</h3>
+<div class="code-block"><div class="code-line"><code># Générer 10 nombres entre 1 et 6 (comme un dé)
+shuf -i 1-6 -r -n 10
+
+# Résultat possible :
+# 3
+# 6
+# 1
+# 6
+# 2
+# 4
+# 6
+# 3
+# 1
+# 5
+
+# Simuler 100 lancers de pièce
+shuf -e "Pile" "Face" -r -n 100 | sort | uniq -c</code></div></div>
+
+<h2>📂 Écrire le résultat dans un fichier</h2>
+<div class="code-block"><div class="code-line"><code># Méthode 1 : redirection
+shuf -i 1-100 > resultat.txt
+
+# Méthode 2 : option -o
+shuf -i 1-100 -o resultat.txt
+
+# Les deux sont équivalentes</code></div></div>
+
+<h2>🔗 Combiner avec d'autres commandes</h2>
+
+<h3>Pipeline classique</h3>
+<div class="code-block"><div class="code-line"><code># Prendre les 5 dernières lignes, puis en choisir 2 au hasard
+tail -20 /var/log/syslog | shuf -n 2
+
+# Mélanger puis exécuter
+shuf -e "apt update" "apt upgrade" "reboot" | xargs -I {} sh -c '{}'</code></div></div>
+
+<h3>Dans un script Bash</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Script : sélection aléatoire d'un serveur
+
+SERVEURS=(
+  "serveur1.exemple.com"
+  "serveur2.exemple.com"
+  "serveur3.exemple.com"
+  "serveur4.exemple.com"
+)
+
+# Choisir un serveur au hasard
+serveur=$(printf '%s\n' "${SERVEURS[@]}" | shuf -n 1)
+echo "Connexion au serveur : $serveur"
+ssh "$serveur"</code></div></div>
+
+<h3>Avec xargs</h3>
+<div class="code-block"><div class="code-line"><code># Appliquer une commande à 3 fichiers choisis au hasard
+ls *.log | shuf -n 3 | xargs -I {} gzip {}
+
+# Exécuter un backup sur 2 machines aléatoires parmi une liste
+cat serveurs.txt | shuf -n 2 | xargs -I {} ssh {} "backup.sh"</code></div></div>
+
+<h2>⚠️ Différence entre shuf et sort -R</h2>
+<p>La commande <code>sort -R</code> existe aussi pour mélanger, mais voici les différences :</p>
+
+<table>
+<tr><th>Aspect</th><th><code>shuf</code></th><th><code>sort -R</code></th></tr>
+<tr><td>Performance</td><td>Plus rapide et prévisible</td><td>Plus lent sur grands fichiers</td></tr>
+<tr><td>Répétition possible</td><td>Oui, avec <code>-r</code></td><td>Non</td></tr>
+<tr><td>Sélection aléatoire (head)</td><td>Fiables avec <code>-n</code></td><td>biaisé car le tri est aléatoire</td></tr>
+<tr><td>Standard POSIX</td><td>Non (GNU coreutils)</td><td>Non (GNU extension)</td></tr>
+</table>
+
+<p>Pour la sélection aléatoire, <code>shuf -n</code> est toujours plus fiable que <code>sort -R | head</code>.</p>
+
+<h2>🎓 Cas d'utilisation réels</h2>
+
+<ul>
+<li><strong>Tests automatisés</strong> — Exécuter des tests dans un ordre aléatoire pour détecter les dépendances cachées</li>
+<li><strong>Monte-Carlo</strong> — Générer des simulations aléatoires en batch</li>
+<li><strong>jeux</strong> — Tirages, dés, sélection aléatoire</li>
+<li><strong>ML / Data Science</strong> — Créer des jeux de données de test/validation</li>
+<li><strong>Rotation</strong> — Alterner des tâches ou serveurs de manière équilibrée</li>
+</ul>
+
+<h2>📝 Résumé des options</h2>
+<div class="code-block"><div class="code-line"><code>shuf [OPTIONS]
+  -e, --echo              Traiter les arguments comme des lignes d'entrée
+  -i, --input-range=MIN-MAX  Intervalle de nombres (ex: 1-100)
+  -n, --head-count=NOMBRE    Nombre de lignes à输出
+  -o, --output=FICHIER       Écrire dans un fichier
+  -r, --repeat              Autoriser la répétition (tirage avec remise)
+  -z, --zero-terminated     Séparateur nul au lieu de newline</code></div></div>
+
+<h2>⚡ Astuces</h2>
+
+<h3>Sélectionner un élément parmi N</h3>
+<div class="code-block"><div class="code-line"><code># Une seule ligne au hasard
+shuf -n 1 fichier.txt
+
+# Équivalent à :
+head -$((RANDOM % $(wc -l < fichier.txt) + 1)) fichier.txt | tail -1</code></div></div>
+
+<h3>Graines aléatoires (reproductibilité)</h3>
+<p>Bien que <code>shuf</code> ne supporte pas nativement une graine (seed), vous pouvez utiliser <code>RANDOM</code> de Bash pour des cas simples :</p>
+<div class="code-block"><div class="code-line"><code># Fixer la graine pour des tests reproductibles
+RANDOM=42
+shuf -e un deux trois quatre cinq</code></div></div>
+
+<nav>
+<a href="195-at-taches-uniques-avance.html">&larr; at — Planifier une tâche unique (avancé)</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
