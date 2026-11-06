@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>set — Contrôler le comportement du Shell Bash</h1>
+
+<h2>📖 Introduction</h2>
+<p>La commande <code>set</code> est un builtin Bash qui permet de modifier le comportement du shell et de ses scripts. Elle contrôle notamment la gestion des erreurs, l'expansion des motifs, l'historique, et bien plus encore.</p>
+<p>Chaque option activée par <code>set</code> change la façon dont le shell interprète les commandes. C'est un outil puissant pour écrire des scripts robustes ou déboguer des comportements étranges.</p>
+
+<h2>🔧 Syntaxe de base</h2>
+<div class="code-block"><div class="code-line"><code># Activer des options
+set -option
+
+# Désactiver des options
+set +option
+
+# Activer plusieurs options
+set -euo pipefail
+
+# Afficher toutes les options actives
+set -o</code></div></div>
+
+<h2>⚡ Options les plus utiles</h2>
+
+<h3>-e : Arrêter sur la première erreur</h3>
+<p>L'option <code>-e</code> (pour <em>exit on error</em>) fait quitter le script dès qu'une commande retourne un code de sortie non nul :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -e
+
+echo "Début du script"
+fichier_inexistant.txt  # Cette commande échoue → le script s'arrête ici
+echo "Cette ligne ne sera jamais atteinte"</code></div></div>
+<p>Cette option est recommandée pour tout script de production. Elle empêche le script de continuer quand quelque chose se passe mal.</p>
+
+<h3>-u : Détecter les variables non définies</h3>
+<p>L'option <code>-u</code> (pour <em>undefined</em>) génère une erreur quand une variable non définie est utilisée :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -u
+
+echo "Bienvenue $nom_utilisateur"  # Si $nom_utilisateur n'existe pas → erreur
+
+# Sans set -u, cela afficherait simplement une chaîne vide sans avertissement</code></div></div>
+
+<h3>-o pipefail : Garder le code de retour du pipeline qui échoue</h3>
+<p>Par défaut, le code de retour d'un pipeline est celui de la <em>dernière</em> commande. <code>pipefail</code> retourne le code de la première commande qui échoue :</p>
+<div class="code-block"><div class="code-line"><code># Sans pipefail : le code de retour est celui de grep (0 si trouvé)
+commande | grep pattern
+echo "Code: $?"  # Affiche 0 même si commande échoue
+
+# Avec pipefail : le code de retour est celui de la commande qui échoue
+set -o pipefail
+commande | grep pattern
+echo "Code: $?"  # Affiche le vrai code d'erreur de commande</code></div></div>
+
+<h3>-x : Mode débogage (trace)</h3>
+<p>L'option <code>-x</code> affiche chaque commande avant son exécution, avec les valeurs des variables substituées :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -x
+
+nom="Alice"
+age=30
+echo "Bonjour $nom, vous avez $age ans"
+
+# Sortie affichée :
+# + nom=Alice
+# + age=30
+# + echo 'Bonjour Alice, vous avez 30 ans'
+# Bonjour Alice, vous avez 30 ans</code></div></div>
+
+<h3>-v : Afficher les lignes lues</h3>
+<p>L'option <code>-v</code> affiche chaque ligne du script telle qu'elle est lue par le shell, avant expansion :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -v
+
+echo "Test $HOME"
+# Affiche :
+# echo "Test $HOME"
+# Test /home/utilisateur</code></div></div>
+
+<h2>📋 Tableau récapitulatif des options</h2>
+
+<table>
+<tr><th>Option</th><th>Nom complet</th><th>Effet</th></tr>
+<tr><td><code>-e</code></td><td>exit on error</td><td>Quitte le script à la première erreur</td></tr>
+<tr><td><code>-u</code></td><td>undefined variable</td><td>Erreur si une variable n'est pas définie</td></tr>
+<tr><td><code>-o pipefail</code></td><td>pipe fail</td><td>Retourne le code du pipeline échoué, pas de la dernière commande</td></tr>
+<tr><td><code>-x</code></td><td>xtrace</td><td>Affiche chaque commande avant exécution (mode debug)</td></tr>
+<tr><td><code>-v</code></td><td>verbose</td><td>Affiche les lignes lues avant expansion</td></tr>
+<tr><td><code>-n</code></td><td>noexec</td><td>Lit les commandes sans les exécuter (syntaxe check)</td></tr>
+<tr><td><code>-h</code></td><td>hashall</td><td>Mémorise l'emplacement des commandes (par défaut)</td></tr>
+<tr><td><code>-e</code></td><td>errexit</td><td>Quitte sur erreur (equivalent à -e)</td></tr>
+</table>
+
+<h2>💡 Combinaison recommandée pour les scripts robustes</h2>
+<p>La combinaison <code>set -euo pipefail</code> est devenue un standard dans l'écriture de scripts Bash professionnels :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# Mode strict : arrêt sur erreur ou variable non définie
+set -euo pipefail
+
+# Variables obligatoires
+: "${NOM_FICHIER:?Erreur: NOM_FICHIER doit être défini}"
+: "${TAILLE_MAX:?Erreur: TAILLE_MAX doit être défini}"
+
+echo "Traitement de $NOM_FICHIER (max: $TAILLE_MAX octets)"
+# ... suite du script</code></div></div>
+
+<h3>Explication détaillée</h3>
+<ul>
+<li><code>-e</code> : Le script s'arrête dès qu'une commande échoue</li>
+<li><code>-u</code> : Le script s'arrête si une variable n'est pas définie</li>
+<li><code>-o pipefail</code> : Un pipeline retourne le code d'erreur réel, pas juste celui de la dernière commande</li>
+</ul>
+
+<h2>🔄 Activer et désactiver</h2>
+<p>On peut activer une option avec <code>-</code> et la désactiver avec <code>+</code> :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -e  # Activer : quitter sur erreur
+
+commandé_risqué  # Si échec → arrêt
+
+set +e  # Désactiver : continuer même en cas d'erreur
+commandé_risqué  # Si échec → on continue
+
+set -e  # Réactiver
+echo "Fin du script"</code></div></div>
+
+<h2>🛠️ Options interactives du shell</h2>
+<p>Ces options sont surtout utiles dans un shell interactif ou dans le <code>~/.bashrc</code> :</p>
+
+<h3>Options d'historique</h3>
+<div class="code-block"><div class="code-line"><code># Ne pas enregistrer de commande en double dans l'historique
+set -o histappend
+
+# Ignorer les doublons dans l'historique
+HISTCONTROL=ignoredups
+
+# Ignorer les commandes commençant par un espace
+HISTCONTROL=ignorespace
+
+# Ignorer les deux
+HISTCONTROL=ignoreboth</code></div></div>
+
+<h3>Options de correction</h3>
+<div class="code-block"><div class="code-line"><code># Activer la correction orthographique des commandes
+shopt -s cdspell
+
+# Compléter les chemins même avec des fautes de frappe
+shopt -s nocaseglob</code></div></div>
+
+<h2>🔍 shopt : d'autres options du shell</h2>
+<p>La commande <code>shopt</code> (shell options) permet d'activer des options supplémentaires que <code>set</code> ne couvre pas :</p>
+<div class="code-block"><div class="code-line"><code># Voir toutes les options et leur état
+shopt
+
+# Activer une option
+shopt -s nom_option
+
+# Désactiver une option
+shopt -u nom_option
+
+# Options utiles
+shopt -s histappend      # Ajouter à l'historique au lieu de l'écraser
+shopt -s checkwinsize    # Mettre à jour LINES et COLUMNS après resize
+shopt -s cmdhist         # Garder les commandes multi-lignes comme une entrée
+shopt -s dotglob         # Inclure les fichiers cachés dans les expansions *
+shopt -s nullglob        # Remplacer les patterns sans correspondance par rien
+shopt -s nocaseglob      # Expansion insensible à la casse</code></div></div>
+
+<h2>📝 Options utiles pour le shell interactif</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Dans ~/.bashrc</th></tr>
+<tr><td><code>histappend</code></td><td>Ajouter à l'historique au lieu d'écraser</td><td><code>shopt -s histappend</code></td></tr>
+<tr><td><code>checkwinsize</code></td><td>Mettre à jour la taille du terminal</td><td><code>shopt -s checkwinsize</code></td></tr>
+<tr><td><code>cdspell</code></td><td>Corrections mineures dans cd</td><td><code>shopt -s cdspell</code></td></tr>
+<tr><td><code>nocaseglob</code></td><td>Glob insensible à la casse</td><td><code>shopt -s nocaseglob</code></td></tr>
+<tr><td><code>nullglob</code></td><td>Patterns sans correspondance → vide</td><td><code>shopt -s nullglob</code></td></tr>
+</table>
+
+<h2>⚠️ Pièges courants</h2>
+
+<h3>set -e dans une fonction qui retourne explicitement</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -e
+
+ma_fonction() {
+    return 1  # set -e ne quitte pas ici si c'est explicite
+}
+
+ma_fonction  # Ne quitte PAS car return est explicite
+echo "On continue"</code></div></div>
+
+<h3>set -e avec les条件 ternaires</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -e
+
+# L'opérateur || est souvent utilisé pour éviter set -e
+commande || true  # Continue même en cas d'échec
+commande || :     # Équivalent (null command)
+
+# Mais prudence avec les pipes :
+commande1 | commande2
+# Si commande1 échoue mais commande2 réussit → code = 0 sans pipefail</code></div></div>
+
+<h3>set -u vs variables tableaux</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -u
+
+tableau=([0]="a" [2]="c")  # Note : l'index 1 n'existe pas
+
+echo "${tableau[0]}"  # OK : "a"
+echo "${tableau[1]}"  # ERREUR avec set -u (même si le tableau existe)
+echo "${tableau[@]}"  # OK : affiche "a c"</code></div></div>
+
+<h2>🎯 Débogage avec set</h2>
+
+<h3>Débogage ciblé avec un sous-shell</h3>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -euo pipefail
+
+echo "Début"
+
+# Déboguer seulement cette partie
+(
+    set -x
+    resultat=$((calcul_complexe))
+    echo "Résultat: $resultat"
+)
+
+echo "Suite du script"</code></div></div>
+
+<h3>Débogage depuis la ligne de commande</h3>
+<div class="code-block"><div class="code-line"><code># Lancer un script en mode trace
+bash -x mon_script.sh
+
+# Lancer en mode noexec (vérifier la syntaxe)
+bash -n mon_script.sh
+
+# Lancer avec exit on error
+bash -e mon_script.sh</code></div></div>
+
+<h3>ISET bash pour le débogage</h3>
+<p>On peut activer le mode trace seulement pour certaines fonctions :</p>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+set -euo pipefail
+
+fonction_complexe() {
+    set -x
+    # ... code complexe ...
+    result=$((a + b * c))
+    set +x  # Désactiver le trace
+    echo "Résultat: $result"
+}
+
+echo "Début"
+fonction_complexe
+echo "Fin"</code></div></div>
+
+<h2>📜 Résumé des options principales</h2>
+
+<table>
+<tr><th>Option</th><th>Description</th><th>Quand l'utiliser</th></tr>
+<tr><td><code>set -e</code></td><td>Quitter sur erreur</td><td>Scripts de production</td></tr>
+<tr><td><code>set -u</code></td><td>Quitter sur variable indéfinie</td><td>Scripts de production</td></tr>
+<tr><td><code>set -o pipefail</code></td><td>Code de retour du pipeline défaillant</td><td>Scripts de production</td></tr>
+<tr><td><code>set -x</code></td><td>Afficher les commandes avant exécution</td><td>Débogage</td></tr>
+<tr><td><code>set -n</code></td><td>Vérifier la syntaxe sans exécuter</td><td>Validation</td></tr>
+<tr><td><code>set -v</code></td><td>Afficher les lignes brutes</td><td>Débogage avancé</td></tr>
+</table>
+
+<h2>⚡ Récapitulatif pour un script robuste</h2>
+<div class="code-block"><div class="code-line"><code>#!/bin/bash
+# ============================================
+# Mode strict pour scripts de production
+# ============================================
+set -euo pipefail
+IFS=$'\n\t'
+
+# Bonnes pratiques :
+# - Définir les variables avant utilisation
+# - Vérifier les arguments avec : "${VAR:?message}"
+# - Utiliser des fonctions pour isoler la logique
+# - logger les erreurs avant de quitter</code></div></div>
+
+<nav>
+<a href="196-shuf-aleatoire.html">&larr; shuf — Générer de l'aléatoire en ligne de commande</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
