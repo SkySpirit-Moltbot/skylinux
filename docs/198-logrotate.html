@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 198 — logrotate : Gérer automatiquement la rotation des logs</h1>
+
+<p>Sous Linux, les fichiers logs ne cessent de grandir. Si vous ne les maîtrisez pas, votre disque finit par se remplir et les services plantent. C'est là qu'intervient <code>logrotate</code> — l'outil qui rotate, compresse, supprime et envoie automatiquement vos logs pour éviter les sorpresas.</p>
+
+<h2>1. Comment ça marche ?</h2>
+
+<p><code>logrotate</code> est lancé quotidiennement par <code>cron</code> (via <code>/etc/cron.daily/logrotate</code>). Il lit ses fichiers de configuration et applique les règles définies pour chaque fichier ou groupe de fichiers.</p>
+
+<p>Le principe est simple : quand un log atteint une certaine taille ou un certain âge, logrotate le renomme (en y ajoutant un numéro), le compresse, et crée un nouveau fichier vide à la place. Les anciens fichiers sont supprimés après un certain nombre de rotations.</p>
+
+<h2>2. Le fichier de configuration principal</h2>
+
+<p>La configuration principale se trouve dans <code>/etc/logrotate.conf</code>. C'est le point de départ, mais en pratique on crée des fichiers individuels par service dans <code>/etc/logrotate.d/</code>.</p>
+
+<h3>Contenu typique de /etc/logrotate.conf :</h3>
+
+<div class="code-block"><div class="code-line"><code># Rotation hebdomadaire (weekly = par défaut)</code></div><div class="code-line"><code>weekly</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Garder les 4 dernières versions</code></div><div class="code-line"><code>rotate 4</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Compresser les fichiers rotatés</code></div><div class="code-line"><code>compress</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Créer un nouveau fichier log après rotation avec les droits specified</code></div><div class="code-line"><code>create 0640 root adm</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Inclure les configs individuelles</code></div><div class="code-line"><code>include /etc/logrotate.d</code></div></div>
+
+<h2>3. Créer une configuration pour un service</h2>
+
+<p>Dans <code>/etc/logrotate.d/</code>, chaque service a son propre fichier. Par exemple, pour une application personnalisée :</p>
+
+<div class="code-block"><div class="code-line"><code>/var/log/monapp/*.log {</code></div><div class="code-line"><code>    weekly        # Rotation chaque semaine</code></div><div class="code-line"><code>    rotate 8      # Garder 8 fichiers (8 semaines)</code></div><div class="code-line"><code>    missingok     # Ne pas erreur si le fichier n'existe pas</code></div><div class="code-line"><code>    notifempty    # Ne pas tourner si le fichier est vide</code></div><div class="code-line"><code>    compress      # Compresser les anciennes versions</code></div><div class="code-line"><code>    delaycompress # Compresser à la deuxième rotation (pas immédiatement)</code></div><div class="code-line"><code>    create 0640 www-data www-data  # Nouveau fichier avec ces droits</code></div><div class="code-line"><code>    sharedscripts # Exécuter le script post-rotation une seule fois</code></div><div class="code-line"><code>    postrotate</code></div><div class="code-line"><code>        systemctl reload monapp > /dev/null 2>&1 || true</code></div><div class="code-line"><code>    endscript</code></div><div class="code-line"><code>}</code></div></div>
+
+<h2>4. Les directives les plus utiles</h2>
+
+<table>
+<tr><th>Directive</th><th>Description</th></tr>
+<tr><td><code>weekly</code></td><td>Rotation hebdomadaire (aussi : <code>daily</code>, <code>monthly</code>)</td></tr>
+<tr><td><code>rotate N</code></td><td>Nombre de fichiers à garder</td></tr>
+<tr><td><code>size SIZE</code></td><td>Rotation quand le fichier dépasse cette taille (ex: <code>100M</code>)</td></tr>
+<tr><td><code>compress</code></td><td>Compresser les fichiers avec <code>gzip</code></td></tr>
+<tr><td><code>nocompress</code></td><td>Désactiver la compression</td></tr>
+<tr><td><code>delaycompress</code></td><td>Compresser à partir de la 2ème rotation</td></tr>
+<tr><td><code>missingok</code></td><td>Pas d'erreur si le fichier log manque</td></tr>
+<tr><td><code>notifempty</code></td><td>Ne pas tourner si le fichier est vide</td></tr>
+<tr><td><code>create MODE USER GROUP</code></td><td>Droits du nouveau fichier après rotation</td></tr>
+<tr><td><code>copytruncate</code></td><td>Copier le contenu puis vider (pour les processus qui gardent le fichier ouvert)</td></tr>
+<tr><td><code>sharedscripts</code></td><td>Script postrotate/prerotate exécuté une seule fois pour tout le pattern</td></tr>
+<tr><td><code>mail ADDR</code></td><td>Envoyer les logs dépassés par email</td></tr>
+<tr><td><code>dateext</code></td><td>Utiliser la date comme suffixe au lieu d'un numéro</td></tr>
+</table>
+
+<h2>5. Exemple concret : configurer les logs Nginx</h2>
+
+<p>Voyons à quoi ressemble la config de Nginx livrée par défaut :</p>
+
+<div class="code-block"><div class="code-line"><code>/var/log/nginx/*.log {</code></div><div class="code-line"><code>    daily                # Rotation quotidienne</code></div><div class="code-line"><code>    missingok            # Pas d'erreur si pas de log</code></div><div class="code-line"><code>    rotate 14            # Garder 14 jours</code></div><div class="code-line"><code>    compress             # Compresser</code></div><div class="code-line"><code>    delaycompress        # Garder la dernière non compressée</code></div><div class="code-line"><code>    notifempty           # Ignorer les fichiers vides</code></div><div class="code-line"><code>    create 0640 www-data adm  # Droits du nouveau fichier</code></div><div class="code-line"><code>    sharedscripts        # Script exécuté une seule fois</code></div><div class="code-line"><code>    postrotate</code></div><div class="code-line"><code>        invoke-rc.d nginx rotate >/dev/null 2>&1</code></div><div class="code-line"><code>    endscript</code></div><div class="code-line"><code>}</code></div></div>
+
+<h2>6. Tester sa configuration</h2>
+
+<p>Avant de déployer, toujours tester :</p>
+
+<div class="code-block"><div class="code-line"><code># Tester sans rien modifier (mode debug)</code></div><div class="code-line"><code>sudo logrotate -d /etc/logrotate.conf</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Forcer une rotation maintenant (pour tester)</code></div><div class="code-line"><code>sudo logrotate -f /etc/logrotate.d/monapp</code></div></div>
+
+<p>L'option <code>-d</code> montre ce qui se passerait sans rien faire. Très utile pour débugger avant de apply.</p>
+
+<h2>7. Rotation par taille plutôt que par temps</h2>
+
+<p>Si vos logs grossissent très vite, privilégiez une rotation par taille :</p>
+
+<div class="code-block"><div class="code-line"><code>/var/log/monapp/access.log {</code></div><div class="code-line"><code>    size 50M           # Rotation quand le fichier dépasse 50 Mo</code></div><div class="code-line"><code>    rotate 5           # Garder 5 fichiers</code></div><div class="code-line"><code>    compress</code></div><div class="code-line"><code>    missingok</code></div><div class="code-line"><code>    notifempty</code></div><div class="code-line"><code>    create 0640 www-data www-data</code></div><div class="code-line"><code>}</code></div></div>
+
+<p>Notez que <code>size</code> prime sur <code>weekly</code>/<code>daily</code> : si les deux sont spécifiés, la rotation se fait à la première condition remplie.</p>
+
+<h2>8. Le piège du copytruncate</h2>
+
+<p>Certains processus (comme SysV init ou certains services legacy) gardent le fichier log ouvert en permanence. Dans ce cas, vous ne pouvez pas renommer le fichier. Utilisez <code>copytruncate</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>/var/log/ancien-service.log {</code></div><div class="code-line"><code>    daily</code></div><div class="code-line"><code>    rotate 7</code></div><div class="code-line"><code>    copytruncate   # Copie le contenu puis vide le fichier original</code></div><div class="code-line"><code>    compress</code></div><div class="code-line"><code>    missingok</code></div><div class="code-line"><code>    notifempty</code></div><div class="code-line"><code>}</code></div></div>
+
+<p><code>copytruncate</code> a un léger overhead (copie du contenu) mais c'est la seule solution pour les processus qui ne supportent pas le signal de réouverture des logs.</p>
+
+<h2>9. Surveillance et logs</h2>
+
+<p>logrotate écrit son activité dans <code>/var/lib/logrotate/status</code> (fichier binaire) et peut aussi logger dans <code>/var/log/syslog</code> selon la configuration. Pour voir les dernières rotations :</p>
+
+<div class="code-block"><div class="code-line"><code># Voir quand chaque log a été rotaté</code></div><div class="code-line"><code>cat /var/lib/logrotate/status</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Filtrer les entrées logrotate dans syslog</code></div><div class="code-line"><code>grep logrotate /var/log/syslog | tail -20</code></div></div>
+
+<h2>10. Exercice pratique</h2>
+
+<p>Créez une configuration pour une application fictive :</p>
+
+<div class="code-block"><div class="code-line"><code># 1. Créer un répertoire et des fichiers de test</code></div><div class="code-line"><code>sudo mkdir -p /var/log/testapp</code></div><div class="code-line"><code>sudo sh -c 'for i in $(seq 1 20); do echo "Ligne $i de log $(date)" >> /var/log/testapp/app.log; done'</code></div><div class="code-line"><code></code></div><div class="code-line"><code># 2. Créer la config</code></div><div class="code-line"><code>sudo nano /etc/logrotate.d/testapp</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Y écrire :</code></div><div class="code-line"><code># /var/log/testapp/*.log {</code></div><div class="code-line"><code>#     weekly</code></div><div class="code-line"><code>#     rotate 4</code></div><div class="code-line"><code>#     compress</code></div><div class="code-line"><code>#     missingok</code></div><div class="code-line"><code>#     notifempty</code></div><div class="code-line"><code>#     create 0640 root root</code></div><div class="code-line"><code># }</code></div><div class="code-line"><code></code></div><div class="code-line"><code># 3. Forcer une rotation pour tester</code></div><div class="code-line"><code>sudo logrotate -f /etc/logrotate.d/testapp</code></div><div class="code-line"><code></code></div><div class="code-line"><code># 4. Vérifier le résultat</code></div><div class="code-line"><code>ls -la /var/log/testapp/</code></div><div class="code-line"><code># Vous devriez voir app.log.1.gz (compressé) et un nouveau app.log</code></div></div>
+
+<h2>Résumé</h2>
+
+<p><code>logrotate</code> est un outil essentiel pour tout administrateur Linux. Il permet de gérer automatiquement la croissance des fichiers logs avec des règles simples et flexibles. Les points clés à retenir :</p>
+
+<ul>
+<li><code>/etc/logrotate.conf</code> = configuration globale, <code>/etc/logrotate.d/</code> = configs par service</li>
+<li><code>weekly</code>, <code>daily</code>, <code>monthly</code> ou <code>size</code> contrôlent la fréquence</li>
+<li><code>rotate N</code> définit combien de versions garder</li>
+<li><code>compress</code> et <code>delaycompress</code> pour gérer l'espace</li>
+<li><code>copytruncate</code> pour les processus qui gardent le log ouvert</li>
+<li>Testez toujours avec <code>logrotate -d</code> avant d'appliquer</li>
+</ul>
+
+<nav>
+<a href="197-set-bash-options.html">&larr; set — Contrôler le comportement du Shell Bash</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
