@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 199 : expect — Automatiser les tâches interactives</h1>
+
+<p>Quand vous devez automatiser des programmes qui posent des questions (mot de passe, confirmation, menu interactif), les scripts bash classiques ne suffisent pas. <code>expect</code> permet de dialoguer automatiquement avec n'importe quel programme interactif en simulant des frappes et en répondant aux invites.</p>
+
+<h2>Installation</h2>
+
+<p><code>expect</code> n'est généralement pas installé par défaut :</p>
+
+<div class="code-block"><div class="code-line"><code># Debian/Ubuntu</code></div><div class="code-line"><code>sudo apt install expect</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Fedora/RHEL</code></div><div class="code-line"><code>sudo dnf install expect</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Arch Linux</code></div><div class="code-line"><code>sudo pacman -S expect</code></div></div>
+
+<h2>Principe de base</h2>
+
+<p>Un script <code>expect</code> fonctionne ainsi :</p>
+
+<ol>
+<li>On lance un programme (<code>spawn</code>)</li>
+<li>On attend une chaîne de caractères précise (<code>expect</code>)</li>
+<li>On envoie une réponse (<code>send</code>)</li>
+<li>On termine (<code>interact</code> ou <code>exit</code>)</li>
+</ol>
+
+<h2>Premier exemple : ssh sans taper le mot de passe</h2>
+
+<div class="code-block"><div class="code-line"><code>#!/usr/bin/expect -f</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Définir les variables</code></div><div class="code-line"><code>set USER "david"</code></div><div class="code-line"><code>set HOST "serveur.example.com"</code></div><div class="code-line"><code>set PASS "monmotdepasse"</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Lancer ssh</code></div><div class="code-line"><code>spawn ssh $USER@$HOST</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Attendre l'invite de mot de passe</code></div><div class="code-line"><code>expect "password:"</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Envoyer le mot de passe</code></div><div class="code-line"><code>send "$PASS\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Passer la main à l'utilisateur</code></div><div class="code-line"><code>interact</code></div></div>
+
+<h2>Les commandes fondamentales</h2>
+
+<h3>spawn — Lancer un programme</h3>
+
+<p><code>spawn</code> démarre le processus que vous voulez automatiser :</p>
+
+<div class="code-block"><div class="code-line"><code>spawn ssh dbserv03</code></div><div class="code-line"><code>spawn ftp serveurftp.com</code></div><div class="code-line"><code>spawn passwd             # changer son mot de passe</code></div><div class="code-line"><code>spawn scp fichier.txt user@host:/chemin/</code></div></div>
+
+<h3>expect — Attendre une chaîne</h3>
+
+<p><code>expect</code> met le script en pause jusqu'à ce que le programme affiche un texte précis :</p>
+
+<div class="code-block"><div class="code-line"><code>expect "password:"</code></div><div class="code-line"><code>expect "Are you sure (yes/no)?"</code></div><div class="code-line"><code>expect "Login:"</code></div><div class="code-line"><code>expect "># "              # invite de commande d'un équipement réseau</code></div></div>
+
+<p>On peut enchaîner plusieurs <code>expect</code> pour gérer différentes réponses :</p>
+
+<div class="code-block"><div class="code-line"><code>expect {</code></div><div class="code-line"><code>    "yes/no" { send "yes\r"; exp_continue }</code></div><div class="code-line"><code>    "password:" { send "$PASS\r" }</code></div><div class="code-line"><code>}</code></div></div>
+
+<h3>send — Envoyer du texte</h3>
+
+<p><code>send</code> envoie les caractères comme si vous les tapiez au clavier. N'oubliez pas <code>\r</code> (retour chariot) pour valider :</p>
+
+<div class="code-block"><div class="code-line"><code>send "monmotdepasse\r"</code></div><div class="code-line"><code>send "yes\r"</code></div><div class="code-line"><code>send "show running-config\r"</code></div><div class="code-line"><code>send "\r"                # juste appuyer sur Entrée</code></div></div>
+
+<h3>send_user — Afficher pour l'humain</h3>
+
+<p><code>send_user</code> affiche du texte dans le terminal (sans l'envoyer au programme) :</p>
+
+<div class="code-block"><div class="code-line"><code>send_user "Connexion en cours à $HOST...\n"</code></div><div class="code-line"><code>send_user "Transfert terminé avec succès.\n"</code></div></div>
+
+<h3>interact vs expect_before / expect_after</h3>
+
+<ul>
+<li><code>interact</code> : rend la main à l'utilisateur humain (il peut taper lui-même)</li>
+<li><code>expect_before</code> : intercepte automatiquement certaines chaînes avant les autres <code>expect</code></li>
+<li><code>expect_after</code> : intercepte automatiquement après un <code>expect</code></li>
+</ul>
+
+<h2>Exemple complet : automatiser un transfert FTP</h2>
+
+<div class="code-block"><div class="code-line"><code>#!/usr/bin/expect -f</code></div><div class="code-line"><code></code></div><div class="code-line"><code>set FTP_HOST "ftp.example.com"</code></div><div class="code-line"><code>set FTP_USER "admin"</code></div><div class="code-line"><code>set FTP_PASS "secretpass"</code></div><div class="code-line"><code>set LOCAL_FILE "rapport.pdf"</code></div><div class="code-line"><code>set REMOTE_DIR "/uploads"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>send_user "Connexion FTP à $FTP_HOST...\n"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>spawn ftp $FTP_HOST</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect {</code></div><div class="code-line"><code>    "Name" { send "$FTP_USER\r" }</code></div><div class="code-line"><code>    timeout { send_user "Timeout: FTP ne répond pas\n"; exit 1 }</code></div><div class="code-line"><code>}</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "Password:"</code></div><div class="code-line"><code>send "$FTP_PASS\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "ftp>"</code></div><div class="code-line"><code>send "binary\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "ftp>"</code></div><div class="code-line"><code>send "cd $REMOTE_DIR\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "ftp>"</code></div><div class="code-line"><code>send "put $LOCAL_FILE\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "ftp>"</code></div><div class="code-line"><code>send "bye\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>send_user "Transfert FTP terminé.\n"</code></div></div>
+
+<h2>Gestion des timeout</h2>
+
+<p>Par défaut, <code>expect</code> attend indéfiniment. Utilisez <code>set timeout</code> pour limiter :</p>
+
+<div class="code-block"><div class="code-line"><code>set timeout 30              # timeout de 30 secondes</code></div><div class="code-line"><code></code></div><div class="code-line"><code>spawn ssh serveur</code></div><div class="code-line"><code>expect {</code></div><div class="code-line"><code>    "password:" { send "$PASS\r" }</code></div><div class="code-line"><code>    timeout { send_user "Trop long, abandon\n"; exit 1 }</code></div><div class="code-line"><code>}</code></div></div>
+
+<h2>Variables dans expect</h2>
+
+<p>Comme en Tcl (sur lequel repose expect), on accède aux variables avec <code>$nom</code> et on peut utiliser l'interpolation dans les chaînes entre guillemets :</p>
+
+<div class="code-block"><div class="code-line"><code>set nom_utilisateur "alice"</code></div><div class="code-line"><code>set hote "serveur-linux"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>spawn ssh $nom_utilisateur@$hote</code></div><div class="code-line"><code>expect "password:"</code></div><div class="code-line"><code>send "$PASS\r"</code></div><div class="code-line"><code>send_user "Connecté à $hote\n"</code></div></div>
+
+<h2>Combiner expect dans un script bash</h2>
+
+<p>On peut intégrer un bloc <code>expect</code> dans un script bash avec <code>expect -c</code> pour les cas simples :</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash</code></div><div class="code-line"><code></code></div><div class="code-line"><code>HOST="serveur.example.com"</code></div><div class="code-line"><code>USER="admin"</code></div><div class="code-line"><code>PASS="motdepasse123"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect -c "</code></div><div class="code-line"><code>    spawn ssh $USER@$HOST</code></div><div class="code-line"><code>    expect {</code></div><div class="code-line"><code>        \"yes/no\" { send \"yes\r\"; exp_continue }</code></div><div class="code-line"><code>        \"password:\" { send \"$PASS\r\" }</code></div><div class="code-line"><code>    }</code></div><div class="code-line"><code>    expect eof</code></div><div class="code-line"><code>"</code></div></div>
+
+<h2>Exemple avec un équipement réseau (switch Cisco)</h2>
+
+<p><code>expect</code> est très utilisé pour automatiser l'administration d'équipements réseau :</p>
+
+<div class="code-block"><div class="code-line"><code>#!/usr/bin/expect -f</code></div><div class="code-line"><code></code></div><div class="code-line"><code>set IP "192.168.1.1"</code></div><div class="code-line"><code>set USER "admin"</code></div><div class="code-line"><code>set PASS "cisco123"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>spawn telnet $IP</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "Username:"</code></div><div class="code-line"><code>send "$USER\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "Password:"</code></div><div class="code-line"><code>send "$PASS\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect ">"</code></div><div class="code-line"><code>send "enable\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "Password:"</code></div><div class="code-line"><code>send "enablepass\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "#"</code></div><div class="code-line"><code>send "show interfaces status\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>expect "#"</code></div><div class="code-line"><code>send "exit\r"</code></div><div class="code-line"><code></code></div><div class="code-line"><code>interact</code></div></div>
+
+<h2>La commande expect_out (capturer la sortie)</h2>
+
+<p>Pour extraire du texte de la sortie d'un programme, on utilise <code>expect_out</code> :</p>
+
+<div class="code-block"><div class="code-line"><code>spawn hostnamectl</code></div><div class="code-line"><code>expect "Static hostname:"</code></div><div class="code-line"><code>set hostname $expect_out(1,string)</code></div><div class="code-line"><code>send_user "Le hostname est : $hostname\n"</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>timeout approprié</strong> : réglez-le avant chaque bloc <code>expect</code> critique</li>
+<li><strong>exp_continue</strong> : permet de rester dans un <code>expect</code> après une correspondance pour attendre autre chose</li>
+<li><strong>send_user</strong> pour le feedback : n'envoyez jamais de mot de passe en clair dans un <code>send_user</code> visible</li>
+<li><strong>Protégez vos scripts</strong> : un script expect contient le mot de passe en clair — utilisez <code>chmod 600</code> et envisagez l'authentification par clé SSH à la place</li>
+<li><strong>Testez avec spawn + expect + exit</strong> avant d'utiliser <code>interact</code> pour débugger</li>
+</ul>
+
+<h2>Résumé des commandes</h2>
+
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>spawn</code></td><td>Lancer un programme</td></tr>
+<tr><td><code>expect</code></td><td>Attendre une chaîne du programme</td></tr>
+<tr><td><code>send</code></td><td>Envoyer du texte au programme</td></tr>
+<tr><td><code>send_user</code></td><td>Afficher du texte dans le terminal</td></tr>
+<tr><td><code>interact</code></td><td>Rendre la main à l'utilisateur humain</td></tr>
+<tr><td><code>set timeout N</code></td><td>Définir un timeout en secondes</td></tr>
+<tr><td><code>exp_continue</code></td><td>Rester dans le expect après une correspondance</td></tr>
+<tr><td><code>expect_out</code></td><td>Capturer la sortie pour l'utiliser</td></tr>
+<tr><td><code>set variable valeur</code></td><td>Définir une variable</td></tr>
+<tr><td><code>exit</code></td><td>Terminer le script</td></tr>
+</table>
+
+<h2>Conclusion</h2>
+
+<p><code>expect</code> est l'outil idéal pour automatiser tout ce qui nécessite une interaction humaine : connexions SSH/FTP/Telnet, changement de mots de passe, dialogues de confirmation, administration d'équipements réseau. Combiné à un script bash, il permet de construire des procédures d'automatisation puissantes sans avoir besoin d'API ou de clés SSH.</p>
+
+<nav>
+<a href="198-logrotate.html">&larr; logrotate — Gestion automatique de la rotation des logs</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
