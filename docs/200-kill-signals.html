@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Inter", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+.container { max-width: 800px; margin: 0 auto; }
+h1 { font-size: 1.8rem; background: linear-gradient(135deg, #00d9ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+h2 { color: #00d9ff; margin: 20px 0 10px; }
+h3 { color: #a855f7; margin: 15px 0 8px; }
+p { line-height: 1.7; margin: 10px 0; color: #bbb; }
+code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+th, td { border: 1px solid #333; padding: 8px; }
+th { background: rgba(0,217,255,0.1); }
+li { line-height: 1.8; color: #bbb; margin-left: 20px; }
+li code { background: rgba(0,217,255,0.1); color: #00d9ff; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+nav { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; }
+a { color: #00d9ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+hr { border: none; border-top: 1px solid #333; margin: 20px 0; }
+.code-block { background: #111118; border-radius: 8px; overflow: hidden; margin: 15px 0; border: 1px solid #30363d; }
+.code-line { display: flex; align-items: center; padding: 12px 16px; }
+.code-line code { background: none; color: #e6edf3; padding: 0; font-family: 'Courier New', monospace; font-size: 13.5px; line-height: 1.5; white-space: pre; flex: 1; overflow-x: auto; }
+</style>
+</head>
+<body>
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:15px;margin-bottom:20px;border-bottom:1px solid #333;">
+<a href="index.html" style="color:#666;text-decoration:none;">&larr; Sommaire</a>
+<span style="font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#00d9ff,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SkyLinux</span>
+</div>
+<div class="container">
+<h1>Leçon 200 : kill — Envoyer des signaux aux processus</h1>
+
+<p>Sous Linux, tout processus peut recevoir des <strong>signaux</strong> (signals) — des messages spéciaux qui demandent au processus de faire quelque chose : s'arrêter, redémarrer, se recharger, etc. La commande <code>kill</code> est l'outil principal pour envoyer ces signaux depuis le terminal.</p>
+
+<h2>Principe fondamental : les signaux</h2>
+
+<p>Un signal est un mécanisme de communication inter-processus. Quand vous envoyez un signal à un programme, le noyau interrompt ce que le programme est en train de faire et lui transmet le signal. Le programme peut alors :</p>
+
+<ul>
+<li>Ignorer le signal (certain signaux ne peuvent pas être ignorés)</li>
+<li>Intercepter le signal et exécuter une action personnalisée</li>
+<li>Mourir silencieusement</li>
+<li>Créer un fichier <code>core dump</code> avant de mourir</li>
+</ul>
+
+<h2>La commande kill — Envoyer un signal</h2>
+
+<p>Par défaut, <code>kill</code> envoie le signal <code>SIGTERM</code> (signal 15) au processus cible :</p>
+
+<div class="code-block"><div class="code-line"><code>kill 1234           # envoyer SIGTERM au processus PID 1234</code></div><div class="code-line"><code>kill -15 1234       # équivalent explicite</code></div><div class="code-line"><code>kill -TERM 1234     # notation par nom</code></div></div>
+
+<p>Si le processus ne s'arrête pas, on peut utiliser <code>SIGKILL</code> (signal 9), qui est impossible à ignorer :</p>
+
+<div class="code-block"><div class="code-line"><code>kill -9 1234        # forcer l'arrêt immédiat (SIGKILL)</code></div><div class="code-line"><code>kill -KILL 1234     # notation par nom, equivalent</code></div></div>
+
+<h2>Trouver le bon PID</h2>
+
+<p>Avant d'envoyer un signal, il faut identifier le PID du processus. Plusieurs méthodes :</p>
+
+<h3>pgrep — Rechercher par nom</h3>
+
+<div class="code-block"><div class="code-line"><code>pgrep firefox       # affiche le(s) PID de firefox</code></div><div class="code-line"><code>pgrep -f "python"   # recherche dans la ligne de commande complete</code></div><div class="code-line"><code>pgrep -u david      # processus appartenants a l'utilisateur david</code></div></div>
+
+<h3>pidof — PID d'un programme précis</h3>
+
+<div class="code-block"><div class="code-line"><code>pidof firefox       # PID du processus firefox principal</code></div><div class="code-line"><code>pidof -s nginx      # un seul PID (le plus ancien)</code></div></div>
+
+<h3>ps + grep</h3>
+
+<div class="code-block"><div class="code-line"><code>ps aux | grep nginx</code></div><div class="code-line"><code>ps -ef | grep "[c]hromium"   # le crochet evite de capturer le grep lui-meme</code></div></div>
+
+<h2>Les signaux les plus courants</h2>
+
+<table>
+<tr><th>Signal</th><th>Numéro</th><th>Rôle</th><th>Exemple d'usage</th></tr>
+<tr><td><code>SIGTERM</code></td><td>15</td><td>Demande d'arrêt élégante</td><td><code>kill 1234</code></td></tr>
+<tr><td><code>SIGKILL</code></td><td>9</td><td>Arrêt forcé immédiat</td><td><code>kill -9 1234</code></td></tr>
+<tr><td><code>SIGHUP</code></td><td>1</td><td>Signal de raccrochage (souvent : recharger la config)</td><td><code>kill -1 1234</code></td></tr>
+<tr><td><code>SIGINT</code></td><td>2</td><td>Interruption (Ctrl+C)</td><td><code>kill -2 1234</code></td></tr>
+<tr><td><code>SIGSTOP</code></td><td>19</td><td>Suspendre le processus (Ctrl+Z)</td><td><code>kill -STOP 1234</code></td></tr>
+<tr><td><code>SIGCONT</code></td><td>18</td><td>Reprendre un processus suspendu</td><td><code>kill -CONT 1234</code></td></tr>
+<tr><td><code>SIGUSR1</code></td><td>10</td><td>Signal utilisateur 1 (personnalisable)</td><td><code>kill -USR1 1234</code></td></tr>
+<tr><td><code>SIGUSR2</code></td><td>12</td><td>Signal utilisateur 2 (personnalisable)</td><td><code>kill -USR2 1234</code></td></tr>
+<tr><td><code>SIGWINCH</code></td><td>28</td><td>Changement de taille de fenêtre terminal</td><td><code>kill -WINCH 1234</code></td></tr>
+</table>
+
+<h2>Envoyer un signal à plusieurs processus</h2>
+
+<p>On peut cibler plusieurs processus avec <code>kill</code> et une commande qui renvoie plusieurs PID :</p>
+
+<div class="code-block"><div class="code-line"><code># Arrêter tous les processus python</code></div><div class="code-line"><code>kill $(pgrep python)</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Forcer l'arrêt de tous les chromium</code></div><div class="code-line"><code>kill -9 $(pidof chromium)</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Arrêter tous les processus d'un utilisateur</code></div><div class="code-line"><code>kill -15 -1       # -1 = tous les processus du processus courant (sauf init)</code></div></div>
+
+<h2>Signal et scripts : capturer un signal</h2>
+
+<p>Dans un script bash, on peut capturer un signal pour réagir proprement (par exemple, nettoyer des fichiers temporaires avant de s'arrêter) :</p>
+
+<div class="code-block"><div class="code-line"><code>#!/bin/bash</code></div><div class="code-line"><code></code></div><div class="code-line"><code>TEMP_DIR="/tmp/mon_script_$$"</code></div><div class="code-line"><code>mkdir "$TEMP_DIR"</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Fonction de nettoyage</code></div><div class="code-line"><code>cleanup() {</code></div><div class="code-line"><code>    echo "Nettoyage en cours..."</code></div><div class="code-line"><code>    rm -rf "$TEMP_DIR"</code></div><div class="code-line"><code>    exit 0</code></div><div class="code-line"><code>}</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Capturer SIGTERM et SIGINT</code></div><div class="code-line"><code>trap cleanup SIGTERM SIGINT</code></div><div class="code-line"><code></code></div><div class="code-line"><code>echo "Script en cours (PID: $$). Appuyez sur Ctrl+C ou envoyez SIGTERM pour arrêter."</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Boucle infinie pour garder le script actif</code></div><div class="code-line"><code>while true; do</code></div><div class="code-line"><code>    sleep 1</code></div><div class="code-line"><code>done</code></div></div>
+
+<h2>SIGHUP : recharger la configuration</h2>
+
+<p>Quand un daemon (service en arrière-plan) reçoit <code>SIGHUP</code>, il relit généralement sa configuration sans redémarrer. C'est le comportement standard pour nginx, apache, bind, etc. :</p>
+
+<div class="code-block"><div class="code-line"><code># Relire la configuration de nginx sans redémarrer</code></div><div class="code-line"><code>kill -HUP $(pidof nginx)</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Équivalent avec systemctl</code></div><div class="code-line"><code>systemctl reload nginx</code></div></div>
+
+<h2>Suspendre et reprendre (SIGSTOP / SIGCONT)</h2>
+
+<p><code>SIGSTOP</code> met le processus en pause (comme Ctrl+Z) et <code>SIGCONT</code> le reprend :</p>
+
+<div class="code-block"><div class="code-line"><code># Suspendre un processus</code></div><div class="code-line"><code>kill -STOP 1234</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Le reprendre</code></div><div class="code-line"><code>kill -CONT 1234</code></div></div>
+
+<p>Cela permet de mettre un processus de côté temporairement, par exemple pour libérer un terminal ou de la mémoire.</p>
+
+<h2>La famille kill : killall et pkill</h2>
+
+<h3>killall — Par nom de programme</h3>
+
+<div class="code-block"><div class="code-line"><code>killall firefox        # envoyer SIGTERM a tous les firefox</code></div><div class="code-line"><code>killall -9 chromium    # forcer l'arret de tous les chromium</code></div><div class="code-line"><code>killall -u david       # tuer tous les processus de l'utilisateur david</code></div><div class="code-line"><code>killall -i nginx       # mode interactif (demande confirmation)</code></div></div>
+
+<h3>pkill — Recherche + kill</h3>
+
+<div class="code-block"><div class="code-line"><code>pkill firefox          # arreter firefox par son nom</code></div><div class="code-line"><code>pkill -f "python script.py"   # arreter un processus par sa ligne de commande</code></div><div class="code-line"><code>pkill -u david         # tuer tous les processus de david</code></div><div class="code-line"><code>pkill -x nginx         # tuer uniquement si le nom correspond exactement</code></div><div class="code-line"><code>pkill -o firefox       # arreter uniquement le plus ancien</code></div><div class="code-line"><code>pkill -n firefox       # arreter uniquement le plus recent</code></div></div>
+
+<h2>Vérifier que le signal a été reçu</h2>
+
+<p>Après l'envoi d'un signal, vérifiez que le processus est bien terminé :</p>
+
+<div class="code-block"><div class="code-line"><code>kill -15 1234</code></div><div class="code-line"><code>sleep 2</code></div><div class="code-line"><code>ps -p 1234 && echo "Le processus existe encore" || echo "Processus arrete"</code></div><div class="code-line"><code></code></div><div class="code-line"><code># Si le processus persiste malgré SIGTERM</code></div><div class="code-line"><code>kill -9 1234</code></div></div>
+
+<h2>Signaux et numéros — La liste complète</h2>
+
+<p>Pour voir tous les signaux disponibles sur votre système :</p>
+
+<div class="code-block"><div class="code-line"><code>kill -l               # liste tous les signaux (nom et numéro)</code></div><div class="code-line"><code>kill -l 9             # afficher le nom du signal numero 9 (KILL)</code></div><div class="code-line"><code>kill -l SIGTERM       # afficher le numero du signal SIGTERM (15)</code></div></div>
+
+<h2>Bonnes pratiques</h2>
+
+<ul>
+<li><strong>Toujours essayer <code>SIGTERM</code> d'abord</strong> : c'est propre, le processus peut nettoyer ses fichiers et fermer proprement ses connexions</li>
+<li><strong>Utiliser <code>SIGKILL</code> (-9) uniquement en dernier recours</code> : le processus n'a aucune chance de nettoyer, vous risquez de perdre des données</li>
+<li><strong>Utilisez <code>trap</code> dans vos scripts</strong> pour capturer les signaux et nettoyer proprement</li>
+<li><strong><code>kill -1</code> (SIGHUP)</strong> est le standard pour demander à un daemon de relire sa configuration — pas besoin de le redémarrer</li>
+<li><strong>Attention avec <code>kill -9</code> sur un processus qui écrit sur le disque</strong> : corruption possible de fichiers</li>
+<li><strong><code>killall</code> et <code>pkill</code></strong> sont pratiques mais utilisez-les avec prudence — vérifiez bien le nom avant d'exécuter</li>
+</ul>
+
+<h2>Résumé</h2>
+
+<table>
+<tr><th>Commande</th><th>Rôle</th></tr>
+<tr><td><code>kill PID</code></td><td>Envoyer SIGTERM à un processus</td></tr>
+<tr><td><code>kill -9 PID</code></td><td>Forcer l'arrêt (SIGKILL)</td></tr>
+<tr><td><code>kill -1 PID</code></td><td>Envoyer SIGHUP (recharger config)</td></tr>
+<tr><td><code>kill -STOP PID</code></td><td>Suspendre le processus</td></tr>
+<tr><td><code>kill -CONT PID</code></td><td>Reprendre le processus suspendu</td></tr>
+<tr><td><code>killall nom</code></td><td>Arrêter tous les processus par nom</td></tr>
+<tr><td><code>pkill nom</code></td><td>Arrêter par recherche de nom</td></tr>
+<tr><td><code>pgrep nom</code></td><td>Trouver le(s) PID par nom</td></tr>
+<tr><td><code>kill -l</code></td><td>Lister tous les signaux</td></tr>
+<tr><td><code>trap func SIGTERM</code></td><td>Capturer un signal dans un script</td></tr>
+</table>
+
+<h2>Conclusion</h2>
+
+<p><code>kill</code> est bien plus qu'un simple "tueur" de processus. C'est un outil de communication avec les programmes : leur demander de s'arrêter proprement, forcer leur arrêt, leur demander de relire leur configuration, ou même les suspendre temporairement. Connaître les signaux et leur utilisation est indispensable pour administrer efficacement un système Linux.</p>
+
+<nav>
+<a href="199-expect-automatisation-taches-interactives.html">&larr; expect — Automatiser les tâches interactives</a>
+<a href="index.html">Sommaire</a>
+</nav>
+</div>
+</body>
+</html>
